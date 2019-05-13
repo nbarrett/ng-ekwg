@@ -1,0 +1,7 @@
+<div style="font-size:12px">
+    <p>This email is just to confirm that the EKWG expense claim you created on <span ng-bind="expenseClaimCreatedEvent().date | displayDate" class="nowrap"></span> with the
+        <span ng-bind="selected.expenseClaim().expenseItems.length"></span> item(s) listed below has been submitted for approval:
+    </p>
+    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
+    <p>Once your claim has been approved by Kerry and Des it will be passed to Jon for payment. Please note that this can take up until the next committee meeting to be processed so please be patient with us!</p>
+</div>

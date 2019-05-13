@@ -1,0 +1,185 @@
+<div ng-class="{'busy': busy}">
+    <div class="wrapper">
+        <div id="page-body" role="main">
+            <div class="body-header">
+
+                <div class="breadcrumbs">
+                    <ul>
+                        <li><a href="#/" title="Home">Home</a></li>
+                        <li class="last">Social Events</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <uib-accordion class="accordion accordion-style" close-others="false">
+                <uib-accordion-group is-open="socialEventsInformationOpen">
+                    <uib-accordion-heading>
+                        <div class="accordion-title">
+                            <img src="../../assets/images/ramblers/icon-getinvolved.png" class="accordion-image"
+                                 alt="members area">Social Events Information
+                            <i class="pull-right fa fa-lg darkred"
+                               ng-class="{'fa fa-minus-circle': socialEventsInformationOpen, 'fa fa-plus-circle': !socialEventsInformationOpen}"></i>
+                        </div>
+                    </uib-accordion-heading>
+                    <div class="green-bullets-no-rule col-sm-6">
+                        <markdown-editor name="socialEventsInformation"
+                                         description="social events information"></markdown-editor>
+                        <a ng-if="allowContentEdits" ng-href="#image-editor/imagesSocialEvents" title="Edit images"
+                           class="button-form button-form-right round">Edit images</a>
+                    </div>
+                    <div class="green-bullets-no-rule col-sm-6 auto-fit-column">
+                        <div id="social-carousel">
+                            <div class="carousel-wrapper">
+                                <div class="slider-container">
+                                    <div class="sc-inner">
+                                        <uib-carousel interval="interval">
+                                            <uib-slide ng-repeat="slide in slides" active="slide.active">
+                                                <img ng-src="{{slide.image}}" class="carousel-image">
+
+                                                <div class="carousel-caption">
+                                                    <h4>{{slide.text}}</h4>
+                                                </div>
+                                            </uib-slide>
+                                        </uib-carousel>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </uib-accordion-group>
+                <uib-accordion-group ng-if="allowDetailView" is-open="socialEventsDetailProgrammeOpen">
+                    <uib-accordion-heading>
+                        <div class="accordion-title">
+                            <img src="../../assets/images/ramblers/icon-getinvolved.png" class="accordion-image"
+                                 alt="members area">Social Events In Detail
+                            <i class="pull-right fa fa-lg darkred"
+                               ng-class="{'fa fa-minus-circle': socialEventsDetailProgrammeOpen, 'fa fa-plus-circle': !socialEventsDetailProgrammeOpen}"></i>
+                        </div>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div ng-if="allowEdits" class="cta-add-new round">
+                                <a href="" ng-click="addSocialEvent()" data-toggle="modal"
+                                   title="Add New Social Event Details">Add New Social Event</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="thumbnail event-thumbnail"
+                         ng-repeat="socialEvent in filteredSocialEvents = (socialEvents | orderBy: 'eventDate')">
+
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h1><span ng-bind="socialEvent.eventDate | displayDay"></span></h1>
+                                <h2><span ng-bind="socialEvent.briefDescription"></span></h2>
+                                <h3 ng-if="socialEvent | eventTimes">Time: <span
+                                    ng-bind="socialEvent | eventTimes"></span></h3>
+                            </div>
+                            <div class="col-sm-4">
+                                <input ng-if="allowEdits" type="submit" value="edit"
+                                       ng-click="editSocialEvent(socialEvent)"
+                                       title="Edit social event" class="button-form button-form-right">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="event-description">
+                                    <a class="event-thumbnail-image" target="_blank"
+                                       ng-href="{{socialEvent.link}}">
+                                        <img ng-if="socialEvent.thumbnail"
+                                             ng-src="{{socialEvent.thumbnail}}"
+                                             type="text" value=""
+                                             id="thumbnail"
+                                             class="round"
+                                             placeholder="Enter a thumbnail image"></a>
+                                    <div class="green-bullets-no-rule">
+                                        <p btf-markdown="socialEvent.longerDescription"></p>
+                                        <ul>
+                                            <li ng-if="socialEvent.attachment">
+                                                <a target="_blank" ng-bind="attachmentTitle(socialEvent)"
+                                                   ng-href="{{attachmentUrl(socialEvent)}}"></a>
+                                            </li>
+                                            <li ng-hide="socialEvent.thumbnail" ng-if="socialEvent.link">
+                                                <a target="_blank" ng-href="{{socialEvent.link}}">{{socialEvent.linkTitle
+                                                    ||
+                                                    'Link: ' + socialEvent.link}}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="event-panel round">
+                                    <h1>Location</h1>
+                                    <p><span ng-bind="socialEvent.location"></span><a
+                                        ng-href="http://maps.google.co.uk/maps?q={{socialEvent.postcode}}"
+                                        target="_blank">
+                                        <span tooltip-placement="left"
+                                              uib-tooltip="Click to locate postcode {{socialEvent.postcode}} on Google Maps">{{socialEvent.postcode}}</span></a>
+                                    </p>
+                                    <div class="row related-links-row" ng-if="userEdits.socialEventLink(socialEvent)">
+                                        <div class="col-sm-12">
+                                            <label> <a href="" uib-popover="Link has been copied to clipboard"
+                                                       popover-trigger="focus"
+                                                       ng-click="userEdits.copyToClipboard(userEdits.socialEventLink(socialEvent))">
+                                                <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
+                                                    tooltip-placement="left"
+                                                    uib-tooltip="Click to copy link to clipboard"></span></i> copy link </a> to
+                                                this </label>
+                                            <a ng-href="{{userEdits.socialEventLink(socialEvent)}}"
+                                               target="_blank">social event</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="event-panel round">
+                                    <h1>Contact Details</h1>
+                                    <p><a ng-href="mailto:{{socialEvent.contactEmail}}">
+                                <span tooltip-placement="left"
+                                      uib-tooltip="Click to email {{socialEvent.displayName}} at {{socialEvent.contactEmail}}">{{socialEvent.displayName}}</span></a>
+                                        <a ng-href="tel:{{socialEvent.contactPhone}}">
+                                            <span tooltip-placement="left"
+                                                  uib-tooltip="Click to ring {{socialEvent.displayName}} on {{socialEvent.contactPhone}} (mobile devices only)">{{socialEvent.contactPhone}}</span></a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </uib-accordion-group>
+                <div ng-if="showLoginTooltip()" class="tooltip-link"
+                     ng-click="login()">
+                    <uib-accordion-group ng-if="allowSummaryView" is-open="socialEventsBriefProgrammeOpen">
+                        <uib-accordion-heading>
+                            <div class="accordion-title">
+                                <img src="../../assets/images/ramblers/icon-getinvolved.png" class="accordion-image"
+                                     alt="members area">Social Events in Brief
+                                <i class="pull-right fa fa-lg darkred"
+                                   ng-class="{'fa fa-minus-circle': socialEventsBriefProgrammeOpen, 'fa fa-plus-circle': !socialEventsBriefProgrammeOpen}"></i>
+                            </div>
+                        </uib-accordion-heading>
+
+                        <div class="social-events-brief">
+                            <ul>
+                                <li ng-repeat="socialEvent in filteredSocialEvents = (socialEvents | orderBy: 'eventDate')">
+                                    <p class="social-event-date"><span
+                                        ng-bind="socialEvent.eventDate | displayDay"></span></p>
+                                    <p class="social-event-title"><span ng-bind="socialEvent.briefDescription"></span>
+                                    </p>
+                                    <img ng-if="socialEvent.thumbnail" ng-src="{{socialEvent.thumbnail}}"
+                                         alt="{{socialEvent.briefDescription }}"
+                                         title="{{socialEvent.briefDescription }}"></li>
+                            </ul>
+                        </div>
+
+                    </uib-accordion-group>
+                </div>
+            </uib-accordion>
+        </div>
+    </div>
+</div>
+<ng-include src="'partials/socialEvents/social-event-dialog.html'"></ng-include>

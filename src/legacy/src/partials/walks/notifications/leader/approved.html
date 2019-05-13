@@ -1,0 +1,8 @@
+<div  ng-controller="WalkNotificationsController" style="font-size:12px">
+    <p>This message is just to let you know that your walk on <strong ng-bind="walk.walkDate | displayDate" class="nowrap"></strong> has been approved and is now published on our website!</p>
+    <p ng-if="event.reason" ng-bind="event.reason"></p>
+    <p>For info, the details of your walk are as follows:
+        <ng-include src="'partials/walks/notifications/common/walk-details.html'"></ng-include></p>
+    <p>Now the walk is published, if you need to make any further changes to it, please let me know and I'll make it editable again for you.</p>
+    <ng-include src="'partials/walks/notifications/common/footer.html'"></ng-include>
+</div>

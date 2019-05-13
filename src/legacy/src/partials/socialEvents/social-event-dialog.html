@@ -1,0 +1,307 @@
+<div ng-class="{'busy': busy}">
+    <div class="modal" id="social-event-dialog" tabindex="-1" role="dialog" data-backdrop="true"
+         aria-labelledby="modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="modal-title-heading">{{socialEventEditMode}} <em>Social Event</em>
+                        Details</h4>
+                </div>
+                <div class="modal-body">
+                    <span class="hidden-input"><input id="hidden-input" type="file" value="Replace"
+                                                      ngf-select="onFileSelect($file)"
+                                                      title="Replace this image"></span>
+                    <uib-tabset>
+                        <uib-tab>
+                            <uib-tab-heading>Date and Location</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col col-sm-6">
+                                        <div class="form-group">
+                                            <label for="social-event-date">Social Event Date</label>
+
+                                            <div class="input-group">
+                                                <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.eventDate"
+                                                       type="text" class="form-control input-sm"
+                                                       value="{{currentSocialEvent.eventDate}}"
+                                                       day-format="dd" month-format="MMM" year-format="yyyy"
+                                                       uib-datepicker-popup="dd-MMM-yyyy"
+                                                       is-open="eventDateCalendar.opened" min="minDate"
+                                                       uib-datepicker-options="dateOptions"
+                                                       ng-required="true" close-text="Close" id="social-event-date"/>
+                                                <span class="input-group-btn">
+                            <button ng-disabled="!allowEdits" class="btn btn-default btn-sm"
+                                    ng-click="eventDateCalendar.open($event)"><i
+                                class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col col-sm-3">
+                                        <div class="form-group">
+                                            <label for="start-time">Start Time</label>
+                                            <input ng-disabled="!allowEdits"
+                                                   ng-model="currentSocialEvent.eventTimeStart" type="text"
+                                                   class="form-control input-sm" id="start-time"
+                                                   placeholder="Enter Start time here">
+                                        </div>
+                                    </div>
+                                    <div class="col col-sm-3">
+                                        <div class="form-group">
+                                            <label for="end-time">End Time</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.eventTimeEnd"
+                                                   type="text" class="form-control input-sm" id="end-time"
+                                                   placeholder="Enter End time here">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-sm-8">
+                                        <div class="form-group">
+                                            <label for="location">Location</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.location"
+                                                   type="text" class="form-control input-sm" id="location"
+                                                   placeholder="Enter Location here">
+                                        </div>
+                                    </div>
+                                    <div class="col col-sm-4">
+                                        <div class="form-group">
+                                            <label for="post-code">Postcode</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.postcode"
+                                                   type="text" class="form-control input-sm" id="post-code"
+                                                   placeholder="Enter Postcode here">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                        <uib-tab>
+                            <uib-tab-heading>Descriptions</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col col-sm-12">
+                                        <div class="form-group">
+                                            <label for="title">Title</label>
+                                            <input ng-disabled="!allowEdits"
+                                                   ng-model="currentSocialEvent.briefDescription" type="text"
+                                                   class="form-control input-sm"
+                                                   id="title"
+                                                   placeholder="Enter title for social event here"></input>
+                                        </div>
+
+                                        <div class="row">
+                                            <div ng-class="currentSocialEvent.thumbnail ? 'col-sm-8': 'col-sm-12'">
+                                                <div class="event-description">
+                                                    <div class="form-group">
+                                                        <label for="longer-description">Description <a
+                                                            ng-hide="userEdits.longerDescriptionPreview"
+                                                            ng-click="previewLongerDescription()" ng-href=""><i
+                                                            class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i>
+                                                            preview</a>
+                                                            <a
+                                                                ng-if="userEdits.longerDescriptionPreview"
+                                                                ng-click="editLongerDescription()" ng-href=""><i
+                                                                class="glyphicon glyphicon-pencil markdown-preview-icon"></i>
+                                                                edit</a> </label>
+                                                        <div class="green-bullets-no-rule">
+                                                            <p ng-if="userEdits.longerDescriptionPreview"
+                                                               ng-click="editLongerDescription()"
+                                                               btf-markdown="currentSocialEvent.longerDescription"
+                                                               type="text"
+                                                               id="longer-description-preview"></p>
+                                                        </div>
+                                                        <textarea ng-if="!userEdits.longerDescriptionPreview"
+                                                                  ng-disabled="!allowEdits"
+                                                                  ng-blur="previewLongerDescription()"
+                                                                  ng-model="currentSocialEvent.longerDescription"
+                                                                  type="text"
+                                                                  class="form-control input-sm"
+                                                                  ng-attr-rows="{{currentSocialEvent.thumbnail ? 20 : 5}}"
+                                                                  id="longer-description"
+                                                                  placeholder="Enter description for social event here"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div ng-if="currentSocialEvent.thumbnail" class="col-sm-4">
+                                                <a class="event-dialog-thumbnail-image" target="_blank"
+                                                   ng-href="{{currentSocialEvent.link}}">
+                                                    <img ng-if="currentSocialEvent.thumbnail"
+                                                         ng-src="{{currentSocialEvent.thumbnail}}"
+                                                         type="text" value=""
+                                                         id="image-thumbnail"
+                                                         class="round"
+                                                         placeholder="Enter a thumbnail image"></a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <label for="thumbnail">Thumbnail</label>
+                                                    <input ng-disabled="!allowEdits"
+                                                           ng-model="currentSocialEvent.thumbnail"
+                                                           type="text" value="" class="form-control input-sm"
+                                                           id="thumbnail"
+                                                           placeholder="Enter a thumbnail image">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="link">Link</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.link"
+                                                   type="text" value="" class="form-control input-sm" id="link"
+                                                   placeholder="Enter a link">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="linkTitle">Display title for link</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.linkTitle"
+                                                   type="text" value="" class="form-control input-sm" id="linkTitle"
+                                                   placeholder="Enter a title for link">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                        <uib-tab>
+                            <uib-tab-heading>Organiser</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col col-sm-12">
+                                        <div class="form-group">
+                                            <label for="contact-member">Event Organiser</label>
+                                            <select ng-disabled="!allowEdits" ng-change="selectMemberContactDetails()"
+                                                    class="form-control input-sm"
+                                                    ng-model="currentSocialEvent.eventContactMemberId"
+                                                    ng-options="member.$id() as member | fullNameWithAlias for member in members"
+                                                    class="form-control round spaced-controls" id="contact-member">
+                                                <option value="">(no event organiser yet)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contact-display-name">Display Name</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.displayName"
+                                                   type="text" class="form-control input-sm"
+                                                   id="contact-display-name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contact-phone">Contact Phone</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.contactPhone"
+                                                   type="text" class="form-control input-sm" id="contact-phone"
+                                                   placeholder="Enter contact phone here">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="contact-email">Contact Email</label>
+                                            <input ng-disabled="!allowEdits" ng-model="currentSocialEvent.contactEmail"
+                                                   type="text" class="form-control input-sm" id="contact-email"
+                                                   placeholder="Enter contact email here">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                        <uib-tab>
+                            <uib-tab-heading>Attendees</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label class="col-sm-12">{{attendeeCaption()}}
+                                            <ui-select class="multi-select" id="emailMembers" ng-if="allowEdits"
+                                                       multiple ng-model="currentSocialEvent.attendees">
+                                                <ui-select-match placeholder="Select one or more attendees">
+                                                    {{$item.text}}
+                                                </ui-select-match>
+                                                <ui-select-choices
+                                                    repeat="member in selectMembers | filter: $select.search track by member.id">
+                                                    <div ng-bind-html="member.text | highlight: $select.search"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
+                                        </label>
+
+                                        <p ng-hide="allowEdits" class="col-sm-12 round">{{attendeeList()}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                        <uib-tab ng-if="allowEdits">
+                            <uib-tab-heading>Attachment</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div ng-if="uploadedFile || currentSocialEvent.attachment" class="form-group">
+                                            <label for="attachment">Attachment file</label>
+                                            <a target="_blank" id="attachment"
+                                               ng-href="{{attachmentUrl(currentSocialEvent)}}"
+                                               ng-bind="attachmentTitle(currentSocialEvent)"></a>
+                                        </div>
+                                        <div ng-if="uploadedFile || currentSocialEvent.attachment" class="form-group">
+                                            <label for="attachmentTitle">Display title for attachment
+                                                {{currentSocialEvent.attachment.originalFileName ||
+                                                currentSocialEvent.attachment}}</label>
+                                            <input ng-model="currentSocialEvent.attachmentTitle" type="text" value=""
+                                                   class="form-control input-sm" id="attachmentTitle"
+                                                   placeholder="Enter a title for this attachment">
+                                        </div>
+                                        <div class="form-group">
+                                            <input ng-if="uploadedFile || currentSocialEvent.attachment" type="submit"
+                                                   value="Remove attachment" ng-click="removeAttachment()"
+                                                   title="Remove Attachment"
+                                                   class="button-form">
+                                            <input ng-if="uploadedFile || currentSocialEvent.attachment" type="submit"
+                                                   value="Replace attachment"
+                                                   title="Replace attachment on this social event"
+                                                   class="button-form" ng-click="addOrReplaceAttachment()">
+                                            <input ng-hide="currentSocialEvent.attachment" type="submit"
+                                                   value="Add attachment" title="Add attachment to this social event"
+                                                   class="button-form" ng-click="addOrReplaceAttachment()">
+                                        </div>
+                                        <div ng-if="uploadedFile" class="form-group">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar"
+                                                     style="width:{{uploadedFile.progress}}%;">
+                                                    {{uploadedFile.progress}}% uploaded
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                    </uib-tabset>
+                    <div class="form-group modal-alert">
+                        <div ng-hide="!showAlert" class="alert {{alertClass}}"><i
+                            class="glyphicon {{alert.icon}}"> </i><strong ng-if="alertTitle">
+                            {{alertTitle}}: </strong> {{alertMessage}}
+                        </div>
+                    </div>
+                    <div ng-if="userEdits.socialEventLink(currentSocialEvent)">
+                        <label> <a href="" uib-popover="Link has been copied to clipboard" popover-trigger="focus"
+                                   ng-click="userEdits.copyToClipboard(userEdits.socialEventLink(currentSocialEvent))">
+                            <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span tooltip-placement="left" uib-tooltip="Click to copy link to clipboard"></span></i> copy link </a> to this </label>
+                        <a ng-href="{{userEdits.socialEventLink(currentSocialEvent)}}"
+                           target="_blank">social event</a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input ng-if="allowEdits" type="submit" value="Save" ng-click="saveSocialEventDetails()"
+                           title="Save this social event" class="button-form button-form-left">
+                    <input ng-if="allowEdits" type="submit" value="Send Notification"
+                           ng-click="sendSocialEventNotification()" title="Send social event notification"
+                           class="button-form button-form-left">
+                    <input ng-if="allowDelete" type="submit" value="Delete" ng-click="deleteSocialEventDetails()"
+                           title="Delete this social event" class="button-form button-form-left">
+                    <input ng-if="allowConfirmDelete" type="submit" value="Confirm Deletion"
+                           ng-click="confirmDeleteSocialEventDetails()" title="Confirm delete of this social event"
+                           class="button-form button-form-left button-confirm">
+                    <input ng-if="allowEdits" type="submit" value="Cancel" ng-click="cancelSocialEventDetails()"
+                           title="Cancel and don't save social event" class="button-form button-form-left">
+                    <input ng-if="allowCopy" type="submit" value="Copy" ng-click="copyDetailsToNewSocialEvent()"
+                           title="Copy details to new social event" class="button-form button-form-left">
+                    <input ng-if="!allowEdits" type="submit" value="Close" ng-click="cancelSocialEventDetails()"
+                           title="Close this social event without saving" class="button-form button-form-left">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

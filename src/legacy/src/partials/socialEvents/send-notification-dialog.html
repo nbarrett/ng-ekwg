@@ -1,0 +1,294 @@
+<div ng-class="{'busy': notify.busy}" class="modal" id="send-social-notification-dialog" tabindex="-1" role="dialog"
+     data-backdrop="true" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
+            </div>
+            <div class="modal-body">
+                <uib-tabset>
+                    <uib-tab>
+                        <uib-tab-heading>Recipients & Addressing</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-7"><label>Send to:</label>
+                                    <div class="form-group">
+                                        <input ng-click="clearRecipients()" id="all-ekwg-social" type="radio"
+                                               ng-model="socialEvent.notification.destinationType"
+                                               value="all-ekwg-social"/>
+                                        <label for="all-ekwg-social">{{userEdits.socialList().length}} Social Group
+                                            Members <a
+                                                ng-if="userEdits.socialList().length>0"
+                                                ng-click="editAllSocialRecipients()"
+                                                ng-href=""> (edit)</a>
+                                        </label>
+
+                                        <input ng-click="clearRecipients()"
+                                               ng-disabled="socialEvent.attendees.length===0"
+                                               id="attendees"
+                                               type="radio"
+                                               ng-model="socialEvent.notification.destinationType"
+                                               value="attendees"/>
+                                        <label for="attendees"
+                                               ng-disabled="socialEvent.notification.recipients.length===0">{{socialEvent.attendees.length}}
+                                            Attendees <a ng-if="socialEvent.attendees.length>0"
+                                                         ng-click="editAttendeeRecipients()"
+                                                         ng-href=""> (edit)</a>
+                                        </label>
+                                        <input id="custom"
+                                               type="radio"
+                                               ng-model="socialEvent.notification.destinationType"
+                                               value="custom"/>
+                                        <label for="custom"><span
+                                            ng-if="socialEvent.notification.recipients.length===0">Choose individual recipients</span><span
+                                            ng-if="socialEvent.notification.recipients.length>0">{{socialEvent.notification.recipients.length}} recipient(s) chosen<a
+                                            ng-click="clearRecipients()"
+                                            ng-href=""> (clear)</a></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col col-sm-5"><label>Address as:</label>
+                                    <div class="form-group">
+                                        <input id="addressee-first-name" type="radio"
+                                               ng-model="socialEvent.notification.addresseeType"
+                                               value="Hi *|FNAME|*,"/>
+                                        <label for="addressee-first-name">Hi <i>first name</i></label>
+                                        <input id="addressee-all" type="radio"
+                                               ng-model="socialEvent.notification.addresseeType"
+                                               value="Hi all,"/>
+                                        <label for="addressee-all">Hi all</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="socialEvent.notification.destinationType==='custom'">
+                                <div class="form-group">
+                                    <label class="col-sm-12">
+                                        <ui-select multiple ng-model="socialEvent.notification.recipients"
+                                                   close-on-select="false"
+                                                   class="multi-select" id="specific-members-edit"
+                                                   title="Select one or more recipients"
+                                                   input-id="recipients" id="recipients">
+
+                                            <ui-select-match placeholder="Select one or more recipients">
+                                                {{$item.text}}
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                ui-disable-choice="member.order > 0"
+                                                group-by="memberGrouping"
+                                                repeat="member as member in selectableRecipients | filter: $select.search track by member.id">
+                                                <small><span
+                                                    ng-bind-html="member.text | highlight: $select.search"></span>
+                                                </small>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Edit Content</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.title.include}"
+                                                for="include-title">Include Title:
+                                                <input ng-model="socialEvent.notification.items.title.include"
+                                                       type="checkbox"
+                                                       id="include-title">
+                                            </label>
+                                        </div>
+                                        <textarea ng-model="socialEvent.briefDescription"
+                                                  type="text"
+                                                  class="form-control input-sm"
+                                                  ng-disabled="!socialEvent.notification.items.title.include"
+                                                  rows="1"
+                                                  id="title"
+                                                  placeholder="Enter the title you'd like at the top of the notification here">
+                                            </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.notificationText.include}"
+                                                for="include-notification-text">Include Notification text:
+                                                <input
+                                                    ng-model="socialEvent.notification.items.notificationText.include"
+                                                    type="checkbox"
+                                                    id="include-notification-text">
+                                            </label>
+                                        </div>
+                                        <textarea ng-model="socialEvent.notification.items.notificationText.value"
+                                                  type="text"
+                                                  class="form-control input-sm" rows="5"
+                                                  id="free-text"
+                                                  ng-disabled="!socialEvent.notification.items.notificationText.include"
+                                                  placeholder="Enter free text to be included in the notification here">
+                                            </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.description.include}"
+                                                for="include-description">Include Social Event Description text:
+                                                <input
+                                                    ng-model="socialEvent.notification.items.description.include"
+                                                    type="checkbox"
+                                                    id="include-description">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="socialEvent.attendees.length>0">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.attendees.include}"
+                                                for="include-attendees">Include List of attendees:
+                                                <input
+                                                    ng-model="socialEvent.notification.items.attendees.include"
+                                                    type="checkbox"
+                                                    id="include-attendees"><span style="font-weight: normal"> ({{attendeeList()}})</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="socialEvent.attachment">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.attachment.include}"
+                                                for="include-attachment">Include link to attachment:
+                                                <input
+                                                    ng-model="socialEvent.notification.items.attachment.include"
+                                                    type="checkbox"
+                                                    id="include-attachment"><span style="font-weight: normal"> {{attachmentTitle(socialEvent)}}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Signing Off</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.replyTo.include}"
+                                                for="include-reply-to">Send replies to:
+                                                <input ng-model="socialEvent.notification.items.replyTo.include"
+                                                       type="checkbox"
+                                                       id="include-reply-to">
+                                            </label>
+                                        </div>
+                                        <select ng-model="socialEvent.notification.items.replyTo.value" id="replyTo"
+                                                ng-disabled="!socialEvent.notification.items.replyTo.include"
+                                                class="form-control input-sm"
+                                                ng-options="role.type as role.description for role in roles.replyTo">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.signoffText.include}"
+                                                for="include-signoff-text">Signoff with text:
+                                                <input ng-model="socialEvent.notification.items.signoffText.include"
+                                                       type="checkbox"
+                                                       id="include-signoff-text">
+                                            </label>
+                                        </div>
+                                        <textarea ng-model="socialEvent.notification.items.signoffText.value"
+                                                  type="text"
+                                                  class="form-control input-sm"
+                                                  ng-disabled="!socialEvent.notification.items.signoffText.include"
+                                                  rows="3"
+                                                  id="signoff-text"
+                                                  placeholder="Enter any signoff text to be included in the notification here">
+                                            </textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label
+                                                ng-class="{'ui-state-active': socialEvent.notification.items.signoffAs.include}"
+                                                for="include-signoff-as">Signoff as:
+                                                <input ng-model="socialEvent.notification.items.signoffAs.include"
+                                                       type="checkbox"
+                                                       id="include-signoff-as">
+                                            </label>
+                                        </div>
+                                        <select ng-model="socialEvent.notification.items.signoffAs.value"
+                                                id="signoff-as"
+                                                ng-disabled="!socialEvent.notification.items.signoffAs.include"
+                                                class="form-control input-sm"
+                                                ng-options="role.type as role.description for role in roles.signoff">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Preview</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="form-horizontal">
+                                <div id="preview" class="print-preview">
+                                    <ng-include src="'partials/socialEvents/social-notification.html'"></ng-include>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+                <div ng-if="notify.showAlert" class="row">
+                    <div class="col-sm-12 mb-10">
+                        <div class="alert {{notify.alertClass}}"><i
+                            class="glyphicon {{notify.alert.icon}}"> </i><strong ng-if="notify.alertTitle">
+                            {{notify.alertTitle}}: </strong> {{notify.alertMessage}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Confirm Send" ng-click="confirmSendNotification()"
+                       title="Confirm sending of notification email"
+                       ng-disabled="userEdits.notReady()"
+                       ng-class="userEdits.notReady() ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
+                <input type="submit" value="Complete in Mailchimp" ng-click="completeInMailchimp()"
+                       ng-disabled="userEdits.notReady()"
+                       title="Complete editing and sending in Mailchimp"
+                       ng-class="userEdits.notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+                <input type="submit" value="Cancel Send" ng-click="cancelSendNotification()"
+                       ng-disabled="userEdits.notReady()"
+                       title="Cancel sending of notification email"
+                       ng-class="userEdits.notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm button-form-left'">
+            </div>
+        </div>
+    </div>
+</div>

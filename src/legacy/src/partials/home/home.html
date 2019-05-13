@@ -1,0 +1,86 @@
+<div id="home-carousel">
+    <div class="carousel-wrapper">
+        <div class="slider-container">
+            <div class="sc-inner">
+                <uib-carousel interval="interval">
+                    <uib-slide ng-repeat="slide in slides" active="slide.active">
+                        <img ng-src="{{slide.image}}" class="carousel-image">
+                        <div class="carousel-caption">
+                            <h4>{{slide.text}} ({{$index+1}} of {{slides.length}})</h4>
+                        </div>
+                    </uib-slide>
+                </uib-carousel>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div class="no-header-padding" role="main">
+        <div class="row">
+            <div class="col-sm-12">
+                <a ng-if="allowEdits()" ng-href="#image-editor/imagesHome" title="Edit images"
+                   class="button-form button-form-right round">Edit images</a>
+                <markdown-editor class="event-description" name="welcome"></markdown-editor>
+            </div>
+        </div>
+
+        <uib-accordion class="accordion accordion-style" close-others="false">
+
+            <uib-accordion-group ng-class="{'busy': busy}" is-open="true">
+                <uib-accordion-heading>
+                    <div class="accordion-title">
+                        <img src="../../assets/images/ramblers/icon-supportus.png" class="accordion-image"
+                             alt="reasons we walk">Latest news <i class="pull-right fa fa-lg darkred"
+                                                                  ng-class="{'fa fa-minus-circle': reasonsOpen, 'fa fa-plus-circle': !reasonsOpen }"></i>
+                    </div>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-sm-6 thumbnail social-media-thumbnail round">
+                        <div class="cta-button cta-facebook-blue round">
+                            <a href="https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649"
+                               title="Visit Our Facebook Page"> Facebook</a>
+                        </div>
+
+                        <div class="body-content">
+                            <iframe
+                                src="https://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2FEast-Kent-Walking-Group-172849389464649%2F&amp;width=460&amp;height=584&amp;colorscheme=light&amp;show_faces=true&amp;stream=true&amp;show_border=false&amp;header=false&amp;force_wall=false"
+                                scrolling="yes" frameborder="0"
+                                class="facebook-frame"></iframe>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 thumbnail social-media-thumbnail round">
+                        <div class="cta-button cta-instagram round">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <a href="https://www.instagram.com/eastkentwalking/">
+                                        <img style="height: 27px; margin-left: 5px;"
+                                             src="../../assets/images/local/instagram.png"></a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <a style="color: #333" href="https://www.instagram.com/eastkentwalking/">eastkentwalking</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="instagram-pics">
+                            <ul>
+                                <li ng-repeat="media in feeds.instagram.recentMedia">
+                                    <a ng-href="{{media.link}}" target="_blank">
+                                        <img ng-src="{{mediaUrlFor(media) }}" alt="{{mediaCaptionFor(media)}}"
+                                             title="{{mediaCaptionFor(media)}}"></a>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                </div>
+                <!--in here-->
+
+            </uib-accordion-group>
+        </uib-accordion>
+    </div>
+</div>
+<div class="content-footer">
+
+</div>

@@ -1,0 +1,33 @@
+<div ng-class="{'busy': notify.busy}">
+    <div class="wrapper">
+        <div id="page-body" role="main">
+            <div class="body-header">
+
+                <div class="breadcrumbs">
+                    <ul>
+                        <li><a href="#/" title="Home">Home</a></li>
+                        <li class="last">Admin</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div ng-if="!loggedIn">
+                <div class="well"><img src="assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in to view this page. Click the link above to login.</div>
+            </div>
+
+            <div ng-if="loggedIn">
+                <uib-accordion class="accordion accordion-style" close-others="false">
+                    <div ng-if="memberAdmin">
+                        <ng-include ng-controller="MemberAdminController" src="'partials/admin/memberAdmin.html'"></ng-include>
+                    </div>
+                    <div ng-if="!memberAdmin">
+                        <ng-include ng-controller="ExpensesController" src="'partials/expenses/expenses.html'"></ng-include>
+                    </div>
+                    <ng-include ng-controller="ProfileController" src="'partials/admin/profile.html'"></ng-include>
+                </uib-accordion>
+            </div>
+
+        </div>
+    </div>
+</div>

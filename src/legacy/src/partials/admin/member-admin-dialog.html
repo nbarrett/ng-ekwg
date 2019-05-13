@@ -1,0 +1,472 @@
+<div class="modal" id="member-admin-dialog" tabindex="-1" role="dialog" data-backdrop="true"
+     aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{memberEditMode}} <em>Member</em> Details</h4>
+            </div>
+            <div class="modal-body">
+                <uib-tabset>
+                    <uib-tab>
+                        <uib-tab-heading>Contact</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <p class="title-in-thumbnail">The following contact information is managed
+                                            locally in EKWG and is never overwritten by the monthly Ramblers head office
+                                            data</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="first-name">First Name</label>
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.firstName"
+                                               type="text"
+                                               class="form-control input-sm" id="first-name"
+                                               placeholder="Enter First Name here">
+                                    </div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="form-group">
+                                        <label for="last-name">Last Name</label>
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.lastName"
+                                               type="text"
+                                               class="form-control input-sm" id="last-name"
+                                               placeholder="Enter Last Name here">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="name-alias">Alias</label>
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.nameAlias"
+                                               type="text"
+                                               class="form-control input-sm" id="name-alias"
+                                               placeholder="Enter additional name alias here to ensure name uniqueness">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="mobile-number">Mobile Number</label>
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.mobileNumber"
+                                               type="text" class="form-control input-sm" id="mobile-number"
+                                               placeholder="Enter mobile number here">
+                                    </div>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="contact-email">Contact Email</label>
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.email" type="text"
+                                               class="form-control input-sm" id="contact-email"
+                                               placeholder="Enter contact email here">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="postcode">Postcode</label>
+                                        <input ng-model="currentMember.postcode" type="text"
+                                               class="form-control input-sm" id="postcode"
+                                               placeholder="Enter home postcode">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <p class="title-in-thumbnail">The following information is used to publish
+                                            to <a target="_blank"
+                                                  href="http://www.ramblers.org.uk/group-walks-and-events-manager.aspx?tab=Contacts">Ramblers
+                                                Walks and Events
+                                                Manager</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="display-name">Display Name</label>
+                                        <input ng-model="currentMember.displayName" type="text"
+                                               class="form-control input-sm" id="display-name"
+                                               placeholder="The display name as shown to non-logged in members as stored in the ramblers GWEM">
+                                    </div>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="display-name">Contact Id</label>
+                                        <input ng-model="currentMember.contactId" type="text"
+                                               class="form-control input-sm" id="contact-id"
+                                               placeholder="The contact Id as stored in the ramblers GWEM">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Login</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <ng-form autocomplete="false">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="login-user-name">Login User Name</label>
+                                            <input ng-disabled="!allowEdits"
+                                                   ng-model="currentMember.userName" type="text"
+                                                   class="form-control input-sm" id="login-user-name"
+                                                   placeholder="Enter login user name here">
+                                        </div>
+                                    </div>
+                                </ng-form>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input ng-disabled="!allowEdits"
+                                               ng-model="currentMember.password"
+                                               type="password" class="form-control input-sm" id="password"
+                                               placeholder="Enter password here">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="lastLogin">Last Login</label>
+                                        <input ng-disabled="true" type="text"
+                                               value="{{lastLoggedIn | lastLoggedInDateDisplayed}}"
+                                               class="form-control input-sm" id="lastLogin"
+                                               placeholder="Member has not logged in yet">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 checkbox-group">
+                                    <label ng-class="{'ui-state-active': currentMember.expiredPassword}"
+                                           for="is-member-ex">Expired Password
+                                        <input ng-disabled="!allowEdits" ng-model="currentMember.expiredPassword"
+                                               type="checkbox" id="is-member-ex">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Privileges</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <p>Please select the <b>privileges</b> that should be assigned to
+                                        {{currentMember |
+                                        fullNameWithAlias}} using the checkboxes below:</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="checkbox-group">
+                                    <div class="col-sm-6">
+                                        <label ng-class="{'ui-state-active': currentMember.groupMember}"
+                                               for="is-approved-group-member">Approved Group Member
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.groupMember"
+                                                   type="checkbox" id="is-approved-group-member">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.socialMember}"
+                                               for="is-approved-social-member">Approved Social Member
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.socialMember"
+                                                   type="checkbox" id="is-approved-social-member">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.revoked}"
+                                               for="is-revoked-member">Revoked Member
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.revoked"
+                                                   type="checkbox" id="is-revoked-member">
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label ng-class="{'ui-state-active': currentMember.contentAdmin}"
+                                               for="is-content-admin">Content Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.contentAdmin"
+                                                   type="checkbox" id="is-content-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.walkAdmin}"
+                                               for="is-walk-admin">Walk Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.walkAdmin"
+                                                   type="checkbox" id="is-walk-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.walkChangeNotifications}"
+                                               for="receives-walk-change-notifications">Walk Change Notifications
+                                            <input ng-disabled="!allowEdits"
+                                                   ng-model="currentMember.walkChangeNotifications" type="checkbox"
+                                                   id="receives-walk-change-notifications">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.socialAdmin}"
+                                               for="is-social-admin">Social Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.socialAdmin"
+                                                   type="checkbox" id="is-social-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.memberAdmin}"
+                                               for="is-member-admin">Member Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.memberAdmin"
+                                                   type="checkbox" id="is-member-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.financeAdmin}"
+                                               for="is-finance-admin">Finance Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.financeAdmin"
+                                                   type="checkbox" id="is-finance-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.treasuryAdmin}"
+                                               for="is-treasury-admin">Treasury Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.treasuryAdmin"
+                                                   type="checkbox" id="is-treasury-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.fileAdmin}"
+                                               for="is-file-admin">File Admin
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.fileAdmin"
+                                                   type="checkbox" id="is-file-admin">
+                                        </label>
+                                        <label ng-class="{'ui-state-active': currentMember.committee}"
+                                               for="is-committee-member">Committee Member
+                                            <input ng-disabled="!allowEdits" ng-model="currentMember.committee"
+                                                   type="checkbox" id="is-committee-member">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Preferences</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="checkbox-group">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <p>Please deselect the checkbox below to prompt {{currentMember |
+                                            fullNameWithAlias}} to
+                                            confirm their profile settings on next login:</p>
+                                        <label
+                                            ng-class="{'ui-state-active': currentMember.profileSettingsConfirmed}"
+                                            for="profile-settings-confirmed">Profile settings confirmed
+                                            ({{currentMember | lastConfirmedDateDisplayed}})
+                                            <input ng-click="profileSettingsConfirmedChecked()"
+                                                   ng-model="currentMember.profileSettingsConfirmed" type="checkbox"
+                                                   id="profile-settings-confirmed">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <p>Please select how {{currentMember | fullNameWithAlias}} wants to be <b>emailed</b>
+                                            by using the subscription checkboxes below. To see the member entry in a
+                                            mailchimp list, click the corresponding mailchimp icon!</p>
+
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <label
+                                                    ng-class="{'ui-state-active': currentMember.mailchimpLists.walks.subscribed}"
+                                                    for="subscribe-walks-emails">Walks emails
+                                                    <input ng-model="currentMember.mailchimpLists.walks.subscribed"
+                                                           type="checkbox" id="subscribe-walks-emails">
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <button target="_blank"
+                                                        ng-disabled="!currentMember.mailchimpLists.walks.leid"
+                                                        ng-click="viewMailchimpListEntry(currentMember.mailchimpLists.walks.leid)"
+                                                        title="View walks list entry In Mailchimp">
+                                                    <img
+                                                        ng-class="currentMember.mailchimpLists.walks.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                                                        src="assets/images/mailchimp/freddie_wink.svg"
+                                                        alt="View walks list entry In Mailchimp"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <label
+                                                    ng-class="{'ui-state-active': currentMember.mailchimpLists.socialEvents.subscribed}"
+                                                    for="subscribe-social-events-emails">Social events emails
+                                                    <input
+                                                        ng-model="currentMember.mailchimpLists.socialEvents.subscribed"
+                                                        type="checkbox" id="subscribe-social-events-emails">
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <button target="_blank"
+                                                        ng-disabled="!currentMember.mailchimpLists.socialEvents.leid"
+                                                        ng-click="viewMailchimpListEntry(currentMember.mailchimpLists.socialEvents.leid)"
+                                                        title="View social list entry In Mailchimp">
+                                                    <img
+                                                        ng-class="currentMember.mailchimpLists.socialEvents.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                                                        src="assets/images/mailchimp/freddie_wink.svg"
+                                                        alt="View social list entry In Mailchimp"></button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <label
+                                                    ng-class="{'ui-state-active': currentMember.mailchimpLists.general.subscribed}"
+                                                    for="subscribe-general-emails">General emails
+                                                    <input
+                                                        ng-model="currentMember.mailchimpLists.general.subscribed"
+                                                        type="checkbox" id="subscribe-general-emails">
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <button target="_blank"
+                                                        ng-disabled="!currentMember.mailchimpLists.general.leid"
+                                                        ng-click="viewMailchimpListEntry(currentMember.mailchimpLists.general.leid)"
+                                                        title="View general list entry In Mailchimp">
+                                                    <img
+                                                        ng-class="currentMember.mailchimpLists.general.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                                                        src="assets/images/mailchimp/freddie_wink.svg"
+                                                        alt="View general list entry In Mailchimp"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <p>Please select how {{currentMember | fullNameWithAlias}} wishes to limit
+                                            access to
+                                            their member data using the checkboxes below:</p>
+
+                                        <label ng-class="{'ui-state-active': currentMember.hideSurname}"
+                                               for="hide-surname">Hide surname from non-logged-in members
+                                            <input ng-model="currentMember.hideSurname" type="checkbox"
+                                                   id="hide-surname">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Membership</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col col-sm-12">
+                                    <p>The membership information below is populated directly from the Ramblers
+                                        provided
+                                        data:</p>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="membership-expiry-date">Membership Expiry Date</label>
+
+                                        <div class="input-group">
+                                            <input ng-model="currentMember.membershipExpiryDate" type="text"
+                                                   class="form-control input-sm"
+                                                   day-format="dd" month-format="MMM" year-format="yyyy"
+                                                   uib-datepicker-popup="dd-MMM-yyyy"
+                                                   is-open="memberFilterDateCalendar.opened"
+                                                   uib-datepicker-options="dateOptions"
+                                                   ng-required="true" close-text="Close"
+                                                   id="membership-expiry-date"/>
+                                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" ng-click="memberFilterDateCalendar.open($event)"><i
+                                    class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col col-sm-6">
+                                    <div class="form-group">
+                                        <label for="membership-number">Membership Number</label>
+                                        <input ng-model="currentMember.membershipNumber" type="text"
+                                               class="form-control input-sm" id="membership-number"
+                                               placeholder="Enter Membership Number here">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Audit</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <dl class="dl-horizontal input-sm">
+                                        <dt>Member Id</dt>
+                                        <dd><a target="_blank" ng-href="{{memberUrl()}}">{{currentMember.$id()}}</a>
+                                        </dd>
+                                        <dt>Member Created</dt>
+                                        <dd ng-bind="currentMember | createdAudit : members"></dd>
+                                        <dt>Member Updated</dt>
+                                        <dd ng-bind="currentMember | updatedAudit : members"></dd>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <dl class="dl-horizontal input-sm">
+                                        <dt>Last Bulk Load Date</dt>
+                                        <dd ng-bind="currentMember.lastBulkLoadDate | lastLoggedInDateDisplayed">
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="col-sm-4 checkbox-group input-sm">
+                                    <label ng-class="{'ui-state-active': currentMember.receivedInLastBulkLoad}"
+                                           for="received-in-last-bulkload">Received In Last Bulk Load
+                                        <input ng-disabled="true" ng-model="currentMember.receivedInLastBulkLoad"
+                                               type="checkbox" id="received-in-last-bulkload">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-sm-12">
+                                    <p>The information below is an audit of all Member bulk loads from the
+                                        Ramblers provided data for {{currentMember | fullNameWithAlias}}:</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col col-sm-12">
+                                    <table
+                                        class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                                        <thead>
+                                        <tr>
+                                            <th>Update Time</th>
+                                            <th>Member Action</th>
+                                            <th>Audit Message</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="memberUpdateAudit in currentMemberUpdateAudit">
+                                            <td>{{memberUpdateAudit.updateTime | lastLoggedInDateDisplayed}}</td>
+                                            <td>{{memberUpdateAudit.memberAction}}</td>
+                                            <td>{{memberUpdateAudit.auditMessage || 'No changes or differences found'}}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+                <div ng-if="notify.showAlert" class="alert {{notify.alertClass}}"><i
+                    class="glyphicon {{alert.icon}}"> </i><strong ng-if="notify.alertTitle">
+                    {{notify.alertTitle}}: </strong> {{notify.alertMessage}}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input ng-if="allowEdits" type="submit" ng-disabled="display.saveInProgress"
+                       ng-class="display.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                       ng-click="saveMemberDetails()" title="Save these member details" value="Save">
+                <input ng-if="allowDelete" type="submit" ng-disabled="display.saveInProgress"
+                       ng-class="display.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                       ng-click="deleteMemberDetails()" title="Delete these member details" value="Delete">
+                <input ng-if="allowConfirmDelete" type="submit" class="button-form button-form-left cta-red"
+                       ng-click="confirmDeleteMemberDetails()" title="Confirm Delete of these member details"
+                       value="Confirm Deletion">
+                <input ng-if="allowEdits" type="submit" ng-disabled="display.saveInProgress"
+                       ng-class="display.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                       ng-click="cancelMemberDetails()" title="Cancel and don't save" value="Cancel">
+                <input ng-if="allowEdits" type="submit" ng-disabled="display.saveInProgress"
+                       ng-class="display.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                       ng-click="copyDetailsToNewMember()" title="Copy details to new Member" value="Copy">
+                <input ng-if="!allowEdits" type="submit" ng-disabled="display.saveInProgress"
+                       ng-class="display.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                       ng-click="cancelMemberDetails()" title="Close" value="Close">
+            </div>
+        </div>
+    </div>
+</div>

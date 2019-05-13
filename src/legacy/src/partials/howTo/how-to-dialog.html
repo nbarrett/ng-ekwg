@@ -1,0 +1,207 @@
+<div ng-class="{'busy': notify.busy}" class="modal" id="file-detail-dialog" tabindex="-1" role="dialog"
+     data-backdrop="true"
+     aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">{{editMode}} <em>Member Resource</em></h4>
+            </div>
+            <div class="modal-body">
+                <div class="thumbnail">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="event-date">Date</label>
+
+                                <div class="input-group">
+                                    <input ng-model="memberResource.resourceDate" type="text"
+                                           class="form-control input-sm" value="{{memberResource.resourceDate}}"
+                                           ng-click="resourceDateCalendar.open($event)"
+                                           uib-datepicker-popup is-open="resourceDateCalendar.opened"
+                                           ng-required="true" close-text="Close" id="event-date"/>
+                                    <span class="input-group-btn"><button class="btn btn-default btn-sm"
+                                                                          ng-click="resourceDateCalendar.open($event)">
+                                        <i class="glyphicon glyphicon-calendar"></i></button></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="resource-type">Access</label>
+                                <select ng-model="memberResource.accessLevel" id="visibility"
+                                        class="form-control input-sm"
+                                        ng-options="accessLevel.id as accessLevel.description for accessLevel in memberResourcesReferenceData.accessLevels">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="resource-type">Type</label>
+                                <select ng-model="memberResource.resourceType" id="resource-type"
+                                        class="form-control input-sm"
+                                        ng-options="resourceType.id as resourceType.description for resourceType in memberResourcesReferenceData.resourceTypes">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <select ng-model="memberResource.subject" id="subject"
+                                        option=""
+                                        class="form-control input-sm"
+                                        ng-options="subject.id as subject.description for subject in memberResourcesReferenceData.subjects">
+                                    <option value="">(none)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="memberResource.resourceType==='email'">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <label for="campaign-search-term">Search the last <select
+                                            ng-disabled="notify.busy"
+                                            ng-model="memberResource.data.campaignSearchLimit"
+                                            class="form-control input-sm">
+                                            <option value="100">100</option>
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                        </select> campaign <select
+                                            ng-disabled="notify.busy"
+                                            ng-model="memberResource.data.campaignSearchField"
+                                            class="form-control input-sm">
+                                            <option value="subject">subjects</option>
+                                            <option value="title">titles</option>
+                                        </select> for the text</label>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <form>
+                                <div class="col-sm-10">
+                                    <div class="form-group">
+                                        <input id="campaign-search-term" type="text"
+                                               ng-model="memberResource.data.campaignSearchTerm"
+                                               ng-disabled="notify.busy"
+                                               class="form-control input-sm"
+                                               placeholder="Enter campaign search term">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="submit" value="Search"
+                                               ng-click="performCampaignSearch(true)"
+                                               title="Search"
+                                               ng-class="notify.busy ? 'btn btn-default button-form disabled-button-form': 'btn btn-default button-form blue-confirm'">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="campaign">Campaign matches ({{campaigns.length ||0}})</label>
+                                    <select ng-disabled="notify.busy"
+                                            ng-model="memberResource.data.campaign" id="campaign"
+                                            class="form-control input-sm"
+                                            ng-options="campaign as campaignTitle(campaign) for campaign in campaigns track by campaign.web_id"
+                                            ng-change="campaignChange()">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="memberResource.resourceType==='file'">
+                        <div class="col-sm-12">
+                            <div ng-if="uploadedFile || memberResource.data.fileNameData" class="form-group">
+                                <label for="file">Description for: </label>
+                                <a target="_blank" id="file"
+                                   ng-href="{{memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)}}">attached
+                                    file</a>
+                                <input ng-model="memberResource.data.fileNameData.title" type="text" value=""
+                                       class="form-control input-sm" id="fileTitle"
+                                       placeholder="Enter a title for this file">
+                            </div>
+
+                        </div>
+                        <div class="col-sm-3">
+                            <span class="hidden-input"><input id="hidden-input" type="file" ng-disabled="notify.busy"
+                                                              value="{{fileUtils.attachmentTitle(memberResource,'data','file')}}"
+                                                              ngf-select="onSelect($file)"
+                                                              title="{{fileUtils.attachmentTitle(memberResource,'data','file')}}"></span>
+
+                            <input type="submit" ng-disabled="notify.busy"
+                                   value="{{fileUtils.attachmentTitle(memberResource,'data','file')}}"
+                                   title="{{fileUtils.attachmentTitle(memberResource,'data','file')}}"
+                                   ng-class="notify.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                                   ng-click="attach()">
+                        </div>
+                        <div class="col-sm-9">
+
+                            <div ng-if="uploadedFile" class="form-group">
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width:{{uploadedFile.progress}}%;">{{uploadedFile.progress}}% uploaded
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input ng-disabled="notify.busy" ng-model="memberResource.title" id="title"
+                                       class="form-control input-sm">
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea lines="10" ng-disabled="notify.busy" ng-model="memberResource.description"
+                                          id="description"
+                                          class="form-control input-sm"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="link-preview">Link preview: </label>
+                                <a target="_blank" id="link-preview"
+                                   ng-disabled="notify.busy"
+                                   ng-href="{{memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)}}">{{memberResource.title}}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="notify.showAlert" class="row">
+                        <div class="col-sm-12 mb-10">
+                            <div class="alert {{notify.alert.class}}"><i
+                                class="glyphicon {{notify.alert.icon}}"> </i><strong ng-if="notify.alertTitle">
+                                {{notify.alertTitle}}: </strong> {{notify.alertMessage}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Save" ng-disabled="notify.busy" ng-click="save()"
+                       title="Save"
+                       ng-class="notify.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+                <input ng-if="!allowConfirmDelete && allowDelete()" type="submit" value="Delete File"
+                       ng-disabled="notify.busy" ng-click="delete()" title="Delete File"
+                       ng-class="notify.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+                <input ng-if="allowConfirmDelete" type="submit" value="Confirm Delete of File"
+                       ng-disabled="notify.busy" ng-click="confirmDelete()"
+                       title="Confirm delete"
+                       ng-class="notify.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left button-confirm'">
+                <input type="submit" value="Cancel Change" ng-disabled="notify.busy"
+                       ng-click="cancelChange()" title="Cancel changes and close this dialog"
+                       ng-class="notify.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+            </div>
+        </div>
+    </div>
+</div>

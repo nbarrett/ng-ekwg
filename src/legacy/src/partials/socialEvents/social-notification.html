@@ -1,0 +1,66 @@
+<div>
+    <h3 ng-if="socialEvent.notification.items.title.include"><strong ng-bind="socialEvent.briefDescription"></strong>
+    </h3>
+    <p ng-bind="socialEvent.notification.addresseeType"></p>
+    <p ng-if="socialEvent.notification.items.notificationText.include" ng-bind-html="formattedText()"></p>
+    <h4 class="null"><strong style="font-size:14px">Social Event details</strong></h4>
+    <p ng-if="socialEvent.notification.items.description.include">
+        <span btf-markdown="socialEvent.longerDescription"></span>
+    </p>
+    <table
+        style="cellpadding:10; border:1px solid lightgrey;border-collapse:collapse;width: 100%;border-spacing: 5px;">
+        <tr ng-if="socialEvent.eventDate">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Date and Time:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+                <span ng-bind="socialEvent.eventDate | displayDate"></span>
+                <span ng-bind="socialEvent.eventTimeStart"></span>
+            </td>
+        </tr>
+        <tr ng-if="socialEvent.postcode || socialEvent.location">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Location:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+                <span ng-bind="socialEvent.location"></span>
+                <a ng-href="http://maps.google.co.uk/maps?q={{socialEvent.postcode}}"
+                   target="_blank"><span
+                    ng-bind="socialEvent.postcode"></span></a></td>
+        </tr>
+        <tr ng-if="socialEvent.notification.items.attendees.include">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Attendees:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px" ng-bind="attendeeList()"></td>
+        </tr>
+        <tr ng-if="socialEvent.eventContactMemberId">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Organiser:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+                <a ng-href="mailto:{{socialEvent.contactEmail}}"><span
+                    ng-bind="socialEvent.displayName || socialEvent.contactEmail"></span></a>
+                ({{socialEvent.contactEmail}})
+                <span ng-if="socialEvent.contactPhone" ng-bind="socialEvent.contactPhone"></span>
+
+            </td>
+        </tr>
+        <tr ng-if="socialEvent.notification.items.replyTo.include">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Send email replies to:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+                <a ng-href="mailto:{{userEdits.replyToRole().email}}"><span
+                    ng-bind="userEdits.replyToRole().fullName"></span></a> ({{userEdits.replyToRole().email}})
+            </td>
+        </tr>
+        <tr ng-if="socialEvent.notification.items.attachment.include && socialEvent.attachment">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Attachment:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px"><a target="_blank"
+                                                                                         id="attachment"
+                                                                                         ng-href="{{attachmentUrl(socialEvent)}}"
+                                                                                         ng-bind="attachmentTitle(socialEvent)"></a>
+            </td>
+        </tr>
+        <tr ng-if="socialEvent.link">
+            <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Link:</td>
+            <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+                <a target="_blank" ng-href="{{socialEvent.link}}">{{socialEvent.linkTitle || socialEvent.link}}</a></td>
+        </tr>
+    </table>
+
+    <p ng-if="socialEvent.notification.items.signoffText.include" ng-bind-html="formattedSignoffText()"></p>
+    <contact-us ng-if="contactUs.ready() && socialEvent.notification.items.signoffAs.value" format="list"
+                role="{{socialEvent.notification.items.signoffAs.value}}"></contact-us>
+</div>

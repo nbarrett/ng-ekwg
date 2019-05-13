@@ -1,0 +1,56 @@
+<div ng-class="{'busy': busy}">
+    <div class="modal" id="submit-dialog" tabindex="-1" role="dialog" data-backdrop="true" aria-labelledby="modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Submit <em>Expense Claim</em></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="thumbnail">
+                        <div class="green-bullets-no-rule">
+                            <ul>You are about to submit your Expense Claim:
+                                <li>If you supply us with your bank account details below we will be able to pay your claim electronically which will hopefully speeed up the claim processing time.</li>
+                                <li>Alternatively you can leave the bank details blank and we'll raise a cheque for you.</li>
+                                <li>When you confirm using the button below your claim will be automatically submitted to us and we'll notify with updates via email.</li>
+                            </ul>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="sortCode">Sort Code</label>
+
+                                    <input ng-model="selected.expenseClaim().bankDetails.sortCode" type="text" class="form-control input-sm" id="sortCode"
+                                           placeholder="Enter sort code here">
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="accountNumber">Bank Account Number</label>
+
+                                    <input ng-model="selected.expenseClaim().bankDetails.accountNumber" type="text" class="form-control input-sm" id="accountNumber"
+                                           placeholder="Enter account number here">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="accountName">Account Name</label>
+
+                                    <input ng-model="selected.expenseClaim().bankDetails.accountName" type="text" class="form-control input-sm" id="accountName"
+                                           placeholder="Enter account holder name here">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Confirm Submit" ng-disabled="selected.saveInProgress" ng-click="confirmSubmitExpenseClaim()" title="Confirm submission of this Expense Claim (you won't be able to make any more changes to it after this)" ng-class="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-confirm green-confirm button-form-left'">
+                    <input type="submit" value="Cancel Submit" ng-disabled="selected.saveInProgress" ng-click="cancelSubmitExpenseClaim()" title="Cancel submission of this Expense Claim (maybe you want to make some final changes to it?)" ng-class="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-confirm button-form-left'">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

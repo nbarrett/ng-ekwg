@@ -1,0 +1,235 @@
+<uib-accordion-group ng-class="{'busy': busy}" is-open="expensesOpen">
+    <uib-accordion-heading>
+        <div class="accordion-title" ng-click="showArea('expenses')">
+            <img src="assets/images/ramblers/icon-members.png" alt="members area">
+            Expense Claims <i class="pull-right fa fa-lg darkred"
+                              ng-class="{'fa fa-minus-circle': expensesOpen, 'fa fa-plus-circle': !expensesOpen}"></i>
+        </div>
+    </uib-accordion-heading>
+    <div class="thumbnail">
+        <div ng-if="showAlert" class="row">
+            <div class="col-sm-12">
+                <div class="alert {{alertClass}}"><i
+                    class="glyphicon {{alert.icon}}"> </i><strong ng-if="alertTitle">
+                    {{alertTitle}}: </strong> {{alertMessage}}
+                </div>
+            </div>
+        </div>
+        <div ng-if="ready || allowClearError()">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="no-bullets">
+                        <div class="action-button-group">
+                            <form class="form-inline" role="form">
+                                <div ng-if="allowClearError()" class="form-group">
+                                    <input type="submit" value="Show All Expense Claims"
+                                           ng-click="showAllExpenseClaims()" title="Show All Expense Claims"
+                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                                </div>
+                                <div ng-if="allowAddExpenseClaim()" class="form-group">
+                                    <input type="submit" value="Add Expense Claim"
+                                           ng-click="addExpenseClaim()" title="Add new Expense Claim"
+                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label for="filter-expenses">Filter for:</label>
+                                        <select class="form-control input-sm"
+                                                ng-change="refreshExpenses()"
+                                                ng-model="selected.expenseFilter"
+                                                ng-options="filterType as filterType.description disable when filterType.disabled for filterType in filterTypes"
+                                                class="form-control round spaced-controls" id="filter-expenses">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div ng-if="allowAdminFunctions()" class="form-group">
+                                    <div class="col-sm-12">
+                                        <div class="checkbox-group">
+                                            <label ng-class="{'ui-state-active': selected.showOnlyMine}"
+                                                   ng-click="refreshExpenses()"
+                                                   for="show-only-mine">Show only my expense claims
+                                                <input ng-model="selected.showOnlyMine"
+                                                       type="checkbox" id="show-only-mine">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div ng-repeat="expenseClaim in expenseClaims" ng-mouseover="selectExpenseClaim($index)">
+
+                            <div class="row">
+                                <div class="col-sm-7">
+                                    <table
+                                        class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                                        <thead>
+                                        <tr ng-class="{'inactive': isInactive(expenseClaim)}">
+                                            <th width="20%">Date</th>
+                                            <th width="70%">Description</th>
+                                            <th width="10%">Cost</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="expenseItem in expenseClaim.expenseItems track by $index"
+                                            ng-click="selectExpenseItem($index, expenseItem)"
+                                            ng-class="{selected: $parent.$index === selected.expenseClaimIndex && $index === selected.expenseItemIndex}">
+                                            <td ng-bind="expenseItem.expenseDate | displayDate" class="nowrap"></td>
+                                            <td ng-class="{'inactive': isInactive(expenseClaim)}">
+                                                <a ng-if="!selected.saveInProgress"
+                                                   ng-bind="prefixedExpenseItemDescription(expenseItem)"
+                                                   ng-click="editExpenseItem()" href=""></a>
+                                                <span ng-if="selected.saveInProgress"
+                                                      ng-bind="prefixedExpenseItemDescription(expenseItem)"></span>
+                                                <div ng-if="!selected.saveInProgress && expenseItem.receipt"> receipt:
+                                                    <a target="_blank" ng-href="{{receiptUrl(expenseItem)}}"
+                                                       ng-bind="receiptTitle(expenseItem)"></a></div>
+                                                <div ng-if="selected.saveInProgress && expenseItem.receipt"> receipt:
+                                                    {{receiptTitle(expenseItem)}}
+                                                </div>
+                                            </td>
+                                            <td class="text-right" ng-bind="expenseItem.cost | asMoney"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong ng-bind="expenseClaim.expenseItems.length +' item(s)'"></strong>
+                                            </td>
+                                            <td class="text-right"><strong
+                                                ng-bind="expenseClaim.cost | asMoney"></strong></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div ng-if="!isInactive(expenseClaim)" class="row" class="mb-12">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <span ng-if="!confirmAction">
+                                                    <input ng-if="allowAddExpenseItem()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Add Item" ng-click="addExpenseItem()" title="Add Item"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                                                    <input ng-if="allowEditExpenseItem()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Edit Item" ng-click="editExpenseItem()"
+                                                           title="Edit Claim"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                                                    <input ng-if="allowDeleteExpenseItem()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Delete Item" ng-click="deleteExpenseItem()"
+                                                           title="Delete item"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                                                    <input ng-if="allowSubmitExpenseClaim()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Submit Claim" ng-click="submitExpenseClaim()"
+                                                           title="Submit Claim for approval"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                    <input ng-if="allowApproveExpenseClaim()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="{{nextApprovalStage()}}"
+                                                           ng-click="approveExpenseClaim()" title="Approve Claim"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                    <input ng-if="allowPaidExpenseClaim()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Claim Paid" ng-click="paidExpenseClaim()"
+                                                           title="Mark Claim as paid"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                    <input ng-if="allowReturnExpenseClaim()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Return Claim" ng-click="returnExpenseClaim()"
+                                                           title="Return Claim"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
+                                                    <input ng-if="allowResubmitExpenseClaim()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Resubmit Claim" ng-click="resubmitExpenseClaim()"
+                                                           title="Resubmit Claim"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                </span>
+                                                <input ng-if="!confirmAction && allowDeleteExpenseClaim()"
+                                                       type="submit"
+                                                       value="Delete Expense Claim" ng-click="deleteExpenseClaim()"
+                                                       title="Delete Expense Claim"
+                                                       ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+
+                                                <span ng-if="confirmAction.delete">
+                                                    <input ng-if="allowDeleteExpenseItem()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Confirm Delete of Item"
+                                                           ng-click="confirmDeleteExpenseItem()"
+                                                           title="Confirm delete of this item"
+                                                           class="button-form button-confirm">
+                                                    <input ng-if="allowDeleteExpenseItem()"
+                                                           ng-disabled="selected.saveInProgress" type="submit"
+                                                           value="Cancel Delete of Item" ng-click="removeConfirm()"
+                                                           title="Cancel delete of this expense item"
+                                                           class="button-form button-form-left green-confirm">
+                                                    <input ng-if="allowDeleteExpenseClaim()" type="submit"
+                                                           value="Confirm Delete of Expense Claim"
+                                                           ng-click="confirmDeleteExpenseClaim()"
+                                                           title="Delete Expense Claim"
+                                                           class="button-form button-confirm">
+                                                    <input ng-if="allowDeleteExpenseClaim()" type="submit"
+                                                           value="Cancel Delete of Expense Claim"
+                                                           ng-click="cancelDeleteExpenseClaim()"
+                                                           title="Cancel delete of Expense Claim"
+                                                           ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                </span>
+                                                <span ng-if="confirmAction.approve">
+                                                    <span ng-if="allowApproveExpenseClaim()">
+                                                        <div ng-if="itemAlert.showAlert" class="mb-10">
+                                                            <div class="alert {{itemAlert.alertClass}}">
+                                                                <i class="glyphicon {{itemAlert.alert.icon}}"> </i>
+                                                                <strong ng-if="itemAlert.alertTitle">{{itemAlert.alertTitle}}: </strong> {{itemAlert.alertMessage}} </div>
+                                                        </div>
+                                                        <input type="submit" ng-disabled="selected.saveInProgress"
+                                                               value="Confirm {{nextApprovalStage()}}"
+                                                               ng-click="confirmApproveExpenseClaim()"
+                                                               title="Confirm {{nextApprovalStage()}} of Claim"
+                                                               ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                                        <input type="submit" ng-disabled="selected.saveInProgress"
+                                                               value="Cancel {{nextApprovalStage()}}"
+                                                               ng-click="removeConfirm()"
+                                                               title="Cancel {{nextApprovalStage()}} of Claim"
+                                                               ng-class="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
+                                                    </span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5" style="padding-left: 0px;">
+                                    <table
+                                        class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                                        <thead>
+                                        <tr>
+                                            <th width="33%" ng-class="{'inactive': isInactive(expenseClaim)}">Date</th>
+                                            <th width="33%" ng-class="{'inactive': isInactive(expenseClaim)}">Who</th>
+                                            <th width="34%" ng-class="{'inactive': isInactive(expenseClaim)}">
+                                                Description
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="event in expenseClaim.expenseEvents track by $index">
+                                            <td ng-bind="event.date | displayDate" class="nowrap"></td>
+                                            <td ng-bind="event.memberId | memberIdToFullName : members"></td>
+                                            <td ng-bind="event.eventType.description">
+                                                <span ng-if="event.eventType.reason" tooltip-placement="right"
+                                                      uib-tooltip="Reason: {{event.eventType.reason}}">Reason: {{event.eventType.reason}}</span>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</uib-accordion-group>
+<ng-include src="'partials/expenses/modals/expense-detail-dialog.html'"></ng-include>
+<ng-include src="'partials/expenses/modals/paid-dialog.html'"></ng-include>
+<ng-include src="'partials/expenses/modals/return-dialog.html'"></ng-include>
+<ng-include src="'partials/expenses/modals/submit-dialog.html'"></ng-include>
+

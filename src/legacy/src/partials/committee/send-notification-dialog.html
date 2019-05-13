@@ -1,0 +1,389 @@
+<div ng-class="{'busy': notify.busy}" class="modal" id="send-notification-dialog" tabindex="-1" role="dialog"
+     data-backdrop="true" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Send <em>Committee</em> Notification</h4>
+            </div>
+            <div class="modal-body">
+                <uib-tabset>
+                    <uib-tab>
+                        <uib-tab-heading>Recipients & Addressing</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-7"><label>Send to:</label>
+                                    <div class="form-group">
+
+                                        <input ng-click="clearRecipientsForCampaignOfType('committee')"
+                                               id="send-to-committee"
+                                               ng-disabled="userEdits.allCommitteeList().length===0"
+                                               type="radio"
+                                               ng-model="notification.destinationType"
+                                               value="committee"/>
+                                        <label for="send-to-committee">{{userEdits.allCommitteeList().length}}
+                                            Committee
+                                            Members
+                                            <a ng-if="userEdits.allCommitteeList().length>0"
+                                               ng-click="editCommitteeRecipients()"
+                                               ng-href=""> (edit)</a>
+                                        </label>
+
+                                        <input ng-click="clearRecipientsForCampaignOfType('general')"
+                                               id="send-to-general"
+                                               ng-disabled="userEdits.allGeneralSubscribedList().length===0"
+                                               type="radio"
+                                               ng-model="notification.destinationType"
+                                               value="general"/>
+                                        <label for="send-to-general">{{userEdits.allGeneralSubscribedList().length}}
+                                            General List
+                                            Members
+                                            <a ng-if="userEdits.allGeneralSubscribedList().length>0"
+                                               ng-click="editAllEKWGRecipients()"
+                                               ng-href=""> (edit)</a>
+                                        </label>
+
+                                        <input ng-click="clearRecipientsForCampaignOfType('walks')"
+                                               id="send-to-walks"
+                                               ng-disabled="userEdits.allWalksSubscribedList().length===0"
+                                               type="radio"
+                                               ng-model="notification.destinationType"
+                                               value="walks"/>
+                                        <label for="send-to-walks">{{userEdits.allWalksSubscribedList().length}} Walks
+                                            List
+                                            Members
+                                            <a ng-if="userEdits.allWalksSubscribedList().length>0"
+                                               ng-click="editAllWalksRecipients()"
+                                               ng-href=""> (edit)</a>
+                                        </label>
+
+                                        <input ng-click="clearRecipientsForCampaignOfType('socialEvents')"
+                                               id="send-to-social"
+                                               ng-disabled="userEdits.allSocialSubscribedList().length===0"
+                                               type="radio"
+                                               ng-model="notification.destinationType"
+                                               value="socialEvents"/>
+                                        <label for="send-to-social">{{userEdits.allSocialSubscribedList().length}}
+                                            Social List
+                                            Members
+                                            <a ng-if="userEdits.allSocialSubscribedList().length>0"
+                                               ng-click="editAllSocialRecipients()"
+                                               ng-href=""> (edit)</a>
+                                        </label>
+
+                                        <input id="custom"
+                                               type="radio"
+                                               ng-model="notification.destinationType"
+                                               value="custom"/>
+                                        <label for="custom"><span
+                                            ng-if="notification.recipients.length===0">Choose individual recipients</span><span
+                                            ng-if="notification.recipients.length>0">{{notification.recipients.length}} recipient(s) chosen<a
+                                            ng-click="clearRecipientsForCampaignOfType()"
+                                            ng-href=""> (clear)</a></span>
+                                        </label>
+
+                                    </div>
+                                </div>
+                                <div class="col col-sm-5"><label>Address as:</label>
+                                    <div class="form-group">
+                                        <input id="addressee-first-name" type="radio"
+                                               ng-model="notification.addresseeType" value="Hi *|FNAME|*,"/>
+                                        <label for="addressee-first-name">Hi <i>first name</i></label>
+                                        <input id="addressee-all" type="radio" ng-model="notification.addresseeType"
+                                               value="Hi all,"/>
+                                        <label for="addressee-all">Hi all</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="notification.destinationType==='custom'">
+                                <div class="form-group">
+                                    <label class="col-sm-12">
+
+                                        <ui-select multiple ng-model="notification.recipients"
+                                                   close-on-select="false"
+                                                   reset-search-input="true"
+                                                   class="multi-select  col-sm-12" id="specific-members-edit"
+                                                   title="Select one or more recipients"
+                                                   input-id="recipients" id="recipients">
+
+                                            <ui-select-match placeholder="Select one or more recipients">
+                                                {{$item.text}}
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                ui-disable-choice="member.order > 0"
+                                                group-by="memberGrouping"
+                                                repeat="member as member in selectableRecipients | filter: $select.search track by member.id">
+                                                <small><span
+                                                    ng-bind-html="member.text | highlight: $select.search"></span>
+                                                </small>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Edit Content</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="campaign">Replicate Based On:</label>
+                                        <select ng-model="notification.campaignId"
+                                                id="campaign"
+                                                class="form-control input-sm"
+                                                ng-change="campaignIdChanged()"
+                                                ng-options="campaign.id as campaign.title for campaign in campaigns">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <br>
+                                        <label for="notification-title">Email title:</label>
+                                        <input ng-model="notification.title" type="text" class="form-control input-sm"
+                                               id="notification-title"
+                                               placeholder="This will appear as the email title to the recipient">
+                                        <br>
+                                        <label for="free-text">Email text:
+                                            <small>(no need to prefix 'Hi ...' as it's done automatically)</small>
+                                        </label>
+                                        <textarea btf-markdown ng-model="notification.editable.text" type="text"
+                                                  class="form-control input-sm" rows="5"
+                                                  id="free-text"
+                                                  placeholder="Enter free text to be included in the notification here"></textarea>
+                                        <br>
+                                        <div ng-if="committeeFile" class="row">
+                                            <div class="col col-sm-12"><label>Include download information for:</label>
+                                                <div class="checkbox-group">
+                                                    <label
+                                                        ng-class="{'ui-state-active': notification.includeDownloadInformation}"
+                                                        for="include-download-information">{{committeeFile.fileType}} -
+                                                        {{fileTitle()}}
+                                                        <input ng-model="notification.includeDownloadInformation"
+                                                               type="checkbox" id="include-download-information">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" ng-hide="committeeFile">
+                                            <div class="col-sm-4">
+                                                <div class="form-group">
+                                                    <label for="from-date">Include Events From:</label>
+                                                    <div class="input-group">
+                                                        <input ng-model="userEdits.groupEvents.fromDate"
+                                                               type="text" class="form-control input-sm"
+                                                               day-format="dd" month-format="MMM" year-format="yyyy"
+                                                               uib-datepicker-popup="dd-MMM-yyyy"
+                                                               is-open="fromDateCalendar.opened"
+                                                               ng-change="populateGroupEvents()"
+                                                               ng-click="fromDateCalendar.open($event)"
+                                                               uib-datepicker-options="dateOptions"
+                                                               ng-required="true" close-text="Close" id="from-date"/>
+                                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-sm"
+                                                    ng-click="fromDateCalendar.open($event)"><i
+                                                class="glyphicon glyphicon-calendar"></i></button></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="to-date">Include Events To:</label>
+                                                    <div class="input-group">
+                                                        <input ng-model="userEdits.groupEvents.toDate"
+                                                               type="text" class="form-control input-sm"
+                                                               day-format="dd" month-format="MMM" year-format="yyyy"
+                                                               uib-datepicker-popup="dd-MMM-yyyy"
+                                                               is-open="toDateCalendar.opened" min="minDate"
+                                                               ng-change="populateGroupEvents()"
+                                                               ng-click="toDateCalendar.open($event)"
+                                                               uib-datepicker-options="dateOptions"
+                                                               ng-required="true" close-text="Close" id="to-date"/>
+                                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-sm"
+                                                    ng-click="toDateCalendar.open($event)"><i
+                                                class="glyphicon glyphicon-calendar"></i></button></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label>Include Information:</label>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeDescription}"
+                                                    for="user-events-show-description">Description:
+                                                    <input ng-model="userEdits.groupEvents.includeDescription"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-show-description">
+                                                </label>
+                                                </div>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeLocation}"
+                                                    for="user-events-show-location">Location:
+                                                    <input ng-model="userEdits.groupEvents.includeLocation"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-show-location">
+                                                </label>
+                                                </div>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeContact}"
+                                                    for="user-events-show-contact">Contact:
+                                                    <input ng-model="userEdits.groupEvents.includeContact"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-show-contact">
+                                                </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label>Include Events:</label>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeWalks}"
+                                                    for="user-events-include-walks">Walks:
+                                                    <input ng-model="userEdits.groupEvents.includeWalks"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-include-walks">
+                                                </label>
+                                                </div>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeSocialEvents}"
+                                                    for="user-events-include-social-events">Social Events:
+                                                    <input ng-model="userEdits.groupEvents.includeSocialEvents"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-include-social-events">
+                                                </label>
+                                                </div>
+                                                <div class="checkbox-group"><label
+                                                    ng-class="{'ui-state-active': userEdits.groupEvents.includeCommitteeEvents}"
+                                                    for="user-events-include-committee-events">Committee Events:
+                                                    <input ng-model="userEdits.groupEvents.includeCommitteeEvents"
+                                                           ng-change="populateGroupEvents()"
+                                                           type="checkbox" id="user-events-include-committee-events">
+                                                </label>
+                                                </div>
+                                            </div>
+                                            <div ng-hide="committeeFile" class="row">
+                                                <div class="col col-sm-12">
+                                                    <ul class="group-events-ul"
+                                                        ng-repeat="event in userEdits.groupEvents.events">
+
+                                                        <li ng-class="event.selected ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
+                                                            ng-click="changeGroupEventSelection(event)">
+                                                            <p style="font-size: 14px;font-weight: bold">
+                                                                <span ng-bind="event.eventDate | displayDate"></span>
+                                                                <span ng-if="event.eventTime"> • <span ng-bind="event.eventTime"></span></span>
+                                                                • <span ng-bind="event.eventType"></span>
+                                                                • <notification-url area="{{event.area}}"
+                                                                                    type="{{event.type}}"
+                                                                                    id="{{event.id}}"
+                                                                                    text="{{event.title}}"
+                                                                                    target="_blank"></notification-url>
+                                                                <span ng-if="event.distance"> • <span ng-bind="event.distance"></span></span>
+                                                            </p>
+                                                            <div style="font-size: 14px;font-weight: bold">
+                                                            <span
+                                                                ng-if="userEdits.groupEvents.includeContact && event.contactName">Contact: <a
+                                                                ng-href="mailto:{{event.contactEmail}}"><span
+                                                                ng-bind="event.contactName || event.contactEmail"></span></a>
+                                                                <span ng-if="event.contactPhone"> ({{event.contactPhone}})</span></span>
+                                                                <span
+                                                                    ng-if="userEdits.groupEvents.includeLocation && event.postcode"> • Location: <a
+                                                                    ng-href="http://maps.google.co.uk/maps?q={{event.postcode}}"
+                                                                    target="_blank"><span
+                                                                    ng-bind="event.postcode"></span></a></span>
+                                                            </div>
+
+                                                            <p btf-markdown="event.description" style="padding: 8px 0px 0px 0px"
+                                                               ng-if="userEdits.groupEvents.includeDescription">
+                                                                </p>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Signing Off</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <div class="checkbox-group">
+                                            <label ng-class="{'ui-state-active': notification.includeSignoffText}"
+                                                   for="include-signoff-text">Include Signoff text:
+                                                <input ng-model="notification.includeSignoffText" type="checkbox"
+                                                       id="include-signoff-text">
+                                            </label>
+                                        </div>
+                                        <textarea ng-model="notification.editable.signoffText" type="text"
+                                                  class="form-control input-sm" rows="3"
+                                                  id="signoff-text"
+                                                  placeholder="Enter any signoff text to be included in the notification here"></textarea>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col col-sm-12"><label>Signoff as:</label>
+
+                                                <div class="form-group">
+                                                    <div class="checkbox-group">
+                                                        <label
+                                                            ng-class="{'ui-state-active': notification.signoffAs.include}"
+                                                            for="include-signoff-as">Signoff as:
+                                                            <input ng-model="notification.signoffAs.include"
+                                                                   type="checkbox"
+                                                                   id="include-signoff-as">
+                                                        </label>
+                                                    </div>
+                                                    <select ng-model="notification.signoffAs.value"
+                                                            id="signoff-as"
+                                                            ng-disabled="!notification.signoffAs.include"
+                                                            class="form-control input-sm"
+                                                            ng-options="role.type as role.description for role in roles.signoff">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <uib-tab>
+                        <uib-tab-heading>Preview</uib-tab-heading>
+                        <div class="thumbnail thumbnail-admin-edit">
+                            <div class="form-horizontal">
+                                <div id="preview" class="print-preview">
+                                    <ng-include src="'partials/committee/committee-notification.html'"></ng-include>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                </uib-tabset>
+                <div ng-if="notify.showAlert" class="row">
+                    <div class="col-sm-12 mb-10">
+                        <div class="alert {{notify.alert.class}}"><i
+                            class="glyphicon {{notify.alert.icon}}"> </i><strong ng-if="notify.alertTitle">
+                            {{notify.alertTitle}}: </strong> {{notify.alertMessage}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Confirm Send" ng-click="confirmSendNotification()"
+                       ng-disabled="userEdits.notReady()"
+                       title="Confirm sending of notification email"
+                       ng-class="userEdits.notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm green-confirm button-form-left'">
+                <input type="submit" value="Complete in Mailchimp" ng-click="completeInMailchimp()"
+                       ng-disabled="userEdits.notReady()"
+                       title="Complete editing and sending in Mailchimp"
+                       ng-class="userEdits.notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+                <input type="submit" value="Cancel Send" ng-click="cancelSendNotification()"
+                       title="Cancel sending of notification email"
+                       class="button-form button-confirm button-form-left">
+            </div>
+        </div>
+    </div>
+</div>
