@@ -1,0 +1,9 @@
+mailchimp:
+  lists:
+    walks: 2f81d7b3a2
+    socialEvents: 4b24051b01
+    general: 54073fa60a
+mongo:
+  database: ekwg
+aws:
+  bucket: ekwg-prod
