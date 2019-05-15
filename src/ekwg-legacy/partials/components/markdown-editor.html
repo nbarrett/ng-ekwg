@@ -1,0 +1,27 @@
+<div ng-hide="$ctrl.editSite()" btf-markdown="$ctrl.data.text" type="text"></div>
+<div ng-if="$ctrl.editSite()">
+    <div class="markdown-links">
+        <a ng-hide="$ctrl.userEdits.preview"
+           ng-click="$ctrl.preview()" ng-href=""><i
+            class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i> preview {{$ctrl.description}}</a>
+        <a ng-if="$ctrl.userEdits.preview"
+           ng-click="$ctrl.edit()" ng-href=""><i
+            class="glyphicon glyphicon-pencil markdown-preview-icon"></i> edit {{$ctrl.description}}</a>
+        <a ng-if="$ctrl.dirty()"
+           ng-click="$ctrl.save()" ng-href=""><i
+            class="{{$ctrl.saveGlyph()}}"></i>
+            save</a>
+        <a ng-if="$ctrl.dirty()"
+           ng-click="$ctrl.revert()" ng-href=""><i
+            class="{{$ctrl.revertGlyph()}}"></i>
+            revert</a>
+    </div>
+    <div ng-if="$ctrl.userEdits.preview"
+         ng-click="$ctrl.edit()"
+         btf-markdown="$ctrl.data.text" type="text">
+    </div>
+    <textarea ng-if="!$ctrl.userEdits.preview"
+              ng-model="$ctrl.data.text" type="text"
+              class="form-control markdown-textarea" ng-attr-rows="{{$ctrl.rows()}}"
+              placeholder="Enter {{$ctrl.description}} text here"></textarea>
+</div>

@@ -26,7 +26,7 @@ angular.module('ekwgApp')
         'font-weight: normal;' +
         'padding: 4px 0px 4px 21px;' +
         'list-style: none;' +
-        'background-image: url(' + URLService.baseUrl() + '/assets/images/ramblers/bull-green.png);' +
+        'background-image: url(' + URLService.baseUrl() + '/ekwg-legacy/assets/images/ramblers/bull-green.png);' +
         'background-position: 0px 9px;' +
         'background-repeat: no-repeat no-repeat">' +
         fullName(role) + ' - ' + description(role) + ' -  ' +
@@ -60,7 +60,7 @@ angular.module('ekwgApp')
           + 'margin: 10px 0 0;'
           + 'padding: 0 0 10px 10px;'
           + 'font-weight: bold;'
-          + 'background-image: url(' + URLService.baseUrl() + '/assets/images/ramblers/dot-darkgrey-hor.png);'
+          + 'background-image: url(' + URLService.baseUrl() + '/ekwg-legacy/assets/images/ramblers/dot-darkgrey-hor.png);'
           + 'background-position: 0% 100%;'
           + 'background-repeat: repeat no-repeat;'
           + 'margin-bottom: 20px;"> '

@@ -1,6 +1,6 @@
 angular.module("ekwgApp")
   .component("notificationUrl", {
-    templateUrl: "partials/components/notification-url.html",
+    templateUrl: "ekwg-legacy/partials/components/notification-url.html",
     controller: function ($log, URLService, FileUtils) {
       var ctrl = this;
       var logger = $log.getInstance("NotificationUrlController");

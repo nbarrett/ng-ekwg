@@ -25,7 +25,7 @@ angular.module('ekwgApp')
         description: "Email",
         action: "View email",
         icon: function () {
-          return "assets/images/local/mailchimp.ico"
+          return "ekwg-legacy/assets/images/local/mailchimp.ico"
         },
         resourceUrl: function (memberResource) {
           var data = _.property(['data', 'campaign', 'archive_url_long'])(memberResource);
@@ -51,7 +51,7 @@ angular.module('ekwgApp')
         action: "View page",
         description: "External Link",
         icon: function () {
-          return "assets/images/ramblers/favicon.ico"
+          return "ekwg-legacy/assets/images/ramblers/favicon.ico"
         },
         resourceUrl: function () {
           return "TBA";

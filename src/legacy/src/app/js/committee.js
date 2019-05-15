@@ -158,7 +158,7 @@ angular.module('ekwgApp')
 
     $scope.openSettings = function () {
       ModalService.showModal({
-        templateUrl: "partials/committee/notification-settings-dialog.html",
+        templateUrl: "ekwg-legacy/partials/committee/notification-settings-dialog.html",
         controller: "CommitteeNotificationSettingsController",
         preClose: function (modal) {
           logger.debug('preClose event with modal', modal);
@@ -175,7 +175,7 @@ angular.module('ekwgApp')
 
     $scope.sendNotification = function (committeeFile) {
       ModalService.showModal({
-        templateUrl: "partials/committee/send-notification-dialog.html",
+        templateUrl: "ekwg-legacy/partials/committee/send-notification-dialog.html",
         controller: "CommitteeNotificationsController",
         preClose: function (modal) {
           logger.debug('preClose event with modal', modal);

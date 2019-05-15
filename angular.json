@@ -25,11 +25,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/legacy/dist"
+              "src/ekwg-legacy"
             ],
             "styles": [
-              "src/styles.sass",
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css"
+//              "./node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "src/styles.sass"
             ],
             "scripts": [],
             "es5BrowserSupport": true

@@ -229,7 +229,7 @@ angular.module('ekwgApp')
         $scope.userEdits.cancelFlow = false;
 
         function getTemplate() {
-          return $templateRequest($sce.getTrustedResourceUrl('partials/socialEvents/social-notification.html'))
+          return $templateRequest($sce.getTrustedResourceUrl('ekwg-legacy/partials/socialEvents/social-notification.html'))
         }
 
         return $q.when(createOrSaveMailchimpSegment())

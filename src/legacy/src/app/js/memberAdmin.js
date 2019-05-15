@@ -63,7 +63,7 @@ angular.module('ekwgApp')
         $scope.alertTypeResetPassword = false;
         $scope.display.emailMembers = [];
         ModalService.showModal({
-          templateUrl: "partials/admin/send-emails-dialog.html",
+          templateUrl: "ekwg-legacy/partials/admin/send-emails-dialog.html",
           controller: "MemberAdminSendEmailsController",
           preClose: function (modal) {
             logger.debug('preClose event with modal', modal);

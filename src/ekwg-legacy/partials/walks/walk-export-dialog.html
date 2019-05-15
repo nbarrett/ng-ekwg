@@ -1,0 +1,126 @@
+<div ng-class="{'busy': walkExport.busy}">
+    <div class="modal" id="walk-export-dialog" tabindex="-1" role="dialog" data-backdrop="true"
+         aria-labelledby="modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Export <em>walks</em> to Ramblers</h4>
+                </div>
+                <div class="modal-body">
+                    <uib-tabset>
+                        <uib-tab active="userEdits.walkExportTab0Active">
+                            <uib-tab-heading>Walk export selection</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col col-sm-12">
+                                        <table
+                                            class="round tbl-green-g table-striped table-hover table-condensed table-pointer">
+                                            <thead>
+                                            <tr>
+                                                <th>Export Walk</th>
+                                                <th>Published On Ramblers</th>
+                                                <th>Walk Date</th>
+                                                <th>Description</th>
+                                                <th>Problems</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="walk in walksForExport">
+                                                <td ng-click="changeWalkExportSelection(walk)"
+                                                    ng-class="walk.selected ? 'checkbox-on' : 'checkbox-off'"></td>
+                                                <td ng-class="walk.publishedOnRamblers ? 'checkbox-on' : 'checkbox-off'"></td>
+                                                <td class="nowrap">{{walk.walk.walkDate | displayDate}}</td>
+                                                <td>{{walk.walk.briefDescriptionAndStartPoint}}</td>
+                                                <td>{{walk.walkValidations.join(", ")}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                        <uib-tab active="userEdits.walkExportTab1Active">
+                            <uib-tab-heading>Walk upload audit</uib-tab-heading>
+                            <div class="thumbnail thumbnail-admin-edit">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="fileNames">Show audit records for export:</label>
+                                            <select class="form-control input-sm"
+                                                    ng-change="fileNameChanged()"
+                                                    ng-model="userEdits.fileName"
+                                                    ng-options="fileName for fileName in userEdits.fileNames"
+                                                    class="form-control round spaced-controls" id="fileNames">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="checkbox-group">
+                                            <label ng-class="{'ui-state-active': userEdits.showDetail}"
+                                                   ng-click="refreshRamblersUploadAudit()"
+                                                   for="show-detailed-audit-messages">Show detailed audit messages
+                                                <input ng-model="userEdits.showDetail"
+                                                       type="checkbox" id="show-detailed-audit-messages">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-sm-12">
+                                        <table
+                                            class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                                            <thead>
+                                            <tr>
+                                                <th>Date/Time</th>
+                                                <th>Status</th>
+                                                <th>Audit Message</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="audit in ramblersUploadAudit">
+                                                <td class="nowrap">{{audit.auditTime | displayDateAndTime}}</td>
+                                                <td ng-if="audit.status==='complete'">
+                                                    <i ng-class="finalStatusError() ? 'glyphicon glyphicon-ok red-icon':'glyphicon glyphicon-ok green-icon'"></i>
+                                                <td ng-if="audit.status==='success'">
+                                                    <i class="glyphicon glyphicon-ok-circle green-icon"></i>
+                                                <td ng-if="audit.status==='info'">
+                                                    <i class="glyphicon glyphicon-info-sign blue-icon"></i>
+                                                <td ng-if="audit.status==='error'">
+                                                    <i class="glyphicon glyphicon-remove-circle red-icon"></i>
+                                                <td>{{audit.message}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </uib-tab>
+                    </uib-tabset>
+                    <div class="form-group modal-alert">
+                        <div ng-if="walkExport.showAlert" class="alert {{walkExport.alertClass}}"><i
+                            class="glyphicon {{walkExport.alert.icon}}"> </i><strong ng-if="walkExport.alertTitle">
+                            {{walkExport.alertTitle}}: </strong> {{walkExport.alertMessage}}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input ng-if="walksDownloadFile().length > 0" type="submit"
+                           value="Export {{walksDownloadFile().length}} walk(s) in Ramblers format"
+                           ng-csv="walksDownloadFile()" csv-header="walksDownloadHeader()"
+                           filename="{{walksDownloadFileName()}}"
+                           title="Export {{walksDownloadFile().length}} selected walk(s) in Ramblers Walks and Events Manager upload format"
+                           ng-class="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+                    <input ng-if="walksDownloadFile().length > 0" type="submit"
+                           value="Upload {{walksDownloadFile().length}} walk(s) directly to Ramblers"
+                           ng-click="uploadToRamblers()"
+                           title="Upload {{walksDownloadFile().length}} selected walk(s) directly to Ramblers Walks and Events Manager"
+                           ng-class="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+                    <input type="submit" value="Close" ng-click="cancelExportWalkDetails()" title="Close this dialog"
+                           class="button-form button-form-left">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
