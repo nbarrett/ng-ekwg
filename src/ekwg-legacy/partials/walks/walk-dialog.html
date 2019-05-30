@@ -371,6 +371,16 @@
                                                         id="meetup-event-url">
                                                 </select>
                                             </div>
+                                            <div ng-if="canUnlinkMeetup()">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <input type="submit" value="Unlink"
+                                                               ng-click="unlinkMeetup()"
+                                                               title="Remove link between this walk and Meetup"
+                                                               class="button-form">
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div ng-if="false" class="form-group">
                                                 <label for="meetup-title">Meetup event title</label>
                                                 <input ng-model="currentWalk.meetupEventTitle"

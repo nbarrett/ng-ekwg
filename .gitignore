@@ -45,3 +45,8 @@ testem.log
 .DS_Store
 Thumbs.db
 /non-vcs/
+/server/scripts/*
+/server/scripts/run-staging.sh
+/server/scripts/run-prod.sh
+/server/scripts/run-test.sh
+/server/node_modules/

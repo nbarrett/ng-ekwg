@@ -219,9 +219,18 @@ angular.module('ekwgApp')
         notify.progress('Previous Ramblers walk has now been unlinked.')
       };
 
-
       $scope.canUnlinkRamblers = function () {
         return LoggedInMemberService.allowWalkAdminEdits() && $scope.ramblersWalkExists();
+      };
+
+      $scope.unlinkMeetup = function () {
+        delete $scope.currentWalk.meetupEventTitle;
+        delete $scope.currentWalk.meetupEventUrl;
+        notify.progress('Previous Meetup link has now been removed.')
+      };
+
+      $scope.canUnlinkMeetup = function () {
+        return LoggedInMemberService.allowWalkAdminEdits() && $scope.currentWalk && $scope.currentWalk.meetupEventUrl;
       };
 
       $scope.notUploadedToRamblersYet = function () {
