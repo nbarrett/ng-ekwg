@@ -50,3 +50,4 @@ Thumbs.db
 /server/scripts/run-prod.sh
 /server/scripts/run-test.sh
 /server/node_modules/
+/src/ekwg-legacy/
