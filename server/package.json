@@ -9,7 +9,7 @@
     "lint": "tslint --config ./tslint.json --project ./tsconfig.json --format stylish",
     "lintfix": "tslint --config ./tslint.json --project ./tsconfig.json --format stylish --fix",
     "pretest": "serenity update",
-    "server": "node server",
+    "server": "nodemon server",
     "pree2e": "webdriver-manager update --gecko false --standalone --versions.standalone=2.53.1 --versions.chrome 2.35",
     "e2e": "protractor ./protractor.conf.js",
     "e2e-single": "protractor ./protractor.conf.js --mochaOpts.grep",

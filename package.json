@@ -5,10 +5,14 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "postinstall": "grunt client && ng build && npm install --prefix server",
+    "postinstall": "npm run build",
     "ng": "ng",
     "start": "ng serve",
+    "prebuild": "grunt client",
     "build": "ng build",
+    "postbuild": "npm install --prefix server",
+    "start:test": "server/scripts/run-test.sh",
+    "start:prod": "server/scripts/run-prod.sh",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
