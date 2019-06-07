@@ -8,7 +8,7 @@ angular.module('ekwgApp')
       logger.info('called showForgotPasswordModal');
       ModalService.closeModals(true);
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/index/forgotten-password-dialog.html",
+        templateUrl: "partials/index/forgotten-password-dialog.html",
         controller: "ForgotPasswordController",
         preClose: function (modal) {
           modal.element.modal('hide');
@@ -29,7 +29,7 @@ angular.module('ekwgApp')
       logger.info('called showResetPasswordModal for userName', userName);
       ModalService.closeModals(true);
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/index/reset-password-dialog.html",
+        templateUrl: "partials/index/reset-password-dialog.html",
         controller: "ResetPasswordController",
         inputs: {userName: userName, message: message},
         preClose: function (modal) {
@@ -49,7 +49,7 @@ angular.module('ekwgApp')
       logger.info('called showLoginDialog');
       ModalService.closeModals(true);
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/index/login-dialog.html",
+        templateUrl: "partials/index/login-dialog.html",
         controller: "LoginController",
         preClose: function (modal) {
           modal.element.modal('hide');
@@ -70,7 +70,7 @@ angular.module('ekwgApp')
 
       ModalService.closeModals(true);
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/index/reset-password-failed-dialog.html",
+        templateUrl: "partials/index/reset-password-failed-dialog.html",
         controller: "ResetPasswordFailedController",
         preClose: function (modal) {
           modal.element.modal('hide');
@@ -89,7 +89,7 @@ angular.module('ekwgApp')
       logger.info('called showMailingPreferencesDialog');
       ModalService.closeModals(true);
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/index/mailing-preferences-dialog.html",
+        templateUrl: "partials/index/mailing-preferences-dialog.html",
         controller: "MailingPreferencesController",
         inputs: {memberId: memberId},
         preClose: function (modal) {

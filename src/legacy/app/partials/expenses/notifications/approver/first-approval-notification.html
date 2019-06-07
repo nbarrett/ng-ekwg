@@ -5,7 +5,7 @@
         For reference, the claim was originally created on <span ng-bind="expenseClaimCreatedEvent().date | displayDate" class="nowrap"></span>
         and contains the following <span ng-bind="selected.expenseClaim().expenseItems.length"></span> item(s):
     </p>
-    <ng-include src="'ekwg-legacy/partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
+    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
     <p>Because an EKWG expense claim needs 2 stages of approval, it will now need to be approved by a different person
         (e.g. not <span ng-bind="expenseClaimLatestEvent().memberId | memberIdToFirstName : members"></span>). Then Jon will be automatically notified to organise the payment.</p>
 </div>

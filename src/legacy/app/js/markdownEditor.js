@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .component('markdownEditor', {
-    templateUrl: 'ekwg-legacy/partials/components/markdown-editor.html',
+    templateUrl: 'partials/components/markdown-editor.html',
     controller: function ($cookieStore, $log, $rootScope, $scope, $element, $attrs, ContentText) {
       var logger = $log.getInstance('MarkdownEditorController');
       $log.logLevels['MarkdownEditorController'] = $log.LEVEL.OFF;

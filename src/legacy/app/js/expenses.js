@@ -59,7 +59,7 @@ angular.module('ekwgApp')
       var notify = Notifier($scope);
       var notifyItem = Notifier($scope.itemAlert);
       notify.setBusy();
-      var notificationsBaseUrl = 'ekwg-legacy/partials/expenses/notifications';
+      var notificationsBaseUrl = 'partials/expenses/notifications';
 
       LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
 

@@ -13,7 +13,7 @@
                 <uib-accordion-group is-open="walksProgrammeOpen">
                     <uib-accordion-heading>
                         <div class="accordion-title">
-                            <img src="ekwg-legacy/assets/images/ramblers/icon-gowalking.png" class="accordion-image"
+                            <img src="assets/images/ramblers/icon-gowalking.png" class="accordion-image"
                                  alt="Walks Programme">Walks Programme<i class="pull-right fa fa-lg darkred"
                                                                          ng-class="{'fa fa-minus-circle': walksProgrammeOpen, 'fa fa-plus-circle': !walksProgrammeOpen}"></i>
                         </div>
@@ -112,7 +112,7 @@
                                         <div ng-if="walk.meetupEventUrl" class="row related-links-row">
                                             <div class="col-sm-1">
                                                 <img class="related-links-image"
-                                                     src="ekwg-legacy/assets/images/local/meetup.ico"
+                                                     src="assets/images/local/meetup.ico"
                                                      alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
                                             </div>
                                             <div class="col-sm-11">
@@ -128,7 +128,7 @@
                                         <div ng-if="walk.ramblersWalkId" class="row related-links-row">
                                             <div class="col-sm-1">
                                                 <img class="related-links-image"
-                                                     src="ekwg-legacy/assets/images/ramblers/favicon.ico"
+                                                     src="assets/images/ramblers/favicon.ico"
                                                      alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
                                             </div>
                                             <div class="col-sm-11">
@@ -145,7 +145,7 @@
                                         <div ng-if="walk.osMapsRoute" class="row related-links-row">
                                             <div class="col-sm-1">
                                                 <img class="related-links-image"
-                                                     src="ekwg-legacy/assets/images/local/ordnance-survey-untitled.png"
+                                                     src="assets/images/local/ordnance-survey-untitled.png"
                                                      alt="Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
                                             </div>
                                             <div class="col-sm-11">
@@ -349,7 +349,7 @@
                 <uib-accordion-group is-open="walksInformationOpen">
                     <uib-accordion-heading>
                         <div class="accordion-title">
-                            <img src="ekwg-legacy/assets/images/ramblers/icon-gowalking.png"
+                            <img src="assets/images/ramblers/icon-gowalking.png"
                                  alt="Walks Information" class="accordion-image">Walks Information<i
                             class="pull-right fa fa-lg darkred"
                             ng-class="{'fa fa-minus-circle': walksInformationOpen, 'fa fa-plus-circle': !walksInformationOpen}"></i>
@@ -377,7 +377,7 @@
                 <uib-accordion-group ng-if="false" is-open="walksMapViewOpen">
                     <uib-accordion-heading>
                         <div class="accordion-title">
-                            <img src="ekwg-legacy/assets/images/ramblers/icon-gowalking.png"
+                            <img src="assets/images/ramblers/icon-gowalking.png"
                                  alt="View our past and planned walks on Google Maps!" class="accordion-image">View our
                             past and planned walks on Google Maps!<i class="pull-right fa fa-lg darkred"
                                                                      ng-class="{'fa fa-minus-circle': walksMapViewOpen, 'fa fa-plus-circle': !walksMapViewOpen}"></i>
@@ -416,9 +416,9 @@
                     </div>
                 </uib-accordion-group>
             </uib-accordion>
-            <ng-include src="'ekwg-legacy/partials/walks/walk-dialog.html'"></ng-include>
-            <ng-include src="'ekwg-legacy/partials/walks/walk-export-dialog.html'"></ng-include>
-            <ng-include src="'ekwg-legacy/partials/walks/add-slots-dialog.html'"></ng-include>
+            <ng-include src="'partials/walks/walk-dialog.html'"></ng-include>
+            <ng-include src="'partials/walks/walk-export-dialog.html'"></ng-include>
+            <ng-include src="'partials/walks/add-slots-dialog.html'"></ng-include>
         </div>
     </div>
 </div>

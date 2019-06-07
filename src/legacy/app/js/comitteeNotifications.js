@@ -300,7 +300,7 @@ angular.module('ekwgApp')
         $scope.userEdits.sendInProgress = true;
         var campaignName = $scope.notification.title;
         notify.setBusy();
-        return $q.when(templateFor('ekwg-legacy/partials/committee/committee-notification.html'))
+        return $q.when(templateFor('partials/committee/committee-notification.html'))
           .then(renderTemplateContent)
           .then(populateContentSections)
           .then(sendEmailCampaign)

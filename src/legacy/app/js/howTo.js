@@ -211,7 +211,7 @@ angular.module('ekwgApp')
 
     $scope.edit = function () {
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/howTo/how-to-dialog.html",
+        templateUrl: "partials/howTo/how-to-dialog.html",
         controller: "HowToDialogController",
         preClose: function (modal) {
           logger.debug("preClose event with modal", modal);

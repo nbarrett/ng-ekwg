@@ -205,7 +205,7 @@ angular.module('ekwgApp')
       if (fileNameData && fileExtensionIs(fileNameData.awsFileName, ['doc', 'docx', 'jpg', 'pdf', 'ppt', 'png', 'txt', 'xls', 'xlsx'])) {
         icon = 'icon-' + fileExtension(fileNameData.awsFileName).substring(0, 3) + '.jpg';
       }
-      return "ekwg-legacy/assets/images/ramblers/" + icon;
+      return "assets/images/ramblers/" + icon;
     }
 
     return {

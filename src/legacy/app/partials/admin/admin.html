@@ -13,18 +13,18 @@
             </div>
 
             <div ng-if="!loggedIn">
-                <div class="well"><img src="ekwg-legacy/assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in to view this page. Click the link above to login.</div>
+                <div class="well"><img src="assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in to view this page. Click the link above to login.</div>
             </div>
 
             <div ng-if="loggedIn">
                 <uib-accordion class="accordion accordion-style" close-others="false">
                     <div ng-if="memberAdmin">
-                        <ng-include ng-controller="MemberAdminController" src="'ekwg-legacy/partials/admin/memberAdmin.html'"></ng-include>
+                        <ng-include ng-controller="MemberAdminController" src="'partials/admin/memberAdmin.html'"></ng-include>
                     </div>
                     <div ng-if="!memberAdmin">
-                        <ng-include ng-controller="ExpensesController" src="'ekwg-legacy/partials/expenses/expenses.html'"></ng-include>
+                        <ng-include ng-controller="ExpensesController" src="'partials/expenses/expenses.html'"></ng-include>
                     </div>
-                    <ng-include ng-controller="ProfileController" src="'ekwg-legacy/partials/admin/profile.html'"></ng-include>
+                    <ng-include ng-controller="ProfileController" src="'partials/admin/profile.html'"></ng-include>
                 </uib-accordion>
             </div>
 

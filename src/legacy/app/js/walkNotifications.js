@@ -14,7 +14,7 @@ angular.module('ekwgApp')
     var noLogger = $log.getInstance('WalkNotificationServiceNoLog');
     $log.logLevels['WalkNotificationService'] = $log.LEVEL.OFF;
     $log.logLevels['WalkNotificationServiceNoLog'] = $log.LEVEL.OFF;
-    var basePartialsUrl = 'ekwg-legacy/partials/walks/notifications';
+    var basePartialsUrl = 'partials/walks/notifications';
     var auditedFields = ['grade', 'walkDate', 'walkType', 'startTime', 'briefDescriptionAndStartPoint', 'longerDescription', 'distance', 'nearestTown', 'gridReference', 'meetupEventUrl', 'meetupEventTitle', 'osMapsRoute', 'osMapsTitle', 'postcode', 'walkLeaderMemberId', 'contactPhone', 'contactEmail', 'contactId', 'displayName', 'ramblersWalkId'];
 
     function currentDataValues(walk) {

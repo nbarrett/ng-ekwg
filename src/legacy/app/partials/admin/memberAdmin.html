@@ -1,7 +1,7 @@
 <uib-accordion-group is-open="memberAdminOpen">
     <uib-accordion-heading>
         <div class="accordion-title" ng-click="showArea('member-admin')">
-            <img src="ekwg-legacy/assets/images/ramblers/icon-members.png"
+            <img src="assets/images/ramblers/icon-members.png"
                  alt="members area">
             Member Admin <i class="pull-right fa fa-lg darkred"
                             ng-class="{'fa fa-minus-circle': memberAdminOpen, 'fa fa-plus-circle': !memberAdminOpen}"></i>
@@ -154,11 +154,11 @@
         </div>
     </div>
 </uib-accordion-group>
-<ng-include ng-controller="ExpensesController" src="'ekwg-legacy/partials/expenses/expenses.html'"></ng-include>
+<ng-include ng-controller="ExpensesController" src="'partials/expenses/expenses.html'"></ng-include>
 <uib-accordion-group is-open="memberBulkLoadOpen">
     <uib-accordion-heading>
         <div class="accordion-title" ng-click="showArea('member-bulk-load')">
-            <img src="ekwg-legacy/assets/images/ramblers/icon-members.png"
+            <img src="assets/images/ramblers/icon-members.png"
                  alt="members area">
             Member Bulk Load <i class="pull-right fa fa-lg darkred"
                                 ng-class="memberBulkLoadOpen ? 'fa fa-minus-circle': 'fa fa-plus-circle'"></i></div>
@@ -456,7 +456,7 @@
 <uib-accordion-group is-open="memberAuditOpen">
     <uib-accordion-heading>
         <div class="accordion-title" ng-click="showArea('member-audit')">
-            <img src="ekwg-legacy/assets/images/ramblers/icon-members.png" alt="members area">
+            <img src="assets/images/ramblers/icon-members.png" alt="members area">
             Member Login Audit <i class="pull-right fa fa-lg darkred"
                                   ng-class="memberAuditOpen ? 'fa fa-minus-circle' : 'fa fa-plus-circle'"></i>
         </div>
@@ -518,4 +518,4 @@
         </div>
     </div>
 </uib-accordion-group>
-<ng-include src="'ekwg-legacy/partials/admin/member-admin-dialog.html'"></ng-include>
+<ng-include src="'partials/admin/member-admin-dialog.html'"></ng-include>

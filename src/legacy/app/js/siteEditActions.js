@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .component('siteEditActions', {
-    templateUrl: 'ekwg-legacy/partials/components/site-edit.html',
+    templateUrl: 'partials/components/site-edit.html',
     controller: function ($log, SiteEditService){
   var logger = $log.getInstance('SiteEditActionsController');
   $log.logLevels['SiteEditActionsController'] = $log.LEVEL.OFF;

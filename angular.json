@@ -25,156 +25,160 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/ekwg-legacy",
+              {
+                "input": "src/ekwg-legacy",
+                "glob": "**/*",
+                "output": "/"
+              },
               {
                 "input": "node_modules/angular-logger/dist",
                 "glob": "**/angular-logger.min.js",
-                "output": "/ekwg-legacy/vendor/angular-logger"
+                "output": "/vendor/angular-logger"
               },
               {
                 "input": "src/legacy/vendor/angular-easyfb/build",
                 "glob": "**/angular-easyfb.min.js",
-                "output": "/ekwg-legacy/vendor/angular-easyfb"
+                "output": "/vendor/angular-easyfb"
               },
               {
                 "input": "src/legacy/vendor/angularjs-mongolab-promise",
                 "glob": "**/mongolabResourceHttp.js",
-                "output": "/ekwg-legacy/vendor/angularjs-mongolab-promise"
+                "output": "/vendor/angularjs-mongolab-promise"
               },
               {
                 "input": "src/legacy/vendor/angular-bootstrap",
                 "glob": "**/ui-bootstrap-tpls.min.js",
-                "output": "/ekwg-legacy/vendor/angular-bootstrap"
+                "output": "/vendor/angular-bootstrap"
               },
               {
                 "input": "src/legacy/vendor/angular-modal-service/dst",
                 "glob": "**/angular-modal-service.*",
-                "output": "/ekwg-legacy/vendor/angular-modal-service"
+                "output": "/vendor/angular-modal-service"
               },
               {
                 "input": "src/legacy/vendor/angular-ui-select/dist",
                 "glob": "**/select*",
-                "output": "/ekwg-legacy/vendor/angular-ui-select"
+                "output": "/vendor/angular-ui-select"
               },
               {
                 "input": "src/legacy/vendor/ng-file-upload",
                 "glob": "**/ng-file-upload.min.js",
-                "output": "/ekwg-legacy/vendor/ng-file-upload"
+                "output": "/vendor/ng-file-upload"
               },
               {
                 "input": "src/legacy/vendor/ng-csv/build",
                 "glob": "**/ng-csv.min.js",
-                "output": "/ekwg-legacy/vendor/ng-csv"
+                "output": "/vendor/ng-csv"
               },
               {
                 "input": "src/legacy/vendor/angular",
                 "glob": "**/angular.min.js.map",
-                "output": "/ekwg-legacy/vendor/angular"
+                "output": "/vendor/angular"
               },
               {
                 "input": "src/legacy/vendor/angular-cookies",
                 "glob": "**/angular-cookies.min.js.map",
-                "output": "/ekwg-legacy/vendor/angular"
+                "output": "/vendor/angular"
               },
               {
                 "input": "src/legacy/vendor/bootstrap/dist",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/bootstrap/dist"
+                "output": "/vendor/bootstrap/dist"
               },
               {
                 "input": "src/legacy/vendor/font-awesome/css",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/font-awesome/css"
+                "output": "/vendor/font-awesome/css"
               },
               {
                 "input": "src/legacy/vendor/font-awesome/fonts",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/font-awesome/fonts"
+                "output": "/vendor/font-awesome/fonts"
               },
               {
                 "input": "src/legacy/vendor/font-awesome/less",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/font-awesome/less"
+                "output": "/vendor/font-awesome/less"
               },
               {
                 "input": "src/legacy/vendor/font-awesome/scss",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/font-awesome/scss"
+                "output": "/vendor/font-awesome/scss"
               },
               {
                 "input": "src/legacy/vendor/html5boilerplate",
                 "glob": "**/**/*.css",
-                "output": "/ekwg-legacy/vendor/html5boilerplate"
+                "output": "/vendor/html5boilerplate"
               },
               {
                 "input": "src/legacy/vendor/jquery/dist",
                 "glob": "**/jquery.slim.min.*",
-                "output": "/ekwg-legacy/vendor/jquery"
+                "output": "/vendor/jquery"
               },
               {
                 "input": "src/legacy/vendor/json3",
                 "glob": "**/json3.min.js",
-                "output": "/ekwg-legacy/vendor/json3"
+                "output": "/vendor/json3"
               },
               {
                 "input": "src/legacy/vendor/moment/min",
                 "glob": "**/moment.min.js",
-                "output": "/ekwg-legacy/vendor/moment/min"
+                "output": "/vendor/moment/min"
               },
               {
                 "input": "src/legacy/vendor/moment-timezone/builds",
                 "glob": "**/moment-timezone-with-data.min.js",
-                "output": "/ekwg-legacy/vendor/moment/min"
+                "output": "/vendor/moment/min"
               },
               {
                 "input": "src/legacy/vendor/es5-shim",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/es5-shim"
+                "output": "/vendor/es5-shim"
               },
               {
                 "input": "src/legacy/vendor/respond/dest",
                 "glob": "**/respond.min.js",
-                "output": "/ekwg-legacy/vendor/respond"
+                "output": "/vendor/respond"
               },
               {
                 "input": "src/legacy/vendor/html5shiv/dist",
                 "glob": "**/html5shiv.min.js",
-                "output": "/ekwg-legacy/vendor/respond"
+                "output": "/vendor/respond"
               },
               {
                 "input": "src/legacy/vendor/underscore",
                 "glob": "**/**/*underscore-min.*",
-                "output": "/ekwg-legacy/vendor/underscore"
+                "output": "/vendor/underscore"
               },
               {
                 "input": "src/legacy/vendor/underscore.string/dist",
                 "glob": "**/underscore.string.min.js",
-                "output": "/ekwg-legacy/vendor/underscore-string"
+                "output": "/vendor/underscore-string"
               },
               {
                 "input": "src/legacy/vendor/showdown/dist",
                 "glob": "**/showdown.min.js*",
-                "output": "/ekwg-legacy/vendor/showdown"
+                "output": "/vendor/showdown"
               },
               {
                 "input": "src/legacy/vendor/angular-markdown-directive",
                 "glob": "**/markdown.js",
-                "output": "/ekwg-legacy/vendor/angular-markdown-directive"
+                "output": "/vendor/angular-markdown-directive"
               },
               {
                 "input": "src/legacy/vendor/xml2json",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/vendor/xml2json"
+                "output": "/vendor/xml2json"
               },
               {
                 "input": "src/legacy/app/assets",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/assets"
+                "output": "/assets"
               },
               {
                 "input": "src/legacy/app/partials",
                 "glob": "**/**/*.*",
-                "output": "/ekwg-legacy/partials"
+                "output": "/partials"
               }
             ],
             "styles": [

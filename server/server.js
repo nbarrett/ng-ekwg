@@ -28,7 +28,7 @@ let debug = require('debug')(config.logNamespace('server'));
 
 app.set('port', config.server.listenPort);
 app.disable('view cache');
-app.use(favicon('../dist/ng-ekwg/ekwg-legacy/assets/images/ramblers/favicon.ico'));
+app.use(favicon('../dist/ng-ekwg/assets/images/ramblers/favicon.ico'));
 app.use(logger(config.env));
 app.use(methodOverride());
 app.use(bodyParser.json());

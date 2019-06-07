@@ -2,9 +2,9 @@
     <p>Thanks for offering to lead the walk on <strong ng-bind="walk.walkDate | displayDate" class="nowrap"></strong>!</p>
     <div ng-if="dataAuditDelta.dataChanged">
         <p>Here are the details that have been completed so far:</p>
-        <ng-include src="'ekwg-legacy/partials/walks/notifications/common/walk-changes-table.html'"></ng-include>
+        <ng-include src="'partials/walks/notifications/common/walk-changes-table.html'"></ng-include>
     </div>
     <p ng-if="validateWalk.walkValidations.length > 0"><strong>Note:</strong> Before I can publish your walk on our walks programme, I need more information from you as
         <span ng-bind="validateWalk.walkValidations | asWalkValidationsList"></span>.</p>
-    <ng-include src="'ekwg-legacy/partials/walks/notifications/common/footer.html'"></ng-include>
+    <ng-include src="'partials/walks/notifications/common/footer.html'"></ng-include>
 </div>

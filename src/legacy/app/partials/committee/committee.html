@@ -26,7 +26,7 @@
                     <uib-accordion-group is-open="true">
                         <uib-accordion-heading>
                             <div class="accordion-title">
-                                <img src="ekwg-legacy/assets/images/ramblers/icon-members.png" alt="members area"> <span
+                                <img src="assets/images/ramblers/icon-members.png" alt="members area"> <span
                                 ng-bind="'General'"></span>
                                 <i class="pull-right fa fa-lg darkred"
                                    ng-class="{'fa fa-minus-circle': general.expanded, 'fa fa-plus-circle': !general.expanded }"></i>
@@ -58,7 +58,7 @@
                         <uib-accordion-group is-open="committeeFileYear.latestYear">
                             <uib-accordion-heading>
                                 <div class="accordion-title">
-                                    <img src="ekwg-legacy/assets/images/ramblers/icon-members.png" alt="members area"> <span
+                                    <img src="assets/images/ramblers/icon-members.png" alt="members area"> <span
                                     ng-bind="committeeFileYear.year + ' Year'"></span>
                                     <i class="pull-right fa fa-lg darkred"
                                        ng-class="{'fa fa-minus-circle': committeeFileYear.latestYear, 'fa fa-plus-circle': !committeeFileYear.latestYear }"></i>
@@ -75,7 +75,7 @@
                                 <div class="file-item"
                                      ng-mouseover="selectCommitteeFile(committeeFile, committeeFiles)">
                                     <div class="file-download">
-                                        <img class="icon" ng-src='ekwg-legacy/assets/images/ramblers/{{ iconFile(committeeFile) }}'
+                                        <img class="icon" ng-src='assets/images/ramblers/{{ iconFile(committeeFile) }}'
                                              alt='{{ iconFile(committeeFile) }}'/>
                                         <a class="morelink" target='_blank' title="{{fileTitle(committeeFile)}}"
                                            ng-href="{{ fileUrl(committeeFile) }}">Download</a>
@@ -131,7 +131,7 @@
 
             </div>
             <div class="col-sm-4 auto-fit-column">
-                <p><img class="round" alt="join us" src="ekwg-legacy/assets/images/local/ekwg-agm.jpg"></p>
+                <p><img class="round" alt="join us" src="assets/images/local/ekwg-agm.jpg"></p>
 
                 <div class="row">
                     <div class="right-col-section">
@@ -153,9 +153,9 @@
                         </div>
                     </div>
                 </div>
-                <p><img class="round" alt="join us" src="ekwg-legacy/assets/images/local/ekwg-agm-2.jpg"></p>
+                <p><img class="round" alt="join us" src="assets/images/local/ekwg-agm-2.jpg"></p>
             </div>
         </div>
     </div>
 </div>
-<ng-include src="'ekwg-legacy/partials/committee/file-detail-dialog.html'"></ng-include>
+<ng-include src="'partials/committee/file-detail-dialog.html'"></ng-include>

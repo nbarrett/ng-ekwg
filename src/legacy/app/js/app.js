@@ -54,60 +54,60 @@ angular.module("ekwgApp", [
     $routeProvider
       .when(mainPages.ADMIN + "/expenseId/:expenseId", {
         controller: "AdminController",
-        templateUrl: "ekwg-legacy/partials/admin/admin.html",
+        templateUrl: "partials/admin/admin.html",
         title: "expenses"
       })
       .when(mainPages.ADMIN + "/:area?", {
         controller: "AdminController",
-        templateUrl: "ekwg-legacy/partials/admin/admin.html",
+        templateUrl: "partials/admin/admin.html",
         title: "admin"
       })
       .when(mainPages.COMMITTEE + "/committeeFileId/:committeeFileId", {
-        controller: "CommitteeController", templateUrl: "ekwg-legacy/partials/committee/committee.html", title: "AGM and committee"
+        controller: "CommitteeController", templateUrl: "partials/committee/committee.html", title: "AGM and committee"
       })
       .when(mainPages.COMMITTEE, {
-        controller: "CommitteeController", templateUrl: "ekwg-legacy/partials/committee/committee.html", title: "AGM and committee"
+        controller: "CommitteeController", templateUrl: "partials/committee/committee.html", title: "AGM and committee"
       })
       .when(mainPages.HOW_TO, {
         controller: "HowToController",
-        templateUrl: "ekwg-legacy/partials/howTo/how-to.html",
+        templateUrl: "partials/howTo/how-to.html",
         title: "How-to"
       })
       .when("/image-editor/:imageSource", {
-        controller: "ImageEditController", templateUrl: "ekwg-legacy/partials/imageEditor/image-editor.html", title: "image editor"
+        controller: "ImageEditController", templateUrl: "partials/imageEditor/image-editor.html", title: "image editor"
       })
       .when(mainPages.JOIN_US, {
-        controller: "HomeController", templateUrl: "ekwg-legacy/partials/joinUs/join-us.html", title: "join us"
+        controller: "HomeController", templateUrl: "partials/joinUs/join-us.html", title: "join us"
       })
       .when("/letterhead/:firstPart?/:secondPart", {
-        controller: "LetterheadController", templateUrl: "ekwg-legacy/partials/letterhead/letterhead.html", title: "letterhead"
+        controller: "LetterheadController", templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
       .when(mainPages.CONTACT_US, {
-        controller: "ContactUsController", templateUrl: "ekwg-legacy/partials/contactUs/contact-us.html", title: "contact us"
+        controller: "ContactUsController", templateUrl: "partials/contactUs/contact-us.html", title: "contact us"
       })
       .when("/links", {redirectTo: mainPages.CONTACT_US})
       .when(mainPages.SOCIAL + "/socialEventId/:socialEventId", {
-        controller: "SocialEventsController", templateUrl: "ekwg-legacy/partials/socialEvents/social.html", title: "social"
+        controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
       .when(mainPages.SOCIAL + "/:area?", {
-        controller: "SocialEventsController", templateUrl: "ekwg-legacy/partials/socialEvents/social.html", title: "social"
+        controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
       .when(mainPages.WALKS + "/walkId/:walkId", {
-        controller: "WalksController", templateUrl: "ekwg-legacy/partials/walks/walks.html", title: "walks"
+        controller: "WalksController", templateUrl: "partials/walks/walks.html", title: "walks"
       })
       .when(mainPages.WALKS + "/:area?", {
-        controller: "WalksController", templateUrl: "ekwg-legacy/partials/walks/walks.html", title: "walks"
+        controller: "WalksController", templateUrl: "partials/walks/walks.html", title: "walks"
       })
       .when(mainPages.HOME, {
-        controller: "HomeController", templateUrl: "ekwg-legacy/partials/home/home.html", title: "home"
+        controller: "HomeController", templateUrl: "partials/home/home.html", title: "home"
       })
       .when("/set-password/:passwordResetId", {
         controller: "AuthenticationModalsController",
-        templateUrl: "ekwg-legacy/partials/home/home.html"
+        templateUrl: "partials/home/home.html"
       })
       .otherwise({
         controller: "AuthenticationModalsController",
-        templateUrl: "ekwg-legacy/partials/home/home.html"
+        templateUrl: "partials/home/home.html"
       });
 
     uibDatepickerConfig.startingDay = 1;

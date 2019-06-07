@@ -3,7 +3,7 @@
         has just returned <strong ng-bind="(expenseClaimCreatedEvent().memberId | memberIdToFullName : members) + '\'s'" class="nowrap"></strong>
         EKWG expense claim as follows:
     </p>
-    <ng-include src="'ekwg-legacy/partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
+    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
     <br>
     <p ng-if="expenseClaimLatestEvent().reason">The reason given was as follows: <span ng-bind="expenseClaimLatestEvent().reason"></span>.</p>
 </div>

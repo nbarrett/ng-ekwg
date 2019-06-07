@@ -269,7 +269,7 @@ angular.module('ekwgApp')
     $scope.sendSocialEventNotification = function () {
       $('#social-event-dialog').modal('hide');
       ModalService.showModal({
-        templateUrl: "ekwg-legacy/partials/socialEvents/send-notification-dialog.html",
+        templateUrl: "partials/socialEvents/send-notification-dialog.html",
         controller: "SocialEventNotificationsController",
         preClose: function (modal) {
           logger.debug('preClose event with modal', modal);
