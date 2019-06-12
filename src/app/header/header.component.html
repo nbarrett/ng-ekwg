@@ -1,0 +1,12 @@
+<div class="header-buttons">
+  <ul class="login-menu">
+    <li class="btn-members"><a class="active" [href]="loginOrLogoutUrl()"
+                               [textContent]="memberLoginStatus()"
+                               title="{{memberLoginStatus()}}"></a><span *ngIf="!memberLoggedIn()"> • <a
+      class="active" [href]="forgotPasswordUrl()"
+      href="">Forgot Password</a></span>
+    </li>
+  </ul>
+  <app-site-edit class="row" *ngIf="allowEdits()"></app-site-edit>
+
+</div>

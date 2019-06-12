@@ -51,34 +51,8 @@
       <div class="header-caption">
         <em>East Kent <span>Walking</span> Group</em>
       </div>
-      <div class="header-buttons">
-        <ul class="login-menu">
-          <li class="btn-members"><a class="active" ng-click="actions.loginOrLogout()" href=""
-                                     ng-bind="memberLoginStatus()"
-                                     title="{{memberLoginStatus()}}"></a><span ng-if="!memberLoggedIn()"> • <a
-            class="active" ng-click="actions.forgotPassword()"
-            href="">Forgot Password</a></span>
-          </li>
-        </ul>
-        <site-edit-actions class="row" ng-if="allowEdits()"></site-edit-actions>
-
-      </div>
-
-      <nav class="top-nav round-top active" role="navigation">
-        <ul>
-          <li><a ng-class="{'active' : isHome()}" href="#/" title="Home">Home</a></li>
-          <li><a ng-class="{'active' : isOnPage('walks')}" href="#/walks" title="Walks">Walks</a></li>
-          <li><a ng-class="{'active' : isOnPage('social')}" href="#/social" title="Social">Social</a></li>
-          <li><a ng-class="{'active' : isOnPage('join-us')}" href="#/join-us" title="Join Us">Join Us</a>
-          </li>
-          <li><a ng-class="{'active' : isOnPage('contact-us')}" href="#/contact-us" title="Contact Us">Contact
-            Us</a></li>
-          <li><a ng-class="{'active' : isOnPage('committee')}" href="#/committee" title="Committee">Committee</a>
-          </li>
-          <li><a ng-class="{'active' : isOnPage('admin')}" href="#/admin" title="Admin">Admin</a></li>
-          <li><a ng-class="{'active' : isOnPage('how-to')}" href="#/how-to" title="How-to">How-to</a></li>
-        </ul>
-      </nav>
+      <app-header></app-header>
+      <app-navbar></app-navbar>
     </div>
   </header>
   <div ng-view></div>

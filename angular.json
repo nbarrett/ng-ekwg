@@ -9,8 +9,26 @@
       "projectType": "application",
       "prefix": "app",
       "schematics": {
+        "@schematics/angular:pipe": {
+          "lintFix": true
+        },
+        "@schematics/angular:class": {
+          "lintFix": true
+        },
+        "@schematics/angular:module": {
+          "lintFix": true
+        },
+        "@schematics/angular:service": {
+          "lintFix": true
+        },
         "@schematics/angular:component": {
+          "lintFix": true,
+          "prefix": "app",
           "style": "sass"
+        },
+        "@schematics/angular:directive": {
+          "lintFix": true,
+          "prefix": "app"
         }
       },
       "architect": {
@@ -182,7 +200,6 @@
               }
             ],
             "styles": [
-//              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.sass"
             ],
             "scripts": [],

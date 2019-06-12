@@ -2,13 +2,11 @@
   "extends": "tslint:latest",
   "rulesDirectory": "node_modules/tslint-microsoft-contrib",
   "rules": {
-    "space-before-function-paren": ["error", {
-      "anonymous": "always"
-    }],
+    "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
     "no-submodule-imports": false,
     "no-string-literal": false,
     "no-console": false,
-    "quotemark": [true, "single", "avoid-escape"],
+    "quotemark": [true, "double", "avoid-escape"],
     "one-variable-per-declaration": false,
     "member-access": false,
     "typedef-whitespace":

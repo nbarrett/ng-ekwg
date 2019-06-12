@@ -60,6 +60,7 @@
       true,
       "double"
     ],
+    "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
     "trailing-comma": false,
     "no-output-on-prefix": true,
     "use-input-property-decorator": true,

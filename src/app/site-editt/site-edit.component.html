@@ -1,0 +1,8 @@
+<div class="col-sm-12" (click)="toggleEditSite()">
+  <button type="button" class="btn btn-xs btn-toggle {{editSiteActive()}} pull-right"
+          data-toggle="button"
+          aria-pressed="false" autocomplete="off">
+    <div class="handle"></div>
+  </button>
+  <span class="edit-site pull-right" [textContent]="editSiteCaption()">edit site</span>
+</div>

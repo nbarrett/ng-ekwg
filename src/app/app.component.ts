@@ -6,7 +6,6 @@ import { UpgradeModule } from "@angular/upgrade/static";
   templateUrl: "./app.component.html"
 })
 export class AppComponent implements OnInit {
-  title = "ng-ekwg";
 
   constructor(private upgrade: UpgradeModule) {
   }
