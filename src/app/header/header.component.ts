@@ -1,30 +1,23 @@
-import { Component } from "@angular/core";
-import { NGXLogger } from "ngx-logger";
+import { Component, Inject } from "@angular/core";
 import { LoginService } from "../login/login.service";
+import { LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-header",
   templateUrl: "./header.component.html"
 })
 export class HeaderComponent {
-
-  constructor(private loginService: LoginService, private logger: NGXLogger) {
+  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+              private loginService: LoginService) {
   }
 
   memberLoginStatus() {
-    // if (LoggedInMemberService.memberLoggedIn()) {
-    if (false) {
-      const loggedInMember = {
-        firstName: "tbdfn",
-        lastName: "tbdln"
-      };
-      // var loggedInMember = LoggedInMemberService.loggedInMember();
-      // return "Logout " + loggedInMember.firstName + " " + loggedInMember.lastName;
+    if (this.loginService.memberLoggedIn()) {
+      const loggedInMember = this.loginService.loggedInMember();
       return "Logout " + loggedInMember.firstName + " " + loggedInMember.lastName;
     } else {
       return "Login to EWKG Site";
     }
-
   }
 
   loginOrLogoutUrl() {
@@ -32,7 +25,7 @@ export class HeaderComponent {
   }
 
   allowEdits() {
-    return false;
+    return this.loggedInMemberService.allowContentEdits();
   }
 
   forgotPasswordUrl() {
@@ -40,6 +33,6 @@ export class HeaderComponent {
   }
 
   memberLoggedIn() {
-    return false;
+    return this.loginService.memberLoggedIn();
   }
 }

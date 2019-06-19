@@ -8,7 +8,7 @@ import { NGXLogger } from "ngx-logger";
 export class LogoutComponent {
 
   constructor(private logger: NGXLogger) {
-    logger.info(this, "constructed");
+    logger.debug(LogoutComponent.name, "constructed");
   }
 
 }

@@ -1,7 +1,7 @@
 angular.module('ekwgApp')
   .component('markdownEditor', {
     templateUrl: 'partials/components/markdown-editor.html',
-    controller: function ($cookieStore, $log, $rootScope, $scope, $element, $attrs, ContentText) {
+    controller: function (SiteEditService, $log, $rootScope, $scope, $element, $attrs, ContentText) {
       var logger = $log.getInstance('MarkdownEditorController');
       $log.logLevels['MarkdownEditorController'] = $log.LEVEL.OFF;
       var ctrl = this;
@@ -56,7 +56,9 @@ angular.module('ekwgApp')
       };
 
       ctrl.editSite = function () {
-        return $cookieStore.get('editSite');
+        let active = SiteEditService.active();
+        logger.info(ctrl.name, "site edit active:", active);
+        return active;
       };
 
       ctrl.rows = function () {

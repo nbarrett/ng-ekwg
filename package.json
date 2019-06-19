@@ -7,8 +7,10 @@
   "scripts": {
     "postinstall": "npm run build",
     "start": "ng serve",
+    "preserve": "grunt client",
+    "serve": "ng serve --proxy-config proxy.config.json",
     "prebuild": "grunt client",
-    "build": "ng build",
+    "build": "ng build --prod",
     "postbuild": "npm install --prefix server",
     "start:test": "server/scripts/run-test.sh",
     "start:prod": "server/scripts/run-prod.sh",

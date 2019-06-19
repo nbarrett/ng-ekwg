@@ -39,7 +39,7 @@ angular.module('ekwgApp')
     };
 
     var logger = $log.getInstance('SocialEventsController');
-    $log.logLevels['SocialEventsController'] = $log.LEVEL.OFF;
+    $log.logLevels['SocialEventsController'] = $log.LEVEL.INFO;
     var notify = Notifier($scope);
 
     $scope.attachmentBaseUrl = ContentMetaDataService.baseUrl('socialEvents');
@@ -209,6 +209,7 @@ angular.module('ekwgApp')
       $scope.allowEdits = LoggedInMemberService.allowSocialAdminEdits();
       $scope.allowCopy = LoggedInMemberService.allowSocialAdminEdits();
       $scope.allowContentEdits = SiteEditService.active() && LoggedInMemberService.allowContentEdits();
+      logger.info("SiteEditService.active()", SiteEditService.active());
       $scope.allowSummaryView = allowSummaryView();
     }
 

@@ -36,11 +36,4 @@ export class UrlService {
     return this.baseUrl() + "/#/" + area + "/" + type + "Id/" + id;
   }
 
-  // navigateTo(page: string, area) {
-  //   var url = pageUrl(page) + (area ? "/" + area : "");
-  //   this.logger.info("navigating to page:", page, "area:", area, "->", url);
-  //   $location.path(url);
-  //   this.logger.info("$location.path is now", $location.path());
-  // }
-
 }

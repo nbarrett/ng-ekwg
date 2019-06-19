@@ -1,8 +1,9 @@
-<div class="col-sm-12" (click)="toggleEditSite()">
-  <button type="button" class="btn btn-xs btn-toggle {{editSiteActive()}} pull-right"
+<div class="col-sm-12" (click)="toggle()">
+  <button type="button"
+          [ngClass]="active()? 'active btn btn-xs btn-toggle pull-right' : 'btn btn-xs btn-toggle pull-right'"
           data-toggle="button"
-          aria-pressed="false" autocomplete="off">
+          autocomplete="off">
     <div class="handle"></div>
   </button>
-  <span class="edit-site pull-right" [textContent]="editSiteCaption()">edit site</span>
+  <span class="edit-site pull-right" [textContent]="caption()"></span>
 </div>

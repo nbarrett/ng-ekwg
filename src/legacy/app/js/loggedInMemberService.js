@@ -2,9 +2,7 @@ angular.module('ekwgApp')
   .factory('LoggedInMemberService', function ($rootScope, $q, $routeParams, $cookieStore, URLService, MemberService, MemberAuditService, DateUtils, NumberUtils, $log) {
 
       var logger = $log.getInstance('LoggedInMemberService');
-      var noLogger = $log.getInstance('NoLogger');
-      $log.logLevels['NoLogger'] = $log.LEVEL.OFF;
-      $log.logLevels['LoggedInMemberService'] = $log.LEVEL.OFF;
+      $log.logLevels['LoggedInMemberService'] = $log.LEVEL.INFO;
 
       function loggedInMember() {
         if (!getCookie('loggedInMember')) setCookie('loggedInMember', {});
@@ -90,7 +88,7 @@ angular.module('ekwgApp')
       }
 
       function setCookie(key, value) {
-        noLogger.debug('setting cookie ' + key + ' with value ', value);
+        logger.info('setting cookie ' + key + ' with value ', value);
         $cookieStore.put(key, value);
       }
 
@@ -100,9 +98,7 @@ angular.module('ekwgApp')
       }
 
       function getCookie(key) {
-        var object = $cookieStore.get(key);
-        noLogger.debug('getting cookie ' + key + ' with value', object);
-        return object;
+        return $cookieStore.get(key);
       }
 
       function login(userName, password) {
