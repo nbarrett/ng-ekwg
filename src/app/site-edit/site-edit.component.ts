@@ -36,10 +36,6 @@ export class SiteEditComponent {
     this.siteEditService.toggle($event);
   }
 
-  onValueChange($event: boolean) {
-    this.logger.info("onValueChange", $event);
-  }
-
   toggle() {
     this.onChange(!this.active());
   }
