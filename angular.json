@@ -24,6 +24,7 @@
         "@schematics/angular:component": {
           "lintFix": true,
           "prefix": "app",
+          "styleext": "sass",
           "style": "sass"
         },
         "@schematics/angular:directive": {
@@ -200,6 +201,7 @@
               }
             ],
             "styles": [
+              "src/app/site-edit/ui-switch.component.scss",
               "src/styles.sass"
             ],
             "scripts": [],
@@ -309,5 +311,10 @@
       }
     }
   },
-  "defaultProject": "ng-ekwg"
+  "defaultProject": "ng-ekwg",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "sass"
+    }
+  }
 }

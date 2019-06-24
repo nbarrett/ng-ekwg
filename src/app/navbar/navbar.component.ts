@@ -9,7 +9,7 @@ import { NGXLogger } from "ngx-logger";
 })
 export class NavBarComponent {
 
-  private pages = [
+  public pages = [
     {href: "", title: "Home"},
     {href: "walks", title: "Walks"},
     {href: "social", title: "Social"},

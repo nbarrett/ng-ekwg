@@ -1,17 +1,20 @@
-import { InjectionToken } from "@angular/core";
+export function DateUtils($injector) {
+  return $injector.get("DateUtils");
+}
 
-export const DateUtils = new InjectionToken("DateUtils");
-export const LoggedInMemberService = new InjectionToken("LoggedInMemberService");
+export function LoggedInMemberService($injector) {
+  return $injector.get("LoggedInMemberService");
+}
 
 export const DateUtilsProvider = {
   provide: "DateUtils",
-  useFactory: $injector => $injector.get("DateUtils"),
+  useFactory: DateUtils,
   deps: ["$injector"]
 };
 
 export const LoggedInMemberServiceProvider = {
   provide: "LoggedInMemberService",
-  useFactory: $injector => $injector.get("LoggedInMemberService"),
+  useFactory: LoggedInMemberService,
   deps: ["$injector"]
 };
 

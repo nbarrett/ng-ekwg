@@ -62,6 +62,7 @@
     "ng-file-upload": "9.0.8",
     "ngx-cookie-service": "2.2.0",
     "ngx-logger": "3.3.13",
+    "ngx-ui-switch": "8.1.0",
     "popper.js": "1.15.0",
     "rxjs": "6.3.3",
     "showdown": "1.7.5",

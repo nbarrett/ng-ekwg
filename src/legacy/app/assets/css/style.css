@@ -1938,14 +1938,6 @@ a.svg:after {
   font-weight: bold;
 }
 
-.edit-site {
-  font-size: 12px;
-  color: #A8B400;
-  padding-top: 1px;
-  padding-right: 6px;
-  cursor: pointer;
-}
-
 .region-menu li a.active {
   color: #A8B400;
 }
@@ -5366,4 +5358,3 @@ input[type="radio"]:checked + label {
 .btn-toggle.btn-xs.btn-xs:after {
   display: none;
 }
-

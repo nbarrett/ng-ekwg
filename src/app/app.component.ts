@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
-import { SiteEditService } from "./site-editt/site-edit.service";
+import { SiteEditService } from "./site-edit/site-edit.service";
 
 @Component({
   selector: "app-root",

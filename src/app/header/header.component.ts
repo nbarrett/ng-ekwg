@@ -1,6 +1,5 @@
-import { Component, Inject } from "@angular/core";
+import { Component, Inject} from "@angular/core";
 import { LoginService } from "../login/login.service";
-import { LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-header",

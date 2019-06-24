@@ -1,0 +1,11 @@
+<div class="col-sm-12">
+  <ui-switch labelOn="Yes"
+             labelOff="No"
+             [checked]="active()"
+             (change)="onChange($event)"
+             (valueChange)="onValueChange($event)"
+             (changeEvent)="onChangeEvent($event)"
+             class="edit-site pull-right" size="small" checkedLabel="on" uncheckedLabel="off"></ui-switch>
+  <span (click)="toggle()" class="edit-site pull-right" [textContent]="caption()"></span>
+</div>
+

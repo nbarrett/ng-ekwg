@@ -22,10 +22,10 @@ export class SiteEditService {
     return active;
   }
 
-  toggle() {
+  toggle(state: boolean) {
     const priorState = this.active();
-    const newState = String(!priorState);
-    this.events.emit(new GlobalEvent("editSite", newState));
+    const newState = String(state);
+    this.events.emit(new GlobalEvent("editSite", state));
     this.logger.info("toggle:priorState", priorState, "newState", newState);
     this.cookieService.set("editSite", newState);
   }
