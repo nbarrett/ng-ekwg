@@ -4,10 +4,12 @@ import { NGXLogger } from "ngx-logger";
 
 
 @Component({
-  selector: "app-navbar",
-  templateUrl: "./navbar.component.html"
+  selector: "app-page-navigator",
+  templateUrl: "./page-navigator.component.html",
+  styleUrls: ["./page-navigator.component.sass"]
+
 })
-export class NavBarComponent {
+export class PageNavigatorComponent {
 
   public pages = [
     {href: "", title: "Home"},

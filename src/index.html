@@ -36,23 +36,11 @@
   <![endif]-->
   <header>
     <div class="header-inner">
-      <a href="http://www.ramblers.org.uk/" title="East Kent Walking Group"><img class="main-logo"
-                                                                                 src="assets/images/ramblers/ramblers-logo.gif"
-                                                                                 alt="East Kent Walking Group - get fit, make friends, have fun......"></a>
-
-      <div class="header-toolbar round-bottom">
-        <ul class="region-menu">
-          <li><a class="active" href="#" title="EKWG">EKWG</a></li>
-          <li><a href="http://www.kentramblers.org.uk/" title="Kent Ramblers">Kent Ramblers</a></li>
-          <li><a href="http://www.ramblers.org.uk/" title="National Ramblers">National Ramblers</a>
-          </li>
-        </ul>
-      </div>
-      <div class="header-caption">
-        <em>East Kent <span>Walking</span> Group</em>
-      </div>
-      <app-header></app-header>
-      <app-navbar></app-navbar>
+      <app-site-navigator></app-site-navigator>
+      <app-main-logo></app-main-logo>
+      <app-main-title></app-main-title>
+      <app-login-panel></app-login-panel>
+      <app-page-navigator></app-page-navigator>
     </div>
   </header>
   <div ng-view></div>

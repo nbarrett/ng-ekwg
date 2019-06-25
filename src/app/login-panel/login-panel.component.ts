@@ -2,10 +2,11 @@ import { Component, Inject} from "@angular/core";
 import { LoginService } from "../login/login.service";
 
 @Component({
-  selector: "app-header",
-  templateUrl: "./header.component.html"
+  selector: "app-login-panel",
+  templateUrl: "./login-panel.component.html",
+  styleUrls: ["./login-panel.component.sass"]
 })
-export class HeaderComponent {
+export class LoginPanelComponent {
   constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
               private loginService: LoginService) {
   }

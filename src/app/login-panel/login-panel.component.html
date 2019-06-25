@@ -1,0 +1,15 @@
+<div class="login-panel">
+  <div class="vertical-center">
+    <ul>
+      <li class="pull-right">
+        <a class="active" [href]="loginOrLogoutUrl()"
+           [textContent]="memberLoginStatus()"
+           title="{{memberLoginStatus()}}"></a>
+        <span *ngIf="!memberLoggedIn()"> • <a
+          class="active" [href]="forgotPasswordUrl()"
+          href="">Forgot Password</a></span>
+      </li>
+    </ul>
+    <app-site-edit class="row" *ngIf="allowEdits()"></app-site-edit>
+  </div>
+</div>

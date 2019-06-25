@@ -1,0 +1,6 @@
+<div class="header-toolbar round-bottom">
+  <ul class="region-menu">
+    <li *ngFor="let site of sites"><a [ngClass]="{'active' : site.active}" href="{{site.href}}"
+                                      title="{{site.title}}">{{site.title}}</a>
+  </ul>
+</div>
