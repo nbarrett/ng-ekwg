@@ -1,14 +1,17 @@
 import { Component } from "@angular/core";
-import { NGXLogger } from "ngx-logger";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { NgxLoggerLevel } from "ngx-logger";
 
 @Component({
   selector: "app-logout",
   templateUrl: "./logout.component.html"
 })
 export class LogoutComponent {
+  private logger: Logger;
 
-  constructor(private logger: NGXLogger) {
-    logger.debug(LogoutComponent.name, "constructed");
+  constructor(loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(LogoutComponent, NgxLoggerLevel.INFO);
+    this.logger.debug(LogoutComponent.name, "constructed");
   }
 
 }

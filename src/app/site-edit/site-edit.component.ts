@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { GlobalEvent, SiteEditService } from "./site-edit.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { NgxLoggerLevel } from "ngx-logger";
 
 @Component({
   selector: "app-site-edit",
@@ -16,7 +17,7 @@ export class SiteEditComponent {
   constructor(private siteEditService: SiteEditService, private loggerFactory: LoggerFactory) {
     this.userEdits = {preview: true, saveInProgress: false, revertInProgress: false};
     siteEditService.events.subscribe(item => this.onItemEvent(item));
-    this.logger = loggerFactory.createLogger(SiteEditComponent);
+    this.logger = loggerFactory.createLogger(SiteEditComponent, NgxLoggerLevel.INFO);
   }
 
   active() {
@@ -32,7 +33,7 @@ export class SiteEditComponent {
   }
 
   onChange($event: boolean) {
-    this.logger.info("onChange", $event);
+    this.logger.debug("onChange", $event);
     this.siteEditService.toggle($event);
   }
 

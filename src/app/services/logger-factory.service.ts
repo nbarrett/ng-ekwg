@@ -10,8 +10,8 @@ export class LoggerFactory {
   constructor(private customLogger: CustomNGXLoggerService) {
   }
 
-  createLogger<T extends InstanceType<any>>(classRef: T): Logger {
-    return new Logger(this.customLogger.create({level: NgxLoggerLevel.INFO}), classRef.name);
+  createLogger<T extends InstanceType<any>>(classRef: T, level: NgxLoggerLevel): Logger {
+    return new Logger(this.customLogger.create({level}), classRef.name);
   }
 
 }
