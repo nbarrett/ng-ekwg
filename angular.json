@@ -155,16 +155,6 @@
                 "output": "/vendor/es5-shim"
               },
               {
-                "input": "src/legacy/vendor/respond/dest",
-                "glob": "**/respond.min.js",
-                "output": "/vendor/respond"
-              },
-              {
-                "input": "src/legacy/vendor/html5shiv/dist",
-                "glob": "**/html5shiv.min.js",
-                "output": "/vendor/respond"
-              },
-              {
                 "input": "src/legacy/vendor/underscore",
                 "glob": "**/**/*underscore-min.*",
                 "output": "/vendor/underscore"
