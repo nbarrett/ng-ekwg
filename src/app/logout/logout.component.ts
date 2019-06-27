@@ -11,7 +11,7 @@ export class LogoutComponent {
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(LogoutComponent, NgxLoggerLevel.INFO);
-    this.logger.debug(LogoutComponent.name, "constructed");
+    this.logger.debug("constructed");
   }
 
 }

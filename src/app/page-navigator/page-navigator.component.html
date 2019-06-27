@@ -1,6 +1,6 @@
 <nav class="top-nav round-top active" roles="navigation">
   <ul>
-    <li *ngFor="let page of pages"><a [ngClass]="{'active' : isOnPage(page.href)}" href="#/{{page.href}}" title="{{page.title}}">{{page.title}}</a>
+    <li *ngFor="let page of pages()"><a [ngClass]="{'active' : isOnPage(page.href)}" href="#/{{page.href}}" title="{{page.title}}">{{page.title}}</a>
     </li>
   </ul>
 </nav>

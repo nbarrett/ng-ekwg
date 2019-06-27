@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { UrlService } from "../services/url.service";
 import { NGXLogger } from "ngx-logger";
+import { PageService } from "../services/page.service";
 
 
 @Component({
@@ -11,17 +12,7 @@ import { NGXLogger } from "ngx-logger";
 })
 export class PageNavigatorComponent {
 
-  public pages = [
-    {href: "", title: "Home"},
-    {href: "walks", title: "Walks"},
-    {href: "social", title: "Social"},
-    {href: "join-us", title: "Join Us"},
-    {href: "contact-us", title: "Contact Us"},
-    {href: "committee", title: "Committee"},
-    {href: "admin", title: "Admin"},
-    {href: "how-to", title: "How-to"}];
-
-  constructor(private urlService: UrlService, private logger: NGXLogger) {
+  constructor(private pageService: PageService, private urlService: UrlService, private logger: NGXLogger) {
   }
 
   isOnPage(page: string) {
@@ -35,4 +26,7 @@ export class PageNavigatorComponent {
     }
   }
 
+  pages() {
+    return this.pageService.pages();
+  }
 }

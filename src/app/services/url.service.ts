@@ -28,12 +28,16 @@ export class UrlService {
     return first((optionalUrl || this.absUrl()).split("/#"));
   }
 
-  relativeUrl(optionalUrl) {
+  relativeUrl(optionalUrl?: string) {
     return last((optionalUrl || this.absUrl()).split("/#"));
   }
 
   resourceUrl(area: string, type: string, id: string) {
     return this.baseUrl() + "/#/" + area + "/" + type + "Id/" + id;
+  }
+
+  area(optionalUrl?: string) {
+    return this.relativeUrlFirstSegment(optionalUrl).substring(1);
   }
 
 }

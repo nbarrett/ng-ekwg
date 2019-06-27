@@ -25,6 +25,16 @@ describe("UrlService", () => {
     expect(service.baseUrl(URL_PATH)).toBe("https://www.ekwg.co.uk");
   });
 
+  it("should return area as the first url segment minus the slash and use current location when no args are passed", () => {
+    const service: UrlService = TestBed.get(UrlService);
+    expect(service.area()).toBe("admin");
+  });
+
+  it("area should support passing or argument", () => {
+    const service: UrlService = TestBed.get(UrlService);
+    expect(service.area("https://ng-ekwg-production.herokuapp.com/#/contact-us")).toBe("contact-us");
+  });
+
   it("should return relativeUrlFirstSegment as first path segment after /#", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.relativeUrlFirstSegment(URL_PATH)).toBe("/admin");
@@ -39,4 +49,5 @@ describe("UrlService", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.resourceUrl("admin", "expenseses", "12345")).toBe("https://www.ekwg.co.uk/#/admin/expensesesId/12345");
   });
+
 });

@@ -17,6 +17,7 @@ import { UiSwitchModule } from "ngx-ui-switch";
 import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
+import { PageTitleComponent } from "./page-title/page-title.component";
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { MainTitleComponent } from "./main-title/main-title.component";
     MainTitleComponent,
     PageNavigatorComponent,
     SiteEditComponent,
+    PageTitleComponent,
     SiteNavigatorComponent
   ],
   imports: [
@@ -45,7 +47,8 @@ import { MainTitleComponent } from "./main-title/main-title.component";
     DateUtilsProvider,
     LoggedInMemberServiceProvider,
   ],
-  bootstrap: [MainLogoComponent, MainTitleComponent, AppComponent, LoginPanelComponent, PageNavigatorComponent, SiteNavigatorComponent]
+  bootstrap: [PageTitleComponent, MainLogoComponent, MainTitleComponent, AppComponent,
+    LoginPanelComponent, PageNavigatorComponent, SiteNavigatorComponent]
 })
 
 export class AppModule {

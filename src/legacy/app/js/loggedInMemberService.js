@@ -2,7 +2,7 @@ angular.module('ekwgApp')
   .factory('LoggedInMemberService', function ($rootScope, $q, $routeParams, $cookieStore, URLService, MemberService, MemberAuditService, DateUtils, NumberUtils, $log) {
 
       var logger = $log.getInstance('LoggedInMemberService');
-      $log.logLevels['LoggedInMemberService'] = $log.LEVEL.INFO;
+      $log.logLevels['LoggedInMemberService'] = $log.LEVEL.OFF;
 
       function loggedInMember() {
         if (!getCookie('loggedInMember')) setCookie('loggedInMember', {});

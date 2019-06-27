@@ -121,15 +121,10 @@ angular.module("ekwgApp", [
     var logger = $log.getInstance("App.run");
     $log.logLevels["App.run"] = $log.LEVEL.OFF;
 
-    $rootScope.$on('$locationChangeStart', function (evt, absNewUrl, absOldUrl) {
-    });
     $rootScope.$on("$locationChangeSuccess", function (event, newUrl, absOldUrl) {
       if (!$rootScope.pageHistory) $rootScope.pageHistory = [];
       $rootScope.pageHistory.push(URLService.relativeUrl(newUrl));
       logger.info("newUrl", newUrl, "$rootScope.pageHistory", $rootScope.pageHistory);
-    });
-    $rootScope.$on("$routeChangeSuccess", function (currentRoute, previousRoute) {
-      $rootScope.title = $route.current.title;
     });
     CommitteeConfig.getConfig()
       .then(function (config) {

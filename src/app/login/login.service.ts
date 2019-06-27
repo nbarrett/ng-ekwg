@@ -1,14 +1,18 @@
 import { Inject, Injectable } from "@angular/core";
-import { NGXLogger } from "ngx-logger";
+import { NgxLoggerLevel } from "ngx-logger";
 import { CookieService } from "ngx-cookie-service";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class LoginService {
-  constructor(@Inject("DateUtils") private DateUtils, private logger: NGXLogger, private cookieService: CookieService) {
-    logger.info(LoginService.name, "constructed at", DateUtils.currentMemberBulkLoadDisplayDate());
+  private logger: Logger;
+
+  constructor(@Inject("DateUtils") private DateUtils, private loggerFactory: LoggerFactory, private cookieService: CookieService) {
+    this.logger = loggerFactory.createLogger(LoginService, NgxLoggerLevel.INFO);
+    this.logger.info("constructed at", DateUtils.currentMemberBulkLoadDisplayDate());
   }
 
   memberLoggedIn() {

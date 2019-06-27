@@ -12,8 +12,8 @@ export class LoginComponent implements OnInit {
   private logger: Logger;
 
   constructor(public route: ActivatedRoute, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SiteEditComponent, NgxLoggerLevel.INFO);
-    this.logger.debug(LoginComponent.name, "constructed");
+    this.logger = loggerFactory.createLogger(LoginComponent, NgxLoggerLevel.INFO);
+    this.logger.info("constructed");
   }
 
   ngOnInit() {
