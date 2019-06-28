@@ -21,15 +21,19 @@ export class Logger {
   }
 
   info(...additional: any[]) {
-    this.logger.info(this.className, ...additional);
+    this.logger.info(this.logPrefix(), ...additional);
+  }
+
+  private logPrefix() {
+    return this.className + " -";
   }
 
   debug(...additional: any[]) {
-    this.logger.debug(this.className, ...additional);
+    this.logger.debug(this.logPrefix(), ...additional);
   }
 
   error(...additional: any[]) {
-    this.logger.error(this.className, ...additional);
+    this.logger.error(this.logPrefix(), ...additional);
   }
 
 }
