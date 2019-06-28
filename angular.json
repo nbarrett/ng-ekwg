@@ -140,16 +140,6 @@
                 "output": "/vendor/json3"
               },
               {
-                "input": "src/legacy/vendor/moment/min",
-                "glob": "**/moment.min.js",
-                "output": "/vendor/moment/min"
-              },
-              {
-                "input": "src/legacy/vendor/moment-timezone/builds",
-                "glob": "**/moment-timezone-with-data.min.js",
-                "output": "/vendor/moment/min"
-              },
-              {
                 "input": "src/legacy/vendor/es5-shim",
                 "glob": "**/**/*.*",
                 "output": "/vendor/es5-shim"
