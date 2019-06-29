@@ -1,5 +1,6 @@
 'use strict';
 let config = require('./lib/config/config.js');
+let path = require('path');
 let express = require('express');
 let favicon = require('serve-favicon');
 let logger = require('morgan');
@@ -33,7 +34,6 @@ app.use(logger(config.env));
 app.use(methodOverride());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(config.server.distFolder));
 
 app.get('/walksAndEventsManager/walkBaseUrl', walksAndEventsManager.walkBaseUrl);
 app.get('/walksAndEventsManager/walkDescriptionPrefix', walksAndEventsManager.walkDescriptionPrefix);
@@ -97,7 +97,10 @@ app.post('/uploadRamblersData', multer({dest: config.server.uploadDir}).any(), m
 app.all('/databases/:db/collections/:collection/:id*', mongoProxyInstance);
 app.all('/databases/:db/collections/:collection*', mongoProxyInstance);
 app.all('/databases/:db/runCommand', mongoProxyInstance);
-
+app.use("/", express.static(config.server.distFolder));
+app.use((req, res, next) => {
+  res.sendFile(path.join(config.server.distFolder, "index.html"));
+});
 
 if (app.get('env') === 'dev') {
   app.use(errorHandler())
