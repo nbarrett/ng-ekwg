@@ -5,11 +5,11 @@ angular.module('ekwgApp')
     $log.logLevels['URLService'] = $log.LEVEL.OFF;
 
     function baseUrl(optionalUrl) {
-      return _.first((optionalUrl || $location.absUrl()).split('/#'));
+      return _.first((optionalUrl || $location.absUrl()).split('/'));
     }
 
     function relativeUrl(optionalUrl) {
-      var relativeUrlValue = _.last((optionalUrl || $location.absUrl()).split("/#"));
+      var relativeUrlValue = _.last((optionalUrl || $location.absUrl()).split("/"));
       logger.debug("relativeUrlValue:", relativeUrlValue);
       return relativeUrlValue;
     }
@@ -23,7 +23,7 @@ angular.module('ekwgApp')
     }
 
     function resourceUrl(area, type, id) {
-      return baseUrl() + '/#/' + area + '/' + type + 'Id/' + id;
+      return baseUrl() + '/' + area + '/' + type + 'Id/' + id;
     }
 
     function notificationHref(ctrl) {

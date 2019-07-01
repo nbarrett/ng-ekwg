@@ -2,7 +2,7 @@ angular.module('ekwgApp')
   .factory('GoogleMapsConfig', function ($http, HTTPResponseService) {
 
     function getConfig() {
-      return $http.get('/googleMaps/config').then(function (response) {
+      return $http.get('/api/google-maps/config').then(function (response) {
         return HTTPResponseService.returnResponse(response);
       });
     }

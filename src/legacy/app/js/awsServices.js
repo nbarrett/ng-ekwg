@@ -2,11 +2,11 @@ angular.module('ekwgApp')
   .factory('AWSConfig', function ($http, HTTPResponseService) {
 
     function getConfig() {
-      return $http.get('/aws/config').then(HTTPResponseService.returnResponse);
+      return $http.get('/api/aws/config').then(HTTPResponseService.returnResponse);
     }
 
     function awsPolicy(fileType, objectKey) {
-      return $http.get('/aws/s3Policy?mimeType=' + fileType + '&objectKey=' + objectKey).then(HTTPResponseService.returnResponse);
+      return $http.get('/api/aws/s3/policy?mimeType=' + fileType + '&objectKey=' + objectKey).then(HTTPResponseService.returnResponse);
     }
 
     return {

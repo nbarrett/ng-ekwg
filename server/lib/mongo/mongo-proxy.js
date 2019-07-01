@@ -1,35 +1,35 @@
 'use strict';
-let config = require('../config/config.js');
-let debug = require('debug')(config.logNamespace('mongo-proxy'));
-let url = require('url');
-let _ = require('underscore');
-let qs = require('querystring');
-let https = require('https');
+const config = require('../config/config.js');
+const debug = require('debug')(config.logNamespace('mongo-proxy'));
+const url = require('url');
+const _ = require('underscore');
+const qs = require('querystring');
+const https = require('https');
 
 module.exports = function () {
-  let dbUrlBasePath = config.mongo.dbUrl;
-  let database = config.mongo.database;
-  let apiKey = config.mongo.apiKey;
+  const dbUrlBasePath = config.mongo.dbUrl;
+  const database = config.mongo.database;
+  const apiKey = config.mongo.apiKey;
 
   debug('Proxying MongoLab at', dbUrlBasePath, 'with database', database, 'with APIKey', apiKey);
 
-  let dbUrl = url.parse(dbUrlBasePath);
+  const dbUrl = url.parse(dbUrlBasePath);
 
-  let mapUrl = function (reqUrlString, collection, id) {
-    let reqUrl = url.parse(reqUrlString, true);
-    let newUrl = {
+  const mapUrl = function (reqUrlString, collection, id) {
+    const reqUrl = url.parse(reqUrlString, true);
+    const newUrl = {
       hostname: dbUrl.hostname,
       protocol: dbUrl.protocol
     };
-    let query = _.extend({}, reqUrl.query, {apiKey: apiKey});
-    let idPath = id ? ('/' + id) : '';
+    const query = _.extend({}, reqUrl.query, {apiKey: apiKey});
+    const idPath = id ? ('/' + id) : '';
     var action = collection ? ('/collections/' + collection) : '/runCommand';
     newUrl.path = dbUrlBasePath + '/' + database + action + idPath + '?' + qs.stringify(query);
     return newUrl;
   };
 
-  let mapRequest = function (req) {
-    let newReq = mapUrl(req.url, req.params.collection, req.params.id);
+  const mapRequest = function (req) {
+    const newReq = mapUrl(req.url, req.params.collection, req.params.id);
     newReq.method = req.method;
     newReq.headers = req.headers || {};
     newReq.headers.host = newReq.hostname;
@@ -41,8 +41,8 @@ module.exports = function () {
 
   return function (req, res, next) {
     try {
-      let options = mapRequest(req);
-      let dbReq = https.request(options, function (dbRes) {
+      const options = mapRequest(req);
+      const dbReq = https.request(options, function (dbRes) {
         let data = "";
         res.headers = dbRes.headers;
         dbRes.setEncoding('utf8');

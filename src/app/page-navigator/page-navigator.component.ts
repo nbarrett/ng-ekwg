@@ -27,6 +27,6 @@ export class PageNavigatorComponent {
   }
 
   pages() {
-    return this.pageService.pages();
+    return this.pageService.pages;
   }
 }

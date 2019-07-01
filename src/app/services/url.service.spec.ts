@@ -6,7 +6,7 @@ import { DOCUMENT } from "@angular/common";
 
 describe("UrlService", () => {
 
-  const URL_PATH = "https://www.ekwg.co.uk/#/admin/member-bulk-load";
+  const URL_PATH = "https://www.ekwg.co.uk/admin/member-bulk-load";
   const LOCATION_VALUE = {
     location: {
       href: URL_PATH
@@ -20,34 +20,43 @@ describe("UrlService", () => {
     }, UrlService]
   }).compileComponents());
 
-  it("should return baseUrl as the path segment before /#", () => {
+  it("should return baseUrl as the path segment before /", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.baseUrl(URL_PATH)).toBe("https://www.ekwg.co.uk");
   });
 
-  it("should return area as the first url segment minus the slash and use current location when no args are passed", () => {
-    const service: UrlService = TestBed.get(UrlService);
-    expect(service.area()).toBe("admin");
+  describe("area", () => {
+
+    it("should return current location when no args are passed", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.area()).toBe("admin");
+    });
+
+    it("should return first url segment minus the slash", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.area("https://www.ekwg.co.uk/walks/my-walk-detail")).toBe("walks");
+    });
+
+    it("should support passing of argument", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.area("https://ng-ekwg-production.herokuapp.com/contact-us")).toBe("contact-us");
+    });
+
   });
 
-  it("area should support passing or argument", () => {
-    const service: UrlService = TestBed.get(UrlService);
-    expect(service.area("https://ng-ekwg-production.herokuapp.com/#/contact-us")).toBe("contact-us");
-  });
-
-  it("should return relativeUrlFirstSegment as first path segment after /#", () => {
+  it("should return relativeUrlFirstSegment as first path segment after base url including slash", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.relativeUrlFirstSegment(URL_PATH)).toBe("/admin");
   });
 
-  it("should return absUrl", () => {
+  it("absUrl should return full current url ", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.absUrl()).toBe(URL_PATH);
   });
 
   it("should return resourceUrl as area type and id joined by slashes", () => {
     const service: UrlService = TestBed.get(UrlService);
-    expect(service.resourceUrl("admin", "expenseses", "12345")).toBe("https://www.ekwg.co.uk/#/admin/expensesesId/12345");
+    expect(service.resourceUrl("admin", "expenses", "12345")).toBe("https://www.ekwg.co.uk/admin/expensesId/12345");
   });
 
 });

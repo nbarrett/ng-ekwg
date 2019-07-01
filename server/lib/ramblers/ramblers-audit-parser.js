@@ -1,6 +1,6 @@
 'use strict';
 let config = require('../config/config.js');
-let debug = require('debug')(config.logNamespace('ramblers:ramblersAuditParser'));
+let debug = require('debug')(config.logNamespace('ramblers:ramblers-audit-parser'));
 let _ = require('underscore');
 let _str = require('underscore.string');
 

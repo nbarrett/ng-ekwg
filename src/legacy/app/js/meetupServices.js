@@ -6,10 +6,10 @@ angular.module('ekwgApp')
 
     return {
       config: function () {
-        return $http.get('/meetup/config').then(HTTPResponseService.returnResponse);
+        return $http.get('/api/meetup/config').then(HTTPResponseService.returnResponse);
       },
       eventUrlFor: function (meetupEventUrl) {
-        return $http.get('/meetup/config').then(HTTPResponseService.returnResponse).then(function (meetupConfig) {
+        return $http.get('/api/meetup/config').then(HTTPResponseService.returnResponse).then(function (meetupConfig) {
           return meetupConfig.url + '/' + meetupConfig.group + '/events/' + meetupEventUrl;
         });
       },
@@ -20,7 +20,7 @@ angular.module('ekwgApp')
           params: {
             status: queriedStatus,
           },
-          url: '/meetup/events'
+          url: '/api/meetup/events'
         }).then(function (response) {
           var returnValue = HTTPResponseService.returnResponse(response);
           logger.debug('eventsForStatus', queriedStatus, returnValue);

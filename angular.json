@@ -184,7 +184,9 @@
               "src/app/site-edit/ui-switch.component.scss",
               "src/styles.sass"
             ],
-            "scripts": [],
+            "scripts": [
+              "./node_modules/marked/lib/marked.js"
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -220,7 +222,8 @@
         "serve": {
           "builder": "angular-builder-custom-terser-options:dev-server-custom-terser",
           "options": {
-            "browserTarget": "ng-ekwg:build"
+            "browserTarget": "ng-ekwg:build",
+            "proxyConfig": "proxy.config.json"
           },
           "configurations": {
             "production": {

@@ -1,0 +1,29 @@
+<div *ngIf="!editSiteActive()" markdown ngPreserveWhitespaces [data]="data.text"></div>
+<div *ngIf="editSiteActive()">
+  <div class="markdown-links">
+    <a *ngIf="!previewActive()"
+       (click)="preview()"><span class="badge">
+      <i class="glyphicon glyphicon-zoom-in badge-icon"></i> preview</span></a>
+    <a *ngIf="userEdits.preview"
+       (click)="edit()"><span class="badge">
+      <i class="glyphicon glyphicon-pencil badge-icon"></i> edit</span></a>
+    <a *ngIf="dirty()"
+       (click)="save()"><span class="badge">
+      <i [ngClass]="{'fa fa-spinner fa-spin': userEdits.saveInProgress,
+        'glyphicon glyphicon-ok badge-icon':!userEdits.saveInProgress}"></i>
+      save</span></a>
+    <a *ngIf="dirty()"
+       (click)="revert()"><span class="badge"><i
+      [ngClass]="{'fa fa-spinner fa-spin': userEdits.revertInProgress,
+      'glyphicon glyphicon-remove badge-icon':!userEdits.revertInProgress}"></i>
+      revert</span></a>
+  </div>
+  <div *ngIf="previewActive()"
+       (click)="edit()"
+       markdown ngPreserveWhitespaces [data]="data.text">
+  </div>
+  <textarea *ngIf="!userEdits.preview"
+            [(ngModel)]="data.text"
+            class="form-control markdown-textarea" rows="{{rows()}}"
+            placeholder="Enter {{description}} text here"></textarea>
+</div>

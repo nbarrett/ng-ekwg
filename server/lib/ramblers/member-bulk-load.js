@@ -1,6 +1,6 @@
 'use strict';
 let config = require('../config/config.js');
-let aws = require('../aws/aws');
+let aws = require('../aws/aws-controllers');
 let debug = require('debug')(config.logNamespace('ramblers:memberBulkLoad'));
 let path = require('path');
 let fs = require('fs');

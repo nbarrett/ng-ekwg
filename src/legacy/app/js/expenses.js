@@ -21,8 +21,7 @@ angular.module('ekwgApp')
         filter: function (expenseClaim) {
           if ($routeParams.expenseId) {
             return expenseClaim && expenseClaim.$id() === $routeParams.expenseId;
-          }
-          else {
+          } else {
             return false;
           }
         }
@@ -249,11 +248,9 @@ angular.module('ekwgApp')
         var approvals = $scope.approvalEvents();
         if (approvals.length === 0) {
           return 'First Approval';
-        }
-        else if (approvals.length === 1) {
+        } else if (approvals.length === 1) {
           return 'Second Approval'
-        }
-        else {
+        } else {
           return 'Already has ' + approvals.length + ' approvals!';
         }
       };
@@ -263,11 +260,9 @@ angular.module('ekwgApp')
         notifyItem.hide();
         if (approvals.length === 0) {
           createEventAndSendNotifications(eventTypes['first-approval']);
-        }
-        else if (approvals.length === 1) {
+        } else if (approvals.length === 1) {
           createEventAndSendNotifications(eventTypes['second-approval']);
-        }
-        else {
+        } else {
           notify.error('This expense claim already has ' + approvals.length + ' approvals!');
         }
       };
@@ -327,12 +322,8 @@ angular.module('ekwgApp')
         return expenseItem && expenseItem.receipt ? (expenseItem.receipt.title || expenseItem.receipt.originalFileName) : '';
       };
 
-      function baseUrl() {
-        return _.first($location.absUrl().split('/#'));
-      }
-
       $scope.receiptUrl = function (expenseItem) {
-        return expenseItem && expenseItem.receipt ? baseUrl() + $scope.receiptBaseUrl + '/' + expenseItem.receipt.awsFileName : '';
+        return expenseItem && expenseItem.receipt ? URLService.baseUrl() + $scope.receiptBaseUrl + '/' + expenseItem.receipt.awsFileName : '';
       };
 
       $scope.onFileSelect = function (file) {
@@ -633,7 +624,7 @@ angular.module('ekwgApp')
                 function populateContentSections(expenseNotificationText) {
                   return {
                     sections: {
-                      expense_id_url: 'Please click <a href="' + baseUrl() + '/#/admin/expenseId/' + expenseClaim.$id() + '" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.',
+                      expense_id_url: 'Please click <a href="' + URLService.baseUrl() + '/#/admin/expenseId/' + expenseClaim.$id() + '" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.',
                       expense_notification_text: expenseNotificationText
                     }
                   };
@@ -729,8 +720,7 @@ angular.module('ekwgApp')
           cost = (NumberUtils.asNumber(expenseItem.travel.miles) *
             (expenseItem.travel.returnJourney ? 2 : 1) *
             NumberUtils.asNumber(expenseItem.travel.costPerMile));
-        }
-        else {
+        } else {
           cost = expenseItem.cost;
         }
         noLogger.info(cost, 'from expenseItem=', expenseItem);

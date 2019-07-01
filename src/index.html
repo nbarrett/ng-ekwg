@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" style="">
 <head>
+  <base href="/">
   <link rel="shortcut icon" href="assets/images/ramblers/favicon.ico">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta charset="utf-8">
@@ -20,7 +21,6 @@
 </head>
 <div ng-class="{'busy': busy}">
   <body ng-controller="IndexController">
-  <app-root></app-root>
   <header>
     <div class="header-inner">
       <app-site-navigator></app-site-navigator>
@@ -30,7 +30,7 @@
       <app-page-navigator></app-page-navigator>
     </div>
   </header>
-  <div ng-view></div>
+  <app-root></app-root>
   <footer>
     <div class="footer-header"></div>
     <div class="footer-inner">

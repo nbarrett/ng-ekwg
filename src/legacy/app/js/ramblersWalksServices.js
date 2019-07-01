@@ -32,19 +32,19 @@ angular.module('ekwgApp')
       $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.OFF;
 
       function uploadRamblersWalks(data) {
-        return RamblersHttpService.call('Upload Ramblers walks', 'POST', 'walksAndEventsManager/uploadWalks', data);
+        return RamblersHttpService.call('Upload Ramblers walks', 'POST', 'api/ramblers/gwem/upload-walks', data);
       }
 
       function listRamblersWalks() {
-        return RamblersHttpService.call('List Ramblers walks', 'GET', 'walksAndEventsManager/listWalks');
+        return RamblersHttpService.call('List Ramblers walks', 'GET', 'api/ramblers/gwem/list-walks');
       }
 
       var walkDescriptionPrefix = function () {
-        return RamblersHttpService.call('Ramblers description Prefix', 'GET', 'walksAndEventsManager/walkDescriptionPrefix');
+        return RamblersHttpService.call('Ramblers description Prefix', 'GET', 'api/ramblers/gwem/walk-description-prefix');
       };
 
       var walkBaseUrl = function () {
-        return RamblersHttpService.call('Ramblers walk url', 'GET', 'walksAndEventsManager/walkBaseUrl');
+        return RamblersHttpService.call('Ramblers walk url', 'GET', 'api/ramblers/gwem/walk-base-url');
       };
 
       function exportWalksFileName() {

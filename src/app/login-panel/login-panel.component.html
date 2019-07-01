@@ -2,11 +2,11 @@
   <div class="vertical-center">
     <ul>
       <li class="pull-right">
-        <a class="active" [href]="loginOrLogoutUrl()"
+        <a class="active" [routerLink]="loginOrLogoutUrl()"
            [textContent]="memberLoginStatus()"
            title="{{memberLoginStatus()}}"></a>
         <span *ngIf="!memberLoggedIn()"> • <a
-          class="active" [href]="forgotPasswordUrl()"
+          class="active" [routerLink]="forgotPasswordUrl()"
           href="">Forgot Password</a></span>
       </li>
     </ul>

@@ -558,7 +558,7 @@ angular.module('ekwgApp')
           }
 
           $scope.uploadedFile = Upload.upload({
-            url: 'uploadRamblersData',
+            url: 'api/ramblers/monthly-reports/upload',
             method: 'POST',
             file: file
           }).then(bulkUploadRamblersResponse, $scope.resetSendFlagsAndNotifyError, bulkUploadRamblersProgress)

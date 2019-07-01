@@ -21,7 +21,7 @@ export class LoginPanelComponent {
   }
 
   loginOrLogoutUrl() {
-    return this.loginService.memberLoggedIn() ? "/#logout" : "/#login";
+    return this.loginService.memberLoggedIn() ? "/logout" : "/login";
   }
 
   allowEdits() {
@@ -29,7 +29,7 @@ export class LoginPanelComponent {
   }
 
   forgotPasswordUrl() {
-    return "/#forgot-password";
+    return "/forgot-password";
   }
 
   memberLoggedIn() {

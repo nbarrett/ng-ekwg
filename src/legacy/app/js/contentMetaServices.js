@@ -1,35 +1,46 @@
-angular.module('ekwgApp')
-  .factory('ContentMetaDataService', function (ContentMetaData, $q) {
+angular.module("ekwgApp")
+  .factory("ContentMetaDataService", function (ContentMetaData, $q) {
+
+    const API_PATH_PREFIX = "api/aws/s3/";
 
     var baseUrl = function (metaDataPathSegment) {
-      return '/aws/s3/' + metaDataPathSegment;
+      return "/" + API_PATH_PREFIX + metaDataPathSegment;
     };
 
     var createNewMetaData = function (withDefaults) {
       if (withDefaults) {
-        return {image: '/(select file)', text: '(Enter title here)'};
+        return {image: "/(select file)", text: "(Enter title here)"};
       } else {
         return {};
       }
     };
 
+    function transform(contentMetaData, contentMetaDataType) {
+      var data = _.omit(contentMetaData, "files");
+      data.files = _.map(contentMetaData.files, function (file) {
+        return {
+          image: API_PATH_PREFIX + contentMetaDataType + "/" + _.last(file.image.split("/")),
+          text: file.text
+        }
+      })
+      return data;
+    }
+
     var getMetaData = function (contentMetaDataType) {
-      var task = $q.defer();
-      ContentMetaData.query({contentMetaDataType: contentMetaDataType}, {limit: 1})
+      return ContentMetaData.query({contentMetaDataType: contentMetaDataType}, {limit: 1})
         .then(function (results) {
           if (results && results.length > 0) {
-            task.resolve(results[0]);
+            return transform(results[0], contentMetaDataType);
           } else {
-            task.resolve(new ContentMetaData({
+            return new ContentMetaData({
               contentMetaDataType: contentMetaDataType,
               baseUrl: baseUrl(contentMetaDataType),
               files: [createNewMetaData(true)]
-            }));
+            });
           }
         }, function (response) {
-          task.reject('Query of contentMetaDataType for ' + contentMetaDataType + ' failed: ' + response);
+          throw new Error("Query of contentMetaDataType for " + contentMetaDataType + " failed: " + response);
         });
-      return task.promise;
     };
 
     var saveMetaData = function (metaData, saveCallback, errorSaveCallback) {
@@ -43,16 +54,16 @@ angular.module('ekwgApp')
       saveMetaData: saveMetaData
     }
   })
-  .factory('ContentMetaData', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('contentMetaData');
+  .factory("ContentMetaData", function ($mongolabResourceHttp) {
+    return $mongolabResourceHttp("contentMetaData");
   })
-  .factory('ContentTextService', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('contentText');
+  .factory("ContentTextService", function ($mongolabResourceHttp) {
+    return $mongolabResourceHttp("contentText");
   })
-  .factory('ContentText', function (ContentTextService) {
+  .factory("ContentText", function (ContentTextService) {
     function forName(name) {
-      return ContentTextService.all().then(function (contentDocuments) {
-        return _.findWhere(contentDocuments, {name: name}) || new ContentTextService({name: name});
+      return ContentTextService.query({name: name}, {limit: 1}).then(function (contentDocuments) {
+        return _.first(contentDocuments) || new ContentTextService({name: name});
       });
     }
 

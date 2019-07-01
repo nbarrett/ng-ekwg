@@ -14,9 +14,8 @@ export class UrlService {
   }
 
   relativeUrlFirstSegment(optionalUrl?: string) {
-    const relativeUrlValue = this.relativeUrl(optionalUrl);
-    const index = relativeUrlValue.indexOf("/", 1);
-    return index === -1 ? relativeUrlValue : relativeUrlValue.substring(0, index);
+    const url = new URL(optionalUrl || this.absUrl());
+    return "/" + first(url.pathname.substring(1).split("/"));
   }
 
   absUrl() {
@@ -25,19 +24,23 @@ export class UrlService {
   }
 
   baseUrl(optionalUrl?: string) {
-    return first((optionalUrl || this.absUrl()).split("/#"));
+    const url = new URL(optionalUrl || this.absUrl());
+    return `${url.protocol}//${url.host}`;
   }
 
   relativeUrl(optionalUrl?: string) {
-    return last((optionalUrl || this.absUrl()).split("/#"));
+    return last((optionalUrl || this.absUrl()).split("/"));
   }
 
   resourceUrl(area: string, type: string, id: string) {
-    return this.baseUrl() + "/#/" + area + "/" + type + "Id/" + id;
+    return this.baseUrl() + "/" + area + "/" + type + "Id/" + id;
   }
 
   area(optionalUrl?: string) {
     return this.relativeUrlFirstSegment(optionalUrl).substring(1);
   }
 
+  refresh() {
+    location.reload(true);
+  }
 }

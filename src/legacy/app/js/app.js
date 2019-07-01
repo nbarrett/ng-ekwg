@@ -28,7 +28,7 @@ angular.module("ekwgApp", [
   "ngCsv"])
   .constant("MONGOLAB_CONFIG", {
     trimErrorMessage: false,
-    baseUrl: "/databases/",
+    baseUrl: "/api/database/",
     database: "ekwg"
   })
   .constant("AUDIT_CONFIG", {
@@ -45,7 +45,7 @@ angular.module("ekwgApp", [
     apiServer: "https://us3.admin.mailchimp.com"
   })
   .config(function ($locationProvider) {
-    $locationProvider.hashPrefix("");
+    $locationProvider.html5Mode(true).hashPrefix("");
   })
   .config(function ($routeProvider, uiSelectConfig, uibDatepickerConfig, uibDatepickerPopupConfig, logEnhancerProvider) {
     uiSelectConfig.theme = "bootstrap";
@@ -76,9 +76,6 @@ angular.module("ekwgApp", [
       .when("/image-editor/:imageSource", {
         controller: "ImageEditController", templateUrl: "partials/imageEditor/image-editor.html", title: "image editor"
       })
-      .when(mainPages.JOIN_US, {
-        controller: "HomeController", templateUrl: "partials/joinUs/join-us.html", title: "join us"
-      })
       .when("/letterhead/:firstPart?/:secondPart", {
         controller: "LetterheadController", templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
@@ -101,13 +98,8 @@ angular.module("ekwgApp", [
       .when(mainPages.HOME, {
         controller: "HomeController", templateUrl: "partials/home/home.html", title: "home"
       })
-      .when("/set-password/:passwordResetId", {
-        controller: "AuthenticationModalsController",
-        templateUrl: "partials/home/home.html"
-      })
       .otherwise({
-        controller: "AuthenticationModalsController",
-        templateUrl: "partials/home/home.html"
+        redirectTo: $routeProvider
       });
 
     uibDatepickerConfig.startingDay = 1;

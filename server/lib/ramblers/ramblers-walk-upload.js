@@ -1,6 +1,6 @@
 'use strict';
 let config = require('../config/config.js');
-let parser = require('./ramblersAuditParser');
+let parser = require('./ramblers-audit-parser');
 let debug = require('debug')(config.logNamespace('ramblers:uploadWalks'));
 let path = require('path');
 let moment = require('moment-timezone');

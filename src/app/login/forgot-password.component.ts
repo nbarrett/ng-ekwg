@@ -1,25 +1,23 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ActivatedRoute, ParamMap } from "@angular/router";
 
 @Component({
-  selector: "app-login",
+  selector: "app-forgot-password",
   templateUrl: "../shared/non-rendering.component.html"
 })
-export class LoginComponent implements OnInit {
+
+export class ForgotPasswordComponent implements OnInit {
   private logger: Logger;
 
   constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
-              public route: ActivatedRoute, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginComponent, NgxLoggerLevel.INFO);
+              private loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(ForgotPasswordComponent, NgxLoggerLevel.INFO);
     this.logger.info("constructed");
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe(() => {
-      this.AuthenticationModalsService.showLoginDialog();
-    });
+    this.AuthenticationModalsService.showForgotPasswordModal();
   }
 
 }
