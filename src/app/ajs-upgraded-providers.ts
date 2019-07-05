@@ -1,7 +1,3 @@
-export function DateUtils($injector) {
-  return $injector.get("DateUtils");
-}
-
 export function LoggedInMemberService($injector) {
   return $injector.get("LoggedInMemberService");
 }
@@ -13,12 +9,6 @@ export function AuthenticationModalsService($injector) {
 export function ContentText($injector) {
   return $injector.get("ContentText");
 }
-
-export const DateUtilsProvider = {
-  provide: "DateUtils",
-  useFactory: DateUtils,
-  deps: ["$injector"]
-};
 
 export const LoggedInMemberServiceProvider = {
   provide: "LoggedInMemberService",

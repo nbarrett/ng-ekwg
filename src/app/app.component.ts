@@ -28,8 +28,8 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
-      .factory("SiteEditService", downgradeInjectable(SiteEditService))
-      .factory("DateUtils", downgradeInjectable(DateUtilsService));
+      .factory("DateUtils", downgradeInjectable(DateUtilsService))
+      .factory("SiteEditService", downgradeInjectable(SiteEditService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     this.isLegacyRoute();
   }

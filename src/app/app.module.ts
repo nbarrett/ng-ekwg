@@ -14,7 +14,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
 import {
   AuthenticationModalsServiceProvider,
   ContentTextProvider,
-  DateUtilsProvider,
   LoggedInMemberServiceProvider
 } from "./ajs-upgraded-providers";
 import { UiSwitchModule } from "ngx-ui-switch";
@@ -29,6 +28,7 @@ import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { SetPasswordComponent } from "./login/set-password.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { MarkdownModule } from "ngx-markdown";
+import { DateUtilsService } from "./services/date-utils.service";
 
 @NgModule({
   declarations: [
@@ -61,7 +61,7 @@ import { MarkdownModule } from "ngx-markdown";
     CustomNGXLoggerService,
     CookieService,
     SiteEditService,
-    DateUtilsProvider,
+    DateUtilsService,
     LoggedInMemberServiceProvider,
     AuthenticationModalsServiceProvider,
     ContentTextProvider,

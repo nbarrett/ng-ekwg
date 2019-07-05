@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { SiteEditComponent } from "./site-edit.component";
 import { NgxLoggerLevel } from "ngx-logger";
 
 @Injectable({
