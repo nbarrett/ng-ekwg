@@ -98,9 +98,7 @@ angular.module("ekwgApp", [
       .when(mainPages.HOME, {
         controller: "HomeController", templateUrl: "partials/home/home.html", title: "home"
       })
-      .otherwise({
-        redirectTo: $routeProvider
-      });
+      .otherwise({template: ''});
 
     uibDatepickerConfig.startingDay = 1;
     uibDatepickerConfig.showWeeks = false;

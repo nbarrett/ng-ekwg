@@ -21,16 +21,8 @@
 </head>
 <div ng-class="{'busy': busy}">
   <body ng-controller="IndexController">
-  <header>
-    <div class="header-inner">
-      <app-site-navigator></app-site-navigator>
-      <app-main-logo></app-main-logo>
-      <app-main-title></app-main-title>
-      <app-login-panel></app-login-panel>
-      <app-page-navigator></app-page-navigator>
-    </div>
-  </header>
   <app-root></app-root>
+  <div ng-view></div>
   <footer>
     <div class="footer-header"></div>
     <div class="footer-inner">

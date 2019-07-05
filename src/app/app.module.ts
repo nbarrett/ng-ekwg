@@ -1,34 +1,33 @@
-import { BrowserModule } from "@angular/platform-browser";
+import { ActivatedRoute } from "@angular/router";
 import { AppComponent } from "./app.component";
-import { UpgradeModule } from "@angular/upgrade/static";
-import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
-import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
-import { LoginPanelComponent } from "./login-panel/login-panel.component";
-import { SiteEditComponent } from "./site-edit/site-edit.component";
-import { LoginComponent } from "./login/login.component";
-import { LogoutComponent } from "./logout/logout.component";
+import { ApplicationRef, NgModule } from "@angular/core";
 import { AppRoutingModule } from "./app-routing.module";
-import { NgModule } from "@angular/core";
+import { AuthenticationModalsServiceProvider, ContentTextProvider, LoggedInMemberServiceProvider } from "./ajs-upgraded-providers";
+import { BrowserModule } from "@angular/platform-browser";
 import { CookieService } from "ngx-cookie-service";
-import { SiteEditService } from "./site-edit/site-edit.service";
-import {
-  AuthenticationModalsServiceProvider,
-  ContentTextProvider,
-  LoggedInMemberServiceProvider
-} from "./ajs-upgraded-providers";
-import { UiSwitchModule } from "ngx-ui-switch";
-import { MainLogoComponent } from "./main-logo/main-logo.component";
-import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
-import { MainTitleComponent } from "./main-title/main-title.component";
-import { PageTitleComponent } from "./page-title/page-title.component";
-import { JoinUsComponent } from "./pages/join-us/join-us.component";
-import { NonRenderingComponent } from "./shared/non-rendering.component";
-import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
+import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
+import { DateUtilsService } from "./services/date-utils.service";
+import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
-import { SetPasswordComponent } from "./login/set-password.component";
+import { JoinUsComponent } from "./pages/join-us/join-us.component";
+import { Logger, LoggerFactory } from "./services/logger-factory.service";
+import { LoginComponent } from "./login/login.component";
+import { LoginPanelComponent } from "./login-panel/login-panel.component";
+import { LogoutComponent } from "./logout/logout.component";
+import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
+import { MainLogoComponent } from "./main-logo/main-logo.component";
+import { MainTitleComponent } from "./main-title/main-title.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { MarkdownModule } from "ngx-markdown";
-import { DateUtilsService } from "./services/date-utils.service";
+import { NonRenderingComponent } from "./shared/non-rendering.component";
+import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
+import { PageTitleComponent } from "./page-title/page-title.component";
+import { SetPasswordComponent } from "./login/set-password.component";
+import { setUpLocationSync } from "@angular/router/upgrade";
+import { SiteEditComponent } from "./site-edit/site-edit.component";
+import { SiteEditService } from "./site-edit/site-edit.service";
+import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
+import { UiSwitchModule } from "ngx-ui-switch";
 
 @NgModule({
   declarations: [
@@ -50,28 +49,42 @@ import { DateUtilsService } from "./services/date-utils.service";
     SiteNavigatorComponent
   ],
   imports: [
+    BrowserModule,
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
-    BrowserModule,
     AppRoutingModule,
     UpgradeModule,
-    UiSwitchModule
+    UiSwitchModule,
   ],
   providers: [
     CustomNGXLoggerService,
     CookieService,
     SiteEditService,
-    DateUtilsService,
     LoggedInMemberServiceProvider,
     AuthenticationModalsServiceProvider,
     ContentTextProvider,
   ],
   entryComponents: [
-    MarkdownEditorComponent,
+    AppComponent,
+    MarkdownEditorComponent
   ],
-  bootstrap: [PageTitleComponent, MainLogoComponent, MainTitleComponent, AppComponent,
-    LoginPanelComponent, PageNavigatorComponent, SiteNavigatorComponent]
 })
 
 export class AppModule {
+  private logger: Logger;
+
+  constructor(private upgrade: UpgradeModule, private route: ActivatedRoute, loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(AppComponent, NgxLoggerLevel.INFO);
+  }
+
+  ngDoBootstrap(appRef: ApplicationRef) {
+    const legacy = getAngularJSGlobal().module("ekwgApp")
+      .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
+      .factory("SiteEditService", downgradeInjectable(SiteEditService))
+      .factory("DateUtils", downgradeInjectable(DateUtilsService));
+    this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
+    setUpLocationSync(this.upgrade);
+    appRef.bootstrap(AppComponent);
+  }
+
 }

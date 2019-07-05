@@ -3,6 +3,14 @@ import { RouterTestingModule } from "@angular/router/testing";
 import { AppComponent } from "./app.component";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { LoggerTestingModule } from "ngx-logger";
+import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
+import { MainLogoComponent } from "./main-logo/main-logo.component";
+import { MainTitleComponent } from "./main-title/main-title.component";
+import { LoginPanelComponent } from "./login-panel/login-panel.component";
+import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
+import { SiteEditComponent } from "./site-edit/site-edit.component";
+import { UiSwitchComponent } from "ngx-ui-switch";
+import { CookieService } from "ngx-cookie-service";
 
 describe("AppComponent", () => {
   beforeEach(async(() => {
@@ -12,18 +20,14 @@ describe("AppComponent", () => {
         RouterTestingModule,
         UpgradeModule
       ],
+      providers: [{provide: "LoggedInMemberService", useValue: {}},
+        CookieService],
       declarations: [
-        AppComponent
+        AppComponent, MainLogoComponent, MainTitleComponent,
+        SiteNavigatorComponent, LoginPanelComponent, PageNavigatorComponent, SiteEditComponent, UiSwitchComponent
       ],
     }).compileComponents();
   }));
-
-  it("should create the app", () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
 
   it("should render a router-outlet  tag", () => {
     const fixture = TestBed.createComponent(AppComponent);
@@ -34,6 +38,6 @@ describe("AppComponent", () => {
   it("should render title in a div [ng-view] tag", () => {
     const fixture = TestBed.createComponent(AppComponent);
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector("div [ng-view]")).toBeTruthy();
+    expect(compiled.querySelector("div [ng-view]")).toBeFalsy();
   });
 });

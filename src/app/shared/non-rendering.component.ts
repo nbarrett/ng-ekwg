@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ActivatedRoute, Router } from "@angular/router";
+import { PageService } from "../services/page.service";
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-navigate",
@@ -11,11 +13,18 @@ import { ActivatedRoute, Router } from "@angular/router";
 export class NonRenderingComponent implements OnInit {
   private logger: Logger;
 
-  constructor(private route: ActivatedRoute, private router: Router, loggerFactory: LoggerFactory) {
+  constructor(private route: ActivatedRoute, private router: Router, private urlService: UrlService,
+              private pageService: PageService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.INFO);
   }
 
-  ngOnInit(): void {
-    this.logger.info("created for path", this.route.snapshot.url.join(""));
+  isLegacyRoute() {
+    const route = this.route.snapshot.url.join("");
+    return !this.pageService.pageForArea(this.urlService.area()).upgraded;
+  }
+
+  ngOnInit() {
+    this.logger.info("created for path:", this.route.snapshot.url.join(""),
+      "area:", this.urlService.area(), "isLegacy:", this.isLegacyRoute());
   }
 }
