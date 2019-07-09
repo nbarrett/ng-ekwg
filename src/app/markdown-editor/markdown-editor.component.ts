@@ -24,8 +24,7 @@ export class MarkdownEditorComponent implements OnInit {
   constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
               @Inject("ContentText") private contentText,
               private siteEditService: SiteEditService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.INFO);
-    this.logger.info("constructed", name);
+    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.OFF);
     this.userEdits = {preview: true, saveInProgress: false, revertInProgress: false};
   }
 
@@ -76,14 +75,6 @@ export class MarkdownEditorComponent implements OnInit {
     return dirty;
   }
 
-  revertGlyph() {
-    return this.userEdits.revertInProgress ? "fa fa-spinner fa-spin" : "glyphicon glyphicon-remove markdown-preview-icon";
-  }
-
-  saveGlyph() {
-    return this.userEdits.saveInProgress ? "fa fa-spinner fa-spin" : "glyphicon glyphicon-ok markdown-preview-icon";
-  }
-
   save() {
     this.userEdits.saveInProgress = true;
     this.logger.info("saving", this.name, "content");
@@ -102,7 +93,6 @@ export class MarkdownEditorComponent implements OnInit {
     this.logger.debug("number of rows in text ", text, "->", rows);
     return Math.max(rows, 10);
   }
-
 
   preview() {
     this.logger.info("previewing " + this.name, "content");

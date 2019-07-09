@@ -77,10 +77,10 @@ angular.module("ekwgApp", [
         controller: "ImageEditController", templateUrl: "partials/imageEditor/image-editor.html", title: "image editor"
       })
       .when("/letterhead/:firstPart?/:secondPart", {
-        controller: "LetterheadController", templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
+        templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
       .when(mainPages.CONTACT_US, {
-        controller: "ContactUsController", templateUrl: "partials/contactUs/contact-us.html", title: "contact us"
+        templateUrl: "partials/contactUs/contact-us.html", title: "contact us"
       })
       .when("/links", {redirectTo: mainPages.CONTACT_US})
       .when(mainPages.SOCIAL + "/socialEventId/:socialEventId", {
@@ -116,9 +116,4 @@ angular.module("ekwgApp", [
       $rootScope.pageHistory.push(URLService.relativeUrl(newUrl));
       logger.info("newUrl", newUrl, "$rootScope.pageHistory", $rootScope.pageHistory);
     });
-    CommitteeConfig.getConfig()
-      .then(function (config) {
-        angular.extend(CommitteeReferenceData, config.committee);
-        $rootScope.$broadcast("CommitteeReferenceDataReady", CommitteeReferenceData);
-      });
   });

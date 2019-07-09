@@ -5,7 +5,7 @@ angular.module('ekwgApp')
                                                MAILCHIMP_APP_CONSTANTS, MailchimpConfig, Notifier, EKWGFileUpload, CommitteeQueryService, CommitteeReferenceData, ModalService) {
 
     var logger = $log.getInstance('CommitteeController');
-    $log.logLevels['CommitteeController'] = $log.LEVEL.OFF;
+    $log.logLevels['CommitteeController'] = $log.LEVEL.INFO;
 
     var notify = Notifier($scope);
     notify.setBusy();
@@ -25,14 +25,10 @@ angular.module('ekwgApp')
       committeeFiles: []
     };
 
-    $rootScope.$on('CommitteeReferenceDataReady', function () {
-      assignFileTypes();
+    CommitteeReferenceData.events.subscribe(function (referenceData) {
+      $scope.fileTypes = referenceData && CommitteeReferenceData.fileTypes();
+      logger.info('fileTypes ->', $scope.fileTypes);
     });
-
-    function assignFileTypes() {
-      $scope.fileTypes = CommitteeReferenceData.fileTypes;
-      logger.debug('CommitteeReferenceDataReady -> fileTypes ->', $scope.fileTypes);
-    }
 
     $scope.userEdits = {
       saveInProgress: false
@@ -306,7 +302,6 @@ angular.module('ekwgApp')
       refreshMembers();
     }
 
-    assignFileTypes();
     refreshAll();
 
   });

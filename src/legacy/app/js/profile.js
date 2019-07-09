@@ -39,12 +39,6 @@ angular.module('ekwgApp')
       URLService.navigateTo('admin', area)
     };
 
-    $scope.contactUs = {
-      ready: function () {
-        return CommitteeReferenceData.ready;
-      }
-    };
-
     function isArea(area) {
       return (area === $routeParams.area);
     }

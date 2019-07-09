@@ -61,6 +61,6 @@
     </table>
 
     <p ng-if="socialEvent.notification.items.signoffText.include" ng-bind-html="formattedSignoffText()"></p>
-    <contact-us ng-if="contactUs.ready() && socialEvent.notification.items.signoffAs.value" format="list"
+    <contact-us ng-if="socialEvent.notification.items.signoffAs.value" format="list"
                 role="{{socialEvent.notification.items.signoffAs.value}}"></contact-us>
 </div>

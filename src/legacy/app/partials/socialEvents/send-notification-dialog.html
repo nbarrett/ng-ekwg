@@ -204,7 +204,7 @@
                                         <select ng-model="socialEvent.notification.items.replyTo.value" id="replyTo"
                                                 ng-disabled="!socialEvent.notification.items.replyTo.include"
                                                 class="form-control input-sm"
-                                                ng-options="role.type as role.description for role in roles.replyTo">
+                                                ng-options="role.type as role.nameAndDescription for role in roles.replyTo">
                                         </select>
                                     </div>
                                 </div>
@@ -248,7 +248,7 @@
                                                 id="signoff-as"
                                                 ng-disabled="!socialEvent.notification.items.signoffAs.include"
                                                 class="form-control input-sm"
-                                                ng-options="role.type as role.description for role in roles.signoff">
+                                                ng-options="role.type as role.nameAndDescription for role in roles.signoff">
                                         </select>
                                     </div>
                                 </div>

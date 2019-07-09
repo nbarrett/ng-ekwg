@@ -17,7 +17,7 @@ describe("UrlService", () => {
     imports: [LoggerTestingModule],
     providers: [{
       provide: DOCUMENT, useValue: LOCATION_VALUE
-    }, UrlService]
+    }]
   }).compileComponents());
 
   it("should return baseUrl as the path segment before /", () => {

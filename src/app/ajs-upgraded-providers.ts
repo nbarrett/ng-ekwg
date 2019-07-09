@@ -10,6 +10,16 @@ export function ContentText($injector) {
   return $injector.get("ContentText");
 }
 
+export function CommitteeConfig($injector) {
+  return $injector.get("CommitteeConfig");
+}
+
+export const CommitteeConfigProvider = {
+  provide: "CommitteeConfig",
+  useFactory: CommitteeConfig,
+  deps: ["$injector"]
+};
+
 export const LoggedInMemberServiceProvider = {
   provide: "LoggedInMemberService",
   useFactory: LoggedInMemberService,

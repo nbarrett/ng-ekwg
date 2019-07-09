@@ -69,7 +69,7 @@ angular.module('ekwgApp')
 
       function loggedOnRole() {
         var memberId = LoggedInMemberService.loggedInMember().memberId;
-        var loggedOnRoleData = _(CommitteeReferenceData.contactUsRolesAsArray()).find(function (role) {
+        var loggedOnRoleData = _(CommitteeReferenceData.committeeMembers()).find(function (role) {
           return role.memberId === memberId
         });
         logger.debug('loggedOnRole for', memberId, '->', loggedOnRoleData);
@@ -85,7 +85,7 @@ angular.module('ekwgApp')
       }
 
       function initialiseRoles() {
-        $scope.roles.signoff = CommitteeReferenceData.contactUsRolesAsArray();
+        $scope.roles.signoff = CommitteeReferenceData.committeeMembers();
         $scope.roles.replyTo = _.clone($scope.roles.signoff);
         if ($scope.socialEvent.eventContactMemberId) {
           $scope.roles.replyTo.unshift({
@@ -183,11 +183,6 @@ angular.module('ekwgApp')
         }
       }
 
-      $scope.contactUs = {
-        ready: function () {
-          return CommitteeReferenceData.ready;
-        }
-      };
 
       $scope.userEdits = {
         sendInProgress: false,

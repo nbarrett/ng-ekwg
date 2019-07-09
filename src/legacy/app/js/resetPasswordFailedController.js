@@ -6,7 +6,6 @@ angular.module('ekwgApp')
     $scope.notify = {};
     var notify = Notifier($scope.notify);
 
-    logger.info("CommitteeReferenceData:", CommitteeReferenceData.ready);
     notify.showContactUs(true);
     notify.error({
       continue: true,

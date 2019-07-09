@@ -11,8 +11,6 @@
     <div class="row">
       <div class="col-sm-8 auto-fit-column">
         <app-markdown-editor name="joinUsTop" description="join us top"></app-markdown-editor>
-        <p><img class="round" alt="join us" src="assets/images/local/join-us-left.jpg"></p>
-        <app-markdown-editor name="joinUsBottom" description="join us bottom"></app-markdown-editor>
         <div class="check-list round">
           <app-markdown-editor name="memberBenefits" description="member benefits"></app-markdown-editor>
         </div>
@@ -29,60 +27,27 @@
              title="Renew online">Renew online</a>
         </div>
 
-        <div class="right-col-section">
-
-          <div class="check-list round">
-            <h3>Why join</h3>
-            <ul>
-              <li><span>Be part of Britain's biggest walking community</span></li>
-              <li><span>Help support <a
-                href="https://www.ramblers.org.uk/about-us/what-we-do/charitable-objectives.aspx">our charitable work</a></span>
-              </li>
-              <li class="last"><span>Opportunities to help <a
-                href="http://www.ramblers.org.uk/about-us/how-we-are-run.aspx">run the Ramblers</a></span></li>
-            </ul>
-          </div>
-          <br>
-          <img class="round" alt="join us" src="assets/images/local/join-us-right-1.jpg">
-        </div>
 
         <div class="right-col-section">
           <div class="check-list round">
-            <h3>Member offers</h3>
-            <ul>
-              <li><span>Holiday offers from <a
-                href="https://www.ramblers.org.uk/news/news/2014/march/walking-holiday-offers-from-hf-holidays.aspx">HF Holidays</a></span>
-              </li>
-              <li><span>Discounts and offers on <a
-                href="https://www.ramblers.org.uk/my-account/discounts-and-offers.aspx">Ramblers</a></span>
-              </li>
-            </ul>
+            <app-markdown-editor name="whyJoin" description="Why join?"></app-markdown-editor>
           </div>
         </div>
-        <br>
-        <img class="round" alt="join us" src="assets/images/local/join-us-right-2.jpg">
+        <app-markdown-editor name="whyJoinImage" description="Why join image"></app-markdown-editor>
+
+
+        <div class="right-col-section">
+          <div class="check-list round">
+            <app-markdown-editor name="memberOffers" description="Member Offers"></app-markdown-editor>
+          </div>
+        </div>
+        <app-markdown-editor name="memberOffersImage" description="Member Offers image"></app-markdown-editor>
+
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12 body-content">
-        <h3>How to join EKWG</h3>
-        <ul>
-          <li>You can join online via the Ramblers website by clicking the link above.</li>
-          <li>Enter your "Ramblers Group" as "East Kent Walking Group" (KT50), and you'll be made a member of EKWG.</li>
-          <li>If you join online, it sometimes takes a couple of weeks for us to receive your details, so
-            <!--                        please send your contact details to our <contact-us ng-if="contactUs.ready()" role="membership" text="Membership Administrator"></contact-us> so that we can add you to our mailing list as soon as possible!-->
-            please send your contact details to our so that we can add you to our mailing list as soon as possible!
-          </li>
-        </ul>
-        <br/>
-        <h3>How to transfer to EKWG</h3>
-        <ul>
-          <li>If you’re already a member of another Ramblers group you can transfer your group membership to EKWG by
-            clicking the link above.
-          </li>
-          <!--                    <li>Enter your "Ramblers Group" as "East Kent Walking Group" (KT50), and you'll be made a member of EKWG. Or contact our <contact-us ng-if="contactUs.ready()" role="membership" text="Membership Administrator"></contact-us> and we’ll arrange the transfer for you.-->
-          <!--                    </li>-->
-        </ul>
+        <app-markdown-editor name="howToJoin" description="How to join"></app-markdown-editor>
       </div>
     </div>
   </div>

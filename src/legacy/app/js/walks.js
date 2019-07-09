@@ -106,11 +106,6 @@ angular.module('ekwgApp')
       var noLogger = $log.getInstance('WalksControllerNoLogger');
       $log.logLevels['WalksControllerNoLogger'] = $log.LEVEL.OFF;
       $log.logLevels['WalksController'] = $log.LEVEL.OFF;
-      $scope.contactUs = {
-        ready: function () {
-          return CommitteeReferenceData.ready;
-        }
-      };
 
       $scope.$watch('filterParameters.quickSearch', function (quickSearch, oldQuery) {
         refreshFilteredWalks();

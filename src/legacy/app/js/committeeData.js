@@ -2,26 +2,7 @@ angular.module('ekwgApp')
   .factory('CommitteeConfig', function (Config) {
 
     function getConfig() {
-      return Config.getConfig('committee', {
-        committee: {
-          contactUs: {
-            chairman: {description: 'Chairman', fullName: 'Claire Mansfield', email: 'chairman@ekwg.co.uk'},
-            secretary: {description: 'Secretary', fullName: 'Kerry O\'Grady', email: 'secretary@ekwg.co.uk'},
-            treasurer: {description: 'Treasurer', fullName: 'Marianne Christensen', email: 'treasurer@ekwg.co.uk'},
-            membership: {description: 'Membership', fullName: 'Desiree Nel', email: 'membership@ekwg.co.uk'},
-            social: {description: 'Social Co-ordinator', fullName: 'Suzanne Graham Beer', email: 'social@ekwg.co.uk'},
-            walks: {description: 'Walks Co-ordinator', fullName: 'Stuart Maisner', email: 'walks@ekwg.co.uk'},
-            support: {description: 'Technical Support', fullName: 'Nick Barrett', email: 'nick.barrett@ekwg.co.uk'}
-          },
-          fileTypes: [
-            {description: "AGM Agenda", public: true},
-            {description: "AGM Minutes", public: true},
-            {description: "Committee Meeting Agenda"},
-            {description: "Committee Meeting Minutes"},
-            {description: "Financial Statements", public: true}
-          ]
-        }
-      })
+      return Config.getConfig('committee')
     }
 
     function saveConfig(config, saveCallback, errorSaveCallback) {
@@ -37,45 +18,9 @@ angular.module('ekwgApp')
   .factory('CommitteeFileService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('committeeFiles');
   })
-  .factory('CommitteeReferenceData', function ($rootScope) {
-
-    var refData = {
-      contactUsRoles: function () {
-        var keys = _.keys(refData.contactUs);
-        if (keys.length > 0) {
-          return keys;
-        }
-      },
-      contactUsField: function (role, field) {
-        return refData.contactUs && refData.contactUs[role][field]
-      },
-      fileTypesField: function (type, field) {
-        return refData.fileTypes && refData.fileTypes[type][field]
-      },
-      toFileType: function (fileTypeDescription, fileTypes) {
-        return _.find(fileTypes, {description: fileTypeDescription});
-      },
-      contactUsRolesAsArray: function () {
-        return _.map(refData.contactUs, function (data, type) {
-          return {
-            type: type,
-            fullName: data.fullName,
-            memberId: data.memberId,
-            description: data.description + ' (' + data.fullName + ')',
-            email: data.email
-          };
-        });
-      }
-    };
-    $rootScope.$on('CommitteeReferenceDataReady', function () {
-      refData.ready = true;
-    });
-    return refData;
-  })
   .factory('CommitteeQueryService', function ($q, $log, $filter, $routeParams, URLService, CommitteeFileService, CommitteeReferenceData, DateUtils, LoggedInMemberService, WalksService, SocialEventsService) {
-
       var logger = $log.getInstance('CommitteeQueryService');
-      $log.logLevels['CommitteeQueryService'] = $log.LEVEL.OFF;
+      $log.logLevels['CommitteeQueryService'] = $log.LEVEL.DEBUG;
 
       function groupEvents(groupEvents) {
         logger.debug('groupEvents', groupEvents);
@@ -233,11 +178,11 @@ angular.module('ekwgApp')
       }
 
       function filterCommitteeFiles(files) {
-        logger.debug('filterCommitteeFiles files ->', files);
+        logger.info('filterCommitteeFiles files ->', files);
         var filteredFiles = _.filter(files, function (file) {
-          return CommitteeReferenceData.fileTypes && CommitteeReferenceData.toFileType(file.fileType, CommitteeReferenceData.fileTypes).public || LoggedInMemberService.allowCommittee() || LoggedInMemberService.allowFileAdmin();
+          return CommitteeReferenceData.isPublic(file.fileType) || LoggedInMemberService.allowCommittee() || LoggedInMemberService.allowFileAdmin();
         });
-        logger.debug('filterCommitteeFiles in ->', files && files.length, 'out ->', filteredFiles.length, 'CommitteeReferenceData.fileTypes', CommitteeReferenceData.fileTypes);
+        logger.debug('filterCommitteeFiles in ->', files && files.length, 'out ->', filteredFiles.length, 'fileTypes', CommitteeReferenceData.fileTypes());
         return filteredFiles
       }
 

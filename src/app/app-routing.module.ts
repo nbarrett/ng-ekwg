@@ -30,7 +30,6 @@ export class AppRoutingModule {
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(AppRoutingModule, NgxLoggerLevel.INFO);
-    this.logger.info("constructed");
   }
 
 }

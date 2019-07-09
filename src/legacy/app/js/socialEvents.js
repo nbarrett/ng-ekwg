@@ -32,12 +32,6 @@ angular.module('ekwgApp')
       $scope.userEdits.longerDescriptionPreview = false;
     };
 
-    $scope.contactUs = {
-      ready: function () {
-        return CommitteeReferenceData.ready;
-      }
-    };
-
     var logger = $log.getInstance('SocialEventsController');
     $log.logLevels['SocialEventsController'] = $log.LEVEL.OFF;
     var notify = Notifier($scope);

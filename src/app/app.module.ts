@@ -2,7 +2,12 @@ import { ActivatedRoute } from "@angular/router";
 import { AppComponent } from "./app.component";
 import { ApplicationRef, NgModule } from "@angular/core";
 import { AppRoutingModule } from "./app-routing.module";
-import { AuthenticationModalsServiceProvider, ContentTextProvider, LoggedInMemberServiceProvider } from "./ajs-upgraded-providers";
+import {
+  AuthenticationModalsServiceProvider,
+  CommitteeConfigProvider,
+  ContentTextProvider,
+  LoggedInMemberServiceProvider
+} from "./ajs-upgraded-providers";
 import { BrowserModule } from "@angular/platform-browser";
 import { CookieService } from "ngx-cookie-service";
 import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
@@ -28,6 +33,8 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { UiSwitchModule } from "ngx-ui-switch";
+import { CommitteeReferenceDataService } from "./services/committee-reference-data.service";
+import { ContactUsComponent } from "./contact-us/contact-us.component";
 
 @NgModule({
   declarations: [
@@ -46,7 +53,8 @@ import { UiSwitchModule } from "ngx-ui-switch";
     SiteEditComponent,
     PageTitleComponent,
     JoinUsComponent,
-    SiteNavigatorComponent
+    SiteNavigatorComponent,
+    ContactUsComponent
   ],
   imports: [
     BrowserModule,
@@ -60,12 +68,15 @@ import { UiSwitchModule } from "ngx-ui-switch";
     CustomNGXLoggerService,
     CookieService,
     SiteEditService,
+    CommitteeReferenceDataService,
     LoggedInMemberServiceProvider,
+    CommitteeConfigProvider,
     AuthenticationModalsServiceProvider,
     ContentTextProvider,
   ],
   entryComponents: [
     AppComponent,
+    ContactUsComponent,
     MarkdownEditorComponent
   ],
 })
@@ -80,6 +91,8 @@ export class AppModule {
   ngDoBootstrap(appRef: ApplicationRef) {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
+      .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
+      .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});

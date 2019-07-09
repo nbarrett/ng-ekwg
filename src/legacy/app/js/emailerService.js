@@ -70,7 +70,7 @@ angular.module('ekwgApp')
         }).value();
 
       if (subscriptionEntries.length > 0) {
-        var url = '/mailchimp/lists/' + listType + '/batchSubscribe';
+        var url = '/api/mailchimp/lists/' + listType + '/batchSubscribe';
         logger.debug('sending', subscriptionEntries.length, listType, 'subscriptions to mailchimp', subscriptionEntries);
         $http({method: 'POST', url: url, data: subscriptionEntries})
           .then(function (response) {

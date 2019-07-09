@@ -9,15 +9,14 @@ angular.module('ekwgApp')
       $scope.notify = {};
       var notify = Notifier($scope.notify);
       notify.setBusy();
-
       $scope.members = [];
       $scope.committeeFile = committeeFile;
-      $scope.roles = {signoff: CommitteeReferenceData.contactUsRolesAsArray(), replyTo: []};
+      $scope.roles = {signoff: CommitteeReferenceData.committeeMembers(), replyTo: []};
       $scope.committeeFileBaseUrl = ContentMetaDataService.baseUrl('committeeFiles');
 
       function loggedOnRole() {
         var memberId = LoggedInMemberService.loggedInMember().memberId;
-        var loggedOnRoleData = _(CommitteeReferenceData.contactUsRolesAsArray()).find(function (role) {
+        var loggedOnRoleData = _(CommitteeReferenceData.committeeMembers()).find(function (role) {
           return role.memberId === memberId
         });
         logger.debug('loggedOnRole for', memberId, '->', loggedOnRoleData);

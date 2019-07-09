@@ -128,36 +128,36 @@ angular.module('ekwgApp')
     $log.logLevels['MailchimpGroupService'] = $log.LEVEL.OFF;
 
     var addInterestGroup = function (listType, interestGroupName, interestGroupingId) {
-      return MailchimpHttpService.call('Adding Mailchimp Interest Group for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/interestGroupAdd', {
+      return MailchimpHttpService.call('Adding Mailchimp Interest Group for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/interestGroupAdd', {
         interestGroupingId: interestGroupingId,
         interestGroupName: interestGroupName
       });
     };
 
     var deleteInterestGroup = function (listType, interestGroupName, interestGroupingId) {
-      return MailchimpHttpService.call('Deleting Mailchimp Interest Group for ' + listType, 'DELETE', 'mailchimp/lists/' + listType + '/interestGroupDel', {
+      return MailchimpHttpService.call('Deleting Mailchimp Interest Group for ' + listType, 'DELETE', 'api/mailchimp/lists/' + listType + '/interestGroupDel', {
         interestGroupingId: interestGroupingId,
         interestGroupName: interestGroupName
       });
     };
 
     var addInterestGrouping = function (listType, interestGroupingName, groups) {
-      return MailchimpHttpService.call('Adding Mailchimp Interest Grouping for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/interestGroupingAdd', {
+      return MailchimpHttpService.call('Adding Mailchimp Interest Grouping for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/interestGroupingAdd', {
         groups: groups,
         interestGroupingName: interestGroupingName
       });
     };
 
     var deleteInterestGrouping = function (listType, interestGroupingId) {
-      return MailchimpHttpService.call('Deleting Mailchimp Interest Grouping for ' + listType, 'DELETE', 'mailchimp/lists/' + listType + '/interestGroupingDel', {interestGroupingId: interestGroupingId});
+      return MailchimpHttpService.call('Deleting Mailchimp Interest Grouping for ' + listType, 'DELETE', 'api/mailchimp/lists/' + listType + '/interestGroupingDel', {interestGroupingId: interestGroupingId});
     };
 
     var listInterestGroupings = function (listType) {
-      return MailchimpHttpService.call('Listing Mailchimp Interest Groupings for ' + listType, 'GET', 'mailchimp/lists/' + listType + '/interestGroupings');
+      return MailchimpHttpService.call('Listing Mailchimp Interest Groupings for ' + listType, 'GET', 'api/mailchimp/lists/' + listType + '/interestGroupings');
     };
 
     var updateInterestGrouping = function (listType, interestGroupingId, interestGroupingName, interestGroupingValue) {
-      return MailchimpHttpService.call('Updating Mailchimp Interest Groupings for ' + listType, 'PUT', 'mailchimp/lists/' + listType + '/interestGroupingUpdate',
+      return MailchimpHttpService.call('Updating Mailchimp Interest Groupings for ' + listType, 'PUT', 'api/mailchimp/lists/' + listType + '/interestGroupingUpdate',
         {
           interestGroupingId: interestGroupingId,
           interestGroupingName: interestGroupingName,
@@ -168,7 +168,7 @@ angular.module('ekwgApp')
     var updateInterestGroup = function (listType, oldName, newName) {
       return function (config) {
         var interestGroupingId = config.mailchimp.interestGroups[listType].interestGroupingId;
-        return MailchimpHttpService.call('Updating Mailchimp Interest Group for ' + listType, 'PUT', 'mailchimp/lists/' + listType + '/interestGroupUpdate',
+        return MailchimpHttpService.call('Updating Mailchimp Interest Group for ' + listType, 'PUT', 'api/mailchimp/lists/' + listType + '/interestGroupUpdate',
           {
             interestGroupingId: interestGroupingId,
             oldName: oldName,
@@ -266,15 +266,15 @@ angular.module('ekwgApp')
     $log.logLevels['MailchimpSegmentService'] = $log.LEVEL.OFF;
 
     function addSegment(listType, segmentName) {
-      return MailchimpHttpService.call('Adding Mailchimp segment for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/segmentAdd', {segmentName: segmentName});
+      return MailchimpHttpService.call('Adding Mailchimp segment for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/segmentAdd', {segmentName: segmentName});
     }
 
     function resetSegment(listType, segmentId) {
-      return MailchimpHttpService.call('Resetting Mailchimp segment for ' + listType, 'PUT', 'mailchimp/lists/' + listType + '/segmentReset', {segmentId: segmentId});
+      return MailchimpHttpService.call('Resetting Mailchimp segment for ' + listType, 'PUT', 'api/mailchimp/lists/' + listType + '/segmentReset', {segmentId: segmentId});
     }
 
     function deleteSegment(listType, segmentId) {
-      return MailchimpHttpService.call('Deleting Mailchimp segment for ' + listType, 'DELETE', 'mailchimp/lists/' + listType + '/segmentDel/' + segmentId);
+      return MailchimpHttpService.call('Deleting Mailchimp segment for ' + listType, 'DELETE', 'api/mailchimp/lists/' + listType + '/segmentDel/' + segmentId);
     }
 
     function callRenameSegment(listType, segmentId, segmentName) {
@@ -286,7 +286,7 @@ angular.module('ekwgApp')
     function renameSegment(listType, segmentId, segmentNameInput) {
       var segmentName = StringUtils.stripLineBreaks(StringUtils.left(segmentNameInput, 99), true);
       logger.debug('renaming segment with name=\'' + segmentName + '\' length=' + segmentName.length);
-      return MailchimpHttpService.call('Renaming Mailchimp segment for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/segmentRename', {
+      return MailchimpHttpService.call('Renaming Mailchimp segment for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/segmentRename', {
         segmentId: segmentId,
         segmentName: segmentName
       });
@@ -299,7 +299,7 @@ angular.module('ekwgApp')
     }
 
     function addSegmentMembers(listType, segmentId, segmentMembers) {
-      return MailchimpHttpService.call('Adding Mailchimp segment members ' + JSON.stringify(segmentMembers) + ' for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/segmentMembersAdd', {
+      return MailchimpHttpService.call('Adding Mailchimp segment members ' + JSON.stringify(segmentMembers) + ' for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/segmentMembersAdd', {
         segmentId: segmentId,
         segmentMembers: segmentMembers
       });
@@ -312,14 +312,14 @@ angular.module('ekwgApp')
     }
 
     function deleteSegmentMembers(listType, segmentId, segmentMembers) {
-      return MailchimpHttpService.call('Deleting Mailchimp segment members ' + segmentMembers + ' for ' + listType, 'DELETE', 'mailchimp/lists/' + listType + '/segmentMembersDel', {
+      return MailchimpHttpService.call('Deleting Mailchimp segment members ' + segmentMembers + ' for ' + listType, 'DELETE', 'api/mailchimp/lists/' + listType + '/segmentMembersDel', {
         segmentId: segmentId,
         segmentMembers: segmentMembers
       });
     }
 
     function listSegments(listType) {
-      return MailchimpHttpService.call('Listing Mailchimp segments for ' + listType, 'GET', 'mailchimp/lists/' + listType + '/segments');
+      return MailchimpHttpService.call('Listing Mailchimp segments for ' + listType, 'GET', 'api/mailchimp/lists/' + listType + '/segments');
     }
 
 
@@ -421,11 +421,11 @@ angular.module('ekwgApp')
     $log.logLevels['MailchimpListService'] = $log.LEVEL.OFF;
 
     var listSubscribers = function (listType) {
-      return MailchimpHttpService.call('Listing Mailchimp subscribers for ' + listType, 'GET', 'mailchimp/lists/' + listType);
+      return MailchimpHttpService.call('Listing Mailchimp subscribers for ' + listType, 'GET', 'api/mailchimp/lists/' + listType);
     };
 
     var batchUnsubscribe = function (listType, subscribers) {
-      return MailchimpHttpService.call('Batch unsubscribing members from Mailchimp List for ' + listType, 'POST', 'mailchimp/lists/' + listType + '/batchUnsubscribe', subscribers);
+      return MailchimpHttpService.call('Batch unsubscribing members from Mailchimp List for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/batchUnsubscribe', subscribers);
     };
 
     var batchUnsubscribeMembers = function (listType, allMembers, notificationCallback) {
@@ -502,23 +502,23 @@ angular.module('ekwgApp')
     $log.logLevels['MailchimpCampaignService'] = $log.LEVEL.OFF;
 
     function addCampaign(campaignId, campaignName) {
-      return MailchimpHttpService.call('Adding Mailchimp campaign ' + campaignId + ' with name ' + campaignName, 'POST', 'mailchimp/campaigns/' + campaignId + '/campaignAdd', {campaignName: campaignName});
+      return MailchimpHttpService.call('Adding Mailchimp campaign ' + campaignId + ' with name ' + campaignName, 'POST', 'api/mailchimp/campaigns/' + campaignId + '/campaignAdd', {campaignName: campaignName});
     }
 
     function deleteCampaign(campaignId) {
-      return MailchimpHttpService.call('Deleting Mailchimp campaign ' + campaignId, 'DELETE', 'mailchimp/campaigns/' + campaignId + '/delete');
+      return MailchimpHttpService.call('Deleting Mailchimp campaign ' + campaignId, 'DELETE', 'api/mailchimp/campaigns/' + campaignId + '/delete');
     }
 
     function getContent(campaignId) {
-      return MailchimpHttpService.call('Getting Mailchimp content for campaign ' + campaignId, 'GET', 'mailchimp/campaigns/' + campaignId + '/content');
+      return MailchimpHttpService.call('Getting Mailchimp content for campaign ' + campaignId, 'GET', 'api/mailchimp/campaigns/' + campaignId + '/content');
     }
 
     function list(options) {
-      return MailchimpHttpService.call('Listing Mailchimp campaigns', 'GET', 'mailchimp/campaigns/list', {}, options);
+      return MailchimpHttpService.call('Listing Mailchimp campaigns', 'GET', 'api/mailchimp/campaigns/list', {}, options);
     }
 
     function setContent(campaignId, contentSections) {
-      return contentSections ? MailchimpHttpService.call('Setting Mailchimp content for campaign ' + campaignId, 'POST', 'mailchimp/campaigns/' + campaignId + '/update', {
+      return contentSections ? MailchimpHttpService.call('Setting Mailchimp content for campaign ' + campaignId, 'POST', 'api/mailchimp/campaigns/' + campaignId + '/update', {
         updates: {
           name: "content",
           value: contentSections
@@ -547,7 +547,7 @@ angular.module('ekwgApp')
     }
 
     function setSegmentOpts(campaignId, value) {
-      return MailchimpHttpService.call('Setting Mailchimp segment opts for campaign ' + campaignId + ' with value ' + JSON.stringify(value), 'POST', 'mailchimp/campaigns/' + campaignId + '/update', {
+      return MailchimpHttpService.call('Setting Mailchimp segment opts for campaign ' + campaignId + ' with value ' + JSON.stringify(value), 'POST', 'api/mailchimp/campaigns/' + campaignId + '/update', {
         updates: {
           name: "segment_opts",
           value: value
@@ -561,7 +561,7 @@ angular.module('ekwgApp')
         subject: campaignName
       }, otherOptions);
 
-      return MailchimpHttpService.call('Setting Mailchimp campaign options for id ' + campaignId + ' with ' + JSON.stringify(value), 'POST', 'mailchimp/campaigns/' + campaignId + '/update', {
+      return MailchimpHttpService.call('Setting Mailchimp campaign options for id ' + campaignId + ' with ' + JSON.stringify(value), 'POST', 'api/mailchimp/campaigns/' + campaignId + '/update', {
         updates: {
           name: "options",
           value: value
@@ -570,16 +570,16 @@ angular.module('ekwgApp')
     }
 
     function replicateCampaign(campaignId) {
-      return MailchimpHttpService.call('Replicating Mailchimp campaign ' + campaignId, 'POST', 'mailchimp/campaigns/' + campaignId + '/replicate');
+      return MailchimpHttpService.call('Replicating Mailchimp campaign ' + campaignId, 'POST', 'api/mailchimp/campaigns/' + campaignId + '/replicate');
     }
 
     function sendCampaign(campaignId) {
       if (!MAILCHIMP_APP_CONSTANTS.allowSendCampaign) throw new Error('You cannot send campaign ' + campaignId + ' as sending has been disabled');
-      return MailchimpHttpService.call('Sending Mailchimp campaign ' + campaignId, 'POST', 'mailchimp/campaigns/' + campaignId + '/send');
+      return MailchimpHttpService.call('Sending Mailchimp campaign ' + campaignId, 'POST', 'api/mailchimp/campaigns/' + campaignId + '/send');
     }
 
     function listCampaigns() {
-      return MailchimpHttpService.call('Listing Mailchimp campaigns', 'GET', 'mailchimp/campaigns/list');
+      return MailchimpHttpService.call('Listing Mailchimp campaigns', 'GET', 'api/mailchimp/campaigns/list');
     }
 
     function replicateAndSendWithOptions(options) {

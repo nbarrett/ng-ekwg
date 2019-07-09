@@ -624,7 +624,7 @@ angular.module('ekwgApp')
                 function populateContentSections(expenseNotificationText) {
                   return {
                     sections: {
-                      expense_id_url: 'Please click <a href="' + URLService.baseUrl() + '/#/admin/expenseId/' + expenseClaim.$id() + '" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.',
+                      expense_id_url: 'Please click <a href="' + URLService.baseUrl() + '/admin/expenseId/' + expenseClaim.$id() + '" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.',
                       expense_notification_text: expenseNotificationText
                     }
                   };
