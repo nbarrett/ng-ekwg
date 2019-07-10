@@ -24,7 +24,7 @@ export class NonRenderingComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("created for path:", this.route.snapshot.url.map(segment => segment.toString()),
+    this.logger.info("created for route.snapshot.url:", this.route.snapshot.url.map(segment => segment.toString()),
       "area:", this.urlService.area(), "isLegacy:", this.isLegacyRoute());
   }
 }

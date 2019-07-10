@@ -35,6 +35,8 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
 import { UiSwitchModule } from "ngx-ui-switch";
 import { CommitteeReferenceDataService } from "./services/committee-reference-data.service";
 import { ContactUsComponent } from "./contact-us/contact-us.component";
+import { PageNavigatorService } from "./services/page-navigator.service";
+import { UrlService } from "./services/url.service";
 
 @NgModule({
   declarations: [
@@ -68,6 +70,7 @@ import { ContactUsComponent } from "./contact-us/contact-us.component";
     CustomNGXLoggerService,
     CookieService,
     SiteEditService,
+    PageNavigatorService,
     CommitteeReferenceDataService,
     LoggedInMemberServiceProvider,
     CommitteeConfigProvider,
@@ -94,6 +97,7 @@ export class AppModule {
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
+      .factory("URLService", downgradeInjectable(UrlService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade);

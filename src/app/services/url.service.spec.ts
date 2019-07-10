@@ -2,6 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { UrlService } from "./url.service";
 import { LoggerTestingModule } from "ngx-logger";
 import { DOCUMENT } from "@angular/common";
+import { ActivatedRoute } from "@angular/router";
 
 
 describe("UrlService", () => {
@@ -15,9 +16,9 @@ describe("UrlService", () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule],
-    providers: [{
-      provide: DOCUMENT, useValue: LOCATION_VALUE
-    }]
+    providers: [
+      {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
+      {provide: DOCUMENT, useValue: LOCATION_VALUE}]
   }).compileComponents());
 
   it("should return baseUrl as the path segment before /", () => {
@@ -40,6 +41,59 @@ describe("UrlService", () => {
     it("should support passing of argument", () => {
       const service: UrlService = TestBed.get(UrlService);
       expect(service.area("https://ng-ekwg-production.herokuapp.com/contact-us")).toBe("contact-us");
+    });
+
+  });
+
+  describe("notificationHref", () => {
+    const object = {
+      type: "walk",
+      area: "walks",
+      id: "1234-567"
+    };
+
+    it("should return the url of an event on the site", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.notificationHref(object)).toBe("https://www.ekwg.co.uk/walks/walkId/1234-567");
+    });
+
+  });
+
+  describe("resourceUrlForAWSFileName", () => {
+
+    it("should return a path to an aws file name", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.resourceUrlForAWSFileName("file.pdf")).toBe("https://www.ekwg.co.uk/api/aws/s3/file.pdf");
+    });
+
+  });
+
+  describe("hasRouteParameter", () => {
+
+    it("should return false if not in the current url", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.hasRouteParameter("blah-blah")).toBe(false);
+    });
+
+    it("should return true if in the current url", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.hasRouteParameter("member-bulk-load")).toBe(true);
+    });
+
+  });
+
+  describe("isArea", () => {
+
+    it("should return true if one or more of the areas is present", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.isArea("blah-blah")).toBe(false);
+      expect(service.isArea(["admin", "blah-blah"])).toBe(true);
+    });
+
+    it("should return false if none of the areas is present", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.isArea("hello")).toBe(false);
+      expect(service.isArea(["wahh-baby", "blah-blah"])).toBe(false);
     });
 
   });
