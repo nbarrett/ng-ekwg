@@ -42,6 +42,7 @@
     "angular-ui-bootstrap": "2.5.6",
     "aws-sdk": "2.404.0",
     "bootstrap": "4.3.1",
+    "classlist.js": "^1.1.20150312",
     "core-js": "2.5.4",
     "express": "4.15.2",
     "express-session": "1.15.2",
@@ -74,6 +75,7 @@
     "ui-select": "0.19.8",
     "underscore": "1.8.3",
     "underscore.string": "3.3.5",
+    "web-animations-js": "^2.3.2",
     "xml2json": "0.11.2",
     "zone.js": "0.8.26"
   },
