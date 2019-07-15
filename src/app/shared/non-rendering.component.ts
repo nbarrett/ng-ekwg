@@ -15,7 +15,7 @@ export class NonRenderingComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.OFF);
   }
 
   isLegacyRoute() {

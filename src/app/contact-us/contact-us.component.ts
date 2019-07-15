@@ -22,7 +22,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
 
   constructor(private committeeReferenceData: CommitteeReferenceDataService, private uRLService: UrlService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContactUsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ContactUsComponent, NgxLoggerLevel.OFF);
   }
 
   committeeMembers() {

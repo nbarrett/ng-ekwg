@@ -1,21 +1,33 @@
-import { first, isArray, last, some } from "lodash-es";
-import { ActivatedRoute } from "@angular/router";
+import { first, isArray, last, some, tail } from "lodash-es";
+import { ActivatedRoute, Router } from "@angular/router";
 import { DOCUMENT } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";
-import { NGXLogger } from "ngx-logger";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class UrlService {
+  private logger: Logger;
 
-  constructor(@Inject(DOCUMENT) private document: Document, private logger: NGXLogger, private route: ActivatedRoute) {
+  constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
+              private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
   }
 
   relativeUrlFirstSegment(optionalUrl?: string) {
     const url = new URL(optionalUrl || this.absUrl());
     return "/" + first(url.pathname.substring(1).split("/"));
+  }
+
+  navigateTo(page?: string, area?: string) {
+    const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
+    this.logger.info("navigating to page:", page, "area:", area, "->", url);
+    this.router.navigate([url], {relativeTo: this.route}).then(() => {
+      this.logger.info("area is now", this.area());
+    });
   }
 
   absUrl() {
@@ -61,10 +73,18 @@ export class UrlService {
     return has;
   }
 
-  isArea(areas) {
+  isArea(...areas: string[]) {
     return some(isArray(areas) ? areas : [areas], (area) => {
       const matched = area === this.area();
-      this.logger.debug("isArea", area, "matched", matched);
+      this.logger.debug("this.area()", this.area(), "isArea", area, "matched", matched);
+      return matched;
+    });
+  }
+
+  isSubArea(...subAreas: string[]) {
+    return some(isArray(subAreas) ? subAreas : [subAreas], (subArea) => {
+      const matched = this.areaUrl().includes(subArea);
+      this.logger.debug("this.subArea()", this.areaUrl(), "isSubArea", subArea, "matched", matched);
       return matched;
     });
   }
@@ -75,8 +95,11 @@ export class UrlService {
   }
 
   noArea() {
-    return this.relativeUrlFirstSegment() === "";
+    return this.areaUrl() === "";
   }
 
 
+  areaUrl() {
+    return tail(new URL(this.absUrl()).pathname.substring(1).split("/")).join("/");
+  }
 }

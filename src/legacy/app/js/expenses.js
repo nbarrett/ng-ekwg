@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('ExpensesController', function ($compile, $log, $timeout, $sce, $templateRequest, $q, $rootScope, $location, $routeParams,
-                                              $scope, $filter, DateUtils, NumberUtils, URLService, LoggedInMemberService, MemberService, ContentMetaDataService,
+                                              $scope, $filter, DateUtils, NumberUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, ContentMetaDataService,
                                               ExpenseClaimsService, MailchimpSegmentService, MailchimpCampaignService, MailchimpConfig, Notifier, EKWGFileUpload) {
       var logger = $log.getInstance('ExpensesController');
       var noLogger = $log.getInstance('ExpensesControllerNoLogger');
@@ -13,7 +13,7 @@ angular.module('ekwgApp')
       $scope.members = [];
       $scope.expenseClaims = [];
       $scope.unfilteredExpenseClaims = [];
-      $scope.expensesOpen = URLService.hasRouteParameter('expenseId') || URLService.isArea('expenses');
+      $scope.expensesOpen = URLService.hasRouteParameter('expenseId') || URLService.isSubArea('expenses');
       $scope.alertMessages = [];
       $scope.filterTypes = [{
         disabled: !$routeParams.expenseId,
@@ -63,7 +63,7 @@ angular.module('ekwgApp')
       LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
 
       $scope.showArea = function (area) {
-        URLService.navigateTo('admin', area)
+        LegacyUrlService.navigateTo('admin', area)
       };
 
       $scope.selected.expenseClaim = function () {

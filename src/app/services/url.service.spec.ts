@@ -2,12 +2,14 @@ import { TestBed } from "@angular/core/testing";
 import { UrlService } from "./url.service";
 import { LoggerTestingModule } from "ngx-logger";
 import { DOCUMENT } from "@angular/common";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, RouterModule } from "@angular/router";
 
 
 describe("UrlService", () => {
 
-  const URL_PATH = "https://www.ekwg.co.uk/admin/member-bulk-load";
+  const INJECTED_URL = "https://ng-ekwg-staging.herokuapp.com/walks/walk-programme";
+
+  const URL_PATH = "https://www.ekwg.co.uk/admin/member-bulk-load/12398719823";
   const LOCATION_VALUE = {
     location: {
       href: URL_PATH
@@ -15,7 +17,7 @@ describe("UrlService", () => {
   };
 
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [LoggerTestingModule],
+    imports: [LoggerTestingModule, RouterModule.forRoot([])],
     providers: [
       {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
       {provide: DOCUMENT, useValue: LOCATION_VALUE}]
@@ -45,7 +47,18 @@ describe("UrlService", () => {
 
   });
 
+  describe("areaUrl", () => {
+
+    it("should return the url segment after the area", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.areaUrl()).toBe("member-bulk-load/12398719823");
+    });
+
+  });
+
+
   describe("notificationHref", () => {
+
     const object = {
       type: "walk",
       area: "walks",
@@ -84,23 +97,37 @@ describe("UrlService", () => {
 
   describe("isArea", () => {
 
+    it("should accept string argument", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.isArea("admin")).toBe(true);
+    });
+
     it("should return true if one or more of the areas is present", () => {
       const service: UrlService = TestBed.get(UrlService);
       expect(service.isArea("blah-blah")).toBe(false);
-      expect(service.isArea(["admin", "blah-blah"])).toBe(true);
+      expect(service.isArea("admin", "blah-blah")).toBe(true);
     });
 
     it("should return false if none of the areas is present", () => {
       const service: UrlService = TestBed.get(UrlService);
       expect(service.isArea("hello")).toBe(false);
-      expect(service.isArea(["wahh-baby", "blah-blah"])).toBe(false);
+      expect(service.isArea("wahh-baby", "blah-blah")).toBe(false);
     });
 
   });
 
-  it("should return relativeUrlFirstSegment as first path segment after base url including slash", () => {
-    const service: UrlService = TestBed.get(UrlService);
-    expect(service.relativeUrlFirstSegment(URL_PATH)).toBe("/admin");
+  describe("relativeUrlFirstSegment", () => {
+
+    it("should return first path segment after base url including slash", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.relativeUrlFirstSegment()).toBe("/admin");
+    });
+
+    it("should allow passed parameter to be processed", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.relativeUrlFirstSegment(INJECTED_URL)).toBe("/walks");
+    });
+
   });
 
   it("absUrl should return full current url ", () => {

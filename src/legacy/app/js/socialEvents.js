@@ -5,7 +5,7 @@ angular.module('ekwgApp')
   .factory('SocialEventAttendeeService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('socialEventAttendees');
   })
-  .controller('SocialEventsController', function ($routeParams, $log, $q, $scope, $filter, URLService, Upload,
+  .controller('SocialEventsController', function ($routeParams, $log, $q, $scope, $filter, LegacyUrlService, URLService, Upload,
                                                   SocialEventsService, SiteEditService,
                                                   SocialEventAttendeeService, LoggedInMemberService, MemberService,
                                                   AWSConfig, ContentMetaDataService, DateUtils, MailchimpSegmentService,
@@ -213,7 +213,7 @@ angular.module('ekwgApp')
 
     $scope.login = function () {
       if (!LoggedInMemberService.memberLoggedIn()) {
-        URLService.navigateTo("login");
+        LegacyUrlService.navigateTo("login");
       }
     };
 

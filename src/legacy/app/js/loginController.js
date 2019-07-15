@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('LoginController', function ($log, $scope, $routeParams, LoggedInMemberService, AuthenticationModalsService, Notifier, URLService, ValidationUtils, close) {
+  .controller('LoginController', function ($log, $scope, $routeParams, LoggedInMemberService, AuthenticationModalsService, Notifier, LegacyUrlService, URLService, ValidationUtils, close) {
 
       $scope.notify = {};
       var logger = $log.getInstance('LoginController');
@@ -15,7 +15,7 @@ angular.module('ekwgApp')
           return passwordPopulated && userNamePopulated;
         },
         forgotPassword: function () {
-          URLService.navigateTo("forgot-password");
+          LegacyUrlService.navigateTo("forgot-password");
         },
         close: function () {
           close()
@@ -33,7 +33,7 @@ angular.module('ekwgApp')
             if (LoggedInMemberService.memberLoggedIn()) {
               close();
               if (!LoggedInMemberService.loggedInMember().profileSettingsConfirmed) {
-                return URLService.navigateTo("mailing-preferences");
+                return LegacyUrlService.navigateTo("mailing-preferences");
               }
               return true;
             }

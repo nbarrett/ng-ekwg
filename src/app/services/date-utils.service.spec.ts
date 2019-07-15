@@ -14,7 +14,7 @@ describe("DateUtilsService", () => {
 
     it("should return a moment instance when passed a string and a date format", () => {
       const DateUtils: DateUtilsService = TestBed.get(DateUtilsService);
-      expect(DateUtils.asMoment("Weds 09 July 2014", "ddd DD MMMM YYYY").valueOf()).toEqual(1404860400000);
+      expect(DateUtils.asMoment("Weds 09 July 2014", "ddd DD MMMM YYYY").valueOf() - 1404860400000).toBeLessThan(2);
     });
 
   });
@@ -22,7 +22,7 @@ describe("DateUtilsService", () => {
   describe("nowAsValue", () => {
     it("should return a millisecond timestamp value as of now", () => {
       const DateUtils: DateUtilsService = TestBed.get(DateUtilsService);
-      expect(DateUtils.nowAsValue()).toEqual(Date.parse(new Date().toISOString()));
+      expect(DateUtils.nowAsValue() - Date.parse(new Date().toISOString())).toBeLessThan(2);
     });
   });
 

@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('ResetPasswordFailedController', function ($log, $scope, URLService, Notifier, CommitteeReferenceData, close) {
+  .controller('ResetPasswordFailedController', function ($log, $scope, LegacyUrlService, URLService, Notifier, CommitteeReferenceData, close) {
     var logger = $log.getInstance('ResetPasswordFailedController');
     $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
 
@@ -17,7 +17,7 @@ angular.module('ekwgApp')
         close()
       },
       forgotPassword: function () {
-        URLService.navigateTo("forgot-password");
+        LegacyUrlService.navigateTo("forgot-password");
       },
     }
   });

@@ -33,15 +33,11 @@ angular.module('ekwgApp')
     };
   })
   .controller('ProfileController', function ($q, $rootScope, $routeParams, $scope, LoggedInMemberService, MemberService,
-                                             URLService, ProfileConfirmationService, EmailSubscriptionService, CommitteeReferenceData) {
+                                             LegacyUrlService, URLService, ProfileConfirmationService, EmailSubscriptionService, CommitteeReferenceData) {
 
     $scope.showArea = function (area) {
-      URLService.navigateTo('admin', area)
+      LegacyUrlService.navigateTo('admin', area)
     };
-
-    function isArea(area) {
-      return (area === $routeParams.area);
-    }
 
     var LOGIN_DETAILS = 'login details';
     var PERSONAL_DETAILS = 'personal details';
@@ -53,9 +49,9 @@ angular.module('ekwgApp')
     $scope.alertClass = ALERT_CLASS_SUCCESS;
     $scope.alertType = LOGIN_DETAILS;
     $scope.alertMessages = [];
-    $scope.personalDetailsOpen = isArea('personal-details');
-    $scope.loginDetailsOpen = isArea('login-details');
-    $scope.contactPreferencesOpen = isArea('contact-preferences');
+    $scope.personalDetailsOpen = URLService.isSubArea('personal-details');
+    $scope.loginDetailsOpen = URLService.isSubArea('login-details');
+    $scope.contactPreferencesOpen = URLService.isSubArea('contact-preferences');
     $scope.showAlertPersonalDetails = false;
     $scope.showAlertLoginDetails = false;
     $scope.showAlertContactPreferences = false;

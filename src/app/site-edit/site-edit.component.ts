@@ -17,7 +17,7 @@ export class SiteEditComponent {
   constructor(private siteEditService: SiteEditService, private loggerFactory: LoggerFactory) {
     this.userEdits = {preview: true, saveInProgress: false, revertInProgress: false};
     siteEditService.events.subscribe(item => this.onItemEvent(item));
-    this.logger = loggerFactory.createLogger(SiteEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SiteEditComponent, NgxLoggerLevel.OFF);
   }
 
   active() {

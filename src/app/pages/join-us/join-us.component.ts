@@ -11,7 +11,7 @@ export class JoinUsComponent implements OnInit {
   private logger: Logger;
 
   constructor(private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(JoinUsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(JoinUsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .factory("AuthenticationModalsService", function ($log, ModalService, URLService) {
+  .factory("AuthenticationModalsService", function ($log, ModalService, RouterHistoryService) {
 
     var logger = $log.getInstance("AuthenticationModalsService");
     $log.logLevels["AuthenticationModalsService"] = $log.LEVEL.OFF;
@@ -18,7 +18,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('close event with result', result);
-          if (!result) URLService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage();
         });
       }).catch(function (error) {
         logger.warn("error happened:", error);
@@ -40,7 +40,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('showResetPasswordModal close event with result', result);
-          if (!result) URLService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage();
         });
       })
     }
@@ -59,7 +59,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('showLoginDialog close event with result', result);
-          if (!result) URLService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage();
         });
       })
     }
@@ -80,7 +80,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('showResetPasswordFailedDialog close event with result', result);
-          if (!result) URLService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage();
         });
       })
     }
@@ -100,7 +100,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('close event with result', result);
-          if (!result) URLService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage();
         });
       })
     }

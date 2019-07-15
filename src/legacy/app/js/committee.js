@@ -5,7 +5,7 @@ angular.module('ekwgApp')
                                                MAILCHIMP_APP_CONSTANTS, MailchimpConfig, Notifier, EKWGFileUpload, CommitteeQueryService, CommitteeReferenceData, ModalService) {
 
     var logger = $log.getInstance('CommitteeController');
-    $log.logLevels['CommitteeController'] = $log.LEVEL.INFO;
+    $log.logLevels['CommitteeController'] = $log.LEVEL.OFF;
 
     var notify = Notifier($scope);
     notify.setBusy();

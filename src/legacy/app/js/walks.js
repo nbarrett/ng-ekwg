@@ -183,9 +183,9 @@ angular.module('ekwgApp')
       };
       $scope.walks = [];
       $scope.busy = false;
-      $scope.walksProgrammeOpen = URLService.isArea('programme', 'walkId') || URLService.noArea();
-      $scope.walksInformationOpen = URLService.isArea('information');
-      $scope.walksMapViewOpen = URLService.isArea('mapview');
+      $scope.walksProgrammeOpen = URLService.isArea('walks');
+      $scope.walksInformationOpen = URLService.isSubArea('information');
+      $scope.walksMapViewOpen = URLService.isSubArea('mapview');
 
       $scope.todayValue = DateUtils.momentNowNoTime().valueOf();
 

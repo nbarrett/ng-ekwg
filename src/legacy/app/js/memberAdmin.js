@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('MemberAdminController',
-    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, StringUtils, DbUtils, URLService, LoggedInMemberService, MemberService, MemberAuditService,
+    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, StringUtils, DbUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, MemberAuditService,
               MemberBulkLoadAuditService, MemberUpdateAuditService, ProfileConfirmationService, EmailSubscriptionService, DateUtils, MailchimpConfig, MailchimpSegmentService, MemberNamingService,
               MailchimpCampaignService, MailchimpListService, Notifier, ErrorMessageService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
@@ -29,14 +29,14 @@ angular.module('ekwgApp')
       };
 
       $scope.showArea = function (area) {
-        URLService.navigateTo('admin', area)
+        LegacyUrlService.navigateTo('admin', area)
       };
 
       $scope.display.emailTypes = [$scope.display.emailType];
       $scope.dropSupported = true;
-      $scope.memberAdminOpen = !URLService.hasRouteParameter('expenseId') && (URLService.isArea('member-admin') || URLService.noArea());
-      $scope.memberBulkLoadOpen = URLService.isArea('member-bulk-load');
-      $scope.memberAuditOpen = URLService.isArea('member-audit');
+      $scope.memberAdminOpen = !URLService.hasRouteParameter('expenseId') && (URLService.isSubArea('member-admin') || URLService.noArea());
+      $scope.memberBulkLoadOpen = URLService.isSubArea('member-bulk-load');
+      $scope.memberAuditOpen = URLService.isSubArea('member-audit');
 
       LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
 
@@ -206,7 +206,9 @@ angular.module('ekwgApp')
             title: "Active Social Member", group: 'Group Settings', filter: MemberService.filterFor.SOCIAL_MEMBERS
           },
           {
-            title: "Membership Date Active/Not set", group: 'From Ramblers Supplied Datas', filter: function (member) {
+            title: "Membership Date Active/Not set",
+            group: 'From Ramblers Supplied Datas',
+            filter: function (member) {
               return !member.membershipExpiryDate || (member.membershipExpiryDate >= $scope.today);
             }
           },
@@ -482,9 +484,9 @@ angular.module('ekwgApp')
 
         function removeEmptyFieldsIn(obj) {
           _.each(obj, function (value, field) {
-            logger.debug('processing', typeof(field), 'field', field, 'value', value);
+            logger.debug('processing', typeof (field), 'field', field, 'value', value);
             if (_.contains([null, undefined, ""], value)) {
-              logger.debug('removing non-populated', typeof(field), 'field', field);
+              logger.debug('removing non-populated', typeof (field), 'field', field);
               delete obj[field];
             }
           });
@@ -625,7 +627,10 @@ angular.module('ekwgApp')
 
       function refreshMemberBulkLoadAudit() {
         if (LoggedInMemberService.allowMemberAdminEdits()) {
-          return MemberBulkLoadAuditService.all({limit: 100, sort: {createdDate: -1}}).then(function (uploadSessions) {
+          return MemberBulkLoadAuditService.all({
+            limit: 100,
+            sort: {createdDate: -1}
+          }).then(function (uploadSessions) {
             logger.debug('refreshed', uploadSessions && uploadSessions.length, 'upload sessions');
             $scope.uploadSessions = uploadSessions;
             $scope.filters.uploadSession.selected = _.first(uploadSessions);

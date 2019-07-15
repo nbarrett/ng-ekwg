@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller("IndexController", function ($q, $cookieStore, $log, $scope, $rootScope, URLService, LoggedInMemberService, ProfileConfirmationService, AuthenticationModalsService, Notifier, DateUtils) {
+  .controller("IndexController", function ($q, $cookieStore, $log, $scope, $rootScope, LegacyUrlService, URLService, LoggedInMemberService, ProfileConfirmationService, AuthenticationModalsService, Notifier, DateUtils) {
 
     var logger = $log.getInstance("IndexController");
     $log.logLevels["IndexController"] = $log.LEVEL.OFF;
@@ -12,13 +12,13 @@ angular.module('ekwgApp')
     $scope.year = DateUtils.asString(DateUtils.momentNow().valueOf(), undefined, "YYYY");
     $scope.actions = {
       forgotPassword: function () {
-        URLService.navigateTo("forgot-password");
+        LegacyUrlService.navigateTo("forgot-password");
       },
       loginOrLogout: function () {
         if (LoggedInMemberService.memberLoggedIn()) {
           LoggedInMemberService.logout();
         } else {
-          URLService.navigateTo("login");
+          LegacyUrlService.navigateTo("login");
         }
       }
     };

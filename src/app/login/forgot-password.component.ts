@@ -10,14 +10,14 @@ import { NgxLoggerLevel } from "ngx-logger";
 export class ForgotPasswordComponent implements OnInit {
   private logger: Logger;
 
-  constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
+  constructor(@Inject("AuthenticationModalsService") private authenticationModalsService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ForgotPasswordComponent, NgxLoggerLevel.INFO);
     this.logger.info("constructed");
   }
 
   ngOnInit() {
-    this.AuthenticationModalsService.showForgotPasswordModal();
+    this.authenticationModalsService.showForgotPasswordModal();
   }
 
 }

@@ -21,7 +21,7 @@ export class CommitteeReferenceDataService {
 
   constructor(@Inject("CommitteeConfig") private committeeConfig, loggerFactory: LoggerFactory) {
     this.events = this.messageSource.asObservable();
-    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.OFF);
     this.queryData();
   }
 

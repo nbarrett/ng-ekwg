@@ -20,7 +20,7 @@ angular.module('ekwgApp')
   })
   .factory('CommitteeQueryService', function ($q, $log, $filter, $routeParams, URLService, CommitteeFileService, CommitteeReferenceData, DateUtils, LoggedInMemberService, WalksService, SocialEventsService) {
       var logger = $log.getInstance('CommitteeQueryService');
-      $log.logLevels['CommitteeQueryService'] = $log.LEVEL.DEBUG;
+      $log.logLevels['CommitteeQueryService'] = $log.LEVEL.OFF;
 
       function groupEvents(groupEvents) {
         logger.debug('groupEvents', groupEvents);

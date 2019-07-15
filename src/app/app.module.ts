@@ -6,6 +6,7 @@ import {
   AuthenticationModalsServiceProvider,
   CommitteeConfigProvider,
   ContentTextProvider,
+  LegacyUrlService,
   LoggedInMemberServiceProvider
 } from "./ajs-upgraded-providers";
 import { BrowserModule } from "@angular/platform-browser";
@@ -35,8 +36,9 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
 import { UiSwitchModule } from "ngx-ui-switch";
 import { CommitteeReferenceDataService } from "./services/committee-reference-data.service";
 import { ContactUsComponent } from "./contact-us/contact-us.component";
-import { PageNavigatorService } from "./services/page-navigator.service";
+import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
+import { $locationShim, LocationUpgradeModule } from "@angular/common/upgrade";
 
 @NgModule({
   declarations: [
@@ -60,6 +62,7 @@ import { UrlService } from "./services/url.service";
   ],
   imports: [
     BrowserModule,
+    LocationUpgradeModule.config({useHash: false, hashPrefix: ""}),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     AppRoutingModule,
@@ -70,7 +73,7 @@ import { UrlService } from "./services/url.service";
     CustomNGXLoggerService,
     CookieService,
     SiteEditService,
-    PageNavigatorService,
+    RouterHistoryService,
     CommitteeReferenceDataService,
     LoggedInMemberServiceProvider,
     CommitteeConfigProvider,
@@ -92,12 +95,16 @@ export class AppModule {
   }
 
   ngDoBootstrap(appRef: ApplicationRef) {
+
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
+      // .factory("$location", downgradeInjectable($locationShim))
+      .factory("LegacyUrlService", LegacyUrlService)
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("URLService", downgradeInjectable(UrlService))
+      .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade);
