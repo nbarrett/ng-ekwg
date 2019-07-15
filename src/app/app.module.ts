@@ -38,7 +38,6 @@ import { CommitteeReferenceDataService } from "./services/committee-reference-da
 import { ContactUsComponent } from "./contact-us/contact-us.component";
 import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
-import { $locationShim, LocationUpgradeModule } from "@angular/common/upgrade";
 
 @NgModule({
   declarations: [
@@ -62,7 +61,6 @@ import { $locationShim, LocationUpgradeModule } from "@angular/common/upgrade";
   ],
   imports: [
     BrowserModule,
-    LocationUpgradeModule.config({useHash: false, hashPrefix: ""}),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     AppRoutingModule,
@@ -99,7 +97,6 @@ export class AppModule {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
-      // .factory("$location", downgradeInjectable($locationShim))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
