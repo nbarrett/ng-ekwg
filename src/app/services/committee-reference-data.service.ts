@@ -1,4 +1,5 @@
-import { get, map } from "lodash-es";
+import get from "lodash-es/get";
+import map from "lodash-es/map";
 import { Inject, Injectable } from "@angular/core";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";

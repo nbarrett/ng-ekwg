@@ -1,4 +1,8 @@
-import { first, isArray, last, some, tail } from "lodash-es";
+import first from "lodash-es/first";
+import isArray from "lodash-es/isArray";
+import last from "lodash-es/last";
+import some from "lodash-es/some";
+import tail from "lodash-es/tail";
 import { ActivatedRoute, Router } from "@angular/router";
 import { DOCUMENT } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";

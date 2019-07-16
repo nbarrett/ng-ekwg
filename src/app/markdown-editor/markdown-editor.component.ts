@@ -88,7 +88,8 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   rows() {
-    const text = property(["text"])(this.data);
+    // @ts-ignore
+    const text: string = property(["text"])(this.data);
     const rows = text ? text.split(/\r*\n/).length + 1 : 1;
     this.logger.debug("number of rows in text ", text, "->", rows);
     return Math.max(rows, 10);
