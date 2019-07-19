@@ -1,4 +1,3 @@
-import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
 import last from "lodash-es/last";
 import some from "lodash-es/some";
@@ -8,6 +7,7 @@ import { DOCUMENT } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { first } from "lodash-es";
 
 @Injectable({
   providedIn: "root"
