@@ -76,6 +76,7 @@
     "ui-select": "0.19.8",
     "underscore": "1.8.3",
     "underscore.string": "3.3.5",
+    "url-polyfill": "^1.1.7",
     "web-animations-js": "^2.3.2",
     "xml2json": "0.11.2",
     "zone.js": "0.8.26"
