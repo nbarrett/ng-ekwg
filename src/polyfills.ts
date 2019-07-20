@@ -20,6 +20,7 @@
 
 import "url-polyfill";
 import "core-js/es6/array";
+import "core-js/es7/array";
 import "core-js/es6/object";
 import "core-js/es6/string";
 import "zone.js/dist/zone";
