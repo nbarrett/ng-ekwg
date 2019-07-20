@@ -22,8 +22,11 @@ export class UrlService {
   }
 
   relativeUrlFirstSegment(optionalUrl?: string) {
+    this.logger.info("about to call relativeUrlFirstSegment for url", optionalUrl);
     const url = new URL(optionalUrl || this.absUrl());
-    return "/" + first(url.pathname.substring(1).split("/"));
+    const returnValue = "/" + first(url.pathname.substring(1).split("/"));
+    this.logger.info("relativeUrlFirstSegment returning url", returnValue);
+    return returnValue;
   }
 
   navigateTo(page?: string, area?: string) {
