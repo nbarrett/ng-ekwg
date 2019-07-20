@@ -72,9 +72,7 @@ export class UrlService {
   }
 
   hasRouteParameter(parameter) {
-    const has = this.route.snapshot.url.includes(parameter);
-    this.logger.debug("hasRouteParameter", parameter, has);
-    return has;
+    return this.router.url.split("/").includes(parameter);
   }
 
   isArea(...areas: string[]) {

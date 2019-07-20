@@ -2,7 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { UrlService } from "./url.service";
 import { LoggerTestingModule } from "ngx-logger";
 import { DOCUMENT } from "@angular/common";
-import { ActivatedRoute, RouterModule } from "@angular/router";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 
 
 describe("UrlService", () => {
@@ -19,6 +19,7 @@ describe("UrlService", () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule, RouterModule.forRoot([])],
     providers: [
+      {provide: Router, useValue: {url: "/admin/member-bulk-load/12398719823"}},
       {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
       {provide: DOCUMENT, useValue: LOCATION_VALUE}]
   }).compileComponents());
