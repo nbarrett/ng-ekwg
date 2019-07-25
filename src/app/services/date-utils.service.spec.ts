@@ -80,7 +80,7 @@ describe("DateUtilsService", () => {
     it("should create a moment as of now when passed a string and a date format", () => {
       const DateUtils: DateUtilsService = TestBed.get(DateUtilsService);
       const testMoment = moment();
-      expect(DateUtils.momentNow().valueOf()).toBeCloseTo(testMoment.valueOf(), 1);
+      expect(DateUtils.momentNow() - testMoment).toBeLessThan(2);
     });
 
   });

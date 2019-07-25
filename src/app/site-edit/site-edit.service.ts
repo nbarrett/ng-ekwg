@@ -2,6 +2,7 @@ import { EventEmitter, Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
+import { GlobalEvent } from "../services/broadcast-service";
 
 @Injectable({
   providedIn: "root"
@@ -33,7 +34,3 @@ export class SiteEditService {
 
 }
 
-export class GlobalEvent {
-  constructor(public key: string, public data: any) {
-  }
-}

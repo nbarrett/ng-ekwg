@@ -12,21 +12,21 @@ import isEmpty from "lodash-es/isEmpty";
 export class SetPasswordComponent implements OnInit {
   private logger: Logger;
 
-  constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
-              @Inject("LoggedInMemberService") private LoggedInMemberService,
+  constructor(@Inject("AuthenticationModalsService") private authenticationModalsService,
+              @Inject("LoggedInMemberService") private loggedInMemberService,
               private route: ActivatedRoute, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SetPasswordComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      this.LoggedInMemberService.getMemberByPasswordResetId(paramMap.get("password-reset-id"))
+      this.loggedInMemberService.getMemberByPasswordResetId(paramMap.get("password-reset-id"))
         .then(member => {
           this.logger.info("for password-reset-id", paramMap.get("password-reset-id"), "member", member);
           if (isEmpty(member)) {
-            this.AuthenticationModalsService.showResetPasswordFailedDialog();
+            this.authenticationModalsService.showResetPasswordFailedDialog();
           } else {
-            this.AuthenticationModalsService.showResetPasswordModal(member.userName);
+            this.authenticationModalsService.showResetPasswordModal(member.userName);
           }
         });
     });

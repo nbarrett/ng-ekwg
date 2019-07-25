@@ -1,13 +1,23 @@
 import { ActivatedRoute } from "@angular/router";
 import { AppComponent } from "./app.component";
-import { ApplicationRef, NgModule } from "@angular/core";
+import { ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { AppRoutingModule } from "./app-routing.module";
 import {
   AuthenticationModalsServiceProvider,
+  ClipboardServiceProvider,
   CommitteeConfigProvider,
   ContentTextProvider,
+  GoogleMapsConfigProvider,
   LegacyUrlService,
-  LoggedInMemberServiceProvider
+  LoggedInMemberServiceProvider,
+  MeetupServiceProvider,
+  MemberServiceProvider,
+  NotifierProvider,
+  RamblersUploadAuditProvider,
+  RamblersWalksAndEventsServiceProvider,
+  WalkNotificationServiceProvider,
+  WalksQueryServiceProvider,
+  WalksServiceProvider
 } from "./ajs-upgraded-providers";
 import { BrowserModule } from "@angular/platform-browser";
 import { CookieService } from "ngx-cookie-service";
@@ -38,26 +48,34 @@ import { CommitteeReferenceDataService } from "./services/committee-reference-da
 import { ContactUsComponent } from "./contact-us/contact-us.component";
 import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
+import { WalksComponent } from "./pages/walks/walks.component";
+import { BroadcasterService } from "./services/broadcast-service";
+import { DisplayDate, DisplayDateAndTime, DisplayDay } from "./pipes";
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AppComponent,
+    ContactUsComponent,
+    ForgotPasswordComponent,
+    JoinUsComponent,
     LoginComponent,
     LoginPanelComponent,
     LogoutComponent,
-    MainLogoComponent,
-    NonRenderingComponent,
     MailingPreferencesComponent,
-    ForgotPasswordComponent,
-    SetPasswordComponent,
+    MainLogoComponent,
     MainTitleComponent,
     MarkdownEditorComponent,
+    NonRenderingComponent,
     PageNavigatorComponent,
-    SiteEditComponent,
     PageTitleComponent,
-    JoinUsComponent,
+    SetPasswordComponent,
+    SiteEditComponent,
+    DisplayDate,
+    DisplayDay,
+    DisplayDateAndTime,
     SiteNavigatorComponent,
-    ContactUsComponent
+    WalksComponent
   ],
   imports: [
     BrowserModule,
@@ -74,6 +92,16 @@ import { UrlService } from "./services/url.service";
     RouterHistoryService,
     CommitteeReferenceDataService,
     LoggedInMemberServiceProvider,
+    ClipboardServiceProvider,
+    RamblersUploadAuditProvider,
+    WalksServiceProvider,
+    WalksQueryServiceProvider,
+    WalkNotificationServiceProvider,
+    MemberServiceProvider,
+    RamblersWalksAndEventsServiceProvider,
+    NotifierProvider,
+    GoogleMapsConfigProvider,
+    MeetupServiceProvider,
     CommitteeConfigProvider,
     AuthenticationModalsServiceProvider,
     ContentTextProvider,
@@ -93,12 +121,12 @@ export class AppModule {
   }
 
   ngDoBootstrap(appRef: ApplicationRef) {
-
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
+      .factory("BroadcasterService", downgradeInjectable(BroadcasterService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("URLService", downgradeInjectable(UrlService))
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))

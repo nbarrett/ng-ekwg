@@ -1,7 +1,8 @@
 import { Component } from "@angular/core";
-import { GlobalEvent, SiteEditService } from "./site-edit.service";
+import { SiteEditService } from "./site-edit.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
+import { GlobalEvent } from "../services/broadcast-service";
 
 @Component({
   selector: "app-site-edit",

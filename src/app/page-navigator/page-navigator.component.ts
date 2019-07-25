@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { UrlService } from "../services/url.service";
 import { NGXLogger } from "ngx-logger";
 import { PageService } from "../services/page.service";
+import { Page } from "../models/page.model";
 
 
 @Component({
@@ -26,7 +27,7 @@ export class PageNavigatorComponent {
     }
   }
 
-  pages() {
+  pages(): Page[] {
     return this.pageService.pages;
   }
 }

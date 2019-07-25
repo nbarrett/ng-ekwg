@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Page } from "./page.model";
-
+import { Page } from "../models/page.model";
 
 const HOME: Page = {href: "", title: "Home"};
 
