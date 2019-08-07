@@ -1,0 +1,201 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="wrapper">
+    <div id="page-body" role="main">
+      <div class="body-header">
+        <div class="breadcrumbs">
+          <ul>
+            <li><a href="/" title="Home">Home</a></li>
+            <li class="last">Walks</li>
+          </ul>
+        </div>
+      </div>
+      <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
+        <app-accordion-group title="Walks Programme" initiallyOpen="true">
+          <div>
+            <form class="form-inline search-heading" role="form">
+              <div class="form-group">
+                <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
+                       (ngModelChange)="onSearchChange(quickSearch.value)"
+                       name="quickSearch"
+                       class="form-control round spaced-controls"
+                       type="text" placeholder="Quick Search">
+              </div>
+              <div class="form-group">
+                <select [(ngModel)]="filterParameters.selectType" (change)="refreshWalks()" name="selectType"
+                        class="form-control round spaced-controls">
+                  <option selected="selected" value="1">Walks Today Onwards</option>
+                  <option value="2">Past Walks</option>
+                  <option value="3">All Walks</option>
+                  <option value="4">Walks With No Leader</option>
+                  <option value="5">Walks With No Details</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <select [(ngModel)]="filterParameters.ascending" (change)="refreshWalks()" name="ascending"
+                        class="form-control round spaced-controls">
+                  <option selected value="true">Sort (date ascending)</option>
+                  <option value="false">Sort (date descending)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <div *ngIf="notifyTarget.showAlert" class="alert walks-programme-alert {{notifyTarget.alertClass}}"><i
+                  class="glyphicon {{notifyTarget.alert.icon}}"></i>
+                  <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+                </div>
+              </div>
+            </form>
+            <div class="walk-action-button-group">
+              <div *ngIf="allowAdminEdits()" class="row">
+                <div class="col-sm-12">
+                  <form class="form-inline">
+                    <input *ngIf="allowAdminEdits()" type="submit" value="Ramblers export"
+                           (click)="selectWalksForExport()"
+                           title="Select walks to export in Ramblers format" class="button-form">
+                    <input *ngIf="allowAdminEdits()" type="submit" value="Add more walk slots"
+                           (click)="addWalkSlotsDialog()"
+                           title="Add more available slots on the walks programme" class="button-form">
+                    <input *ngIf="allowShowAll()" type="submit" value="Show All Walks"
+                           (click)="showAllWalks()" title="Show All Walks" class="button-form">
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div *ngFor="let walk of filteredWalks; let index = index">
+              <app-walks-detail-view [walk]="walk"  *ngIf="isExpandedFor(walk)">
+              </app-walks-detail-view>
+              <table [hidden]="isExpandedFor(walk)"
+                     class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
+                <thead *ngIf="showTableHeader(walk)" class="tbl-green-f">
+                <tr>
+                  <th *ngIf="loggedInMemberService.memberLoggedIn()" width="7%">Action</th>
+                  <th width="13%">Walk Date</th>
+                  <th width="7%">Start Time</th>
+                  <th width="32%">Description</th>
+                  <th width="7%">Distance</th>
+                  <th width="8%">Postcode</th>
+                  <th width="12%">Walk Leader</th>
+                  <th width="11%">Contact Phone</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr [ngClass]="{'active':tableRowOdd(walk), 'default':tableRowEven(walk)}">
+                  <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}" class="nowrap"><input
+                    *ngIf="display.toWalkEditMode(walk)" type="submit"
+                    value="{{display.toWalkEditMode(walk).caption}}"
+                    (click)="display.editWalk(walk)"
+                    title="{{display.toWalkEditMode(walk).caption}}"
+                    class="button-form">
+                  </td>
+                  <td width="13%" (click)="display.toggleViewFor(walk)"
+                      id="walkDate-{{index}}" class="nowrap">
+                            <span tooltip-placement="left"
+                                  tooltip="Click to show walk detail"
+                                  [textContent]="walk.walkDate|displayDate" name="walkDate"></span></td>
+                  <td width="7%" (click)="display.toggleViewFor(walk)"
+                      id="startTime-{{index}}">
+                            <span tooltip-placement="left"
+                                  tooltip="Click to show walk detail"
+                                    [textContent]="viewWalkField(walk, 'startTime')" name="startTime"></span></td>
+                  <td width="32%" (click)="display.toggleViewFor(walk)"
+                      id="briefDescription-{{index}}">
+                            <span tooltip-placement="left"
+                                  tooltip="Click to show walk detail"
+                                  [textContent]="viewWalkField(walk, 'briefDescriptionAndStartPoint')"
+                                  name="briefDescriptionAndStartPoint"></span></td>
+                  <td width="7%" (click)="display.toggleViewFor(walk)" id="distance-{{index}}">
+                            <span tooltip-placement="left" tooltip="Click to show walk detail"
+                                  [textContent]="viewWalkField(walk, 'distance')" name="distance"></span></td>
+                  <td width="8%" id="postcode-{{index}}">
+                    <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(walk, 'postcode')"
+                       target="_blank">
+                                <span tooltip-placement="left"
+                                      tooltip="Click to locate postcode {{viewWalkField(walk, 'postcode')}} on Google Maps"
+                                      [textContent]="viewWalkField(walk, 'postcode')" name="postcode"></span></a></td>
+                  <td width="12%" id="contactEmail-{{index}}">
+                    <a *ngIf="allowDetailView()" [href]="'mailto:'+ walk.contactEmail">
+                                <span tooltip-placement="left"
+                                      tooltip="Click to email {{walk.displayName}} at {{viewWalkField(walk, 'contactEmail')}}"
+                                      [textContent]="walk.displayName" name="displayName"></span></a>
+                    <span class="tooltip-link" *ngIf="!allowDetailView()" tooltip-placement="left"
+                          (click)="loginOrLogout()" tooltip-trigger="mouseenter"
+                          tooltip="Click again to login as an EKWG member and send an email to {{walk.displayName}}"
+                          [textContent]="walk.displayName"></span></td>
+                  <td width="11%" id="contactPhone-{{index}}">
+                    <a *ngIf="allowDetailView()" [href]="'tel:' + walk.contactPhone">
+                            <span tooltip-placement="left"
+                                  tooltip="Click to ring {{walk.displayName}} on {{viewWalkField(walk, 'contactPhone')}} (mobile devices only)"
+                                  [textContent]="viewWalkField(walk, 'contactPhone')" name="contactPhone"></span></a> <a
+                    *ngIf="!allowDetailView()" [href]="'tel:' + walk.contactPhone">
+                                <span tooltip-placement="left"
+                                      tooltip="Click to ring {{walk.displayName}} on {{viewWalkField(walk, 'contactPhone')}} (mobile devices only)"
+                                      [textContent]="viewWalkField(walk, 'contactPhone')"
+                                      name="contactPhone"></span></a>
+                    <div class="markdown-preview-icon pull-right minimise-icon" tooltip-placement="right"
+                         tooltip="Click to show full walk detail" (click)="display.toggleViewFor(walk)">
+                      <i *ngIf="!isExpandedFor(walk)" class="fa fa-caret-up fa-lg"></i>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </app-accordion-group>
+        <app-accordion-group title="Walks Information" initiallyOpen="true">
+          <div class="body-content">
+            <div class="row">
+              <div class="col-sm-12">
+                <app-markdown-editor class="event-description" name="walksInformation"
+                                     description="walks information"></app-markdown-editor>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-9">
+                <app-markdown-editor name="walksInformationSummary"
+                                     description="walks summary"></app-markdown-editor>
+              </div>
+              <div class="col-sm-3">
+                <app-markdown-editor name="walksInformationThumbnail"
+                                     description="walks thumbnail"></app-markdown-editor>
+              </div>
+            </div>
+          </div>
+        </app-accordion-group>
+        <app-accordion-group *ngIf="false" title="View our past and planned walks on Google Maps!">
+          <p>If you are planning where to lead a walk and you want to make sure that you choose an area that
+            hasn't been walked too much before,
+            the map below provides you with a handy, visual way of verifying this.
+          </p>
+
+          <div class="green-bullets-no-rule">
+            <ul>Some Tips
+              <li>Zoom in to see more detail, then click on the pins to see who led the walk and on what
+                date.
+              </li>
+              <li>Show or hide walks based on their date, distance, grid reference, or leader by selecting
+                the appropriate drop-down in the map footer.
+              </li>
+              <li>You can then toggle filtering of the walks on the map by clicking/un-clicking the pins
+                in the map footer.
+              </li>
+              <li>To reset the zoom on the map, just click the map heading.</li>
+              <li>If you want to see the map below displayed full-screen then just click <a
+                href="http://batchgeo.com/map/5053c28766e0bcebfdd6260de7ee593b">here</a>!
+              </li>
+              <li *ngIf="allowEdits()">As an <b>EKWG Walk admin</b> you an edit the map data below by
+                clicking
+                <a href="https://batchgeo.com/map/edit/?map_id=6468775&d=f709a249c90941f5d50383f916da3590">here</a>
+              </li>
+            </ul>
+            <p>
+              <iframe class="round" src="//batchgeo.com/map/5053c28766e0bcebfdd6260de7ee593b"
+                      frameborder="0" width="100%" height="550"
+                      style="border:1px solid #aaa;border-radius:10px;"></iframe>
+            </p>
+          </div>
+
+        </app-accordion-group>
+      </accordion>
+    </div>
+  </div>
+</div>

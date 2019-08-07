@@ -9,7 +9,8 @@ import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { SetPasswordComponent } from "./login/set-password.component";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { WalksComponent } from "./pages/walks/walks.component";
+import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
+import { WalkListComponent } from "./pages/walks/walks-list/walk-list.component";
 
 const routes: Routes = [
   {path: "forgot-password", component: ForgotPasswordComponent},
@@ -18,7 +19,10 @@ const routes: Routes = [
   {path: "join-us", component: JoinUsComponent},
   {path: "login", component: LoginComponent},
   {path: "logout", component: LogoutComponent},
-  {path: "walks/walkId/:walk-id", component: WalksComponent},
+  {path: "walks/walkId/:walk-id", component: WalkListComponent},
+  {path: "walks/add", component: WalkEditComponent},
+  {path: "walks/edit/:walk-id", component: WalkEditComponent},
+  {path: "walks", component: WalkListComponent},
   {path: "**", component: NonRenderingComponent}
 ];
 

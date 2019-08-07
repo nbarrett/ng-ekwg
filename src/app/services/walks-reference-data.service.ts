@@ -11,6 +11,8 @@ import { WalkEventType } from "../models/walk-event-type.model";
 
 export class WalksReferenceService {
 
+  private logger: Logger;
+
   walkEditModes = {
     add: {caption: "add", title: "Add new"} as WalkEditMode,
     edit: {caption: "edit", title: "Edit existing", editEnabled: true} as WalkEditMode,
@@ -18,38 +20,38 @@ export class WalksReferenceService {
     lead: {caption: "lead", title: "Lead this", initialiseWalkLeader: true} as WalkEditMode
   };
 
-  eventTypes: WalkEventType[] = [
-    {
+  eventTypes = {
+    awaitingLeader: {
       eventType: EventType.AWAITING_LEADER,
       statusChange: true,
       description: "Awaiting walk leader"
-    },
-    {
+    } as WalkEventType,
+    awaitingWalkDetails: {
       eventType: EventType.AWAITING_WALK_DETAILS,
       mustHaveLeader: true,
       statusChange: true,
       description: "Awaiting walk details from leader",
       notifyLeader: true,
       notifyCoordinator: true
-    },
-    {
+    } as WalkEventType
+    , walkDetailsRequested: {
       eventType: EventType.WALK_DETAILS_REQUESTED,
       mustHaveLeader: true,
       description: "Walk details requested from leader",
       notifyLeader: true,
       notifyCoordinator: true
-    },
-    {
+    } as WalkEventType,
+    walkDetailsUpdated: {
       eventType: EventType.WALK_DETAILS_UPDATED,
       description: "Walk details updated",
       notifyLeader: true,
       notifyCoordinator: true
-    },
-    {
+    } as WalkEventType,
+    walkDetailsCopied: {
       eventType: EventType.WALK_DETAILS_COPIED,
       description: "Walk details copied"
     },
-    {
+    awaitingApproval: {
       eventType: EventType.AWAITING_APPROVAL,
       mustHaveLeader: true,
       mustPassValidation: true,
@@ -58,8 +60,8 @@ export class WalksReferenceService {
       description: "Awaiting confirmation of walk details",
       notifyLeader: true,
       notifyCoordinator: true
-    },
-    {
+    } as WalkEventType,
+    approved: {
       eventType: EventType.APPROVED,
       mustHaveLeader: true,
       mustPassValidation: true,
@@ -69,17 +71,26 @@ export class WalksReferenceService {
       description: "Approved",
       notifyLeader: true,
       notifyCoordinator: true
-    },
-    {
+    } as WalkEventType,
+    deleted: {
       eventType: EventType.DELETED,
       statusChange: true,
       description: "Deleted",
       notifyLeader: true,
       notifyCoordinator: true
-    }];
+    } as WalkEventType
+  };
 
-  private;
-  logger: Logger;
+  private eventTypesArray: WalkEventType[] = [
+    this.eventTypes.awaitingLeader,
+    this.eventTypes.awaitingWalkDetails,
+    this.eventTypes.walkDetailsRequested,
+    this.eventTypes.walkDetailsUpdated,
+    this.eventTypes.walkDetailsCopied,
+    this.eventTypes.awaitingApproval,
+    this.eventTypes.approved,
+    this.eventTypes.deleted
+  ];
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalksReferenceService, NgxLoggerLevel.OFF);
@@ -87,20 +98,22 @@ export class WalksReferenceService {
 
   toEventType(eventType: EventType | string): WalkEventType {
     if (eventType) {
-      if (eventType.includes(" ")) {
-        eventType = camelCase(eventType.toLowerCase());
+      if (typeof eventType === "string") {
+        if (eventType.includes(" ")) {
+          eventType = camelCase(eventType.toLowerCase());
+        }
       }
-      const returnValue = this.eventTypes.find(e => e.eventType === eventType);
+      const returnValue = this.eventTypesArray.find(e => e.eventType === eventType);
       if (!returnValue) {
-        throw new Error("Event Type " + returnValue + " does not exist. Must be one of: " +
-          this.eventTypes.map(e => e.eventType).join(", "));
+        throw new Error("Event Type " + returnValue + " does not exist, given eventType " + eventType + ". Must be one of: " +
+          this.eventTypesArray.map(e => e.eventType).join(", "));
       }
       return returnValue;
     }
   }
 
   walkStatuses() {
-    return this.eventTypes.filter((eventType) => eventType.statusChange);
+    return this.eventTypesArray.filter((eventType) => eventType.statusChange);
   }
 }
 
@@ -114,4 +127,3 @@ export enum EventType {
   APPROVED = "approved",
   DELETED = "deleted",
 }
-

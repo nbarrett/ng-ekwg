@@ -1,13 +1,16 @@
 angular.module('ekwgApp')
+  .factory('WalksService', function ($mongolabResourceHttp) {
+    return $mongolabResourceHttp('walks')
+  })
   .factory('DbUtils', function ($log, DateUtils, LoggedInMemberService, AUDIT_CONFIG) {
     var logger = $log.getInstance('DbUtilsLogger');
     $log.logLevels['DbUtilsLogger'] = $log.LEVEL.OFF;
 
     function removeEmptyFieldsIn(obj) {
       _.each(obj, function (value, field) {
-        logger.debug('processing', typeof(field), 'field', field, 'value', value);
+        logger.debug('processing', typeof (field), 'field', field, 'value', value);
         if (_.contains([null, undefined, ""], value)) {
-          logger.debug('removing non-populated', typeof(field), 'field', field);
+          logger.debug('removing non-populated', typeof (field), 'field', field);
           delete obj[field];
         }
       });
@@ -255,7 +258,7 @@ angular.module('ekwgApp')
       var i = 0;
 
       return function (key, value) {
-        if (i !== 0 && typeof(censor) === 'object' && typeof(value) === 'object' && censor === value)
+        if (i !== 0 && typeof (censor) === 'object' && typeof (value) === 'object' && censor === value)
           return '[Circular]';
 
         if (i >= 29) // seems to be a hard maximum of 30 serialized objects?

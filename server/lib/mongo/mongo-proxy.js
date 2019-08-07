@@ -59,11 +59,10 @@ module.exports = function () {
           if (dbRes.statusCode !== 200) {
             debug('returned http status', dbRes.statusCode, 'data:', data);
           } else {
-            debug('returned', JSON.parse(data).length, 'record(s)');
+            debug('returned', JSON.parse(data).length, 'record(s) from', req.params.collection);
           }
         });
       });
-      // Send any data the is passed from the original request
       dbReq.end(JSON.stringify(req.body));
     } catch (error) {
       debug('ERROR: ', error.stack);

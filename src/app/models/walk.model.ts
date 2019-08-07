@@ -1,23 +1,32 @@
 import { EventType } from "../services/walks-reference-data.service";
 
 export interface Walk {
+  contactName?: string;
+  walkType?: string;
   _id?: string;
+  briefDescriptionAndStartPoint?: string;
   contactEmail?: string;
-  gridReference?: string;
+  contactId?: string;
   contactPhone?: string;
   displayName?: string;
-  startTime?: string;
+  distance?: string;
+  events: [];
+  grade?: string;
+  gridReference?: string;
+  location?: string;
+  longerDescription?: string;
+  meetupEventTitle?: string;
+  meetupEventUrl?: string;
+  nearestTown?: string;
   osMapsRoute?: string;
   osMapsTitle?: string;
-  briefDescriptionAndStartPoint?: string;
-  ramblersWalkId?: string;
-  events: [];
-  meetupEventUrl?: string;
-  meetupEventTitle?: string;
-  walkLeaderMemberId?: string;
-  status?: EventType;
   postcode?: string;
+  ramblersWalkId?: string;
+  startTime?: string;
+  status?: EventType;
   walkDate: number;
-
+  walkLeaderMemberId?: string;
   $id(): any;
+
+  $saveOrUpdate(hideWalkDialogAndRefreshWalks: () => void, hideWalkDialogAndRefreshWalks2: () => void): any;
 }

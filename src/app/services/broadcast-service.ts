@@ -1,14 +1,15 @@
 import { Observable, Observer } from "rxjs";
-import { filter } from "rxjs/operators";
+import { filter, share } from "rxjs/operators";
 
 export class BroadcasterService {
   observable: Observable<GlobalEvent>;
   observer: Observer<GlobalEvent>;
 
   constructor() {
-    this.observable = Observable.create((observer: Observer<GlobalEvent>) => {
+    const temp = Observable.create((observer: Observer<GlobalEvent>) => {
       this.observer = observer;
-    }).share();
+    });
+    this.observable = temp.pipe(share());
   }
 
   broadcast(event: GlobalEvent | string) {

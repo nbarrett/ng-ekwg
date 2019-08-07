@@ -89,12 +89,6 @@ angular.module("ekwgApp", [
       .when(mainPages.SOCIAL + "/:area?", {
         controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
-      .when(mainPages.WALKS + "/walkId/:walkId", {
-        controller: "WalksController", templateUrl: "partials/walks/walks.html", title: "walks"
-      })
-      .when(mainPages.WALKS + "/:area?", {
-        controller: "WalksController", templateUrl: "partials/walks/walks.html", title: "walks"
-      })
       .when(mainPages.HOME, {
         controller: "HomeController", templateUrl: "partials/home/home.html", title: "home"
       })

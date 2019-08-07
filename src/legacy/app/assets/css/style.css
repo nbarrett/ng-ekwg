@@ -184,6 +184,7 @@ body {
 .panel-default > .panel-heading {
   background-color: #eee;
   border: none;
+  border-radius: 7px;
 }
 
 .panel-group {
@@ -1678,6 +1679,22 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   color: #782327;
 }
 
+.accordion-image {
+  width: 30px;
+  padding-right: 5px;
+}
+
+.accordion-title {
+  color: #782327;
+  font-weight: bold;
+  padding-top: 2px;
+}
+
+.accordion-state-image {
+  color: #782327;
+  padding-top: 6px;
+}
+
 h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
   text-decoration: underline;
 }
@@ -1785,10 +1802,6 @@ a, a:visited {
 
 .white-anchor {
   cursor: pointer;
-}
-
-li.accordion-heading {
-  color: #782327;
 }
 
 .sorting-header {
@@ -2621,6 +2634,11 @@ img[src~="bordered"] {
   text-align: center;
 }
 
+.minimise-icon {
+  position: relative;
+  top: 0px;
+}
+
 .markdown-links {
   cursor: pointer;
 }
@@ -2986,6 +3004,8 @@ table.inactive th {
 
 .breadcrumbs ul li.last {
   background: none;
+  padding-top: 1px
+
 }
 
 .article-list {
@@ -3264,11 +3284,6 @@ img[src*="#thumbnail"] {
   margin: 10px 0;
   font-weight: normal;
   color: black;
-}
-
-.accordion-image {
-  width: 30px;
-  padding-right: 5px;
 }
 
 .accordion {

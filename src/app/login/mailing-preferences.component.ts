@@ -10,16 +10,16 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 export class MailingPreferencesComponent implements OnInit {
   private logger: Logger;
 
-  constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
-              @Inject("LoggedInMemberService") private LoggedInMemberService,
+  constructor(@Inject("AuthenticationModalsService") private authenticationModalsService,
+              @Inject("LoggedInMemberService") private loggedInMemberService,
               private route: ActivatedRoute, private router: Router, private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailingPreferencesComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.route.paramMap.subscribe(() => {
-      if (this.LoggedInMemberService.memberLoggedIn()) {
-        return this.AuthenticationModalsService.showMailingPreferencesDialog(this.LoggedInMemberService.loggedInMember().memberId);
+      if (this.loggedInMemberService.memberLoggedIn()) {
+        return this.authenticationModalsService.showMailingPreferencesDialog(this.loggedInMemberService.loggedInMember().memberId);
       } else {
         this.router.navigate(["/"]);
       }

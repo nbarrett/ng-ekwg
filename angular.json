@@ -181,7 +181,8 @@
               }
             ],
             "styles": [
-              "src/app/site-edit/ui-switch.component.scss",
+              "src/app/styles/bs-datepicker.css",
+              "src/app/styles/ui-switch.component.scss",
               "src/styles.sass"
             ],
             "scripts": [
@@ -245,6 +246,8 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
+              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.sass"
             ],
             "scripts": [],

@@ -1,0 +1,211 @@
+<div class="thumbnail event-thumbnail">
+                <span class="markdown-preview-icon pull-right minimise-icon" tooltip-placement="left"
+                      tooltip="Click to hide walk detail" (click)="display.toggleViewFor(walk)">
+                  <i class="fa fa-caret-down fa-lg"></i>
+                </span>
+  <div class="row row-eq-height-xs">
+    <div class="col-sm-6 round">
+      <div class="panel-toggle">
+        <h1><span [textContent]="walk.walkDate | displayDay" name="walkDate"></span> <span
+          [textContent]="durationInFutureFor(walk)" name="durationInFuture"
+          class="badge event-badge blue-badge"></span> <span *ngIf="display.nextWalk(walk)"
+                                                             class="badge event-badge next-event-badge"> Our next walk</span>
+        </h1>
+        <div *ngIf="display.eventTypeFor(walk).showDetails">
+          <h2>
+                        <span [textContent]="walk.briefDescriptionAndStartPoint"
+                              name="briefDescriptionAndStartPoint"></span>
+          </h2>
+          <h3 *ngIf="walk.startTime">Start Time:
+            <span
+              [textContent]="walk.startTime" name="startTime"></span>
+          </h3>
+        </div>
+      </div>
+      <input *ngIf="display.toWalkEditMode(walk)" type="submit"
+             value="{{display.toWalkEditMode(walk).caption}}"
+             (click)="display.editWalk(walk)"
+             title="{{display.toWalkEditMode(walk).caption}}"
+             class="button-form button-form-edit-event">
+
+      <div *ngIf="display.eventTypeFor(walk).showDetails" class="event-description">
+        <div class="green-bullets-no-rule">
+          <p markdown [data]="walk.longerDescription"></p>
+        </div>
+      </div>
+      <div
+        *ngIf="display.eventTypeFor(walk).showDetails && (walk.meetupEventUrl || walk.osMapsRoute || walk.osMapsRoute || walk.ramblersWalkId || display.walkLink(walk))"
+        class="event-panel round event-panel-inner">
+        <h1>Related Links</h1>
+
+        <div *ngIf="walk.meetupEventUrl" class="row related-links-row">
+          <div class="col-sm-1">
+            <img class="related-links-image"
+                 src="assets/images/local/meetup.ico"
+                 alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+          </div>
+          <div class="col-sm-11">
+            <a target="_blank"
+               [href]="walk.meetupEventUrl">
+                                    <span class="related-links-title"
+                                          tooltip-placement="left"
+                                          tooltip="Click to view the route for this walk on Meetup">
+                                  Meetup: {{walk.meetupEventTitle || walk.briefDescriptionAndStartPoint}}</span></a>
+          </div>
+        </div>
+
+        <div *ngIf="walk.ramblersWalkId" class="row related-links-row">
+          <div class="col-sm-1">
+            <img class="related-links-image"
+                 src="assets/images/ramblers/favicon.ico"
+                 alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+          </div>
+          <div class="col-sm-11">
+            <a target="_blank"
+               class="follow"
+               [href]="ramblersWalkBaseUrl + walk.ramblersWalkId"
+               title="Preview on Ramblers Walks and Events Manager">
+                                    <span class="related-links-title"
+                                          tooltip-placement="left"
+                                          tooltip="Click to view on Ramblers Walks and Events Manager">
+                                  Ramblers: {{walk.briefDescriptionAndStartPoint}}</span></a>
+          </div>
+        </div>
+        <div *ngIf="walk.osMapsRoute" class="row related-links-row">
+          <div class="col-sm-1">
+            <img class="related-links-image"
+                 src="assets/images/local/ordnance-survey-untitled.png"
+                 alt="Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+          </div>
+          <div class="col-sm-11">
+            <a target="_blank"
+               [href]="walk.osMapsRoute">
+                                    <span class="related-links-title"
+                                          tooltip-placement="left"
+                                          tooltip="Click to view the route for this walk on Ordnance Survey Maps">
+                                  OS Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}</span></a>
+          </div>
+        </div>
+        <div class="row related-links-row" *ngIf="display.walkLink(walk)">
+          <div class="col-sm-12">
+            <label>
+              <a popover="Link has been copied to clipboard"
+                 triggers="focus"
+                 placement="bottom"
+                 role="button"
+                 [href]=""
+                 (click)="clipboardService.copyToClipboard(display.walkLink(walk))">
+                <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
+                  tooltip-placement="left"
+                  tooltip="Click to copy link to clipboard"></span></i> copy link
+              </a>
+              to
+              this <a [href]="display.walkLink(walk)"
+                      target="_blank">walk</a></label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 round" *ngIf="display.eventTypeFor(walk).showDetails">
+      <input type="number" min="1" max="20" *ngIf="false"
+             [ngModel]="display.googleMapsConfig.zoomLevel" name="zoomLevel">
+      <iframe *ngIf="walk.postcode" class="map-thumbnail-image" frameborder="0"
+              style="border:0;border-radius: 10px;"
+              [src]="googleMapsUrl" allowfullscreen></iframe>
+      <div class="row thumbnail thumbnail-campaign-settings">
+        <div class="map-radio-heading map-radio-group">Show Map:</div>
+        <div class="radio-inline map-radio-group map-radio-label">
+          <input id="show-start-point" type="radio"
+                 [ngModel]="mapDisplay" name="mapDisplay"
+                 value="show-start-point"/>
+          <label for="show-start-point">At start {{walk.postcode}}</label>
+          <input [disabled]="drivingDirectionsDisabled()"
+                 id="show-driving-directions" type="radio"
+                 [ngModel]="mapDisplay" name="mapDisplay"
+                 value="show-driving-directions"/>
+          <label for="show-driving-directions">Driving from: <input
+            class="input-sm text-uppercase input-postcode"
+            [textContent]="fromPostcode" name="fromPostcode"
+            (change)="autoSelectMapDisplay()"
+            type="text"></label>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 round">
+      <div class="event-panel round">
+        <h1>Walk Leader</h1>
+        <div *ngIf="!display.eventTypeFor(walk).showDetails">
+          <div class="col-sm-12">
+            <p [textContent]="display.eventTypeFor(walk).description" name="description"></p>
+          </div>
+        </div>
+        <div *ngIf="display.eventTypeFor(walk).showDetails">
+          <p *ngIf="walk.contactEmail"><i
+            class="glyphicon glyphicon-envelope markdown-preview-icon fa-lg"></i>
+
+            <a [href]="'mailto:' + walk.contactEmail">
+                                    <span tooltip-placement="left"
+                                          tooltip="Click to email {{walk.displayName}} at {{walk.contactEmail}}">
+                                        {{walk.displayName}}
+                                    </span></a>
+            <span class="tooltip-link"
+                  tooltip-placement="left"
+                  tooltip-trigger="mouseenter"
+                  tooltip="Login as an EKWG member and send an email to {{walk.displayName}}"
+                  [textContent]="walk.displayName" name="displayName"></span>
+          </p>
+          <p *ngIf="display.eventTypeFor(walk).showDetails"><i
+            class="glyphicon glyphicon-phone markdown-preview-icon fa-lg"></i>
+            <a [href]="'tel:' + walk.contactPhone" name="contactPhone">
+                                        <span tooltip-placement="left"
+                                              tooltip="Click to ring {{walk.displayName}} on {{walk.contactPhone}} (mobile devices only)">
+                                            {{walk.contactPhone}}
+                                        </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 round">
+      <div class="event-panel round">
+        <h1>Walk Details</h1>
+        <div *ngIf="!display.eventTypeFor(walk).showDetails">
+          <div class="col-sm-12">
+            <p [textContent]="display.eventTypeFor(walk).description" name="description"></p>
+          </div>
+        </div>
+        <div *ngIf="display.eventTypeFor(walk).showDetails">
+          <div class="row">
+            <div class="col-sm-6">Postcode:
+              <span [textContent]="walk.location" name="location"></span>
+              <a [href]="'http://maps.google.co.uk/maps?q=' + walk.postcode"
+                 target="_blank">
+                                                <span tooltip-placement="left"
+                                                      tooltip="Click to locate postcode {{walk.postcode}} on Google Maps">
+                                                    {{walk.postcode}}
+                                                </span></a>
+            </div>
+            <div class="col-sm-6">
+                                                <span *ngIf="walk.gridReference">Grid Ref: <a
+                                                  [href]="'http://gridreferencefinder.com/?gr=' + walk.gridReference"
+                                                  target="_blank">
+                                            <span tooltip-placement="left"
+                                                  tooltip="Click to locate grid reference {{walk.gridReference}} on UK Grid Reference Finder">
+                                                {{walk.gridReference}}
+                                            </span></a>
+                                                </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">Distance: <span [textContent]="walk.distance" name="distance"></span>
+            </div>
+            <div class="col-sm-6">Grade: <span [textContent]="walk.grade" name="grade"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

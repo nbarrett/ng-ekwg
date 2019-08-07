@@ -46,7 +46,7 @@ export function ClipboardService($injector) {
 
 export const ClipboardServiceProvider = {
   provide: "ClipboardService",
-  useFactory: ContentText,
+  useFactory: ClipboardService,
   deps: ["$injector"]
 };
 
@@ -56,55 +56,77 @@ export function RamblersUploadAudit($injector) {
 
 export const RamblersUploadAuditProvider = {
   provide: "RamblersUploadAudit",
-  useFactory: ContentText,
+  useFactory: RamblersUploadAudit,
   deps: ["$injector"]
 };
+
+export function WalksService($injector) {
+  return $injector.get("WalksService");
+}
 
 export const WalksServiceProvider = {
   provide: "WalksService",
-  useFactory: $injector => $injector.get("WalksService"),
+  useFactory: WalksService,
   deps: ["$injector"]
 };
 
-export const WalksQueryServiceProvider = {
-  provide: "WalksQueryService",
-  useFactory: $injector => $injector.get("WalksQueryService"),
-  deps: ["$injector"]
-};
+export function WalkNotificationService($injector) {
+  return $injector.get("WalkNotificationService");
+}
 
 export const WalkNotificationServiceProvider = {
   provide: "WalkNotificationService",
-  useFactory: $injector => $injector.get("WalkNotificationService"),
+  useFactory: WalkNotificationService,
   deps: ["$injector"]
 };
+
+export function MemberService($injector) {
+  return $injector.get("MemberService");
+}
 
 export const MemberServiceProvider = {
   provide: "MemberService",
-  useFactory: $injector => $injector.get("MemberService"),
+  useFactory: MemberService,
   deps: ["$injector"]
 };
+
+export function RamblersWalksAndEventsService($injector) {
+  return $injector.get("RamblersWalksAndEventsService");
+}
 
 export const RamblersWalksAndEventsServiceProvider = {
   provide: "RamblersWalksAndEventsService",
-  useFactory: $injector => $injector.get("RamblersWalksAndEventsService"),
+  useFactory: RamblersWalksAndEventsService,
   deps: ["$injector"]
 };
+
+export function Notifier($injector) {
+  return $injector.get("Notifier");
+}
 
 export const NotifierProvider = {
   provide: "Notifier",
-  useFactory: $injector => $injector.get("Notifier"),
+  useFactory: Notifier,
   deps: ["$injector"]
 };
+
+export function GoogleMapsConfig($injector) {
+  return $injector.get("GoogleMapsConfig");
+}
 
 export const GoogleMapsConfigProvider = {
   provide: "GoogleMapsConfig",
-  useFactory: $injector => $injector.get("GoogleMapsConfig"),
+  useFactory: GoogleMapsConfig,
   deps: ["$injector"]
 };
 
+export function MeetupService($injector) {
+  return $injector.get("MeetupService");
+}
+
 export const MeetupServiceProvider = {
   provide: "MeetupService",
-  useFactory: $injector => $injector.get("MeetupService"),
+  useFactory: MeetupService,
   deps: ["$injector"]
 };
 

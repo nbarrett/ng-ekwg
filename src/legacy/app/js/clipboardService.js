@@ -9,11 +9,11 @@ angular.module('ekwgApp')
         var body = $document.find('body').eq(0);
         body.append($compile(copyElement)($rootScope));
 
-        var ClipboardServiceElement = angular.element(document.getElementById('clipboard-service-copy-id'));
-        logger.debug(ClipboardServiceElement);
+        var clipboardServiceElement = angular.element(document.getElementById('clipboard-service-copy-id'));
+        logger.debug(clipboardServiceElement);
         var range = document.createRange();
 
-        range.selectNode(ClipboardServiceElement[0]);
+        range.selectNode(clipboardServiceElement[0]);
 
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);

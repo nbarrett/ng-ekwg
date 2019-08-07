@@ -11,7 +11,7 @@ export class DateUtilsService {
   private logger: Logger;
 
   constructor(private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.INFO);
   }
 
   public formats = {
@@ -25,6 +25,12 @@ export class DateUtilsService {
 
   isDate(value) {
     return value && this.asMoment(value).isValid();
+  }
+
+  asDate(value): Date {
+    const date = value && this.asMoment(value).toDate();
+    this.logger.info("asDate:value is", value, "date is", date);
+    return date;
   }
 
   asMoment(dateValue?: any, inputFormat?: string) {

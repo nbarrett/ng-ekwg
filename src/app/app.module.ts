@@ -1,6 +1,6 @@
 import { ActivatedRoute } from "@angular/router";
 import { AppComponent } from "./app.component";
-import { ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
+import { ApplicationRef, NgModule } from "@angular/core";
 import { AppRoutingModule } from "./app-routing.module";
 import {
   AuthenticationModalsServiceProvider,
@@ -16,7 +16,6 @@ import {
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
   WalkNotificationServiceProvider,
-  WalksQueryServiceProvider,
   WalksServiceProvider
 } from "./ajs-upgraded-providers";
 import { BrowserModule } from "@angular/platform-browser";
@@ -48,16 +47,53 @@ import { CommitteeReferenceDataService } from "./services/committee-reference-da
 import { ContactUsComponent } from "./contact-us/contact-us.component";
 import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
-import { WalksComponent } from "./pages/walks/walks.component";
 import { BroadcasterService } from "./services/broadcast-service";
-import { DisplayDate, DisplayDateAndTime, DisplayDay } from "./pipes";
+import { AccordionModule } from "ngx-bootstrap/accordion";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { TooltipModule } from "ngx-bootstrap/tooltip";
+import { PopoverModule } from "ngx-bootstrap/popover";
+import { WalksReferenceService } from "./services/walks-reference-data.service";
+import { WalksQueryService } from "./services/walks-query.service";
+import { AlertModule } from "ngx-bootstrap/alert";
+import { NotifierService } from "./services/notifier.service";
+import { AccordionGroupComponent } from "./accordion/accordion-group.component";
+import { WalkViewComponent } from "./pages/walks/walk-view/walk-view.component";
+import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
+import { WalkListComponent } from "./pages/walks/walks-list/walk-list.component";
+import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.component";
+import { TabsModule } from "ngx-bootstrap/tabs";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
+import { DisplayDatePipe } from "./pipes/display-date.pipe";
+import { DisplayDayPipe } from "./pipes/display-day.pipe";
+import { DisplayDateAndTimePipe } from "./pipes/display-date-and-time.pipe";
+import { EventNotePipe } from "./pipes/event-note.pipe";
+import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
+import { ChangedItemsPipe } from "./pipes/changed-items.pipe";
+import { FullNamePipe } from "./pipes/full-name.pipe";
+import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pipe";
+import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
+import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
+import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
+import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
+import { SearchFilterPipe } from "./pipes/search-filter.pipe";
+import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
 
 @NgModule({
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
+    AccordionGroupComponent,
     AppComponent,
+    AuditDeltaValuePipe,
+    ChangedItemsPipe,
     ContactUsComponent,
+    DisplayDateAndTimePipe,
+    DisplayDatePipe,
+    DisplayDayPipe,
+    EventNotePipe,
     ForgotPasswordComponent,
+    FullNamePipe,
+    FullNameWithAliasOrMePipe,
+    FullNameWithAliasPipe,
     JoinUsComponent,
     LoginComponent,
     LoginPanelComponent,
@@ -66,45 +102,73 @@ import { DisplayDate, DisplayDateAndTime, DisplayDay } from "./pipes";
     MainLogoComponent,
     MainTitleComponent,
     MarkdownEditorComponent,
+    MeetupEventSummaryPipe,
+    MemberIdToFullNamePipe,
     NonRenderingComponent,
     PageNavigatorComponent,
     PageTitleComponent,
+    SearchFilterPipe,
     SetPasswordComponent,
     SiteEditComponent,
-    DisplayDate,
-    DisplayDay,
-    DisplayDateAndTime,
     SiteNavigatorComponent,
-    WalksComponent
-  ],
+    ValueOrDefaultPipe,
+    WalkEditComponent,
+    WalkEventTypePipe,
+    WalkExportComponent,
+    WalkListComponent,
+    WalkSummaryPipe,
+    WalkViewComponent],
   imports: [
+    AccordionModule.forRoot(),
+    AlertModule.forRoot(),
+    AppRoutingModule,
+    BrowserAnimationsModule,
     BrowserModule,
+    BsDatepickerModule.forRoot(),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
-    AppRoutingModule,
-    UpgradeModule,
+    PopoverModule.forRoot(),
+    TabsModule.forRoot(),
+    TooltipModule.forRoot(),
     UiSwitchModule,
+    UpgradeModule,
   ],
   providers: [
-    CustomNGXLoggerService,
-    CookieService,
-    SiteEditService,
-    RouterHistoryService,
-    CommitteeReferenceDataService,
-    LoggedInMemberServiceProvider,
-    ClipboardServiceProvider,
-    RamblersUploadAuditProvider,
-    WalksServiceProvider,
-    WalksQueryServiceProvider,
-    WalkNotificationServiceProvider,
-    MemberServiceProvider,
-    RamblersWalksAndEventsServiceProvider,
-    NotifierProvider,
-    GoogleMapsConfigProvider,
-    MeetupServiceProvider,
-    CommitteeConfigProvider,
+    AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
+    BroadcasterService,
+    ChangedItemsPipe,
+    ClipboardServiceProvider,
+    CommitteeConfigProvider,
+    CommitteeReferenceDataService,
     ContentTextProvider,
+    CookieService,
+    CustomNGXLoggerService,
+    DisplayDateAndTimePipe,
+    DisplayDatePipe,
+    DisplayDayPipe,
+    EventNotePipe,
+    FullNamePipe,
+    FullNameWithAliasOrMePipe,
+    FullNameWithAliasPipe,
+    GoogleMapsConfigProvider,
+    LoggedInMemberServiceProvider,
+    MeetupEventSummaryPipe,
+    MeetupServiceProvider,
+    MemberIdToFullNamePipe,
+    MemberServiceProvider,
+    NotifierProvider,
+    NotifierService,
+    RamblersUploadAuditProvider,
+    RamblersWalksAndEventsServiceProvider,
+    RouterHistoryService,
+    SearchFilterPipe,
+    SiteEditService,
+    ValueOrDefaultPipe,
+    WalkEventTypePipe,
+    WalkNotificationServiceProvider,
+    WalksServiceProvider,
+    WalkSummaryPipe,
   ],
   entryComponents: [
     AppComponent,
@@ -126,6 +190,8 @@ export class AppModule {
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
+      .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
+      .factory("WalksQueryService", downgradeInjectable(WalksQueryService))
       .factory("BroadcasterService", downgradeInjectable(BroadcasterService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("URLService", downgradeInjectable(UrlService))
