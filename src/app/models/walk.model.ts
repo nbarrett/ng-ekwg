@@ -26,7 +26,7 @@ export interface Walk {
   status?: EventType;
   walkDate: number;
   walkLeaderMemberId?: string;
-  $id(): any;
+  $id?(): any;
 
-  $saveOrUpdate(hideWalkDialogAndRefreshWalks: () => void, hideWalkDialogAndRefreshWalks2: () => void): any;
+  $saveOrUpdate?(hideWalkDialogAndRefreshWalks: () => void, hideWalkDialogAndRefreshWalks2: () => void): any;
 }

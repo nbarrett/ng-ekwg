@@ -12,6 +12,7 @@ import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { isEmpty } from "lodash-es";
 import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../../services/date-utils.service";
+import { PopoverDirective } from "ngx-bootstrap";
 
 @Injectable({
   providedIn: "root"
@@ -39,6 +40,7 @@ export class WalkDisplayService {
   loggedIn: boolean;
 
   constructor(
+    @Inject("ClipboardService") private clipboardService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("WalkNotificationService") private walkNotificationService,
@@ -68,7 +70,7 @@ export class WalkDisplayService {
   }
 
   setGoogleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
-    const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
+    const googleMapsUrl = fromPostcode && this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
       "https://www.google.com/maps/embed/v1/directions?origin=" + fromPostcode + "&destination=" +
       walk.postcode + "&key=" + this.googleMapsConfig.apiKey :
       "https://www.google.com/maps/embed/v1/place?q=" + walk.postcode + "&zoom=" +
@@ -129,6 +131,10 @@ export class WalkDisplayService {
     this.logger.info("display.toggleViewFor:", walkId, "-> expandedWalks contains", this.expandedWalks);
   }
 
+  copyWalkToClipboard(walk: Walk, pop: PopoverDirective) {
+    this.clipboardService.copyToClipboard(this.walkLink(walk));
+    pop.show();
+  }
 
   eventTypeFor(walk: Walk): WalkEventType {
     const latestEventWithStatusChange = this.walkNotificationService.latestEventWithStatusChange(walk);

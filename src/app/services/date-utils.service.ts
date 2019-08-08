@@ -41,7 +41,7 @@ export class DateUtilsService {
     return this.asMoment();
   }
 
-  asString(dateValue, inputFormat, outputFormat) {
+  asString(dateValue, inputFormat, outputFormat): string {
     const returnValue = dateValue ? this.asMoment(dateValue, inputFormat).format(outputFormat) : undefined;
     this.logger.debug("asString: dateValue ->", dateValue, "inputFormat ->", inputFormat,
       "outputFormat ->", outputFormat, "returnValue ->", returnValue);
@@ -52,27 +52,27 @@ export class DateUtilsService {
     return this.asMoment(dateValue, inputFormat).valueOf();
   }
 
-  nowAsValue() {
+  nowAsValue(): number {
     return this.asMoment(undefined, undefined).valueOf();
   }
 
-  mailchimpDate(dateValue) {
+  mailchimpDate(dateValue): string {
     return this.asString(dateValue, undefined, this.formats.ddmmyyyyWithSlashes);
   }
 
-  displayDateAndTime(dateValue) {
+  displayDateAndTime(dateValue): string {
     return this.asString(dateValue, undefined, this.formats.displayDateAndTime);
   }
 
-  displayDate(dateValue) {
+  displayDate(dateValue): string {
     return this.asString(dateValue, undefined, this.formats.displayDate);
   }
 
-  displayDay(dateValue) {
+  displayDay(dateValue): string {
     return this.asString(dateValue, undefined, this.formats.displayDay);
   }
 
-  asValueNoTime(dateValue?: any, inputFormat?: string) {
+  asValueNoTime(dateValue?: any, inputFormat?: string): number {
     const returnValue = this.asMoment(dateValue, inputFormat).startOf("day").valueOf();
     this.logger.debug("asValueNoTime: dateValue ->", dateValue, "returnValue ->", returnValue, "->", this.displayDateAndTime(returnValue));
     return returnValue;

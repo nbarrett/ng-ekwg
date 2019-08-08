@@ -14,7 +14,14 @@ describe("DateUtilsService", () => {
 
     it("should return a moment instance when passed a string and a date format", () => {
       const DateUtils: DateUtilsService = TestBed.get(DateUtilsService);
-      expect(DateUtils.asMoment("Weds 09 July 2014", "ddd DD MMMM YYYY").valueOf() - 1404860400000).toBeLessThan(2);
+      expect(DateUtils.asMoment("Weds 09 July 2014", "ddd DD MMMM YYYY").valueOf()
+        - 1404860400000).toBeLessThan(2);
+    });
+
+    it("should support a Date as an argument", () => {
+      const DateUtils: DateUtilsService = TestBed.get(DateUtilsService);
+      const injectedData = new Date(2018, 10, 15);
+      expect(DateUtils.asMoment(injectedData).toDate()).toEqual(injectedData);
     });
 
   });

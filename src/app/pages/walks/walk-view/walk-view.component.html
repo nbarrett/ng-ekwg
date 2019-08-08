@@ -90,11 +90,10 @@
           <div class="col-sm-12">
             <label>
               <a popover="Link has been copied to clipboard"
-                 triggers="focus"
-                 placement="bottom"
-                 role="button"
-                 [href]=""
-                 (click)="clipboardService.copyToClipboard(display.walkLink(walk))">
+                 triggers="" #pop="bs-popover"
+                 (click)="display.copyWalkToClipboard(walk, pop)"
+                 [outsideClick]="true"
+                 placement="bottom">
                 <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
                   tooltip-placement="left"
                   tooltip="Click to copy link to clipboard"></span></i> copy link

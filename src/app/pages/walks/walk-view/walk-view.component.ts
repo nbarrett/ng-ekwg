@@ -8,6 +8,8 @@ import { UrlService } from "../../../services/url.service";
 import { BroadcasterService } from "../../../services/broadcast-service";
 import { SafeResourceUrl } from "@angular/platform-browser";
 
+const SHOW_START_POINT = "show-start-point";
+const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 
 @Component({
   selector: "app-walks-detail-view",
@@ -18,20 +20,15 @@ import { SafeResourceUrl } from "@angular/platform-browser";
 export class WalkViewComponent implements OnInit {
   @Input()
   walk: Walk;
-
-  SHOW_START_POINT = "show-start-point";
-  SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
-
   private logger: Logger;
   private ramblersWalkBaseUrl: string;
-  mapDisplay = this.SHOW_START_POINT;
+  mapDisplay = SHOW_START_POINT;
   fromPostcode = "";
   public googleMapsUrl: SafeResourceUrl;
 
   constructor(
-    @Inject("ClipboardService") public clipboardService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
-    private display: WalkDisplayService,
+    public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
     private urlService: UrlService,
     private broadcasterService: BroadcasterService,
@@ -46,7 +43,7 @@ export class WalkViewComponent implements OnInit {
       this.display.refreshMembers();
       this.refreshHomePostcode();
     });
-    this.display.refreshGoogleMapsConfig();
+    this.googleMapsUrl = this.display.setGoogleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
   }
 
   refreshHomePostcode() {
@@ -56,17 +53,17 @@ export class WalkViewComponent implements OnInit {
   }
 
   autoSelectMapDisplay() {
-    const switchToShowStartPoint = this.drivingDirectionsDisabled() && this.mapDisplay === this.SHOW_DRIVING_DIRECTIONS;
-    const switchToShowDrivingDirections = !this.drivingDirectionsDisabled() && this.mapDisplay === this.SHOW_START_POINT;
+    const switchToShowStartPoint = this.drivingDirectionsDisabled() && this.mapDisplay === SHOW_DRIVING_DIRECTIONS;
+    const switchToShowDrivingDirections = !this.drivingDirectionsDisabled() && this.mapDisplay === SHOW_START_POINT;
     if (switchToShowStartPoint) {
-      this.mapDisplay = this.SHOW_START_POINT;
+      this.mapDisplay = SHOW_START_POINT;
     } else if (switchToShowDrivingDirections) {
-      this.mapDisplay = this.SHOW_DRIVING_DIRECTIONS;
+      this.mapDisplay = SHOW_DRIVING_DIRECTIONS;
     }
   }
 
   showDrivingDirections(): boolean {
-    return this.mapDisplay === this.SHOW_DRIVING_DIRECTIONS;
+    return this.mapDisplay === SHOW_DRIVING_DIRECTIONS;
   }
 
   drivingDirectionsDisabled() {

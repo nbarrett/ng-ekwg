@@ -216,7 +216,7 @@
                       edit</a> </label>
                   <p *ngIf="longerDescriptionPreview"
                      (click)="editLongerDescription()"
-                     btf-markdown="walk.longerDescription" type="text"
+                     markdown [data]="walk.longerDescription" type="text"
                      id="longer-description-formatted"></p>
                   <textarea *ngIf="!longerDescriptionPreview"
                             [disabled]="!allowEdits()"
@@ -236,10 +236,9 @@
                 <div class="form-group">
                   <label for="walk-status">Walk Status</label>
                   <select [disabled]="!allowAdminEdits()"
-                          (change)="walkStatusChange(walk.status)"
-                          class="form-control input-sm"
-                          [(ngModel)]="walk.status"
-                          class="form-control" id="walk-status">
+                          (change)="walkStatusChange()"
+                          [(ngModel)]="currentStatus"
+                          class="form-control input-sm" id="walk-status">
                     <option *ngFor="let status of walkStatuses()"
                             [ngValue]="status.eventType"
                             [textContent]="status.description">
@@ -501,15 +500,16 @@
         </div>
       </div>
       <div class="form-group">
-        <div [hidden]="!notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
-          class="glyphicon {{notifyTarget.alert.icon}}"></i>
-          <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+        <div [hidden]="!notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+          <i class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong>{{notifyTarget.alertTitle}}</strong>
+          <span>{{notifyTarget.alertMessage}}</span>
         </div>
       </div>
       <div *ngIf="display.walkLink(walk)">
-        <label><a href="#" popover="Link has been copied to clipboard" popoverTitle="Copy link to this walk"
-                  triggers="focus"
-                  (click)="clipboardService.copyToClipboard(display.walkLink(walk))">
+        <label><a href="#" popover="Link has been copied to clipboard"
+                  triggers="" #pop="bs-popover"
+                  (click)="display.copyWalkToClipboard(walk, pop)"
+                  [outsideClick]="true">
           <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg">
             <div tooltip-placement="left"
                  tooltip="Click to copy link to clipboard"></div>
@@ -520,7 +520,7 @@
       <div *ngIf="walk">
         <input *ngIf="allowClose()" [disabled]="saveInProgress" type="submit"
                value="Close"
-               (click)="hideWalkDialog()" title="Close this dialog"
+               (click)="backToWalksList()" title="Close and go back to walks list"
                [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
         <input *ngIf="allowSave()" [disabled]="saveInProgress" type="submit" value="Save"
                (click)="saveWalkDetails()" title="Save these walk details"
@@ -560,7 +560,7 @@
                title="Contact {{personToNotify()}} via email"
                [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form green-confirm'">
 
-        <input *ngIf="noPendingConfirmation()" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
+        <input *ngIf="pendingConfirmation()" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
                title="Cancel this action"
                [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form amber-confirm'">
         <div *ngIf="allowNotifyConfirmation() && !saveInProgress" class="row">

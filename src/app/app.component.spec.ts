@@ -11,6 +11,7 @@ import { PageNavigatorComponent } from "./page-navigator/page-navigator.componen
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { UiSwitchComponent } from "ngx-ui-switch";
 import { CookieService } from "ngx-cookie-service";
+import { PageTitleComponent } from "./page-title/page-title.component";
 
 describe("AppComponent", () => {
   beforeEach(async(() => {
@@ -23,7 +24,7 @@ describe("AppComponent", () => {
       providers: [{provide: "LoggedInMemberService", useValue: {}},
         CookieService],
       declarations: [
-        AppComponent, MainLogoComponent, MainTitleComponent,
+        AppComponent, MainLogoComponent, PageTitleComponent, MainTitleComponent,
         SiteNavigatorComponent, LoginPanelComponent, PageNavigatorComponent, SiteEditComponent, UiSwitchComponent
       ],
     }).compileComponents();

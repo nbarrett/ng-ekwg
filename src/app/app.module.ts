@@ -59,7 +59,7 @@ import { NotifierService } from "./services/notifier.service";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { WalkViewComponent } from "./pages/walks/walk-view/walk-view.component";
 import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
-import { WalkListComponent } from "./pages/walks/walks-list/walk-list.component";
+import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
 import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.component";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";

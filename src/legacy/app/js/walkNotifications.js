@@ -11,9 +11,7 @@ angular.module('ekwgApp')
                                                 MemberAuditService, RamblersWalksAndEventsService, MailchimpCampaignService, LoggedInMemberService, DateUtils) {
 
     var logger = $log.getInstance('WalkNotificationService');
-    var noLogger = $log.getInstance('WalkNotificationServiceNoLog');
     $log.logLevels['WalkNotificationService'] = $log.LEVEL.OFF;
-    $log.logLevels['WalkNotificationServiceNoLog'] = $log.LEVEL.OFF;
     var basePartialsUrl = 'partials/walks/notifications';
     var auditedFields = ['grade', 'walkDate', 'walkType', 'startTime', 'briefDescriptionAndStartPoint', 'longerDescription', 'distance', 'nearestTown', 'gridReference', 'meetupEventUrl', 'meetupEventTitle', 'osMapsRoute', 'osMapsTitle', 'postcode', 'walkLeaderMemberId', 'contactPhone', 'contactEmail', 'contactId', 'displayName', 'ramblersWalkId'];
 
@@ -31,15 +29,15 @@ angular.module('ekwgApp')
     }
 
     function eventsLatestFirst(walk) {
-      var events = walk.events && _(walk.events).clone().reverse() || [];
-      noLogger.info('eventsLatestFirst:', events);
-      return events;
+      return walk.events && _(walk.events).clone().reverse() || [];
     }
 
     function latestEventWithStatusChange(walk) {
-      return _(eventsLatestFirst(walk)).find(function (event) {
+      const eventType = _(eventsLatestFirst(walk)).find(function (event) {
         return (WalksReferenceService.toEventType(event.eventType) || {}).statusChange;
-      }) || {};
+      });
+      logger.debug('latestEventWithStatusChange:walk', walk._id, 'eventType =>', eventType);
+      return eventType || {};
     }
 
     function dataAuditDelta(walk, status) {
@@ -49,7 +47,7 @@ angular.module('ekwgApp')
       var changedItems = calculateChangedItems();
       var eventExists = latestEventWithStatusChangeIs(walk, status);
       var dataChanged = changedItems.length > 0;
-      var dataAuditDelta = {
+      return {
         currentData: currentData,
         previousData: previousData,
         changedItems: changedItems,
@@ -58,14 +56,11 @@ angular.module('ekwgApp')
         notificationRequired: dataChanged || !eventExists,
         eventType: dataChanged && eventExists ? WalksReferenceService.eventTypes.walkDetailsUpdated.eventType : status
       };
-      dataAuditDelta.dataChanged && noLogger.info('dataAuditDelta', dataAuditDelta);
-      return dataAuditDelta;
 
       function calculateChangedItems() {
         return _.compact(_.map(auditedFields, function (key) {
           var currentValue = currentData[key];
           var previousValue = previousData[key];
-          noLogger.info('auditing', key, 'now:', currentValue, 'previous:', previousValue);
           if (previousValue !== currentValue) return {
             fieldName: key,
             previousValue: previousValue,

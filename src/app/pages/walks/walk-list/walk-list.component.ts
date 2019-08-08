@@ -26,25 +26,23 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 })
 export class WalkListComponent implements OnInit {
 
-  private logger: Logger;
-  public currentWalk: any;
-  public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
-  private members: [];
-  private todayValue: any;
-  private filteredWalks: Walk[] = [];
   private allow: any;
-  private walkEditMode: WalkEditMode;
   private currentWalkId: string;
+  private logger: Logger;
   private nextWalkId: string;
-  private walks: Walk[];
-  private notifyTarget: AlertTarget = {};
   private notify: AlertInstance;
   private notifyWalkEdit: AlertInstance;
-  private searchChangeObserver: Observer<string>;
   private searchChangeObservable: Observable<string>;
+  private searchChangeObserver: Observer<string>;
+  private todayValue: any;
+  private walkEditMode: WalkEditMode;
+  private walks: Walk[];
+  public currentWalk: any;
+  public filteredWalks: Walk[] = [];
+  public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
+  public notifyTarget: AlertTarget = {};
 
   constructor(
-    @Inject("ClipboardService") public clipboardService,
     @Inject("WalksService") private walksService,
     @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("MemberService") private memberService,
@@ -166,11 +164,11 @@ export class WalkListComponent implements OnInit {
       .pipe(distinctUntilChanged())
       .subscribe(item => {
         this.searchChangeObserver.next(item);
-        this.refreshFilteredWalks(item);
+        this.applyFilterToWalks(item);
       });
   }
 
-  refreshFilteredWalks(keyValue?: string) {
+  applyFilterToWalks(keyValue?: string) {
     this.logger.info("refreshFilteredWalks->keyValue", keyValue);
     this.notify.setBusy();
     this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch);
@@ -204,12 +202,10 @@ export class WalkListComponent implements OnInit {
     this.notify.progress("Refreshing walks...");
     return this.query()
       .then(walks => {
-        if (this.currentWalkId) {
-          this.display.setNextWalkId(walks);
-        }
+        this.display.setNextWalkId(walks);
         this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
         this.walks = this.currentWalkId ? walks : this.walksQueryService.activeWalks(walks);
-        this.refreshFilteredWalks();
+        this.applyFilterToWalks();
         this.notify.clearBusy();
         this.display.saveInProgress = false;
       });

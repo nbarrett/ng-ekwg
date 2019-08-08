@@ -39,8 +39,8 @@
               </div>
               <div class="form-group">
                 <div *ngIf="notifyTarget.showAlert" class="alert walks-programme-alert {{notifyTarget.alertClass}}"><i
-                  class="glyphicon {{notifyTarget.alert.icon}}"></i>
-                  <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+                  class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong>{{notifyTarget.alertTitle}}</strong>
+                  {{notifyTarget.alertMessage}}
                 </div>
               </div>
             </form>
@@ -61,7 +61,7 @@
               </div>
             </div>
             <div *ngFor="let walk of filteredWalks; let index = index">
-              <app-walks-detail-view [walk]="walk"  *ngIf="isExpandedFor(walk)">
+              <app-walks-detail-view [walk]="walk" *ngIf="isExpandedFor(walk)">
               </app-walks-detail-view>
               <table [hidden]="isExpandedFor(walk)"
                      class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
@@ -79,7 +79,8 @@
                 </thead>
                 <tbody>
                 <tr [ngClass]="{'active':tableRowOdd(walk), 'default':tableRowEven(walk)}">
-                  <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}" class="nowrap"><input
+                  <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}"
+                      class="nowrap"><input
                     *ngIf="display.toWalkEditMode(walk)" type="submit"
                     value="{{display.toWalkEditMode(walk).caption}}"
                     (click)="display.editWalk(walk)"
@@ -95,7 +96,7 @@
                       id="startTime-{{index}}">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
-                                    [textContent]="viewWalkField(walk, 'startTime')" name="startTime"></span></td>
+                                  [textContent]="viewWalkField(walk, 'startTime')" name="startTime"></span></td>
                   <td width="32%" (click)="display.toggleViewFor(walk)"
                       id="briefDescription-{{index}}">
                             <span tooltip-placement="left"
@@ -131,7 +132,7 @@
                                       [textContent]="viewWalkField(walk, 'contactPhone')"
                                       name="contactPhone"></span></a>
                     <div class="markdown-preview-icon pull-right minimise-icon" tooltip-placement="right"
-                         tooltip="Click to show full walk detail" (click)="display.toggleViewFor(walk)">
+                         xtooltip="Click to show full walk detail" (click)="display.toggleViewFor(walk)">
                       <i *ngIf="!isExpandedFor(walk)" class="fa fa-caret-up fa-lg"></i>
                     </div>
                   </td>
