@@ -12,7 +12,7 @@ export class AccordionGroupComponent implements OnInit {
   @Input() title: string;
   @Input() initiallyOpen: boolean;
 
-  open: boolean;
+  public open: boolean;
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {

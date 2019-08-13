@@ -1,11 +1,20 @@
 import { Observable, Observer } from "rxjs";
 import { filter, share } from "rxjs/operators";
+import { Logger, LoggerFactory } from "./logger-factory.service";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Injectable } from "@angular/core";
 
-export class BroadcasterService {
+@Injectable({
+  providedIn: "root"
+})
+
+export class BroadcastService {
   observable: Observable<GlobalEvent>;
   observer: Observer<GlobalEvent>;
+  private logger: Logger;
 
-  constructor() {
+  constructor(loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.INFO);
     const temp = Observable.create((observer: Observer<GlobalEvent>) => {
       this.observer = observer;
     });
@@ -13,6 +22,7 @@ export class BroadcasterService {
   }
 
   broadcast(event: GlobalEvent | string) {
+    this.logger.info("broadcast:", event);
     if (event instanceof GlobalEvent) {
       this.observer.next(event);
     } else {

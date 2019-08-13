@@ -5,14 +5,14 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { WalkDisplayService } from "../walk-display.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { BroadcasterService } from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { SafeResourceUrl } from "@angular/platform-browser";
 
 const SHOW_START_POINT = "show-start-point";
 const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 
 @Component({
-  selector: "app-walks-detail-view",
+  selector: "app-walk-view",
   templateUrl: "./walk-view.component.html",
   styleUrls: ["./walk-view.component.sass"]
 })
@@ -31,7 +31,7 @@ export class WalkViewComponent implements OnInit {
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
     private urlService: UrlService,
-    private broadcasterService: BroadcasterService,
+    private broadcastService: BroadcastService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.INFO);
   }
@@ -39,11 +39,12 @@ export class WalkViewComponent implements OnInit {
   ngOnInit() {
     this.logger.info("initialised with walk", this.walk);
     this.refreshHomePostcode();
-    this.broadcasterService.on("memberLoginComplete", () => {
+    this.broadcastService.on("memberLoginComplete", () => {
+      this.logger.info("memberLoginComplete");
       this.display.refreshMembers();
       this.refreshHomePostcode();
     });
-    this.googleMapsUrl = this.display.setGoogleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
+    this.googleMapsUrl = this.display.googleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
   }
 
   refreshHomePostcode() {

@@ -41,6 +41,7 @@ describe("WalkDisplayService", () => {
         {provide: "RamblersWalksAndEventsService", useValue: ramblersWalksAndEventsService},
         {provide: "LoggedInMemberService", useValue: loggedInMemberService},
         {provide: "WalkNotificationService", useValue: {}},
+        {provide: "ClipboardService", useValue: {}},
         {provide: "MemberService", useValue: memberService},
         {provide: "GoogleMapsConfig", useValue: googleConfig}]
     });

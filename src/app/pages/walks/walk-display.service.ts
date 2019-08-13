@@ -9,17 +9,22 @@ import { WalkEventType } from "../../models/walk-event-type.model";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UrlService } from "../../services/url.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
-import { isEmpty } from "lodash-es";
+import { find, isEmpty, sortBy } from "lodash-es";
 import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { PopoverDirective } from "ngx-bootstrap";
+
+interface ExpandedWalk {
+  walkId: string;
+  edit?: boolean;
+}
 
 @Injectable({
   providedIn: "root"
 })
 export class WalkDisplayService {
 
-  expandedWalks = [];
+  expandedWalks: ExpandedWalk [] = [];
   longerDescriptionPreview = true;
   walkExportTab0Active = true;
   walkExportTab1Active = false;
@@ -32,6 +37,8 @@ export class WalkDisplayService {
   private nextWalkId: string;
   private sendNotifications: boolean;
   public members: Member [] = [];
+  private meetupConfig: any;
+  public meetupEvents: any[];
   public ramblersWalkBaseUrl: string;
   public googleMapsConfig: {
     apiKey: string;
@@ -46,6 +53,7 @@ export class WalkDisplayService {
     @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("MemberService") private memberService,
     @Inject("GoogleMapsConfig") private googleMapsConfigService,
+    @Inject("MeetupService") private meetupService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -58,8 +66,38 @@ export class WalkDisplayService {
     this.refreshGoogleMapsConfig();
     this.refreshRamblersConfig();
     this.refreshMembers();
+    this.refreshMeetupData();
     this.logger.info("this.loggedInMemberService", this.loggedInMemberService.loggedInMember());
     this.loggedIn = loggedInMemberService.memberLoggedIn();
+  }
+
+  refreshMeetupData() {
+    this.meetupService.config().then(meetupConfig => {
+      this.meetupConfig = meetupConfig;
+      this.logger.info("refreshMeetupData:meetupConfig", meetupConfig);
+    });
+    this.logger.info("refreshMeetupData");
+    this.meetupService.eventsForStatus("past")
+      .then(pastEvents => {
+        this.meetupService.eventsForStatus("upcoming")
+          .then(futureEvents => {
+            this.meetupEvents = sortBy(pastEvents.concat(futureEvents), "date,").reverse();
+            this.logger.info("refreshMeetupData:meetupEvents", this.meetupEvents);
+          });
+      });
+  }
+
+  findWalk(walk: Walk): ExpandedWalk {
+    return find(this.expandedWalks, {walkId: walk.$id()}) as ExpandedWalk;
+  }
+
+  isExpanded(walk: Walk): boolean {
+    return !!this.findWalk(walk);
+  }
+
+  isEdit(walk: Walk) {
+    const expandedWalk = this.findWalk(walk);
+    return expandedWalk && expandedWalk.edit;
   }
 
   refreshGoogleMapsConfig() {
@@ -69,8 +107,8 @@ export class WalkDisplayService {
     });
   }
 
-  setGoogleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
-    const googleMapsUrl = fromPostcode && this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
+  googleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
+    const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
       "https://www.google.com/maps/embed/v1/directions?origin=" + fromPostcode + "&destination=" +
       walk.postcode + "&key=" + this.googleMapsConfig.apiKey :
       "https://www.google.com/maps/embed/v1/place?q=" + walk.postcode + "&zoom=" +
@@ -111,24 +149,42 @@ export class WalkDisplayService {
 
   editWalk(walk: Walk) {
     this.logger.info("editing walk:", walk);
-    this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
-      this.logger.info("area is now", this.urlService.area());
-    });
+    this.toggleEditModeFor(walk);
   }
 
-  toggleViewFor(walk: Walk) {
+  statusFor(walk: Walk): EventType {
+    return this.walkNotificationService.latestEventWithStatusChange(walk).eventType;
+  }
 
-    const arrayRemove = (arr, value) => arr.filter(ele => ele !== value);
+  editWalkFullscreen(walk: Walk) {
+    this.logger.info("editing walk fullscreen:", walk);
+    this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
+      this.logger.info("area is now", this.urlService.area());
+      this.toggleEditModeFor(walk);
+    });
 
+  }
+
+  toggleEditModeFor(walk: Walk) {
+    const expandedWalk = this.findWalk(walk);
+    if (expandedWalk) {
+      expandedWalk.edit = !expandedWalk.edit;
+    }
+  }
+
+  toggleExpandedViewFor(walk: Walk): ExpandedWalk {
+    let expandedWalk: ExpandedWalk;
     const walkId = walk.$id();
-    if (this.expandedWalks.includes(walkId)) {
-      this.expandedWalks = arrayRemove(this.expandedWalks, walkId);
+    if (this.findWalk(walk)) {
+      this.expandedWalks = this.expandedWalks.filter(ele => ele.walkId !== walkId);
       this.logger.info("display.toggleViewFor:", walkId, "-> collapsing");
     } else {
-      this.expandedWalks.push(walkId);
+      expandedWalk = {walkId, edit: false};
+      this.expandedWalks.push(expandedWalk);
       this.logger.info("display.toggleViewFor:", walkId, "-> expanding");
     }
     this.logger.info("display.toggleViewFor:", walkId, "-> expandedWalks contains", this.expandedWalks);
+    return expandedWalk;
   }
 
   copyWalkToClipboard(walk: Walk, pop: PopoverDirective) {
@@ -162,11 +218,11 @@ export class WalkDisplayService {
     this.nextWalkId = this.walksQueryService.nextWalkId(walks);
   }
 
-  setExpandedWalks(expandedWalks: string[]) {
+  setExpandedWalks(expandedWalks: ExpandedWalk[]) {
     this.expandedWalks = expandedWalks;
   }
 
-  walkLink(walk: Walk) {
+  walkLink(walk: Walk): string {
     return walk && walk.$id() ? this.urlService.notificationHref({
       type: "walk",
       area: "walks",

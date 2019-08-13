@@ -11,6 +11,7 @@ import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
 import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
+import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
 
 const routes: Routes = [
   {path: "forgot-password", component: ForgotPasswordComponent},
@@ -21,7 +22,7 @@ const routes: Routes = [
   {path: "logout", component: LogoutComponent},
   {path: "walks/walkId/:walk-id", component: WalkListComponent},
   {path: "walks/add", component: WalkEditComponent},
-  {path: "walks/edit/:walk-id", component: WalkEditComponent},
+  {path: "walks/edit/:walk-id", component: WalkEditFullPageComponent},
   {path: "walks", component: WalkListComponent},
   {path: "**", component: NonRenderingComponent}
 ];

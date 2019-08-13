@@ -1,8 +1,8 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, Input, OnInit } from "@angular/core";
 import { Walk } from "../../../models/walk.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { clone, find, pick, sortBy } from "lodash-es";
+import { clone, find, pick } from "lodash-es";
 import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { AlertTarget } from "../../../models/alert-target.model";
@@ -11,7 +11,7 @@ import { WalkEventType } from "../../../models/walk-event-type.model";
 import { CommitteeReferenceDataService } from "../../../services/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Member } from "../../../models/member.model";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { WalkEvent } from "../../../models/walk-event.model";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -35,31 +35,30 @@ interface DisplayMember {
   styleUrls: ["./walk-edit.component.sass"]
 })
 export class WalkEditComponent implements OnInit {
+  @Input()
+  public walk: Walk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
   public walkDate: Date;
   private currentStatus: EventType;
   private currentWalkEditMode: WalkEditMode;
   private priorStatus: EventType;
-  public walk: Walk;
-  private logger: Logger;
+  protected logger: Logger;
   public notifyTarget: AlertTarget = {};
-  private notify: AlertInstance;
+  protected notify: AlertInstance;
   private meetupEvent: {
     url: string;
     title: string;
   };
-  private meetupEvents: any[];
   private saveInProgress: boolean;
   private sendNotifications: boolean;
   private longerDescriptionPreview: boolean;
 
   constructor(
-    @Inject("WalksService") private walksService,
+    @Inject("WalksService") protected walksService,
     @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-    @Inject("MeetupService") private meetupService,
     public route: ActivatedRoute,
     private urlService: UrlService,
     private committeeReferenceData: CommitteeReferenceDataService,
@@ -70,15 +69,14 @@ export class WalkEditComponent implements OnInit {
     private fullNameWithAliasOrMePipe: FullNameWithAliasOrMePipe,
     private eventNotePipe: EventNotePipe,
     private changedItemsPipe: ChangedItemsPipe,
-    private dateUtils: DateUtilsService,
+    protected dateUtils: DateUtilsService,
     public display: WalkDisplayService,
     private displayDate: DisplayDatePipe,
-    private notifierService: NotifierService,
+    protected notifierService: NotifierService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
   }
 
-  private meetupConfig: any;
   copySource = "copy-selected-walk-leader";
   copySourceFromWalkLeaderMemberId: undefined;
   private copyFrom: any = {};
@@ -86,27 +84,23 @@ export class WalkEditComponent implements OnInit {
   ngOnInit() {
     this.logger.info("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.refreshMeetupData();
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has("add")) {
-        this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
-        this.showWalk(new this.walksService({
-          status: EventType.AWAITING_LEADER,
-          walkType: this.display.walkTypes[0],
-          walkDate: this.dateUtils.momentNowNoTime().valueOf()
-        }));
-      } else {
+    if (this.walk) {
+      const walkId = this.walk.$id();
+      if (walkId) {
         this.setWalkEditMode(this.walksReferenceService.walkEditModes.edit);
-        const walkId = paramMap.get("walk-id");
-        this.logger.info("querying walk-id", walkId);
-        this.walksService.getById(walkId)
-          .then((walk: Walk) => {
-            this.logger.info("found walk", walk);
-            this.showWalk(walk);
-          });
+      } else {
+        this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
       }
-    });
+    } else {
+      this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
+      this.walk = new this.walksService({
+        status: EventType.AWAITING_LEADER,
+        walkType: this.display.walkTypes[0],
+        walkDate: this.dateUtils.momentNowNoTime().valueOf()
+      });
+    }
+    this.showWalk(this.walk);
   }
 
   dataHasChanged() {
@@ -239,7 +233,7 @@ export class WalkEditComponent implements OnInit {
       this.walk = walk;
       this.confirmAction = ConfirmType.NONE;
       this.sendNotifications = true;
-      this.googleMapsUrl = this.display.setGoogleMapsUrl(walk, false, walk.postcode);
+      this.googleMapsUrl = this.display.googleMapsUrl(walk, false, walk.postcode);
       this.walkDate = this.dateUtils.asDate(walk.walkDate);
       if (this.walkEditMode().initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
@@ -251,7 +245,7 @@ export class WalkEditComponent implements OnInit {
             "It will be published to the public once it\"s approved. If you want to release this slot again, just click cancel."
         });
       } else {
-        const eventTypeIfExists = this.walkNotificationService.latestEventWithStatusChange(this.walk).eventType;
+        const eventTypeIfExists: EventType = this.display.statusFor(this.walk);
         if (eventTypeIfExists) {
           this.setStatus(eventTypeIfExists);
         }
@@ -285,20 +279,6 @@ export class WalkEditComponent implements OnInit {
     return this.display.members.map(member => {
       return {memberId: member.$id(), name: this.fullNamePipe.transform(member)};
     });
-  }
-
-  refreshMeetupData() {
-    this.meetupService.config().then(meetupConfig => {
-      this.meetupConfig = meetupConfig;
-    });
-
-    this.meetupService.eventsForStatus("past")
-      .then(pastEvents => {
-        this.meetupService.eventsForStatus("upcoming")
-          .then(futureEvents => {
-            this.meetupEvents = sortBy(pastEvents || [].concat(futureEvents), "date,").reverse();
-          });
-      });
   }
 
   populateCurrentWalkFromTemplate() {
@@ -378,7 +358,10 @@ export class WalkEditComponent implements OnInit {
   }
 
   meetupSelectSync(walk: Walk) {
-    this.meetupEvent = find(this.meetupEvents, {url: walk.meetupEventUrl});
+    this.logger.info("meetupSelectSync");
+    const criteria = {url: walk.meetupEventUrl};
+    this.meetupEvent = find(this.display.meetupEvents, criteria);
+    this.logger.info("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, criteria, "=>", this.meetupEvent);
   }
 
   ramblersWalkExists() {
@@ -407,13 +390,14 @@ export class WalkEditComponent implements OnInit {
     });
   }
 
-  backToWalksList() {
+  closeEditView() {
     this.confirmAction = ConfirmType.NONE;
-    this.urlService.navigateTo("walks");
+    this.display.toggleEditModeFor(this.walk);
+    // this.urlService.navigateTo("walks");
   }
 
   confirmCancelWalkDetails() {
-    this.backToWalksList();
+    this.closeEditView();
   }
 
   isWalkReadyForStatusChangeTo(eventType: WalkEventType): boolean {
@@ -458,14 +442,15 @@ export class WalkEditComponent implements OnInit {
   confirmDeleteWalkDetails() {
     this.setStatus(EventType.DELETED);
     return this.initiateEvent()
-      .then(() => this.walk.$saveOrUpdate(this.backToWalksList, this.backToWalksList))
+      .then(() => this.walk.$saveOrUpdate(this.closeEditView, this.closeEditView))
       .catch(() => this.saveInProgress = false);
   }
 
   afterSaveWith(notificationSent) {
     return () => {
       if (!notificationSent) {
-        this.urlService.navigateTo("walks");
+        this.display.toggleEditModeFor(this.walk);
+        // this.urlService.navigateTo("walks");
       }
       this.notify.clearBusy();
       this.confirmAction = ConfirmType.NONE;
@@ -619,7 +604,6 @@ export class WalkEditComponent implements OnInit {
   onDateChange(date: Date) {
     this.walkDate = date;
     this.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
-    this.logger.info("onDateChange - date:", date, "display.walkDate", this.walkDate);
   }
 
 }

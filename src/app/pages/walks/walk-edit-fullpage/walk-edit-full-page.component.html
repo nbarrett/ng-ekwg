@@ -1,0 +1,18 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="wrapper">
+    <div id="page-body" role="main">
+      <div class="body-header">
+        <div class="breadcrumbs">
+          <ul>
+            <li><a href="/" title="Home">Home</a></li>
+            <li><a href="/walks" title="Walks">Walks</a></li>
+            <li *ngIf="walk" class="last">{{walkEditMode().title}} walk ({{status()
+              | walkEventType: 'description'}})
+            </li>
+          </ul>
+        </div>
+      </div>
+      <app-walk-edit *ngIf="walk" [walk]="walk"></app-walk-edit>
+    </div>
+  </div>
+</div>

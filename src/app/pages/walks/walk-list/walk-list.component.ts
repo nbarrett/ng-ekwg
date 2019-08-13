@@ -1,5 +1,5 @@
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { BroadcasterService } from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { Component, Inject, OnInit } from "@angular/core";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { WalksReferenceService } from "../../../services/walks-reference-data.service";
@@ -8,12 +8,11 @@ import { LoginService } from "../../../login/login.service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { UrlService } from "../../../services/url.service";
 import { Walk } from "../../../models/walk.model";
-import { WalkEditMode } from "../../../models/walk-edit-mode.model";
 import { WalksQueryService } from "../../../services/walks-query.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { Observable, Observer } from "rxjs";
+import { Subject } from "rxjs";
 import { WalkDisplayService } from "../walk-display.service";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
@@ -21,23 +20,16 @@ import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pip
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 
 @Component({
-  selector: "app-walks",
+  selector: "app-walk-list",
   templateUrl: "./walk-list.component.html"
 })
 export class WalkListComponent implements OnInit {
-
-  private allow: any;
-  private currentWalkId: string;
+  public currentWalkId: string;
   private logger: Logger;
-  private nextWalkId: string;
   private notify: AlertInstance;
-  private notifyWalkEdit: AlertInstance;
-  private searchChangeObservable: Observable<string>;
-  private searchChangeObserver: Observer<string>;
+  private searchChangeObservable: Subject<string>;
   private todayValue: any;
-  private walkEditMode: WalkEditMode;
   private walks: Walk[];
-  public currentWalk: any;
   public filteredWalks: Walk[] = [];
   public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
   public notifyTarget: AlertTarget = {};
@@ -57,14 +49,12 @@ export class WalkListComponent implements OnInit {
     private walksQueryService: WalksQueryService,
     private dateUtils: DateUtilsService,
     private notifierService: NotifierService,
-    private broadcasterService: BroadcasterService,
+    private broadcastService: BroadcastService,
     private urlService: UrlService,
     private walksReferenceService: WalksReferenceService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.INFO);
-    this.searchChangeObservable = Observable.create((observer: Observer<string>) => {
-      this.searchChangeObserver = observer;
-    }) as Observable<string>;
+    this.searchChangeObservable = new Subject<string>();
   }
 
   ngOnInit() {
@@ -77,7 +67,29 @@ export class WalkListComponent implements OnInit {
     });
     this.display.refreshMembers();
     this.refreshWalks();
-    this.broadcasterService.on("walkSlotsCreated", () => this.refreshWalks());
+    this.broadcastService.on("walkSlotsCreated", () => this.refreshWalks());
+    this.searchChangeObservable.pipe(debounceTime(1000))
+      .pipe(distinctUntilChanged())
+      .subscribe(item => {
+        this.applyFilterToWalks(item);
+      });
+  }
+
+  onSearchChange($event: any) {
+    this.logger.info("received searchValue:" + $event);
+    this.searchChangeObservable.next($event);
+  }
+
+  applyFilterToWalks(keyValue?: string) {
+    this.logger.info("applyFilterToWalks:keyValue", keyValue, "this.filterParameters.quickSearch:", this.filterParameters.quickSearch);
+    this.notify.setBusy();
+    this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch);
+    const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
+    this.notify.progress("Showing " + walksCount + " walk(s)");
+    if (this.filteredWalks.length > 0 && this.display.expandedWalks.length === 0) {
+      this.display.setExpandedWalks([{walkId: this.filteredWalks[0].$id(), edit: false}]);
+    }
+    this.notify.clearBusy();
   }
 
   allowAdminEdits() {
@@ -108,15 +120,15 @@ export class WalkListComponent implements OnInit {
   }
 
   addWalkSlotsDialog() {
-    this.broadcasterService.broadcast("addWalkSlotsDialogOpen");
+    this.broadcastService.broadcast("addWalkSlotsDialogOpen");
   }
 
-  allowShowAll() {
-    return true;
+  allowShowAll(): boolean {
+    return !!this.currentWalkId;
   }
 
   showAllWalks() {
-    this.urlService.navigateTo("walks", "programme");
+    this.urlService.navigateTo("walks");
   }
 
   walksCriteriaObject() {
@@ -158,34 +170,9 @@ export class WalkListComponent implements OnInit {
     }
   }
 
-  onSearchChange(searchValue: string) {
-    this.logger.info("received searchValue:" + searchValue);
-    this.searchChangeObservable.pipe(debounceTime(500))
-      .pipe(distinctUntilChanged())
-      .subscribe(item => {
-        this.searchChangeObserver.next(item);
-        this.applyFilterToWalks(item);
-      });
-  }
-
-  applyFilterToWalks(keyValue?: string) {
-    this.logger.info("refreshFilteredWalks->keyValue", keyValue);
-    this.notify.setBusy();
-    this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch);
-    const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
-    this.notify.progress("Showing " + walksCount + " walk(s)");
-    if (this.filteredWalks.length > 0) {
-      this.display.setExpandedWalks([this.filteredWalks[0].$id()]);
-    }
-    this.notify.clearBusy();
-  }
-
   showTableHeader(walk: Walk) {
-    return this.filteredWalks.indexOf(walk) === 0 || this.isExpandedFor(this.filteredWalks[this.filteredWalks.indexOf(walk) - 1]);
-  }
-
-  isExpandedFor(walk: Walk) {
-    return walk && this.display.expandedWalks.includes(walk.$id());
+    return this.filteredWalks.indexOf(walk) === 0 ||
+      this.display.isExpanded(this.filteredWalks[this.filteredWalks.indexOf(walk) - 1]);
   }
 
   tableRowOdd(walk: Walk) {
@@ -197,9 +184,7 @@ export class WalkListComponent implements OnInit {
   }
 
   refreshWalks(notificationSent?: any) {
-    this.logger.info("refreshWalks");
-    this.notify.setBusy();
-    this.notify.progress("Refreshing walks...");
+    this.notify.progress("Refreshing walks...", true);
     return this.query()
       .then(walks => {
         this.display.setNextWalkId(walks);
@@ -217,5 +202,10 @@ export class WalkListComponent implements OnInit {
 
   allowEdits() {
     return false;
+  }
+
+  editWalk(walk: Walk) {
+    this.display.toggleExpandedViewFor(walk);
+    this.display.editWalk(walk);
   }
 }

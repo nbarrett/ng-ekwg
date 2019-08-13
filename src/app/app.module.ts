@@ -47,7 +47,7 @@ import { CommitteeReferenceDataService } from "./services/committee-reference-da
 import { ContactUsComponent } from "./contact-us/contact-us.component";
 import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
-import { BroadcasterService } from "./services/broadcast-service";
+import { BroadcastService } from "./services/broadcast-service";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
@@ -78,6 +78,8 @@ import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
+import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
+import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
 
 @NgModule({
   declarations: [
@@ -113,11 +115,13 @@ import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
     SiteNavigatorComponent,
     ValueOrDefaultPipe,
     WalkEditComponent,
+    WalkEditFullPageComponent,
     WalkEventTypePipe,
     WalkExportComponent,
     WalkListComponent,
     WalkSummaryPipe,
-    WalkViewComponent],
+    WalkViewComponent,
+    PanelExpanderComponent],
   imports: [
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
@@ -136,7 +140,7 @@ import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
   providers: [
     AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
-    BroadcasterService,
+    BroadcastService,
     ChangedItemsPipe,
     ClipboardServiceProvider,
     CommitteeConfigProvider,
@@ -192,7 +196,7 @@ export class AppModule {
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))
-      .factory("BroadcasterService", downgradeInjectable(BroadcasterService))
+      .factory("BroadcastService", downgradeInjectable(BroadcastService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("URLService", downgradeInjectable(UrlService))
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))

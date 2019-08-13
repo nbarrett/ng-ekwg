@@ -21,12 +21,12 @@ export class UrlService {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
   }
 
-  relativeUrlFirstSegment(optionalUrl?: string) {
+  relativeUrlFirstSegment(optionalUrl?: string): string  {
     const url = new URL(optionalUrl || this.absUrl());
     return "/" + first(url.pathname.substring(1).split("/"));
   }
 
-  navigateTo(page?: string, area?: string) {
+  navigateTo(page?: string, area?: string): void  {
     const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
     this.logger.info("navigating to page:", page, "area:", area, "->", url);
     this.router.navigate([url], {relativeTo: this.route}).then(() => {
@@ -34,48 +34,48 @@ export class UrlService {
     });
   }
 
-  absUrl() {
+  absUrl(): string  {
     this.logger.debug("absUrl: document.location.href", this.document.location.href);
     return this.document.location.href;
   }
 
-  baseUrl(optionalUrl?: string) {
+  baseUrl(optionalUrl?: string): string  {
     const url = new URL(optionalUrl || this.absUrl());
     return `${url.protocol}//${url.host}`;
   }
 
-  relativeUrl(optionalUrl?: string) {
+  relativeUrl(optionalUrl?: string): string  {
     return last((optionalUrl || this.absUrl()).split("/"));
   }
 
-  resourceUrl(area: string, type: string, id: string) {
+  resourceUrl(area: string, type: string, id: string) : string {
     return this.baseUrl() + "/" + area + "/" + type + "Id/" + id;
   }
 
-  area(optionalUrl?: string) {
+  area(optionalUrl?: string): string  {
     return this.relativeUrlFirstSegment(optionalUrl).substring(1);
   }
 
-  refresh() {
+  refresh(): void {
     location.reload(true);
   }
 
-  notificationHref(ctrl) {
+  notificationHref(ctrl): string {
     const href = (ctrl.name) ? this.resourceUrlForAWSFileName(ctrl.name) : this.resourceUrl(ctrl.area, ctrl.type, ctrl.id);
     this.logger.debug("href:", href);
     return href;
   }
 
-  resourceUrlForAWSFileName(fileName) {
+  resourceUrlForAWSFileName(fileName): string {
     const API_PATH_PREFIX = "api/aws/s3/";
     return this.baseUrl() + "/" + API_PATH_PREFIX + fileName;
   }
 
-  hasRouteParameter(parameter) {
+  hasRouteParameter(parameter): boolean {
     return this.router.url.split("/").includes(parameter);
   }
 
-  isArea(...areas: string[]) {
+  isArea(...areas: string[]): boolean {
     return some(isArray(areas) ? areas : [areas], (area) => {
       const matched = area === this.area();
       this.logger.debug("this.area()", this.area(), "isArea", area, "matched", matched);
@@ -83,7 +83,7 @@ export class UrlService {
     });
   }
 
-  isSubArea(...subAreas: string[]) {
+  isSubArea(...subAreas: string[]): boolean {
     return some(isArray(subAreas) ? subAreas : [subAreas], (subArea) => {
       const matched = this.areaUrl().includes(subArea);
       this.logger.debug("this.subArea()", this.areaUrl(), "isSubArea", subArea, "matched", matched);
@@ -91,17 +91,17 @@ export class UrlService {
     });
   }
 
-  pageUrl(page?: string) {
+  pageUrl(page?: string): string {
     const pageOrEmpty = (page ? page : "");
     return pageOrEmpty.startsWith("/") ? pageOrEmpty : "/" + pageOrEmpty;
   }
 
-  noArea() {
+  noArea(): boolean {
     return this.areaUrl() === "";
   }
 
 
-  areaUrl() {
+  areaUrl(): string {
     return tail(new URL(this.absUrl()).pathname.substring(1).split("/")).join("/");
   }
 }

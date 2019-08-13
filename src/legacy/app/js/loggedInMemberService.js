@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .factory('LoggedInMemberService', function ($rootScope, $q, $routeParams, $cookieStore, URLService, MemberService, MemberAuditService, DateUtils, NumberUtils, $log) {
+  .factory('LoggedInMemberService', function ($rootScope, $q, $routeParams, $cookieStore, BroadcastService, URLService, MemberService, MemberAuditService, DateUtils, NumberUtils, $log) {
 
       var logger = $log.getInstance('LoggedInMemberService');
       $log.logLevels['LoggedInMemberService'] = $log.LEVEL.OFF;
@@ -73,7 +73,7 @@ angular.module('ekwgApp')
         removeCookie('loggedInMember');
         removeCookie('showResetPassword');
         removeCookie('editSite');
-        $rootScope.$broadcast('memberLogoutComplete');
+        BroadcastService.broadcast('memberLogoutComplete');
       }
 
       function auditMemberLogin(userName, password, member, loginResponse) {
@@ -131,7 +131,7 @@ angular.module('ekwgApp')
             return auditMemberLogin(userName, password, loginData.member, loginData.loginResponse)
               .then(function () {
                   logger.debug('loginResponse =', loginData.loginResponse);
-                  return $rootScope.$broadcast('memberLoginComplete');
+                  return BroadcastService.broadcast('memberLoginComplete');
                 }
               );
           }, function (response) {
@@ -158,7 +158,7 @@ angular.module('ekwgApp')
             setLoggedInMemberCookie(memberToSave);
           })
           .then(function () {
-            $rootScope.$broadcast('memberSaveComplete');
+            BroadcastService.broadcast('memberSaveComplete');
           });
       }
 
@@ -211,7 +211,7 @@ angular.module('ekwgApp')
         }
 
         function broadcastMemberLoginComplete(resetPasswordData) {
-          $rootScope.$broadcast('memberLoginComplete');
+          BroadcastService.broadcast('memberLoginComplete');
           return resetPasswordData
         }
 

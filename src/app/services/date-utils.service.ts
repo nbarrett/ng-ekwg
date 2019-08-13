@@ -28,9 +28,7 @@ export class DateUtilsService {
   }
 
   asDate(value): Date {
-    const date = value && this.asMoment(value).toDate();
-    this.logger.info("asDate:value is", value, "date is", date);
-    return date;
+    return value && this.asMoment(value).toDate();
   }
 
   asMoment(dateValue?: any, inputFormat?: string) {
@@ -42,10 +40,7 @@ export class DateUtilsService {
   }
 
   asString(dateValue, inputFormat, outputFormat): string {
-    const returnValue = dateValue ? this.asMoment(dateValue, inputFormat).format(outputFormat) : undefined;
-    this.logger.debug("asString: dateValue ->", dateValue, "inputFormat ->", inputFormat,
-      "outputFormat ->", outputFormat, "returnValue ->", returnValue);
-    return returnValue;
+    return dateValue ? this.asMoment(dateValue, inputFormat).format(outputFormat) : undefined;
   }
 
   asValue(dateValue: any, inputFormat?: string) {
@@ -73,9 +68,7 @@ export class DateUtilsService {
   }
 
   asValueNoTime(dateValue?: any, inputFormat?: string): number {
-    const returnValue = this.asMoment(dateValue, inputFormat).startOf("day").valueOf();
-    this.logger.debug("asValueNoTime: dateValue ->", dateValue, "returnValue ->", returnValue, "->", this.displayDateAndTime(returnValue));
-    return returnValue;
+    return this.asMoment(dateValue, inputFormat).startOf("day").valueOf();
   }
 
   currentMemberBulkLoadDisplayDate() {
