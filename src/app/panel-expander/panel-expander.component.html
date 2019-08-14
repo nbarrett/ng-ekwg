@@ -1,8 +1,13 @@
-<span *ngIf="expandable" class="markdown-preview-icon pull-right minimise-icon" tooltip-placement="right"
-      tooltip="Click to {{expandAction}}" (click)="expand()">
-  <i class="fa fa-caret-up fa-lg"></i>
-</span>
-<span *ngIf="collapsable" class="markdown-preview-icon pull-right minimise-icon" tooltip-placement="right"
-      tooltip="Click to {{collapseAction}}" (click)="collapse()">
-  <i class="fa fa-caret-down fa-lg"></i>
-</span>
+<div class="pull-right">
+  <div class="top-right">
+    <span *ngIf="collapsable" class="markdown-preview-icon minimise-icon" tooltip-placement="right"
+        tooltip="Click to {{collapseAction}}" (click)="collapse()">
+      <i class="fa fa-caret-down fa-lg"></i>
+    </span>
+    <span *ngIf="expandable" class="markdown-preview-icon minimise-icon" tooltip-placement="right"
+         tooltip="Click to {{expandAction}}" (click)="expand()">
+      <i class="fa fa-caret-up fa-lg"></i>
+    </span>
+  </div>
+</div>
+

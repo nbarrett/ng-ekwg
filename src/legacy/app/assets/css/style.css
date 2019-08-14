@@ -363,16 +363,6 @@ body {
   width: 280px;
 }
 
-.third-party-panel {
-  min-height: 226px;
-}
-
-.force-to-bottom {
-  position: absolute;
-  margin-bottom: 40px;
-  bottom: 0%;
-}
-
 .related-links-image {
   width: 23px;
 }
@@ -587,12 +577,13 @@ img {
 
 .thumbnail-heading {
   position: relative;
-  top: -24px;
+  top: -28px;
   margin-left: 0px;
   margin-bottom: -14px;
   padding-top: 2px;
   background-color: white;
   display: table;
+  font-size: 17px;
   font-weight: bold;
 }
 
@@ -2651,8 +2642,6 @@ img[src~="bordered"] {
 
 .walks-programme-alert {
   margin: 0 0 0 6px;
-  /*display: inline-block;*/
-  /*width: 100%;*/
   float: left;
 }
 
@@ -2666,7 +2655,6 @@ table.inactive th {
   background-color: #A79FA4;
   color: #fff;
   font-weight: bold;
-  /* border-radius: 6px 6px 0px 0px; */
 }
 
 .alert-login {
@@ -2674,7 +2662,7 @@ table.inactive th {
 }
 
 .button-form {
-  margin: 0px 1px 0px 0px;
+  margin: 0px 4px 0px 0px;
   background: url("../images/ramblers/bull-green.png") no-repeat 8px 8px #333;
   color: #fff;
   border: none;

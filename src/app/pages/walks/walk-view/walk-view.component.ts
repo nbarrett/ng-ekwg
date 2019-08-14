@@ -21,7 +21,6 @@ export class WalkViewComponent implements OnInit {
   @Input()
   walk: Walk;
   private logger: Logger;
-  private ramblersWalkBaseUrl: string;
   mapDisplay = SHOW_START_POINT;
   fromPostcode = "";
   public googleMapsUrl: SafeResourceUrl;

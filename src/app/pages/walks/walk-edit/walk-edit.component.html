@@ -1,8 +1,9 @@
+<app-panel-expander [walk]="walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'"
+                    [expandAction]="'show details of walk fullscreen'" [expandable]="true" [expandEdits]="true">
+</app-panel-expander>
 <div [ngClass]="{'busy': notifyTarget.busy}">
-  <app-panel-expander [walk]="walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'" [expandAction]="'show details of walk fullscreen'" [expandable]="true" [expandEdits]="true">
-  </app-panel-expander>
   <tabset *ngIf="walk">
-    <tab heading="Date and Location">
+    <tab heading="Main Details">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-6">
@@ -38,77 +39,6 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="distance">Distance</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.distance"
-                     type="text" class="form-control input-sm" id="distance"
-                     placeholder="Enter Distance here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="nearest-town">Nearest Town</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.nearestTown"
-                     type="text" class="form-control input-sm"
-                     id="nearest-town"
-                     placeholder="Enter nearest town here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="walkType">Walk Type</label>
-              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
-                      class="form-control input-sm"
-                      placeholder="Enter walk type here"
-                      [(ngModel)]="walk.walkType"
-                      class="form-control round spaced-controls" id="walkType">
-                <option *ngFor="let type of display.walkTypes" [ngValue]="type"
-                        [attr.selected]="type == display.walkTypes[0]">{{type}}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="grid-reference">Grid Reference</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.gridReference"
-                     type="text" class="form-control input-sm" id="grid-reference"
-                     placeholder="Enter Grid Reference here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="post-code">Postcode</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.postcode"
-                     type="text" class="form-control input-sm" id="post-code"
-                     placeholder="Enter Postcode here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="grade">Grade</label>
-              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
-                      class="form-control input-sm"
-                      placeholder="Enter Grade here"
-                      [(ngModel)]="walk.grade"
-                      class="form-control round spaced-controls" id="grade">
-                <option *ngFor="let grade of display.grades"
-                        [ngValue]="grade"
-                        [textContent]="grade"
-                        [attr.selected]="grade == display.walkTypes[0]">{{grade}}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </tab>
-    <tab heading="Descriptions">
-      <div class="thumbnail thumbnail-admin-edit">
-        <div class="row">
           <div class="col-sm-12">
             <div class="form-group">
               <label for="brief-description-and-start-point">Brief Description and Start
@@ -142,6 +72,158 @@
                         [(ngModel)]="walk.longerDescription" type="text"
                         class="form-control input-sm" rows="5" id="longer-description"
                         placeholder="Enter Longer Description here"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </tab>
+    <tab heading="Related Links">
+      <div class="thumbnail thumbnail-admin-edit">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="thumbnail thumbnail-campaign-settings">
+              <div class="thumbnail-heading">Ramblers</div>
+              <div class="form-group">
+                <p *ngIf="!insufficientDataToUploadToRamblers() && !ramblersWalkExists()">
+                  This walk has not been
+                  uploaded to Ramblers yet - check back when date is closer to
+                  <b>{{walk.walkDate | displayDate}}</b>.
+                </p>
+                <p *ngIf="insufficientDataToUploadToRamblers()">
+                  {{walkValidations()}}
+                </p>
+                <div *ngIf="canUnlinkRamblers()">
+                  <div class="row">
+                    <div class="col-sm-1">
+                      <input type="submit" value="Unlink"
+                             (click)="unlinkRamblersDataFromCurrentWalk()"
+                             title="Remove link between this walk and Ramblers"
+                             class="mt-6 button-form">
+                    </div>
+                    <div class="col-sm-11 green-bullets-no-rule">
+                      <app-markdown-editor name="ramblers-help" description="Linking to Ramblers"></app-markdown-editor>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group" *ngIf="ramblersWalkExists()">
+                <label>Link preview:
+                  <img class="related-links-image"
+                       src="assets/images/ramblers/favicon.ico"
+                       alt="Click to view on Ramblers Walks and Events Manager"/>
+                  <a target="_blank"
+                     [href]="display.ramblersLink(walk)">
+                                            <span class="related-links-title"
+                                                  tooltip-placement="left"
+                                                  tooltip="Click to view on Ramblers Walks and Events Manager">
+                                          Ramblers: {{walk.briefDescriptionAndStartPoint}}</span></a></label>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="row thumbnail thumbnail-campaign-settings">
+              <div class="thumbnail-heading">Meetup</div>
+              <div *ngIf="canUnlinkMeetup()">
+                <div class="row">
+                  <div class="col-sm-1">
+                    <input type="submit" value="Unlink"
+                           (click)="unlinkMeetup()"
+                           title="Remove link between this walk and Meetup"
+                           class="mt-6 button-form">
+                  </div>
+                  <div class="col-sm-11 green-bullets-no-rule">
+                    <app-markdown-editor name="meetup-help" description="Linking to Meetup"></app-markdown-editor>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group mt-8">
+                <label for="meetup-event-url">Link to Meetup event:</label>
+                <select class="form-control input-sm"
+                        [(ngModel)]="meetupEvent"
+                        (change)="meetupEventUrlChange(walk)"
+                        class="form-control"
+                        id="meetup-event-url">
+                  <option *ngFor="let meetupEvent of display.meetupEvents"
+                          [ngValue]="meetupEvent"
+                          [textContent]="meetupEvent | meetupEventSummary">
+                  </option>
+                </select>
+              </div>
+              <div *ngIf="false" class="form-group">
+                <label for="meetup-title">Meetup event title</label>
+                <input [(ngModel)]="walk.meetupEventTitle"
+                       type="text" value="" class="form-control input-sm"
+                       id="meetup-title"
+                       placeholder="Enter optional title for Meetup event">
+              </div>
+              <div class="form-group" *ngIf="walk.meetupEventUrl">
+                <label>Link preview:
+                  <img class="related-links-image" src="assets/images/local/meetup.ico"
+                       alt=""/>
+                  <a target="_blank"
+                     [href]="walk.meetupEventUrl">
+                                            <span class="related-links-title"
+                                                  tooltip-placement="left"
+                                                  tooltip="Click to view this walk in Meetup">
+                                          Meetup: {{walk.meetupEventTitle || walk.briefDescriptionAndStartPoint}}</span></a></label>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="row thumbnail thumbnail-campaign-settings">
+              <div class="thumbnail-heading">OS Maps</div>
+              <div class="row">
+                <div class="col-sm-1">
+                  <input type="submit" value="Unlink"
+                         (click)="unlinkOSMapsFromCurrentWalk()"
+                         [disabled]="!canUnlinkOSMaps()"
+                         title="Remove link between this walk and OS Maps"
+                         [ngClass]="canUnlinkOSMaps() ? 'button-form': 'disabled-button-form'">
+                </div>
+                <div class="col-sm-11">
+                  <div class="green-bullets-no-rule">
+                    <app-markdown-editor name="os-maps-help" description="Linking to OS Maps"></app-markdown-editor>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="related-links-route">Url</label>
+                    <input [(ngModel)]="walk.osMapsRoute"
+                           type="text" value="" class="form-control input-sm"
+                           id="related-links-route"
+                           placeholder="Enter URL to OS Maps Route">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="related-links-title">Title</label>
+                    <input [(ngModel)]="walk.osMapsTitle"
+                           type="text" value="" class="form-control input-sm"
+                           id="related-links-title"
+                           placeholder="Enter optional title for OS Maps link">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group">
+                    <div *ngIf="walk.osMapsRoute">
+                      <label>Link preview: </label>
+                      <img class="related-links-image"
+                           src="assets/images/local/ordnance-survey.ico"
+                           alt=""/>
+                      <a target="_blank"
+                         [href]="walk.osMapsRoute" class="text1">
+                                            <span class="related-links-title"
+                                                  tooltip-placement="left"
+                                                  tooltip="Click to view the route for this walk on Ordnance Survey Maps">
+                                          Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}</span></a>
+                    </div>
+                  </div>
+                </div>
+                </div>
             </div>
           </div>
         </div>
@@ -240,8 +322,75 @@
         </div>
       </div>
     </tab>
-    <tab heading="Maps and Routes">
+    <tab heading="Walk Details">
       <div class="thumbnail thumbnail-admin-edit">
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="distance">Distance</label>
+              <input [disabled]="!allowEdits()" [(ngModel)]="walk.distance"
+                     type="text" class="form-control input-sm" id="distance"
+                     placeholder="Enter Distance here">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="nearest-town">Nearest Town</label>
+              <input [disabled]="!allowEdits()" [(ngModel)]="walk.nearestTown"
+                     type="text" class="form-control input-sm"
+                     id="nearest-town"
+                     placeholder="Enter nearest town here">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="walkType">Walk Type</label>
+              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
+                      class="form-control input-sm"
+                      placeholder="Enter walk type here"
+                      [(ngModel)]="walk.walkType"
+                      class="form-control round spaced-controls" id="walkType">
+                <option *ngFor="let type of display.walkTypes" [ngValue]="type"
+                        [attr.selected]="type == display.walkTypes[0]">{{type}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="grid-reference">Grid Reference</label>
+              <input [disabled]="!allowEdits()" [(ngModel)]="walk.gridReference"
+                     type="text" class="form-control input-sm" id="grid-reference"
+                     placeholder="Enter Grid Reference here">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="post-code">Postcode</label>
+              <input [disabled]="!allowEdits()" [(ngModel)]="walk.postcode"
+                     type="text" class="form-control input-sm" id="post-code"
+                     placeholder="Enter Postcode here">
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+              <label for="grade">Grade</label>
+              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
+                      class="form-control input-sm"
+                      placeholder="Enter Grade here"
+                      [(ngModel)]="walk.grade"
+                      class="form-control round spaced-controls" id="grade">
+                <option *ngFor="let grade of display.grades"
+                        [ngValue]="grade"
+                        [textContent]="grade"
+                        [attr.selected]="grade == display.walkTypes[0]">{{grade}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
         <div class="row">
           <div class="col-sm-6 round">
             <h1>Google Maps</h1>
@@ -254,153 +403,6 @@
                     frameborder="0"
                     style="border:0;border-radius: 10px;"
                     [src]="googleMapsUrl" allowfullscreen></iframe>
-          </div>
-          <div class="col-sm-6">
-            <h1>OS Maps</h1>
-            <div class="green-bullets-no-rule">
-              <ul>
-                <li>The fields below are optional and unrelated to data that we send to
-                  Ramblers.
-                </li>
-                <li>Using the fields below, our walks programme can be cross-reference
-                  to any OS Map route that one of our members has planned or
-                  recorded.
-                </li>
-                <li>When the URL is populated, a link will be provided on the detail
-                  view of the walk. This assumes that the walk is saved as publically
-                  viewable.
-                </li>
-                <li>An OS Map route can be added after the walk has been completed if
-                  the route has not already been pre-planned by the walks leader and
-                  another member records it on the day.
-                </li>
-              </ul>
-            </div>
-            <div class="form-group">
-              <label for="related-links-route">OS Maps Route</label>
-              <input [(ngModel)]="walk.osMapsRoute"
-                     type="text" value="" class="form-control input-sm"
-                     id="related-links-route"
-                     placeholder="Enter URL to OS Maps Route">
-            </div>
-            <div class="form-group">
-              <label for="related-links-title">OS Maps Title</label>
-              <input [(ngModel)]="walk.osMapsTitle"
-                     type="text" value="" class="form-control input-sm"
-                     id="related-links-title"
-                     placeholder="Enter optional title for OS Maps link">
-            </div>
-            <div class="form-group">
-              <div *ngIf="walk.osMapsRoute">
-                <br>
-                <h3>Link Preview</h3>
-                <img class="related-links-image"
-                     src="assets/images/local/ordnance-survey.ico"
-                     alt=""/>
-                <a target="_blank"
-                   [href]="walk.osMapsRoute" class="text1">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view the route for this walk on Ordnance Survey Maps">
-                                          Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}</span></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </tab>
-    <tab heading="Related Links">
-      <div class="thumbnail thumbnail-admin-edit">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="row thumbnail thumbnail-campaign-settings third-party-panel">
-              <div class="thumbnail-heading">Ramblers</div>
-              <div class="form-group">
-                <p *ngIf="!insufficientDataToUploadToRamblers() && !ramblersWalkExists()">
-                  This walk has not been
-                  uploaded to Ramblers yet - check back when date is closer to
-                  <b>{{walk.walkDate | displayDate}}</b>.
-                </p>
-                <p *ngIf="insufficientDataToUploadToRamblers()">
-                  {{walkValidations()}}
-                </p>
-                <div *ngIf="canUnlinkRamblers()">
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <input type="submit" value="Unlink"
-                             (click)="unlinkRamblersDataFromCurrentWalk()"
-                             title="Remove link between this walk and Ramblers"
-                             class="button-form">
-                    </div>
-                    <div class="col-sm-9">
-                      You might need to unlink if the walk on Ramblers
-                      Walks and Events Manager has been deleted or
-                      replaced by a newer version and you want to re-link
-                      it.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group force-to-bottom" *ngIf="ramblersWalkExists()">
-                <h3>Ramblers Link Preview</h3>
-                <img class="related-links-image"
-                     src="assets/images/ramblers/favicon.ico"
-                     alt="Click to view on Ramblers Walks and Events Manager"/>
-                <a target="_blank"
-                   [href]="display.ramblersWalkBaseUrl + walk.ramblersWalkId">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view on Ramblers Walks and Events Manager">
-                                          Ramblers: {{walk.briefDescriptionAndStartPoint}}</span></a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="row thumbnail thumbnail-campaign-settings third-party-panel">
-              <div class="thumbnail-heading">Meetup</div>
-              <div class="form-group">
-                <label for="meetup-event-url">Link to Meetup event:</label>
-                <select class="form-control input-sm"
-                        [(ngModel)]="meetupEvent"
-                        (change)="meetupEventUrlChange(walk)"
-                        class="form-control round spaced-controls"
-                        id="meetup-event-url">
-                  <option *ngFor="let meetupEvent of display.meetupEvents"
-                          [ngValue]="meetupEvent"
-                          [textContent]="meetupEvent | meetupEventSummary">
-                  </option>
-                </select>
-              </div>
-              <div *ngIf="canUnlinkMeetup()">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <input type="submit" value="Unlink"
-                           (click)="unlinkMeetup()"
-                           title="Remove link between this walk and Meetup"
-                           class="button-form">
-                  </div>
-                </div>
-              </div>
-              <div *ngIf="false" class="form-group">
-                <label for="meetup-title">Meetup event title</label>
-                <input [(ngModel)]="walk.meetupEventTitle"
-                       type="text" value="" class="form-control input-sm"
-                       id="meetup-title"
-                       placeholder="Enter optional title for Meetup event">
-              </div>
-              <div class="form-group force-to-bottom" *ngIf="walk.meetupEventUrl">
-                <h3>Meetup Link Preview</h3>
-                <img class="related-links-image" src="assets/images/local/meetup.ico"
-                     alt=""/>
-                <a target="_blank"
-                   [href]="walk.meetupEventUrl">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view this walk in Meetup">
-                                          Meetup: {{walk.meetupEventTitle || walk.briefDescriptionAndStartPoint}}</span></a>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -434,58 +436,59 @@
         </div>
       </div>
     </tab>
+    <tab heading="Copy">
+      <div class="thumbnail" *ngIf="allowEdits() && walk && walk.walkLeaderMemberId">
+        <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="radio-inline map-radio-group map-radio-label">
 
-  </tabset>
-  <div class="thumbnail" *ngIf="allowEdits() && walk && walk.walkLeaderMemberId">
-    <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="radio-inline map-radio-group map-radio-label">
+              <input [disabled]="false"
+                     id="copy-selected-walk-leader" type="radio"
+                     [(ngModel)]="copySource"
+                     (change)="populateWalkTemplates()"
+                     value="copy-selected-walk-leader"/>
+              <label for="copy-selected-walk-leader">Previously led by: <select
+                class="form-control input-sm input-led-by"
+                [(ngModel)]="copySourceFromWalkLeaderMemberId"
+                (change)="selectCopySelectedLeader()"
+                id="copy-member-walks">
+                <option value="">(no walk leader selected)</option>
+                <option *ngFor="let member of membersWithAliasOrMe()"
+                        [ngValue]="member.memberId"
+                        [textContent]="member.name">
+                </option>
+              </select>
+              </label>
 
-          <input [disabled]="false"
-                 id="copy-selected-walk-leader" type="radio"
-                 [(ngModel)]="copySource"
-                 (change)="populateWalkTemplates()"
-                 value="copy-selected-walk-leader"/>
-          <label for="copy-selected-walk-leader">Previously led by: <select
-            class="form-control input-sm input-led-by"
-            [(ngModel)]="copySourceFromWalkLeaderMemberId"
-            (change)="selectCopySelectedLeader()"
-            id="copy-member-walks">
-            <option value="">(no walk leader selected)</option>
-            <option *ngFor="let member of membersWithAliasOrMe()"
-                    [ngValue]="member.memberId"
-                    [textContent]="member.name">
-            </option>
-          </select>
-          </label>
+              <input id="copy-with-os-maps-route-selected" type="radio"
+                     [(ngModel)]="copySource"
+                     (change)="populateWalkTemplates()"
+                     value="copy-with-os-maps-route-selected"/>
+              <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
 
-          <input id="copy-with-os-maps-route-selected" type="radio"
-                 [(ngModel)]="copySource"
-                 (change)="populateWalkTemplates()"
-                 value="copy-with-os-maps-route-selected"/>
-          <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
-
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12 mt-8">
+            <label for="copy-walks-list">
+              Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
+            <select
+              [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
+              [(ngModel)]="copyFrom.walkTemplate"
+              (change)="populateCurrentWalkFromTemplate()"
+              id="copy-walks-list">
+              <option value="">(none selected)</option>
+              <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
+                      [ngValue]="walkTemplate"
+                      [textContent]="walkTemplate | walkSummary"></option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 mt-8">
-        <label for="copy-walks-list">
-          Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
-        <select
-          [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
-          [(ngModel)]="copyFrom.walkTemplate"
-          (change)="populateCurrentWalkFromTemplate()"
-          id="copy-walks-list">
-          <option value="">(none selected)</option>
-          <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
-                  [ngValue]="walkTemplate"
-                  [textContent]="walkTemplate | walkSummary"></option>
-        </select>
-      </div>
-    </div>
-  </div>
+    </tab>
+  </tabset>
   <div class="form-group">
     <div [hidden]="!notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
       <i class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong>{{notifyTarget.alertTitle}}</strong>

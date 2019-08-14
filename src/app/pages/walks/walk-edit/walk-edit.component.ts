@@ -53,6 +53,7 @@ export class WalkEditComponent implements OnInit {
   private saveInProgress: boolean;
   private sendNotifications: boolean;
   private longerDescriptionPreview: boolean;
+  private fullPageEditActive: boolean;
 
   constructor(
     @Inject("WalksService") protected walksService,
@@ -82,9 +83,10 @@ export class WalkEditComponent implements OnInit {
   private copyFrom: any = {};
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
+    this.fullPageEditActive = this.urlService.hasRouteParameter("edit");
+    this.logger.info("ngOnInit:this.fullPageEditActive", this.fullPageEditActive);
     if (this.walk) {
       const walkId = this.walk.$id();
       if (walkId) {
@@ -104,8 +106,9 @@ export class WalkEditComponent implements OnInit {
   }
 
   dataHasChanged() {
-    const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
-    return dataAuditDelta.notificationRequired;
+    return true;
+    // const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
+    // return dataAuditDelta.notificationRequired;
   }
 
   editable() {
@@ -315,6 +318,12 @@ export class WalkEditComponent implements OnInit {
     this.notify.progress("Previous Ramblers walk has now been unlinked.");
   }
 
+  unlinkOSMapsFromCurrentWalk() {
+    delete this.walk.osMapsRoute;
+    delete this.walk.osMapsTitle;
+    this.notify.progress("Previous OS Maps route has now been unlinked.");
+  }
+
   canUnlinkRamblers() {
     return this.loggedInMemberService.allowWalkAdminEdits() && this.ramblersWalkExists();
   }
@@ -327,6 +336,10 @@ export class WalkEditComponent implements OnInit {
 
   canUnlinkMeetup() {
     return this.loggedInMemberService.allowWalkAdminEdits() && this.walk && this.walk.meetupEventUrl;
+  }
+
+  canUnlinkOSMaps() {
+    return this.walk.osMapsRoute || this.walk.osMapsTitle;
   }
 
   notUploadedToRamblersYet() {
@@ -390,12 +403,6 @@ export class WalkEditComponent implements OnInit {
     });
   }
 
-  closeEditView() {
-    this.confirmAction = ConfirmType.NONE;
-    this.display.toggleEditModeFor(this.walk);
-    // this.urlService.navigateTo("walks");
-  }
-
   confirmCancelWalkDetails() {
     this.closeEditView();
   }
@@ -449,13 +456,21 @@ export class WalkEditComponent implements OnInit {
   afterSaveWith(notificationSent) {
     return () => {
       if (!notificationSent) {
-        this.display.toggleEditModeFor(this.walk);
-        // this.urlService.navigateTo("walks");
+        this.closeEditView();
       }
       this.notify.clearBusy();
       this.confirmAction = ConfirmType.NONE;
       this.display.saveInProgress = false;
     };
+  }
+
+  closeEditView() {
+    this.confirmAction = ConfirmType.NONE;
+    if (this.fullPageEditActive) {
+      this.urlService.navigateTo("walks");
+    } else {
+      this.display.toggleEditModeFor(this.walk);
+    }
   }
 
   saveWalkDetails() {

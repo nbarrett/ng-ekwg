@@ -169,6 +169,9 @@ export class WalkDisplayService {
     const expandedWalk = this.findWalk(walk);
     if (expandedWalk) {
       expandedWalk.edit = !expandedWalk.edit;
+      this.logger.info("toggleEditModeFor:expandedWalk", expandedWalk);
+    } else {
+      this.logger.info("toggleEditModeFor:walk", walk.$id(), "expandedWalk not found");
     }
   }
 
@@ -230,6 +233,9 @@ export class WalkDisplayService {
     }) : undefined;
   }
 
+  ramblersLink(walk: Walk): string {
+    return this.ramblersWalkBaseUrl + walk.ramblersWalkId;
+  }
 }
 
 export enum ConfirmType {

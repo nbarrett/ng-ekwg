@@ -4,7 +4,7 @@
     <a *ngIf="!previewActive()"
        (click)="preview()"><span class="badge">
       <i class="glyphicon glyphicon-zoom-in badge-icon"></i> preview</span></a>
-    <a *ngIf="userEdits.preview"
+    <a *ngIf="userEdits.preview" [title]="'Edit content for ' + description"
        (click)="edit()"><span class="badge">
       <i class="glyphicon glyphicon-pencil badge-icon"></i> edit</span></a>
     <a *ngIf="dirty()"

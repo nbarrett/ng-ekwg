@@ -55,12 +55,13 @@
         <div class="col-sm-1">
           <img class="related-links-image"
                src="assets/images/ramblers/favicon.ico"
-               alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+               alt="Ramblers: {{walk.briefDescriptionAndStartPoint}}"/>
         </div>
         <div class="col-sm-11">
           <a target="_blank"
              class="follow"
-             [href]="ramblersWalkBaseUrl + walk.ramblersWalkId"
+
+             [href]="display.ramblersLink(walk)"
              title="Preview on Ramblers Walks and Events Manager">
                                     <span class="related-links-title"
                                           tooltip-placement="left"
