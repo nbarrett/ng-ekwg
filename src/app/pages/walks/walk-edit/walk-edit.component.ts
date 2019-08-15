@@ -53,7 +53,6 @@ export class WalkEditComponent implements OnInit {
   private saveInProgress: boolean;
   private sendNotifications: boolean;
   private longerDescriptionPreview: boolean;
-  private fullPageEditActive: boolean;
 
   constructor(
     @Inject("WalksService") protected walksService,
@@ -85,8 +84,6 @@ export class WalkEditComponent implements OnInit {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    this.fullPageEditActive = this.urlService.hasRouteParameter("edit");
-    this.logger.info("ngOnInit:this.fullPageEditActive", this.fullPageEditActive);
     if (this.walk) {
       const walkId = this.walk.$id();
       if (walkId) {
@@ -106,9 +103,8 @@ export class WalkEditComponent implements OnInit {
   }
 
   dataHasChanged() {
-    return true;
-    // const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
-    // return dataAuditDelta.notificationRequired;
+    const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
+    return dataAuditDelta.notificationRequired;
   }
 
   editable() {
@@ -331,6 +327,7 @@ export class WalkEditComponent implements OnInit {
   unlinkMeetup() {
     delete this.walk.meetupEventTitle;
     delete this.walk.meetupEventUrl;
+    this.meetupEvent = null;
     this.notify.progress("Previous Meetup link has now been removed.");
   }
 
@@ -466,11 +463,7 @@ export class WalkEditComponent implements OnInit {
 
   closeEditView() {
     this.confirmAction = ConfirmType.NONE;
-    if (this.fullPageEditActive) {
-      this.urlService.navigateTo("walks");
-    } else {
-      this.display.toggleEditModeFor(this.walk);
-    }
+    this.display.closeEditView(this.walk);
   }
 
   saveWalkDetails() {

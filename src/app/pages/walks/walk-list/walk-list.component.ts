@@ -87,7 +87,7 @@ export class WalkListComponent implements OnInit {
     const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
     this.notify.progress("Showing " + walksCount + " walk(s)");
     if (this.filteredWalks.length > 0 && this.display.expandedWalks.length === 0) {
-      this.display.setExpandedWalks([{walkId: this.filteredWalks[0].$id(), edit: false}]);
+      this.display.view(this.filteredWalks[0]);
     }
     this.notify.clearBusy();
   }
@@ -204,8 +204,4 @@ export class WalkListComponent implements OnInit {
     return false;
   }
 
-  editWalk(walk: Walk) {
-    this.display.toggleExpandedViewFor(walk);
-    this.display.editWalk(walk);
-  }
 }

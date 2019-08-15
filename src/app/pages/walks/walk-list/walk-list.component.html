@@ -85,27 +85,27 @@
                       class="nowrap"><input
                     *ngIf="display.toWalkEditMode(walk)" type="submit"
                     value="{{display.toWalkEditMode(walk).caption}}"
-                    (click)="editWalk(walk)"
+                    (click)="display.edit(walk)"
                     title="{{display.toWalkEditMode(walk).caption}}"
                     class="button-form">
                   </td>
-                  <td width="13%" (click)="display.toggleExpandedViewFor(walk)"
+                  <td width="13%" (click)="display.view(walk)"
                       id="walkDate-{{index}}" class="nowrap">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="walk.walkDate|displayDate" name="walkDate"></span></td>
-                  <td width="7%" (click)="display.toggleExpandedViewFor(walk)"
+                  <td width="7%" (click)="display.view(walk)"
                       id="startTime-{{index}}">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(walk, 'startTime')" name="startTime"></span></td>
-                  <td width="32%" (click)="display.toggleExpandedViewFor(walk)"
+                  <td width="32%" (click)="display.view(walk)"
                       id="briefDescription-{{index}}">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(walk, 'briefDescriptionAndStartPoint')"
                                   name="briefDescriptionAndStartPoint"></span></td>
-                  <td width="7%" (click)="display.toggleExpandedViewFor(walk)" id="distance-{{index}}">
+                  <td width="7%" (click)="display.view(walk)" id="distance-{{index}}">
                             <span tooltip-placement="left" tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(walk, 'distance')" name="distance"></span></td>
                   <td width="8%" id="postcode-{{index}}">
@@ -133,7 +133,7 @@
                                       tooltip="Click to ring {{walk.displayName}} on {{viewWalkField(walk, 'contactPhone')}} (mobile devices only)"
                                       [textContent]="viewWalkField(walk, 'contactPhone')"
                                       name="contactPhone"></span></a>
-                    <app-panel-expander [walk]="walk" [collapsable]="false" [expandable]="true"
+                    <app-panel-expander [mode]="'list'" [walk]="walk" [collapsable]="false" [expandable]="true"
                                         [expandAction]="'show full details of walk'">
                     </app-panel-expander>
                   </td>

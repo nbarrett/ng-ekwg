@@ -14,11 +14,6 @@ import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { PopoverDirective } from "ngx-bootstrap";
 
-interface ExpandedWalk {
-  walkId: string;
-  edit?: boolean;
-}
-
 @Injectable({
   providedIn: "root"
 })
@@ -91,13 +86,18 @@ export class WalkDisplayService {
     return find(this.expandedWalks, {walkId: walk.$id()}) as ExpandedWalk;
   }
 
+  walkMode(walk: Walk): WalkViewMode {
+    const expandedWalk = find(this.expandedWalks, {walkId: walk.$id()}) as ExpandedWalk;
+    return expandedWalk ? expandedWalk.mode : WalkViewMode.LIST;
+  }
+
   isExpanded(walk: Walk): boolean {
     return !!this.findWalk(walk);
   }
 
   isEdit(walk: Walk) {
     const expandedWalk = this.findWalk(walk);
-    return expandedWalk && expandedWalk.edit;
+    return expandedWalk && expandedWalk.mode === WalkViewMode.EDIT;
   }
 
   refreshGoogleMapsConfig() {
@@ -147,47 +147,47 @@ export class WalkDisplayService {
     }
   }
 
-  editWalk(walk: Walk) {
+  edit(walk: Walk): ExpandedWalk {
     this.logger.info("editing walk:", walk);
-    this.toggleEditModeFor(walk);
+    return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT);
+  }
+
+  list(walk: Walk): ExpandedWalk {
+    this.logger.info("listing walk:", walk);
+    return this.toggleExpandedViewFor(walk, WalkViewMode.LIST);
+  }
+
+  view(walk: Walk): ExpandedWalk {
+    return this.toggleExpandedViewFor(walk, WalkViewMode.VIEW);
   }
 
   statusFor(walk: Walk): EventType {
     return this.walkNotificationService.latestEventWithStatusChange(walk).eventType;
   }
 
-  editWalkFullscreen(walk: Walk) {
+  editFullscreen(walk: Walk): Promise<ExpandedWalk> {
     this.logger.info("editing walk fullscreen:", walk);
-    this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
+    return this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
       this.logger.info("area is now", this.urlService.area());
-      this.toggleEditModeFor(walk);
+      return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT_FULL_SCREEN);
     });
-
   }
 
-  toggleEditModeFor(walk: Walk) {
-    const expandedWalk = this.findWalk(walk);
-    if (expandedWalk) {
-      expandedWalk.edit = !expandedWalk.edit;
-      this.logger.info("toggleEditModeFor:expandedWalk", expandedWalk);
-    } else {
-      this.logger.info("toggleEditModeFor:walk", walk.$id(), "expandedWalk not found");
-    }
-  }
-
-  toggleExpandedViewFor(walk: Walk): ExpandedWalk {
-    let expandedWalk: ExpandedWalk;
+  toggleExpandedViewFor(walk: Walk, toggleTo: WalkViewMode): ExpandedWalk {
     const walkId = walk.$id();
-    if (this.findWalk(walk)) {
+    const existingWalk: ExpandedWalk = this.findWalk(walk);
+    if (existingWalk && toggleTo === WalkViewMode.LIST) {
       this.expandedWalks = this.expandedWalks.filter(ele => ele.walkId !== walkId);
-      this.logger.info("display.toggleViewFor:", walkId, "-> collapsing");
+      this.logger.info("display.toggleViewFor", toggleTo, "removed", walkId);
+    } else if (existingWalk) {
+      existingWalk.mode = toggleTo;
+      this.logger.info("display.toggleViewFor", toggleTo, "updated", existingWalk);
     } else {
-      expandedWalk = {walkId, edit: false};
-      this.expandedWalks.push(expandedWalk);
-      this.logger.info("display.toggleViewFor:", walkId, "-> expanding");
+      const newWalk = {walkId, mode: toggleTo};
+      this.expandedWalks.push(newWalk);
+      this.logger.info("display.toggleViewFor", toggleTo, "added", newWalk);
     }
-    this.logger.info("display.toggleViewFor:", walkId, "-> expandedWalks contains", this.expandedWalks);
-    return expandedWalk;
+    return existingWalk;
   }
 
   copyWalkToClipboard(walk: Walk, pop: PopoverDirective) {
@@ -236,6 +236,13 @@ export class WalkDisplayService {
   ramblersLink(walk: Walk): string {
     return this.ramblersWalkBaseUrl + walk.ramblersWalkId;
   }
+
+  closeEditView(walk: Walk) {
+    if (this.urlService.hasRouteParameter("edit")) {
+      this.urlService.navigateTo("walks");
+    }
+    this.toggleExpandedViewFor(walk, WalkViewMode.VIEW);
+  }
 }
 
 export enum ConfirmType {
@@ -246,3 +253,14 @@ export enum ConfirmType {
   NONE = "none"
 }
 
+export enum WalkViewMode {
+  VIEW = "view",
+  EDIT = "edit",
+  EDIT_FULL_SCREEN = "edit-full-screen",
+  LIST = "list"
+}
+
+export interface ExpandedWalk {
+  walkId: string;
+  mode?: WalkViewMode;
+}

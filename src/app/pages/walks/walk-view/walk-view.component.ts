@@ -43,7 +43,9 @@ export class WalkViewComponent implements OnInit {
       this.display.refreshMembers();
       this.refreshHomePostcode();
     });
-    this.googleMapsUrl = this.display.googleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
+    if (this.display.eventTypeFor(this.walk).showDetails) {
+      this.googleMapsUrl = this.display.googleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
+    }
   }
 
   refreshHomePostcode() {
