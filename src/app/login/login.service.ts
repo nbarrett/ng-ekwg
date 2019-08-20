@@ -13,7 +13,7 @@ export class LoginService {
 
   constructor(private dateutils: DateUtilsService, private loggerFactory: LoggerFactory, private cookieService: CookieService) {
     this.logger = loggerFactory.createLogger(LoginService, NgxLoggerLevel.OFF);
-    this.logger.info("constructed at", dateutils.currentMemberBulkLoadDisplayDate());
+    this.logger.debug("constructed at", dateutils.currentMemberBulkLoadDisplayDate());
   }
 
   memberLoggedIn() {

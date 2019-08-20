@@ -30,7 +30,7 @@ export class SiteEditComponent {
   }
 
   private onItemEvent(event: GlobalEvent) {
-    this.logger.info("event occurred", event);
+    this.logger.debug("event occurred", event);
   }
 
   onChange($event: boolean) {

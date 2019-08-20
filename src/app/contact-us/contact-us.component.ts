@@ -35,7 +35,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.dataSub = this.committeeReferenceData.events.subscribe(referenceData => {
-      this.logger.info("received event", referenceData);
+      this.logger.debug("received event", referenceData);
     });
   }
 

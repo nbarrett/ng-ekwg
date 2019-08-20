@@ -28,9 +28,9 @@ export class UrlService {
 
   navigateTo(page?: string, area?: string): void  {
     const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
-    this.logger.info("navigating to page:", page, "area:", area, "->", url);
+    this.logger.debug("navigating to page:", page, "area:", area, "->", url);
     this.router.navigate([url], {relativeTo: this.route}).then(() => {
-      this.logger.info("area is now", this.area());
+      this.logger.debug("area is now", this.area());
     });
   }
 

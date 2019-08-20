@@ -15,8 +15,7 @@ export class JoinUsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
-    // this.urlService.refresh();
+    this.logger.debug("ngOnInit");
   }
 
 }

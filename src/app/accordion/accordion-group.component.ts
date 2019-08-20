@@ -20,14 +20,13 @@ export class AccordionGroupComponent implements OnInit {
   }
 
   toggle($event: any) {
-    // this.open = !this.open;
-    this.logger.info(this.title, "$event ->", $event);
+    this.logger.debug(this.title, "$event ->", $event);
   }
 
   ngOnInit(): void {
     this.open = false;
     if (this.initiallyOpen) {
-      this.logger.info(this.title, "initiallyOpen -> ", this.initiallyOpen);
+      this.logger.debug(this.title, "initiallyOpen -> ", this.initiallyOpen);
       this.open = this.initiallyOpen;
     }
   }

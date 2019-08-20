@@ -112,7 +112,7 @@ export class WalksReferenceService {
     }
   }
 
-  walkStatuses() {
+  walkStatuses(): WalkEventType[] {
     return this.eventTypesArray.filter((eventType) => eventType.statusChange);
   }
 }

@@ -17,7 +17,7 @@ export class RouterHistoryService {
   constructor(private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.OFF);
-    this.logger.info("constructed");
+    this.logger.debug("constructed");
     this.loadRouting();
   }
 
@@ -34,7 +34,7 @@ export class RouterHistoryService {
     const lastPage = this.pageHistory.reverse()
       .map(page => first(page.substring(1).split("/")))
       .find((page) => validPages.includes(page));
-    this.logger.info("navigateBackToLastMainPage:pageHistory", this.pageHistory, "lastPage ->", lastPage);
+    this.logger.debug("navigateBackToLastMainPage:pageHistory", this.pageHistory, "lastPage ->", lastPage);
     this.urlService.navigateTo(lastPage || "/");
   }
 

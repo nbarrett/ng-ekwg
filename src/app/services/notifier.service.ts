@@ -27,7 +27,7 @@ export class AlertInstance {
   private logger: Logger;
 
   constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.INFO);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;
     this.alertTarget.alert = ALERT_SUCCESS;
   }
@@ -80,7 +80,7 @@ export class AlertInstance {
       throw message;
     } else {
       return this.logger.debug("notifyAlertMessage:", "class =", alertType, "messageText =",
-        messageText, "append =", append, "showAlert =", this.alertTarget.showAlert);
+        messageText, "alertMessages", this.alertTarget.alertMessages, "append =", append, "showAlert =", this.alertTarget.showAlert);
     }
   }
 

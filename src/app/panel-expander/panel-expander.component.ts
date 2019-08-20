@@ -23,8 +23,7 @@ export class PanelExpanderComponent implements OnInit {
   expandAction: string;
   @Input()
   collapseAction: string;
-  @Input()
-  mode: WalkViewMode;
+
   private logger: Logger;
 
   constructor(private display: WalkDisplayService, loggerFactory: LoggerFactory) {
@@ -42,7 +41,7 @@ export class PanelExpanderComponent implements OnInit {
 
   expand() {
     const viewMode = this.display.walkMode(this.walk);
-    this.logger.info("expanding walk from current mode", viewMode);
+    this.logger.debug("expanding walk from current mode", viewMode);
     if (viewMode === WalkViewMode.LIST) {
       this.display.view(this.walk);
     } else if (viewMode === WalkViewMode.VIEW) {
@@ -54,7 +53,7 @@ export class PanelExpanderComponent implements OnInit {
 
   collapse() {
     const viewMode = this.display.walkMode(this.walk);
-    this.logger.info("collapsing walk from current mode", viewMode);
+    this.logger.debug("collapsing walk from current mode", viewMode);
     if (viewMode === WalkViewMode.VIEW) {
       this.display.list(this.walk);
     } else if (viewMode === WalkViewMode.EDIT) {

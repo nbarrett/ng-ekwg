@@ -28,7 +28,7 @@ export class CommitteeReferenceDataService {
 
   private queryData(): void {
     this.committeeConfig.getConfig().then(referenceData => {
-      this.logger.info("queryData:referenceData", referenceData);
+      this.logger.debug("queryData:referenceData", referenceData);
       this.localFileTypes = get(referenceData, "committee.fileTypes");
       this.localCommitteeMembers = map(get(referenceData, "committee.contactUs"), (data, type) => ({
         type,
@@ -39,7 +39,7 @@ export class CommitteeReferenceDataService {
         email: data.email
       }));
       this.referenceData = referenceData;
-      this.logger.info("queryData:localCommitteeMembers", this.localCommitteeMembers);
+      this.logger.debug("queryData:localCommitteeMembers", this.localCommitteeMembers);
       this.messageSource.next(referenceData);
     });
   }

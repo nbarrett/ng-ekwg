@@ -1,12 +1,12 @@
-import { Component, Inject, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Inject, Input, OnInit } from "@angular/core";
 import { Walk } from "../../../models/walk.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { clone, find, pick } from "lodash-es";
+import { clone, find, isEmpty, pick } from "lodash-es";
 import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ConfirmType, WalkDisplayService } from "../walk-display.service";
+import { ConfirmType, WalkDisplayService, WalkViewMode } from "../walk-display.service";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { CommitteeReferenceDataService } from "../../../services/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -32,7 +32,8 @@ interface DisplayMember {
 @Component({
   selector: "app-walk-edit",
   templateUrl: "./walk-edit.component.html",
-  styleUrls: ["./walk-edit.component.sass"]
+  styleUrls: ["./walk-edit.component.sass"],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkEditComponent implements OnInit {
   @Input()
@@ -104,6 +105,7 @@ export class WalkEditComponent implements OnInit {
 
   dataHasChanged() {
     const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
+    this.logger.debug("dataHasChanged:", dataAuditDelta.notificationRequired);
     return dataAuditDelta.notificationRequired;
   }
 
@@ -202,8 +204,14 @@ export class WalkEditComponent implements OnInit {
     return this.currentWalkEditMode;
   }
 
+  setWalkLeaderToMe() {
+    this.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+    this.walkLeaderMemberIdChanged();
+  }
+
   walkLeaderMemberIdChanged() {
     this.notify.hide();
+    this.populateCopySourceFromWalkLeaderMemberId();
     const memberId = this.walk.walkLeaderMemberId;
     if (!memberId) {
       this.setStatus(EventType.AWAITING_LEADER);
@@ -213,7 +221,7 @@ export class WalkEditComponent implements OnInit {
       delete this.walk.contactPhone;
       delete this.walk.contactEmail;
     } else {
-      const selectedMember: Member = this.display.members.find((member: any) => {
+      const selectedMember: Member = this.display.members.find((member: Member) => {
         return member.$id() === memberId;
       });
       if (selectedMember) {
@@ -244,15 +252,20 @@ export class WalkEditComponent implements OnInit {
             "It will be published to the public once it\"s approved. If you want to release this slot again, just click cancel."
         });
       } else {
-        const eventTypeIfExists: EventType = this.display.statusFor(this.walk);
-        if (eventTypeIfExists) {
-          this.setStatus(eventTypeIfExists);
+        const eventType: EventType = this.display.statusFor(this.walk);
+        if (!isEmpty(eventType)) {
+          this.setStatus(eventType);
+          this.priorStatus = eventType;
         }
-        this.copySourceFromWalkLeaderMemberId = walk.walkLeaderMemberId || this.loggedInMemberService.loggedInMember().memberId;
+        this.populateCopySourceFromWalkLeaderMemberId();
         this.populateWalkTemplates();
         this.meetupSelectSync(this.walk);
       }
     }
+  }
+
+  populateCopySourceFromWalkLeaderMemberId() {
+    this.copySourceFromWalkLeaderMemberId = this.walk.walkLeaderMemberId || this.loggedInMemberService.loggedInMember().memberId;
   }
 
   walkEvents(walk: Walk) {
@@ -286,6 +299,7 @@ export class WalkEditComponent implements OnInit {
       const templateDate = this.displayDate.transform(walkTemplate.walkDate);
       delete walkTemplate._id;
       delete walkTemplate.events;
+      delete walkTemplate.walkLeaderMemberId;
       delete walkTemplate.ramblersWalkId;
       delete walkTemplate.walkDate;
       delete walkTemplate.displayName;
@@ -303,7 +317,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   revertToPriorStatus() {
-    this.logger.info("revertToPriorWalkStatus:", this.status(), "->", this.priorStatus);
+    this.logger.debug("revertToPriorWalkStatus:", this.status(), "->", this.priorStatus);
     if (this.priorStatus) {
       this.setStatus(this.priorStatus);
     }
@@ -368,10 +382,10 @@ export class WalkEditComponent implements OnInit {
   }
 
   meetupSelectSync(walk: Walk) {
-    this.logger.info("meetupSelectSync");
+    this.logger.debug("meetupSelectSync");
     const criteria = {url: walk.meetupEventUrl};
     this.meetupEvent = find(this.display.meetupEvents, criteria);
-    this.logger.info("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, criteria, "=>", this.meetupEvent);
+    this.logger.debug("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, criteria, "=>", this.meetupEvent);
   }
 
   ramblersWalkExists() {
@@ -406,7 +420,7 @@ export class WalkEditComponent implements OnInit {
 
   isWalkReadyForStatusChangeTo(eventType: WalkEventType): boolean {
     this.notify.hide();
-    this.logger.info("isWalkReadyForStatusChangeTo ->", eventType);
+    this.logger.debug("isWalkReadyForStatusChangeTo ->", eventType);
     const walkValidations = this.validateWalk().walkValidations;
     if (eventType.mustHaveLeader && !this.walk.walkLeaderMemberId) {
       this.notify.warning(
@@ -414,7 +428,7 @@ export class WalkEditComponent implements OnInit {
           title: "Walk leader needed",
           message: " - this walk cannot be changed to " + eventType.description + " yet."
         });
-      this.revertToPriorStatus();
+      this.logger.debug("isWalkReadyForStatusChangeTo:false - this.currentStatus ->", this.currentStatus);
       return false;
     } else if (eventType.mustPassValidation && walkValidations.length > 0) {
       this.notify.warning(
@@ -424,7 +438,6 @@ export class WalkEditComponent implements OnInit {
           message: walkValidations.join(", ") +
             ". You can still save this walk, then come back later on to complete the rest of the details."
         });
-      this.revertToPriorStatus();
       return false;
     } else {
       return true;
@@ -439,8 +452,10 @@ export class WalkEditComponent implements OnInit {
   }
 
   setStatus(status: EventType) {
-    this.logger.info("setting status =>", status);
+    this.logger.debug("setting status =>", status);
     this.currentStatus = status;
+    this.priorStatus = clone(this.currentStatus);
+    this.logger.debug("setting status =>", status, "this.priorStatus", this.priorStatus);
   }
 
   confirmDeleteWalkDetails() {
@@ -478,7 +493,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   requestApproval() {
-    this.logger.info("requestApproval called with current status:", this.status());
+    this.logger.debug("requestApproval called with current status:", this.status());
     if (this.isWalkReadyForStatusChangeTo(this.walksReferenceService.toEventType(EventType.AWAITING_APPROVAL))) {
       this.confirmAction = ConfirmType.REQUEST_APPROVAL;
       this.notify.warning({
@@ -497,15 +512,15 @@ export class WalkEditComponent implements OnInit {
     });
   }
 
-  walkStatusChange() {
-    this.priorStatus = this.currentStatus;
+  walkStatusChange(newStatus: Event) {
     this.notify.hide();
-    this.logger.info("walkStatusChange - now:", this.status());
-    if (this.isWalkReadyForStatusChangeTo(this.walksReferenceService.toEventType(this.status()))) {
-      switch (this.status()) {
+    this.logger.debug("walkStatusChange - previous status:", this.currentStatus, "new status:", newStatus);
+    const eventType = this.walksReferenceService.toEventType(this.currentStatus);
+    if (this.isWalkReadyForStatusChangeTo(eventType)) {
+      this.setStatus(eventType.eventType);
+      switch (eventType.eventType) {
         case EventType.AWAITING_LEADER: {
           const walkDate = this.walk.walkDate;
-          this.setStatus(EventType.AWAITING_LEADER);
           this.walk = new this.walksService(pick(this.walk, ["$id()", "events", "walkDate"]));
           return this.notify.success({
             title: "Walk details reset for " + this.displayDate.transform(walkDate) + ".",
@@ -516,6 +531,10 @@ export class WalkEditComponent implements OnInit {
           return this.approveWalkDetails();
         }
       }
+    } else {
+      setTimeout(() => {
+        this.revertToPriorStatus();
+      });
     }
 
   }
@@ -532,7 +551,6 @@ export class WalkEditComponent implements OnInit {
         message: walkValidations.join(", ") +
           ". You\"ll have to get the rest of these details completed before you mark the walk as approved."
       });
-      this.revertToPriorStatus();
     } else {
       this.notify.success({
         title: "Ready to publish walk details!",
@@ -562,7 +580,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   myOrWalkLeader() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) ? "my" : this.walk && this.walk.displayName + "";
+    return this.display.loggedInMemberIsLeadingWalk(this.walk) ? "my" : this.walk && this.walk.displayName + "'s";
   }
 
   meOrWalkLeader() {
@@ -602,7 +620,7 @@ export class WalkEditComponent implements OnInit {
         criteria = {walkLeaderMemberId: memberId};
       }
     }
-    this.logger.info("selecting walks", this.copySource, criteria);
+    this.logger.debug("selecting walks", this.copySource, criteria);
     this.walksService.query(criteria, {sort: {walkDate: -1}})
       .then(walks => {
         this.copyFrom.walkTemplates = walks;
@@ -614,4 +632,7 @@ export class WalkEditComponent implements OnInit {
     this.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
   }
 
+  isExpandable(): boolean {
+    return this.display.walkMode(this.walk) === WalkViewMode.EDIT;
+  }
 }

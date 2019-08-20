@@ -13,7 +13,7 @@ export class ForgotPasswordComponent implements OnInit {
   constructor(@Inject("AuthenticationModalsService") private authenticationModalsService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ForgotPasswordComponent, NgxLoggerLevel.INFO);
-    this.logger.info("constructed");
+    this.logger.debug("constructed");
   }
 
   ngOnInit() {

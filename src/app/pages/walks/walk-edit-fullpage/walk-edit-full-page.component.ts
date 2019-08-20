@@ -32,7 +32,7 @@ export class WalkEditFullPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
+    this.logger.debug("ngOnInit");
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("add")) {
         this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
@@ -43,11 +43,11 @@ export class WalkEditFullPageComponent implements OnInit {
         });
       } else {
         const walkId = paramMap.get("walk-id");
-        this.logger.info("querying walk-id", walkId);
+        this.logger.debug("querying walk-id", walkId);
         this.walksService.getById(walkId)
           .then((walk: Walk) => {
             this.setWalkEditMode(this.walksReferenceService.walkEditModes.edit);
-            this.logger.info("found walk", walk);
+            this.logger.debug("found walk", walk);
             this.walk = walk;
             const eventTypeIfExists: EventType = this.display.statusFor(this.walk);
             if (eventTypeIfExists) {
@@ -60,7 +60,7 @@ export class WalkEditFullPageComponent implements OnInit {
   }
 
   setStatus(status: EventType) {
-    this.logger.info("setting status =>", status);
+    this.logger.debug("setting status =>", status);
     this.currentStatus = status;
   }
 

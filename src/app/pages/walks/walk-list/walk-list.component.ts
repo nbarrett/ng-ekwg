@@ -58,12 +58,12 @@ export class WalkListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
+    this.logger.debug("ngOnInit");
     this.todayValue = this.dateUtils.momentNowNoTime().valueOf();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.currentWalkId = paramMap.get("walk-id");
-      this.logger.info("walk-id from route params:", this.currentWalkId);
+      this.logger.debug("walk-id from route params:", this.currentWalkId);
     });
     this.display.refreshMembers();
     this.refreshWalks();
@@ -76,12 +76,12 @@ export class WalkListComponent implements OnInit {
   }
 
   onSearchChange($event: any) {
-    this.logger.info("received searchValue:" + $event);
+    this.logger.debug("received searchValue:" + $event);
     this.searchChangeObservable.next($event);
   }
 
   applyFilterToWalks(keyValue?: string) {
-    this.logger.info("applyFilterToWalks:keyValue", keyValue, "this.filterParameters.quickSearch:", this.filterParameters.quickSearch);
+    this.logger.debug("applyFilterToWalks:keyValue", keyValue, "this.filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
     this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch);
     const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
@@ -188,7 +188,7 @@ export class WalkListComponent implements OnInit {
     return this.query()
       .then(walks => {
         this.display.setNextWalkId(walks);
-        this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
+        this.logger.debug("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
         this.walks = this.currentWalkId ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();

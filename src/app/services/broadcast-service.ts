@@ -22,7 +22,7 @@ export class BroadcastService {
   }
 
   broadcast(event: GlobalEvent | string) {
-    this.logger.info("broadcast:", event);
+    this.logger.debug("broadcast:", event);
     if (event instanceof GlobalEvent) {
       this.observer.next(event);
     } else {

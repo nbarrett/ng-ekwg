@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Inject, Input, OnInit } from "@angular/core";
 import { Walk } from "../../../models/walk.model";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -14,7 +14,8 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 @Component({
   selector: "app-walk-view",
   templateUrl: "./walk-view.component.html",
-  styleUrls: ["./walk-view.component.sass"]
+  styleUrls: ["./walk-view.component.sass"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class WalkViewComponent implements OnInit {
@@ -36,10 +37,10 @@ export class WalkViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("initialised with walk", this.walk);
+    this.logger.debug("initialised with walk", this.walk);
     this.refreshHomePostcode();
     this.broadcastService.on("memberLoginComplete", () => {
-      this.logger.info("memberLoginComplete");
+      this.logger.debug("memberLoginComplete");
       this.display.refreshMembers();
       this.refreshHomePostcode();
     });

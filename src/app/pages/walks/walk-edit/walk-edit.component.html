@@ -1,5 +1,5 @@
-<app-panel-expander [mode]="'edit'" [walk]="walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'"
-                    [expandAction]="'edit walk full-screen'" [expandable]="true">
+<app-panel-expander [walk]="walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'"
+                    [expandAction]="'edit walk full-screen'" [expandable]="isExpandable()">
 </app-panel-expander>
 <div [ngClass]="{'busy': notifyTarget.busy}">
   <tabset *ngIf="walk">
@@ -235,8 +235,8 @@
             <div class="form-group">
               <label for="walk-status">Walk Status</label>
               <select [disabled]="!allowAdminEdits()"
-                      (change)="walkStatusChange()"
                       [(ngModel)]="currentStatus"
+                      (change)="walkStatusChange($event)"
                       class="form-control input-sm" id="walk-status">
                 <option *ngFor="let status of walkStatuses()"
                         [ngValue]="status.eventType"
@@ -247,12 +247,12 @@
           </div>
         </div>
         <div *ngIf="allowAdminEdits()" class="row">
-          <div class="col-sm-12">
+          <div class="col-sm-11">
             <div class="form-group">
               <label for="contact-member">Walk Leader</label>
               <select *ngIf="allowDetailView()" [disabled]="!allowAdminEdits()"
                       (change)="walkLeaderMemberIdChanged()"
-                      class="form-control input-sm"
+                      class="form-control"
                       [(ngModel)]="walk.walkLeaderMemberId"
                       class="form-control" id="contact-member">
                 <option value="">(no walk leader selected)</option>
@@ -261,6 +261,13 @@
                         [textContent]="member.name">
                 </option>
               </select>
+            </div>
+          </div>
+          <div class="col-sm-1">
+            <div class="form-group">
+              <input type="submit" value="Me" (click)="setWalkLeaderToMe()"
+                     title="Set walk leader to me"
+                     [ngClass]="saveInProgress ? 'disabled-button-form button-bottom-aligned': 'button-form button-bottom-aligned'">
             </div>
           </div>
         </div>
@@ -324,73 +331,74 @@
     <tab heading="Walk Details">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="distance">Distance</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.distance"
-                     type="text" class="form-control input-sm" id="distance"
-                     placeholder="Enter Distance here">
+          <div class="col-sm-6">
+            <h1>Walk details</h1>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="distance">Distance</label>
+                  <input [disabled]="!allowEdits()" [(ngModel)]="walk.distance"
+                         type="text" class="form-control input-sm" id="distance"
+                         placeholder="Enter Distance here">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="nearest-town">Nearest Town</label>
+                  <input [disabled]="!allowEdits()" [(ngModel)]="walk.nearestTown"
+                         type="text" class="form-control input-sm"
+                         id="nearest-town"
+                         placeholder="Enter nearest town here">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="walkType">Walk Type</label>
+                  <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
+                          class="form-control input-sm"
+                          placeholder="Enter walk type here"
+                          [(ngModel)]="walk.walkType"
+                          class="form-control input-sm" id="walkType">
+                    <option *ngFor="let type of display.walkTypes" [ngValue]="type"
+                            [attr.selected]="type == display.walkTypes[0]">{{type}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="post-code">Postcode</label>
+                  <input [disabled]="!allowEdits()" [(ngModel)]="walk.postcode"
+                         type="text" class="form-control input-sm" id="post-code"
+                         placeholder="Enter Postcode here">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grid-reference">Grid Reference</label>
+                  <input [disabled]="!allowEdits()" [(ngModel)]="walk.gridReference"
+                         type="text" class="form-control input-sm" id="grid-reference"
+                         placeholder="Enter Grid Reference here">
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="grade">Grade</label>
+                  <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
+                          class="form-control input-sm"
+                          placeholder="Enter Grade here"
+                          [(ngModel)]="walk.grade"
+                          class="form-control input-sm" id="grade">
+                    <option *ngFor="let grade of display.grades"
+                            [ngValue]="grade"
+                            [textContent]="grade"
+                            [attr.selected]="grade == display.walkTypes[0]">{{grade}}
+                    </option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="nearest-town">Nearest Town</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.nearestTown"
-                     type="text" class="form-control input-sm"
-                     id="nearest-town"
-                     placeholder="Enter nearest town here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="walkType">Walk Type</label>
-              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
-                      class="form-control input-sm"
-                      placeholder="Enter walk type here"
-                      [(ngModel)]="walk.walkType"
-                      class="form-control round spaced-controls" id="walkType">
-                <option *ngFor="let type of display.walkTypes" [ngValue]="type"
-                        [attr.selected]="type == display.walkTypes[0]">{{type}}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="grid-reference">Grid Reference</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.gridReference"
-                     type="text" class="form-control input-sm" id="grid-reference"
-                     placeholder="Enter Grid Reference here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="post-code">Postcode</label>
-              <input [disabled]="!allowEdits()" [(ngModel)]="walk.postcode"
-                     type="text" class="form-control input-sm" id="post-code"
-                     placeholder="Enter Postcode here">
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="form-group">
-              <label for="grade">Grade</label>
-              <select *ngIf="allowDetailView()" [disabled]="!allowEdits()"
-                      class="form-control input-sm"
-                      placeholder="Enter Grade here"
-                      [(ngModel)]="walk.grade"
-                      class="form-control round spaced-controls" id="grade">
-                <option *ngFor="let grade of display.grades"
-                        [ngValue]="grade"
-                        [textContent]="grade"
-                        [attr.selected]="grade == display.walkTypes[0]">{{grade}}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-sm-6 round">
             <h1>Google Maps</h1>
             <p>The map below is a preview of where postcode <strong

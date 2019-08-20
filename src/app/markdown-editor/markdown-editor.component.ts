@@ -43,7 +43,7 @@ export class MarkdownEditorComponent implements OnInit {
       this.userEdits[type + "InProgress"] = true;
     }
     this.contentText.forName(this.name).then((data) => {
-      this.logger.info("populateContent", this.name, "content retrieved:", data);
+      this.logger.debug("populateContent", this.name, "content retrieved:", data);
       this.data = data;
       this.originalData = clone(data);
       if (type) {
@@ -53,7 +53,7 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("initialising:", this.name, "content, editSite:", this.editSiteActive());
+    this.logger.debug("initialising:", this.name, "content, editSite:", this.editSiteActive());
     if (!this.description) {
       this.description = this.name;
     }
@@ -77,7 +77,7 @@ export class MarkdownEditorComponent implements OnInit {
 
   save() {
     this.userEdits.saveInProgress = true;
-    this.logger.info("saving", this.name, "content");
+    this.logger.debug("saving", this.name, "content");
     this.data.$saveOrUpdate().then((data) => {
         this.userEdits.saveInProgress = false;
         this.data = data;
@@ -96,7 +96,7 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   preview() {
-    this.logger.info("previewing " + this.name, "content");
+    this.logger.debug("previewing " + this.name, "content");
     this.userEdits.preview = true;
   }
 

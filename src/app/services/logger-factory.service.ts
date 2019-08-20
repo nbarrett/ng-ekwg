@@ -21,7 +21,7 @@ export class Logger {
   }
 
   info(...additional: any[]) {
-    this.logger.info(this.logPrefix(), ...additional);
+    this.logger.debug(this.logPrefix(), ...additional);
   }
 
   private logPrefix() {
