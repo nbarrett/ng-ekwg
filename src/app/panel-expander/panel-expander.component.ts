@@ -26,7 +26,7 @@ export class PanelExpanderComponent implements OnInit {
 
   private logger: Logger;
 
-  constructor(private display: WalkDisplayService, loggerFactory: LoggerFactory) {
+  constructor(public display: WalkDisplayService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(PanelExpanderComponent, NgxLoggerLevel.INFO);
   }
 
