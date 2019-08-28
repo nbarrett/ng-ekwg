@@ -36,4 +36,8 @@ export class Logger {
     this.logger.error(this.logPrefix(), ...additional);
   }
 
+  warn(...additional: any[]) {
+    this.logger.warn(this.logPrefix(), ...additional);
+  }
+
 }

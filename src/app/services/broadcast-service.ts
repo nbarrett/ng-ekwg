@@ -1,8 +1,8 @@
+import { Injectable } from "@angular/core";
+import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Observer } from "rxjs";
 import { filter, share } from "rxjs/operators";
 import { Logger, LoggerFactory } from "./logger-factory.service";
-import { NgxLoggerLevel } from "ngx-logger";
-import { Injectable } from "@angular/core";
 
 @Injectable({
   providedIn: "root"
@@ -21,12 +21,16 @@ export class BroadcastService {
     this.observable = temp.pipe(share());
   }
 
-  broadcast(event: GlobalEvent | string) {
-    this.logger.debug("broadcast:", event);
-    if (event instanceof GlobalEvent) {
-      this.observer.next(event);
+  broadcast(event: GlobalEvent | string): void {
+    if (this.observer) {
+      this.logger.info("broadcast:", event, "observer", this.observer);
+      if (event instanceof GlobalEvent) {
+        this.observer.next(event);
+      } else {
+        this.observer.next(new GlobalEvent(event));
+      }
     } else {
-      this.observer.next(new GlobalEvent(event));
+      this.logger.warn("broadcast:", event, "occurred before observer created");
     }
   }
 
