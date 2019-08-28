@@ -51,3 +51,5 @@ Thumbs.db
 /server/scripts/run-test.sh
 /server/node_modules/
 /src/ekwg-legacy/
+/server/target/
+/server/upload-errors-source.html

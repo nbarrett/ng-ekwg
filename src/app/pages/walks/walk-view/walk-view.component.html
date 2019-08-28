@@ -5,7 +5,7 @@
     <div class="panel-toggle">
       <h1><span [textContent]="walk.walkDate | displayDay" name="walkDate"></span> <span
         [textContent]="durationInFutureFor(walk)" name="durationInFuture"
-        class="badge event-badge blue-badge"></span> <span *ngIf="display.nextWalk(walk)"
+        class="badge event-badge blue-badge"></span> <span *ngIf="display.isNextWalk(walk)"
                                                            class="badge event-badge next-event-badge"> Our next walk</span>
       </h1>
       <div *ngIf="display.eventTypeFor(walk).showDetails">

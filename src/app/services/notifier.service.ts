@@ -63,7 +63,7 @@ export class AlertInstance {
     if (busy) {
       this.setBusy();
     }
-    if (!append || alertType === ALERT_ERROR) {
+    if (!append || alertType === ALERT_ERROR || !this.alertTarget.alertMessages) {
       this.alertTarget.alertMessages = [];
     }
     if (messageText) {

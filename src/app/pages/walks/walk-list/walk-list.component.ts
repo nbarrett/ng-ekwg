@@ -26,12 +26,12 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 export class WalkListComponent implements OnInit {
   public currentWalkId: string;
   private logger: Logger;
-  private notify: AlertInstance;
   private searchChangeObservable: Subject<string>;
   private todayValue: any;
   private walks: Walk[];
   public filteredWalks: Walk[] = [];
   public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
+  private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
 
   constructor(
@@ -101,7 +101,7 @@ export class WalkListComponent implements OnInit {
   }
 
   selectWalksForExport() {
-    // this.showWalkExportDialog();
+    this.urlService.navigateTo("walks", "export");
   }
 
   viewWalkField(walk: Walk, field) {

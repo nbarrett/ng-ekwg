@@ -502,12 +502,6 @@ h3 small {
   background-color: #ddd;
 }
 
-.modal-alert .alert {
-  border-color: #A8B400;
-  border-radius: 6px;
-  margin: 16px 0px 0px 0px;
-}
-
 .alert-danger {
   word-wrap: break-word;
 }
@@ -2617,6 +2611,7 @@ img[src~="bordered"] {
   margin: 6px 0px 0px 0px;
   padding: 8px 6px 6px 8px;
   border-color: #A8B400;
+  border-radius: 6px;
 }
 
 .markdown-preview-icon {

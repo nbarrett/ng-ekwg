@@ -1,55 +1,88 @@
-import { Component, Inject, OnInit } from "@angular/core";
-import { chain } from "../../../functions/chain";
-import { AlertInstance, NotifierService } from "../../../services/notifier.service";
-import { AlertTarget } from "../../../models/alert-target.model";
-import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { NgxLoggerLevel } from "ngx-logger";
-import { WalkDisplayService } from "../walk-display.service";
-import { Member } from "../../../models/member.model";
-import { Walk } from "../../../models/walk.model";
+import { DOCUMENT } from "@angular/common";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { find } from "lodash-es";
+import { NgxLoggerLevel } from "ngx-logger";
+import { interval, Observable, Subscription } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import { chain } from "../../../functions/chain";
+import { AlertTarget } from "../../../models/alert-target.model";
+import { Member } from "../../../models/member.model";
+import { RamblersUploadAudit } from "../../../models/ramblers-upload-audit.model";
+import { WalkExport } from "../../../models/walk-export.model";
+import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
+import { DateUtilsService } from "../../../services/date-utils.service";
+import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { UrlService } from "../../../services/url.service";
+import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
   selector: "app-walk-export",
   templateUrl: "./walk-export.component.html",
   styleUrls: ["./walk-export.component.sass"]
 })
-export class WalkExportComponent implements OnInit {
 
-  private ramblersUploadAuditData: any[];
-  private walksForExport: any[];
-  private notifyWalkExport: AlertInstance;
-  private walkExport: AlertTarget = {};
+export class WalkExportComponent implements OnInit, OnDestroy {
   private logger: Logger;
+  private ramblersUploadAuditData: RamblersUploadAudit[];
+  private walksForExport: WalkExport[] = [];
   private fileName: string;
   private fileNames: string[];
   private showDetail: boolean;
   private walkExportTab0Active: boolean;
   private members: Member[];
-  private walks: Walk[];
   private walkExportTab1Active: boolean;
+  public notifyTarget: AlertTarget = {};
+  private notify: AlertInstance;
+  public csvOptions: {
+    headers: string[]; fieldSeparator?: string; useBom?: boolean;
+    showTitle?: boolean; quoteStrings?: string; title?: string; removeNewLines?: boolean
+  };
+  private intervalJob: Observable<any>;
+  private subscription: Subscription;
+  private finalStatusError: any;
+  private exportInProgress = false;
 
-  constructor(
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-    @Inject("RamblersUploadAudit") private ramblersUploadAudit,
-    private notifierService: NotifierService,
-    private displayDate: DisplayDatePipe,
-    private display: WalkDisplayService,
-    loggerFactory: LoggerFactory
-  ) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.INFO);
-
+  constructor(@Inject(DOCUMENT) private document: Document,
+              @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+              @Inject("RamblersUploadAudit") private ramblersUploadAudit,
+              @Inject("WalksService") private walksService,
+              private notifierService: NotifierService,
+              private displayDateAndTime: DisplayDateAndTimePipe,
+              private displayDate: DisplayDatePipe,
+              private display: WalkDisplayService,
+              private dateUtils: DateUtilsService,
+              private urlService: UrlService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
+    this.logger.info("ngOnInit");
     this.ramblersUploadAuditData = [];
-    this.walksForExport = [];
-    this.notifyWalkExport = this.notifierService.createAlertInstance(this.walkExport);
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.showAvailableWalkExports();
+    this.showAllAudits();
+    this.csvOptions = {
+      fieldSeparator: ",",
+      quoteStrings: "\"",
+      headers: this.walksDownloadHeader(),
+      showTitle: false,
+      useBom: false,
+      removeNewLines: true
+    };
   }
 
-  finalStatusError() {
-    return find(this.ramblersUploadAudit, {status: "error"});
+  ngOnDestroy(): void {
+    this.stopPolling();
+  }
+
+  private stopPolling() {
+    if (this.subscription) {
+      this.logger.debug("unsubscribing", this.subscription);
+      this.subscription.unsubscribe();
+    }
   }
 
   fileNameChanged() {
@@ -57,24 +90,37 @@ export class WalkExportComponent implements OnInit {
     this.refreshRamblersUploadAudit();
   }
 
+  startRamblersUploadAudit() {
+    this.intervalJob = interval(5000).pipe(
+      switchMap(() => this.refreshRamblersUploadAudit())
+    );
+    this.subscription = this.intervalJob.subscribe();
+  }
 
-  refreshRamblersUploadAudit(stop?: any) {
+  refreshRamblersUploadAudit() {
     this.logger.debug("refreshing audit trail records related to", this.fileName);
     return this.ramblersUploadAudit.query({fileName: this.fileName}, {sort: {auditTime: -1}})
-      .then(auditItems => {
-        this.logger.debug("Filtering", auditItems.length, "audit trail records related to", this.fileName);
-        this.ramblersUploadAudit = auditItems
-          .filter(auditItem => {
-            return this.showDetail || auditItem.type !== "detail";
-          })
-          .map(auditItem => {
-            if (auditItem.status === "complete") {
-              this.logger.debug("Upload complete");
-              this.notifyWalkExport.success("Ramblers upload completed");
-              this.display.saveInProgress = false;
-            }
-            return auditItem;
-          });
+      .then((auditItems: RamblersUploadAudit[]) => {
+        if (auditItems) {
+          this.logger.debug("Filtering", auditItems.length, "audit trail records related to", this.fileName, auditItems);
+          this.ramblersUploadAuditData = auditItems
+            .filter(auditItem => {
+              return this.showDetail || ["complete", "error", "success"].includes(auditItem.status);
+            })
+            .map(auditItem => {
+              if (auditItem.status === "complete" && this.subscription) {
+                this.logger.debug("Upload complete");
+                this.notify.success("Ramblers upload completed");
+                this.exportInProgress = false;
+                this.stopPolling();
+                this.showAvailableWalkExports();
+              }
+              return auditItem;
+            });
+          this.notify.warning("Showing " + this.ramblersUploadAuditData.length + " audit items");
+        }
+        this.finalStatusError = find(this.ramblersUploadAuditData, {status: "error"});
+
       });
   }
 
@@ -82,45 +128,55 @@ export class WalkExportComponent implements OnInit {
     return this.ramblersWalksAndEventsService.exportableWalks(this.walksForExport);
   }
 
-  cancelExportWalkDetails() {
-    // $("#walk-export-dialog").modal("hide");
+  navigateBackToWalks() {
+    this.urlService.navigateTo("walks");
   }
 
   populateWalkExport(walksForExport) {
     this.walksForExport = walksForExport;
-    this.notifyWalkExport.success("Found total of " + this.walksForExport.length + " walk(s), "
-      + this.walksDownloadFile().length + " preselected for export");
-    this.notifyWalkExport.clearBusy();
+    this.notify.success({
+      title: "Export status", message: "Found total of " + this.walksForExport.length + " walk(s), "
+        + this.walksDownloadFile().length + " preselected for export"
+    });
+    this.notify.clearBusy();
   }
 
   walksDownloadFile() {
     return this.ramblersWalksAndEventsService.exportWalks(this.exportableWalks(), this.members);
   }
 
-  showWalkExportDialog() {
-    this.walksForExport = [];
-    this.notifyWalkExport.warning("Determining which walks to export", true);
+  showAllAudits() {
+    this.notify.warning("Refreshing past download sessions", false, true);
     this.ramblersUploadAudit.all({limit: 1000, sort: {auditTime: -1}})
-      .then(auditItems => {
+      .then((auditItems: RamblersUploadAudit[]) => {
         this.logger.debug("found total of", auditItems.length, "audit trail records");
         this.fileNames = chain(auditItems).map("fileName").unique().value();
-        this.logger.debug("unique total of", this.fileNames.length, "audit trail records");
+        this.fileName = this.fileNames[0];
+        this.fileNameChanged();
+        this.logger.debug("Total of", this.fileNames.length, "download sessions");
       });
-    this.ramblersWalksAndEventsService.createWalksForExportPrompt(this.walks, this.members)
-      .then(this.populateWalkExport)
-      .catch(error => {
-        this.logger.debug("error->", error);
-        this.notifyWalkExport.error({title: "Problem with Ramblers export preparation", message: JSON.stringify(error)});
+  }
+
+  showAvailableWalkExports() {
+    this.walksForExport = [];
+    this.notify.warning("Refreshing export status of future walks", false, true);
+    this.walksService.query({walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, {sort: {walkDate: -1}})
+      .then(walks => {
+        this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks, this.members)
+          .then((walksForExport) => this.populateWalkExport(walksForExport))
+          .catch(error => {
+            this.logger.error("error->", error);
+            this.notify.error({title: "Problem with Ramblers export preparation", message: error});
+          });
       });
-    // $("#walk-export-dialog").modal();
   }
 
   changeWalkExportSelection(walk: any) {
     if (walk.walkValidations.length === 0) {
       walk.selected = !walk.selected;
-      this.notifyWalkExport.hide();
+      this.notify.hide();
     } else {
-      this.notifyWalkExport.error({
+      this.notify.error({
         title: "You can\"t export the walk for " + this.displayDate.transform(walk.walk.walkDate),
         message: walk.walkValidations.join(", ")
       });
@@ -128,35 +184,32 @@ export class WalkExportComponent implements OnInit {
   }
 
   uploadToRamblers() {
-
-    const callAtInterval = () => {
-      this.logger.debug("Refreshing audit trail for file", this.fileName, "count =", this.ramblersUploadAudit.length);
-      this.refreshRamblersUploadAudit(stop);
-    };
-
-    this.ramblersUploadAudit = [];
+    this.logger.debug("Refreshing audit trail for file", this.fileName, "count =", this.ramblersUploadAuditData.length);
+    this.startRamblersUploadAudit();
+    this.ramblersUploadAuditData = [];
     this.walkExportTab0Active = false;
     this.walkExportTab1Active = true;
-    this.display.saveInProgress = true;
-    this.ramblersWalksAndEventsService.uploadToRamblers(this.walksForExport, this.members, this.notifyWalkExport).then(fileName => {
+    this.exportInProgress = true;
+    this.ramblersWalksAndEventsService.uploadToRamblers(this.walksForExport, this.members, this.notify).then(fileName => {
       this.fileName = fileName;
-      throw new Error("solve $interval(callAtInterval, 2000, false);");
-      // const stop = $interval(callAtInterval, 2000, false);
-      if (this.fileNames.includes(this.fileName)) {
+      if (!this.fileNames.includes(this.fileName)) {
         this.fileNames.push(this.fileName);
         this.logger.debug("added", this.fileName, "to filenames of", this.fileNames.length, "audit trail records");
       }
       delete this.finalStatusError;
-
     });
   }
 
   walksDownloadFileName() {
-    return this.ramblersWalksAndEventsService.exportWalksFileName();
+    return this.ramblersWalksAndEventsService.exportWalksFileName(true);
   }
 
   walksDownloadHeader() {
     return this.ramblersWalksAndEventsService.exportColumnHeadings();
   }
 
+  exportCSV() {
+    this.document.getElementById("angular-2-csv")
+      .getElementsByTagName("button")[0].click();
+  }
 }

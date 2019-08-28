@@ -6,7 +6,7 @@ import { clone, find, isEmpty, pick } from "lodash-es";
 import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ConfirmType, WalkDisplayService, WalkViewMode } from "../walk-display.service";
+import { ConfirmType, MeetupEvent, WalkDisplayService, WalkViewMode } from "../walk-display.service";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { CommitteeReferenceDataService } from "../../../services/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -384,7 +384,7 @@ export class WalkEditComponent implements OnInit {
   meetupSelectSync(walk: Walk) {
     this.logger.debug("meetupSelectSync");
     const criteria = {url: walk.meetupEventUrl};
-    this.meetupEvent = find(this.display.meetupEvents, criteria);
+    this.meetupEvent = find(this.display.meetupEvents, criteria) as MeetupEvent;
     this.logger.debug("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, criteria, "=>", this.meetupEvent);
   }
 

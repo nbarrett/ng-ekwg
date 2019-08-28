@@ -80,6 +80,7 @@ import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
+import { Angular2CsvModule } from "angular2-csv";
 
 @NgModule({
   declarations: [
@@ -131,6 +132,7 @@ import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk
     BsDatepickerModule.forRoot(),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
+    Angular2CsvModule,
     PopoverModule.forRoot(),
     TabsModule.forRoot(),
     TooltipModule.forRoot(),

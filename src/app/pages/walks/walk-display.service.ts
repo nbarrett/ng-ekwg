@@ -29,7 +29,7 @@ export class WalkDisplayService {
   private nextWalkId: string;
   public members: Member [] = [];
   private meetupConfig: any;
-  public meetupEvents: any[];
+  public meetupEvents: MeetupEvent[] = [];
   public ramblersWalkBaseUrl: string;
   public googleMapsConfig: {
     apiKey: string;
@@ -69,13 +69,22 @@ export class WalkDisplayService {
     });
     this.logger.debug("refreshMeetupData");
     this.meetupService.eventsForStatus("past")
-      .then(pastEvents => {
-        this.meetupService.eventsForStatus("upcoming")
-          .then(futureEvents => {
-            this.meetupEvents = sortBy(pastEvents.concat(futureEvents), "date,").reverse();
-            this.logger.debug("refreshMeetupData:meetupEvents", this.meetupEvents);
-          });
+      .then((pastEvents: MeetupEvent[] | MeetupErrorResponse) => {
+        if (this.isMeetupErrorResponse(pastEvents)) {
+          this.logger.error("failed to get meetup past events - response:", pastEvents);
+        } else {
+          this.meetupService.eventsForStatus("upcoming")
+            .then((futureEvents: MeetupEvent[]) => {
+              const events: MeetupEvent[] = pastEvents.concat(futureEvents);
+              this.meetupEvents = sortBy(events, "date,").reverse();
+              this.logger.debug("refreshMeetupData:meetupEvents", this.meetupEvents);
+            });
+        }
       });
+  }
+
+  private isMeetupErrorResponse(message: MeetupEvent[] | MeetupErrorResponse): message is MeetupErrorResponse {
+    return message && (message as MeetupErrorResponse).status !== undefined;
   }
 
   findWalk(walk: Walk): ExpandedWalk {
@@ -209,7 +218,7 @@ export class WalkDisplayService {
     return eventType;
   }
 
-  nextWalk(walk: Walk): boolean {
+  isNextWalk(walk: Walk): boolean {
     return walk && walk.$id() === this.nextWalkId;
   }
 
@@ -259,4 +268,31 @@ export enum WalkViewMode {
 export interface ExpandedWalk {
   walkId: string;
   mode?: WalkViewMode;
+}
+
+export interface MeetupEvent {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  date: number;
+  startTime: number;
+  duration: number;
+}
+
+export interface MeetupErrorResponse {
+  status: number;
+  response: {
+    req: {
+      method: string,
+      url: string,
+      headers: {
+        "user-agent": string,
+        accept: string
+      },
+    },
+    header: object,
+    status: number,
+    text?: { details: string; code: string; problem: string }
+  };
 }

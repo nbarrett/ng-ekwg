@@ -26,10 +26,10 @@ angular.module('ekwgApp')
       call: call
     }
   })
-  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, DateUtils, RamblersHttpService, LoggedInMemberService, CommitteeReferenceData) {
+  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, LoggedInMemberService, CommitteeReferenceData) {
 
       var logger = $log.getInstance('RamblersWalksAndEventsService');
-      $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.OFF;
+      $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.DEBUG;
 
       function uploadRamblersWalks(data) {
         return RamblersHttpService.call('Upload Ramblers walks', 'POST', 'api/ramblers/gwem/upload-walks', data);
@@ -47,8 +47,8 @@ angular.module('ekwgApp')
         return RamblersHttpService.call('Ramblers walk url', 'GET', 'api/ramblers/gwem/walk-base-url');
       };
 
-      function exportWalksFileName() {
-        return 'walks-export-' + DateUtils.asMoment().format('DD-MMMM-YYYY-HH-mm') + '.csv'
+      function exportWalksFileName(omitExtension) {
+        return 'walks-export-' + DateUtils.asMoment().format('DD-MMMM-YYYY-HH-mm') + (omitExtension ? '' : '.csv');
       }
 
       function exportableWalks(walkExports) {
@@ -88,8 +88,7 @@ angular.module('ekwgApp')
 
             if (!foundWalk) {
               logger.debug('no match found for ramblersWalksResponse', ramblersWalksResponse);
-            }
-            else {
+            } else {
               unreferencedList = _.without(unreferencedList, ramblersWalksResponse.ramblersWalkId);
               if (foundWalk && foundWalk.ramblersWalkId !== ramblersWalksResponse.ramblersWalkId) {
                 logger.debug('updating walk from', foundWalk.ramblersWalkId || 'empty', '->', ramblersWalksResponse.ramblersWalkId, 'on', $filter('displayDate')(foundWalk.walkDate));
@@ -264,6 +263,7 @@ angular.module('ekwgApp')
             .replace('â€“', '–')
             .replace('â€™', '’')
             .replace('â€œ', '“')
+            .replace(/(\r\n|\n|\r)/gm, " ")
           : '';
       }
 

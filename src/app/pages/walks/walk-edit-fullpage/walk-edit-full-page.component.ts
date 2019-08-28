@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
-import { NotifierService } from "../../../services/notifier.service";
+import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { WalkDisplayService } from "../walk-display.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
@@ -22,17 +22,20 @@ export class WalkEditFullPageComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   private currentWalkEditMode: WalkEditMode;
   private currentStatus: EventType;
+  private notify: AlertInstance;
 
   constructor(@Inject("WalksService") private walksService,
               private route: ActivatedRoute, private dateUtils: DateUtilsService,
               private display: WalkDisplayService,
               private walksReferenceService: WalksReferenceService,
-              displayDate: DisplayDatePipe, notifierService: NotifierService, loggerFactory: LoggerFactory) {
+              private notifierService: NotifierService,
+              displayDate: DisplayDatePipe, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkEditFullPageComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("add")) {
         this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
