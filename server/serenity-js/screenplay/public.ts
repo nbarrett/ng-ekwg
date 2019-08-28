@@ -1,6 +1,6 @@
-import { protractor } from 'protractor';
-import { TakeNotes } from 'serenity-js/lib/screenplay';
-import { Actor, BrowseTheWeb, Cast } from 'serenity-js/lib/screenplay-protractor';
+import { protractor } from "protractor";
+import { TakeNotes } from "serenity-js/lib/screenplay";
+import { Actor, BrowseTheWeb, Cast } from "serenity-js/lib/screenplay-protractor";
 
 export class Public implements Cast {
     public actor(name: string): Actor {

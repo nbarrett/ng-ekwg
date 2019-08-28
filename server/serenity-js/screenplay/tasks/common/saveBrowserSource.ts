@@ -1,7 +1,7 @@
-import { FileSystem } from '@serenity-js/core/lib/io/file_system';
-import { Interaction, UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { by, protractor } from 'protractor';
-import { PerformsTasks, Task } from 'serenity-js/lib/screenplay';
+import { FileSystem } from "@serenity-js/core/lib/io/file_system";
+import { Interaction, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { by, protractor } from "protractor";
+import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
 
 export class SaveBrowserSource implements Interaction {
 
@@ -15,7 +15,7 @@ export class SaveBrowserSource implements Interaction {
     performAs(actor: UsesAbilities): PromiseLike<void> {
         return protractor.browser.getPageSource()
             .then((htmlSource: string) => {
-                new FileSystem('./').store(this.relativePathToFile, htmlSource);
+                new FileSystem("./").store(this.relativePathToFile, htmlSource);
             });
     }
 

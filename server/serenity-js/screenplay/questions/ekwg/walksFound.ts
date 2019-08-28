@@ -1,9 +1,9 @@
-import { BrowseTheWeb, Target } from 'serenity-js/lib/serenity-protractor';
+import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
 
-import { by } from 'protractor';
-import { Question, UsesAbilities } from 'serenity-js/lib/screenplay';
-import { expect } from '../../../expect';
-import { WalksProgrammeTargets } from '../../ui/ekwg/walksProgrammeTargets';
+import { by } from "protractor";
+import { Question, UsesAbilities } from "serenity-js/lib/screenplay";
+import { expect } from "../../../expect";
+import { WalksProgrammeTargets } from "../../ui/ekwg/walksProgrammeTargets";
 
 export class WalkSummary {
 
@@ -28,8 +28,8 @@ export class WalkSummaries implements Question<PromiseLike<WalkSummary[]>> {
     answeredBy(actor: UsesAbilities): PromiseLike<WalkSummary[]> {
 
         return BrowseTheWeb.as(actor).locateAll(
-            WalksProgrammeTargets.walks).map(result => result.all(by.tagName('td')).getText().then(function (columns) {
-            console.log('columns', columns);
+            WalksProgrammeTargets.walks).map(result => result.all(by.tagName("td")).getText().then(function (columns) {
+            console.log("columns", columns);
             return ({
                 action: columns[0],
                 walkDate: columns[1],
@@ -51,12 +51,12 @@ export class WalkSummaries implements Question<PromiseLike<WalkSummary[]>> {
 export const showsAWalkOn = (expectedDate: string) => showWalksOnAllOf([expectedDate]);
 export const showWalksOnAllOf = (expectedDates: string[]) => foundWalks => {
     return foundWalks.then(walks => {
-        console.log('walks:', walks);
+        console.log("walks:", walks);
         const walkDates = walks.map(walk => walk.walkDate);
-        console.log('walks dates:', walkDates);
+        console.log("walks dates:", walkDates);
         expect(walkDates).to.include.members(expectedDates);
         // walks.forEach(walk => {
-        //     console.log('walk:', walk);
+        //     console.log("walk:", walk);
         //     expect(walk.walkDate).to.be.oneOf(expectedDates);
         // });
     });

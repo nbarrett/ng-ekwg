@@ -1,31 +1,31 @@
-'use strict';
-let config = require('../config/config.js');
-let aws = require('../aws/aws-controllers');
-let debug = require('debug')(config.logNamespace('ramblers:memberBulkLoad'));
-let path = require('path');
-let fs = require('fs');
-let moment = require('moment-timezone');
-let _ = require('underscore');
-let _str = require('underscore.string');
-let csv = require('csv');
-let childProcess = require('child_process');
-let BULK_LOAD_SUFFIX = 'MemberList.csv';
-let NEW_MEMBER_SUFFIX = 'new.csv';
+"use strict";
+let config = require("../config/config.js");
+let aws = require("../aws/aws-controllers");
+let debug = require("debug")(config.logNamespace("ramblers:memberBulkLoad"));
+let path = require("path");
+let fs = require("fs");
+let moment = require("moment-timezone");
+let _ = require("underscore");
+let _str = require("underscore.string");
+let csv = require("csv");
+let childProcess = require("child_process");
+let BULK_LOAD_SUFFIX = "MemberList.csv";
+let NEW_MEMBER_SUFFIX = "new.csv";
 
 exports.uploadRamblersData = function (req, res) {
-  var momentInstance = moment().tz('Europe/London');
-  let uploadSessionFolder = `memberAdmin/${momentInstance.format('YYYY-MM-DD-HH-mm-ss')}`;
+  var momentInstance = moment().tz("Europe/London");
+  let uploadSessionFolder = `memberAdmin/${momentInstance.format("YYYY-MM-DD-HH-mm-ss")}`;
   let uploadedFile = uploadedFileInfo();
 
   let bulkUploadResponse = {files: {}, auditLog: []};
-  debugAndInfo('Received uploaded member data file', uploadedFile.originalname, 'into location', uploadedFile.path, 'containing', uploadedFile.size, 'bytes');
-  if (fileExtensionIs('.zip')) {
+  debugAndInfo("Received uploaded member data file", uploadedFile.originalname, "into location", uploadedFile.path, "containing", uploadedFile.size, "bytes");
+  if (fileExtensionIs(".zip")) {
     extractZipFile(uploadedFile.path, uploadedFile.originalname, res);
-  } else if (fileExtensionIs('.csv') && filenameValid()) {
+  } else if (fileExtensionIs(".csv") && filenameValid()) {
     extractCsvToJson(uploadedFile.path, uploadedFile.originalname, res);
   } else {
     fs.unlink(uploadedFile.originalname, function () {
-      res.json(debugAndError(`Only zip files or files that end with '${BULK_LOAD_SUFFIX}' or '${NEW_MEMBER_SUFFIX}' are allowed, but you supplied ${uploadedFile.originalname}`))
+      res.json(debugAndError(`Only zip files or files that end with "${BULK_LOAD_SUFFIX}" or "${NEW_MEMBER_SUFFIX}" are allowed, but you supplied ${uploadedFile.originalname}`))
     });
   }
 
@@ -35,22 +35,22 @@ exports.uploadRamblersData = function (req, res) {
     }).join(" ");
     debug(debugData);
     bulkUploadResponse.auditLog.push({status: status, message: debugData});
-    if (status === 'error') {
+    if (status === "error") {
       bulkUploadResponse.error = debugData
     }
     return bulkUploadResponse;
   }
 
   function debugAndComplete() {
-    return logWithStatus('complete', arguments);
+    return logWithStatus("complete", arguments);
   }
 
   function debugAndInfo() {
-    return logWithStatus('info', arguments);
+    return logWithStatus("info", arguments);
   }
 
   function debugAndError(errorMessage) {
-    return logWithStatus('error', arguments);
+    return logWithStatus("error", arguments);
   }
 
 
@@ -74,44 +74,44 @@ exports.uploadRamblersData = function (req, res) {
         } else {
           debugAndInfo(response.information);
           bulkUploadResponse.files.archive = `${uploadSessionFolder}/${uploadedFile.originalname}`;
-          let inflateToken = 'inflating:';
-          let unzipPath = '/tmp/memberData/';
-          let zip = childProcess.spawn('unzip', ['-P', 'J33ves33', '-o', '-d', unzipPath, receivedZipFileName]);
+          let inflateToken = "inflating:";
+          let unzipPath = "/tmp/memberData/";
+          let zip = childProcess.spawn("unzip", ["-P", "J33ves33", "-o", "-d", unzipPath, receivedZipFileName]);
           let zipOutputLines = [];
           let zipErrorLines = [];
 
           let handleError = function (data) {
-            zipErrorLines = zipErrorLines.concat(data.toString().trim().split('\n'));
-            res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(', ')}`));
+            zipErrorLines = zipErrorLines.concat(data.toString().trim().split("\n"));
+            res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`));
           };
 
-          zip.stdout.on('data', function (data) {
-            let logOutput = data.toString().trim().split('\n').filter(item => !_.isEmpty(item));
+          zip.stdout.on("data", function (data) {
+            let logOutput = data.toString().trim().split("\n").filter(item => !_.isEmpty(item));
             if (logOutput.length > 0) {
-              debugAndInfo('Unzip output [' + logOutput + ']');
+              debugAndInfo("Unzip output [" + logOutput + "]");
               zipOutputLines = zipOutputLines.concat(logOutput);
             }
           });
 
-          zip.on('error', handleError);
+          zip.on("error", handleError);
 
-          zip.stderr.on('data', handleError);
+          zip.stderr.on("data", handleError);
 
-          zip.on('exit', function (code) {
+          zip.on("exit", function (code) {
             if (code !== 0) {
-              res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(', ')}`));
+              res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`));
             } else {
               let extractedFiles = _.chain(zipOutputLines)
                 .filter(function (file) {
                   return _str.include(file, inflateToken);
                 })
                 .map(function (file) {
-                  return file.replace(inflateToken, '').trim();
+                  return file.replace(inflateToken, "").trim();
                 })
                 .value();
-              debugAndInfo('Unzip process completed successfully after processing', receivedZipFileName, 'and extracted', extractedFiles.length, 'file(s):', extractedFiles.join(', '));
+              debugAndInfo("Unzip process completed successfully after processing", receivedZipFileName, "and extracted", extractedFiles.length, "file(s):", extractedFiles.join(", "));
               if (extractedFiles.length === 0) {
-                res.json(debugAndError('No files could be unzipped from ' + userZipFileName));
+                res.json(debugAndError("No files could be unzipped from " + userZipFileName));
               } else {
                 extractFromFile(unzipPath, extractedFiles, BULK_LOAD_SUFFIX, res).then(function (response) {
                   if (response.error) {
@@ -138,7 +138,7 @@ exports.uploadRamblersData = function (req, res) {
       return _str.endsWith(file, fileNameSuffix);
     });
     if (memberDataFileName) {
-      debugAndInfo(memberDataFileName, 'matched', fileNameSuffix);
+      debugAndInfo(memberDataFileName, "matched", fileNameSuffix);
       return aws.putObjectDirect(uploadSessionFolder, memberDataFileName, memberDataFileName)
         .then(function (response) {
           if (response.error) {
@@ -150,7 +150,7 @@ exports.uploadRamblersData = function (req, res) {
           }
         });
     } else {
-      debugAndInfo('No files matched', fileNameSuffix);
+      debugAndInfo("No files matched", fileNameSuffix);
       return Promise.resolve(false);
     }
   }
@@ -161,27 +161,27 @@ exports.uploadRamblersData = function (req, res) {
       let memberDataRows = _.chain(json)
         .map(function (dataRow) {
           currentDataRow = dataRow;
-          if (dataRow['[Expiry Date]']) {
+          if (dataRow["[Expiry Date]"]) {
             return {
-              membershipExpiryDate: dataRow['[Expiry Date]'].trim(),
-              membershipNumber: dataRow['[Membership Number]'].trim(),
-              mobileNumber: dataRow['[Telephone]'].trim(),
-              email: dataRow['[Private Email]'].trim(),
-              firstName: dataRow['[Forenames]'] || dataRow['[Initials]'].trim(),
-              lastName: dataRow['[Surname]'].trim(),
-              postcode: dataRow['[Postcode]'].trim()
+              membershipExpiryDate: dataRow["[Expiry Date]"].trim(),
+              membershipNumber: dataRow["[Membership Number]"].trim(),
+              mobileNumber: dataRow["[Telephone]"].trim(),
+              email: dataRow["[Private Email]"].trim(),
+              firstName: dataRow["[Forenames]"] || dataRow["[Initials]"].trim(),
+              lastName: dataRow["[Surname]"].trim(),
+              postcode: dataRow["[Postcode]"].trim()
             }
-          } else if (dataRow['Membership_No']) {
+          } else if (dataRow["Membership_No"]) {
             return {
-              membershipNumber: dataRow['Membership_No'].trim(),
-              mobileNumber: dataRow['Tel'].trim(),
-              email: dataRow['Email'].trim(),
-              firstName: dataRow['Forenames'] || dataRow['Initials'].trim(),
-              lastName: dataRow['Surname'].trim(),
-              postcode: dataRow['PostCode'].trim()
+              membershipNumber: dataRow["Membership_No"].trim(),
+              mobileNumber: dataRow["Tel"].trim(),
+              email: dataRow["Email"].trim(),
+              firstName: dataRow["Forenames"] || dataRow["Initials"].trim(),
+              lastName: dataRow["Surname"].trim(),
+              postcode: dataRow["PostCode"].trim()
             }
           } else {
-            return debugAndError('Loading of data from ' + userFileName + ' failed processing data row ' + JSON.stringify(currentDataRow) + ' due to membership record type not being recognised');
+            return debugAndError("Loading of data from " + userFileName + " failed processing data row " + JSON.stringify(currentDataRow) + " due to membership record type not being recognised");
           }
         })
         .filter(function (dataRow) {
@@ -191,27 +191,28 @@ exports.uploadRamblersData = function (req, res) {
       debugAndComplete(`${memberDataRows.length} member(s) were extracted from ${userFileName}`);
       return bulkUploadResponse;
     } catch (error) {
-      debugAndError('Error attempting to extract data from', userFileName);
-      debugAndError('Error message:' + error.message);
-      debugAndError('Error stack:', error.stack);
-      return debugAndError('Loading of data from ' + userFileName + ' failed processing data row ' + JSON.stringify(currentDataRow) + ' due to unexpected error:' + error);
+      debugAndError("Error attempting to extract data from", userFileName);
+      debugAndError("Error message:" + error.message);
+      debugAndError("Error stack:", error.stack);
+      return debugAndError("Loading of data from " + userFileName + " failed processing data row " + JSON.stringify(currentDataRow) + " due to unexpected error:" + error);
     }
   }
 
   function extractCsvToJson(localFileName, userFileName, res) {
-    debugAndInfo('Extracting member data from', userFileName);
+    debugAndInfo("Extracting member data from", userFileName);
     bulkUploadResponse.files.data = `${uploadSessionFolder}/${userFileName}`;
 
     csv()
-      .from.path(localFileName, {columns: true, delimiter: ',', escape: '"'})
+      .from.path(localFileName, {
+      columns: true, delimiter: ",", escape: "\""})
       .to.array(function (data) {
-      res.json(extractMemberDataFromArray(data, userFileName, res));
-    })
-      .on('error', function (error) {
-        debugAndError('Data could not be extracted from', localFileName);
-        res.json(debugAndError(error));
-      });
+        res.json(extractMemberDataFromArray(data, userFileName, res));
+      })
+        .on("error", function (error) {
+          debugAndError("Data could not be extracted from", localFileName);
+          res.json(debugAndError(error));
+        });
   }
 
-}
-;
+  }
+  ;

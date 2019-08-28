@@ -1,5 +1,5 @@
-import { Question, UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { BrowseTheWeb, Target } from 'serenity-js/lib/serenity-protractor';
+import { Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
 
 export class CheckedValue implements Question<PromiseLike<boolean>> {
     static of = (target: Target) => new CheckedValue(target);

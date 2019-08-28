@@ -2,7 +2,10 @@
   "compilerOptions": {
     "allowJs": true,
     "target": "es5",
-    "lib": [ "es5", "es6" ],
+    "lib": [
+      "es5",
+      "es6"
+    ],
     "module": "commonjs",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -10,8 +13,7 @@
     "outDir": "./lib/ts-gen/",
     "declaration": true
   },
-
-  "exclude": [
-    "node_modules"
+  "include": [
+    "serenity-js/**/*.ts"
   ]
 }

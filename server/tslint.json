@@ -3,7 +3,6 @@
   "rulesDirectory": "node_modules/tslint-microsoft-contrib",
   "rules": {
     "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
-    "no-submodule-imports": false,
     "no-string-literal": false,
     "no-console": false,
     "quotemark": [true, "double", "avoid-escape"],
@@ -33,7 +32,6 @@
     "variable-name": [true, "ban-keywords"],
     "interface-name": [true, "never-prefix"],
     "max-line-length": [true, 180],
-    "no-implicit-dependencies": false,
     "member-ordering": [
       true,
       {

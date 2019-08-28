@@ -1,8 +1,8 @@
-'use strict';
-let config = require('../config/config');
-let debug = require('debug')(config.logNamespace('mailchimp:routes:segments'));
-let messageHandler = require('./messageHandler');
-let mcapi = require('mailchimp-api');
+"use strict";
+let config = require("../config/config");
+let debug = require("debug")(config.logNamespace("mailchimp:routes:segments"));
+let messageHandler = require("./messageHandler");
+let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 
 /*
@@ -16,10 +16,10 @@ exports.segmentRename = function (req, res) {
     "id": messageHandler.mapListTypeToId(req, debug),
     "seg_id": req.body.segmentId,
     "opts": {
-      "name": req.body.segmentName
-    }
+      "name": req.body.segmentName,
+    },
   };
-  var messageType = 'static segment rename';
+  var messageType = "static segment rename";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.segmentUpdate(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -38,9 +38,9 @@ exports.segmentRename = function (req, res) {
 exports.segmentAdd = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "name": req.body.segmentName
+    "name": req.body.segmentName,
   };
-  var messageType = 'static segment add';
+  var messageType = "static segment add";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegmentAdd(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -59,10 +59,10 @@ exports.segmentAdd = function (req, res) {
 exports.segmentDel = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "seg_id": req.params.segmentId
+    "seg_id": req.params.segmentId,
   };
 
-  var messageType = 'static segment delete';
+  var messageType = "static segment delete";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegmentDel(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -82,9 +82,9 @@ exports.segmentMembersAdd = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "seg_id": req.body.segmentId,
-    "batch": req.body.segmentMembers
+    "batch": req.body.segmentMembers,
   };
-  var messageType = 'static segment members add';
+  var messageType = "static segment members add";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegmentMembersAdd(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -104,9 +104,9 @@ exports.segmentMembersDel = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "seg_id": req.body.segmentId,
-    "batch": req.body.segmentMembers
+    "batch": req.body.segmentMembers,
   };
-  var messageType = 'static segment delete';
+  var messageType = "static segment delete";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegmentMembersDel(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -126,9 +126,9 @@ exports.segmentMembersDel = function (req, res) {
 exports.segmentReset = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "seg_id": req.body.segmentId
+    "seg_id": req.body.segmentId,
   };
-  var messageType = 'segment reset';
+  var messageType = "segment reset";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegmentReset(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -148,9 +148,9 @@ exports.segments = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "get_counts": true,
-    "limit": 1000
+    "limit": 1000,
   };
-  var messageType = 'list segments';
+  var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.staticSegments(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);

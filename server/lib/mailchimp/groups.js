@@ -1,8 +1,8 @@
-'use strict';
-let config = require('../config/config');
-let debug = require('debug')(config.logNamespace('mailchimp:routes:groups'));
-let messageHandler = require('./messageHandler');
-let mcapi = require('mailchimp-api');
+"use strict";
+let config = require("../config/config");
+let debug = require("debug")(config.logNamespace("mailchimp:routes:groups"));
+let messageHandler = require("./messageHandler");
+let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 
 /*
@@ -16,9 +16,9 @@ exports.interestGroupAdd = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "group_name": req.body.interestGroupName,
-    "grouping_id": req.body.interestGroupingId
+    "grouping_id": req.body.interestGroupingId,
   };
-  var messageType = 'interest group add';
+  var messageType = "interest group add";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupAdd(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -38,9 +38,9 @@ exports.interestGroupDel = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "group_name": req.body.interestGroupName,
-    "grouping_id": req.body.interestGroupingId
+    "grouping_id": req.body.interestGroupingId,
   };
-  var messageType = 'interest group delete';
+  var messageType = "interest group delete";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupDel(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -62,9 +62,9 @@ exports.interestGroupUpdate = function (req, res) {
     "id": messageHandler.mapListTypeToId(req, debug),
     "old_name": req.body.oldName,
     "new_name": req.body.newName,
-    "grouping_id": req.body.interestGroupingId
+    "grouping_id": req.body.interestGroupingId,
   };
-  var messageType = 'interest group update';
+  var messageType = "interest group update";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupUpdate(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -86,9 +86,9 @@ exports.interestGroupingAdd = function (req, res) {
     "id": messageHandler.mapListTypeToId(req, debug),
     "name": req.body.interestGroupingName,
     "type": "hidden",
-    "groups": req.body.groups
+    "groups": req.body.groups,
   };
-  var messageType = 'interest grouping add';
+  var messageType = "interest grouping add";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupingAdd(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -107,9 +107,9 @@ exports.interestGroupingAdd = function (req, res) {
 
 exports.interestGroupingDel = function (req, res) {
   var requestData = {
-    "grouping_id": req.body.interestGroupingId
+    "grouping_id": req.body.interestGroupingId,
   };
-  var messageType = 'interest grouping delete';
+  var messageType = "interest grouping delete";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupingDel(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -129,9 +129,9 @@ exports.interestGroupingDel = function (req, res) {
 exports.interestGroupings = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "counts": true
+    "counts": true,
   };
-  var messageType = 'interestGroupings list';
+  var messageType = "interestGroupings list";
   messageHandler.logRequestData(messageType, requestData, debug);
 
   mc.lists.interestGroupings(requestData, function (responseData) {
@@ -152,9 +152,9 @@ exports.interestGroupingUpdate = function (req, res) {
   var requestData = {
     "grouping_id": req.body.interestGroupingId,
     "name": req.body.interestGroupingName,
-    "value": req.body.interestGroupingValue
+    "value": req.body.interestGroupingValue,
   };
-  var messageType = 'interestGroupings update';
+  var messageType = "interestGroupings update";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.lists.interestGroupingUpdate(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);

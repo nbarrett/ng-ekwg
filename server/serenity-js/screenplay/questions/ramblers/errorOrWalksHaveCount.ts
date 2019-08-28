@@ -1,10 +1,10 @@
-import { UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { Question } from 'serenity-js/lib/screenplay-protractor';
-import { Text, WebElement } from 'serenity-js/lib/serenity-protractor';
-import { WalksTargets } from '../../ui/ramblers/walksTargets';
-import { UploadError } from './errorDisplayed';
-import { RamblersWalkSummaries } from './ramblersWalksFound';
-import { WalksHaveCount } from './walksHaveCount';
+import { UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { Question } from "serenity-js/lib/screenplay-protractor";
+import { Text, WebElement } from "serenity-js/lib/serenity-protractor";
+import { WalksTargets } from "../../ui/ramblers/walksTargets";
+import { UploadError } from "./errorDisplayed";
+import { RamblersWalkSummaries } from "./ramblersWalksFound";
+import { WalksHaveCount } from "./walksHaveCount";
 
 export class ErrorOrWalksHaveCount implements Question<PromiseLike<boolean>> {
 

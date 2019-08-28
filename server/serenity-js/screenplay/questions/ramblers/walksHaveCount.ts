@@ -1,6 +1,6 @@
-import { UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { Question } from 'serenity-js/lib/screenplay-protractor';
-import { RamblersWalkSummaries } from './ramblersWalksFound';
+import { UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { Question } from "serenity-js/lib/screenplay-protractor";
+import { RamblersWalkSummaries } from "./ramblersWalksFound";
 
 export class WalksHaveCount implements Question<PromiseLike<boolean>> {
 

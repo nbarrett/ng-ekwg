@@ -1,8 +1,8 @@
-import { step } from '@serenity-js/core/lib/recording';
-import { PerformsTasks, Task, UsesAbilities } from 'serenity-js/lib/screenplay';
-import { Click, Duration, Is, Target, Wait } from 'serenity-js/lib/serenity-protractor';
-import { WalksTargets } from '../../ui/ramblers/walksTargets';
-import { Hide } from './hide';
+import { step } from "@serenity-js/core/lib/recording";
+import { PerformsTasks, Task, UsesAbilities } from "serenity-js/lib/screenplay";
+import { Click, Duration, Is, Target, Wait } from "serenity-js/lib/serenity-protractor";
+import { WalksTargets } from "../../ui/ramblers/walksTargets";
+import { Hide } from "./hide";
 
 export class ClickWhenReady implements Task {
 
@@ -13,7 +13,7 @@ export class ClickWhenReady implements Task {
     constructor(private target: Target) {
     }
 
-    @step('{0} clicks on #target when ready')
+    @step("{0} clicks on #target when ready")
     performAs(actor: PerformsTasks & UsesAbilities): PromiseLike<void> {
         return actor.attemptsTo(
             Hide.target(WalksTargets.chatWindow),

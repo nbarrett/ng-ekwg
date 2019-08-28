@@ -1,8 +1,8 @@
-'use strict';
-let config = require('../config/config');
-let debug = require('debug')(config.logNamespace('mailchimp:routes:index'));
-let messageHandler = require('./messageHandler');
-let mcapi = require('mailchimp-api');
+"use strict";
+let config = require("../config/config");
+let debug = require("debug")(config.logNamespace("mailchimp:routes:index"));
+let messageHandler = require("./messageHandler");
+let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 
 /*
@@ -14,7 +14,7 @@ exports.index = function (req, res) {
     res.json(data);
   }, function (err) {
     console.log(err);
-    if (err.name == 'Invalid_ApiKey') {
+    if (err.name === "Invalid_ApiKey") {
       res.locals.error_flash = "Invalid API key. Set it in app.js";
     } else if (error.error) {
       res.locals.error_flash = error.code + ": " + error.error;

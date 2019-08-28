@@ -1,8 +1,8 @@
-import { UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { Question } from 'serenity-js/lib/screenplay-protractor';
-import { every } from 'underscore';
-import { WalkFilters } from '../../tasks/ramblers/walks/selectWalks';
-import { RamblersWalkSummaries } from './ramblersWalksFound';
+import { UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { Question } from "serenity-js/lib/screenplay-protractor";
+import { every } from "underscore";
+import { WalkFilters } from "../../tasks/ramblers/walks/selectWalks";
+import { RamblersWalkSummaries } from "./ramblersWalksFound";
 
 export class WalksWithStatus {
 
@@ -16,7 +16,7 @@ export class WalksWithStatusMatching implements Question<PromiseLike<boolean>> {
     constructor(private status: string) {
     }
 
-    toString = () => `all walks to all have status of '${this.status}'`;
+    toString = () => `all walks to all have status of "${this.status}"`;
 
     answeredBy(actor: UsesAbilities): PromiseLike<boolean> {
         return RamblersWalkSummaries.displayed().answeredBy(actor)
@@ -30,7 +30,7 @@ export class WalksWithStatusNotMatching implements Question<PromiseLike<boolean>
     constructor(private status: string) {
     }
 
-    toString = () => `no walks to have status of '${this.status}'`;
+    toString = () => `no walks to have status of "${this.status}"`;
 
     answeredBy(actor: UsesAbilities): PromiseLike<boolean> {
         return RamblersWalkSummaries.displayed().answeredBy(actor)

@@ -1,8 +1,8 @@
-import { UsesAbilities } from '@serenity-js/core/lib/screenplay';
-import { Question } from 'serenity-js/lib/screenplay-protractor';
-import { every } from 'underscore';
-import { WalkFilters } from '../../tasks/ramblers/walks/selectWalks';
-import { RamblersWalkSummaries } from './ramblersWalksFound';
+import { UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { Question } from "serenity-js/lib/screenplay-protractor";
+import { every } from "underscore";
+import { WalkFilters } from "../../tasks/ramblers/walks/selectWalks";
+import { RamblersWalkSummaries } from "./ramblersWalksFound";
 
 export class SelectedWalksHaveCount implements Question<PromiseLike<boolean>> {
 

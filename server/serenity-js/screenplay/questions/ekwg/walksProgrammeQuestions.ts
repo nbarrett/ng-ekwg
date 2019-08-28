@@ -1,5 +1,5 @@
-import {Question, SelectedValue, Text, Value} from 'serenity-js/lib/screenplay-protractor';
-import {WalksProgrammeTargets} from '../../ui/ekwg/walksProgrammeTargets';
+import {Question, SelectedValue, Text, Value} from "serenity-js/lib/screenplay-protractor";
+import {WalksProgrammeTargets} from "../../ui/ekwg/walksProgrammeTargets";
 
 export class WalksProgrammeQuestions {
     public static QuickSearch: Question<PromiseLike<string>> = Text.of(WalksProgrammeTargets.quickSearch);

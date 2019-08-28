@@ -1,6 +1,6 @@
-import {Click, PerformsTasks, step, Task} from 'serenity-js/lib/screenplay-protractor';
-import {Enter} from 'serenity-js/lib/screenplay-protractor';
-import {WalksProgrammeTargets} from '../../ui/ekwg/walksProgrammeTargets';
+import {Click, PerformsTasks, step, Task} from "serenity-js/lib/screenplay-protractor";
+import {Enter} from "serenity-js/lib/screenplay-protractor";
+import {WalksProgrammeTargets} from "../../ui/ekwg/walksProgrammeTargets";
 
 export class FilterWalks implements Task {
 
@@ -8,7 +8,7 @@ export class FilterWalks implements Task {
         return new FilterWalks(itemName);
     }
 
-    @step('{0} filters the walks to show items matching #searchTerm')
+    @step("{0} filters the walks to show items matching #searchTerm")
     performAs(actor: PerformsTasks): PromiseLike<void> {
         return actor.attemptsTo(
             Enter.theValue(this.searchTerm)

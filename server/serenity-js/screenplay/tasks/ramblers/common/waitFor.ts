@@ -1,13 +1,12 @@
-import { step } from '@serenity-js/core/lib/recording';
-import { PerformsTasks, Task } from 'serenity-js/lib/screenplay';
-import { Duration, Is, Wait } from 'serenity-js/lib/serenity-protractor';
-import { ErrorOrWalksHaveCount } from '../../../questions/ramblers/errorOrWalksHaveCount';
-import { SelectedWalksHaveCount } from '../../../questions/ramblers/selectedWalksHaveCount';
-import { SelectedWalksWithStatus } from '../../../questions/ramblers/selectedWalksHaveStatus';
-import { WalksWithStatus } from '../../../questions/ramblers/walksHaveStatus';
-import { WalksTargets } from '../../../ui/ramblers/walksTargets';
-import { SelectWalks } from '../walks/selectWalks';
-import { WaitForQuestion } from './waitForQuestion';
+import { step } from "@serenity-js/core/lib/recording";
+import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
+import { Duration, Is, Wait } from "serenity-js/lib/serenity-protractor";
+import { ErrorOrWalksHaveCount } from "../../../questions/ramblers/errorOrWalksHaveCount";
+import { SelectedWalksHaveCount } from "../../../questions/ramblers/selectedWalksHaveCount";
+import { SelectedWalksWithStatus } from "../../../questions/ramblers/selectedWalksHaveStatus";
+import { WalksWithStatus } from "../../../questions/ramblers/walksHaveStatus";
+import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { WaitForQuestion } from "./waitForQuestion";
 
 const TIMEOUT_IN_SECONDS = 60;
 
@@ -35,7 +34,7 @@ export class WaitFor {
 }
 export class RamblersToFinishProcessing implements Task {
 
-    @step('{0} waits for progress indicator to disappear')
+    @step("{0} waits for progress indicator to disappear")
     performAs(actor: PerformsTasks): PromiseLike<void> {
         return actor.attemptsTo(
             Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(WalksTargets.progressIndicator, Is.invisible()));

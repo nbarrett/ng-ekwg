@@ -1,4 +1,4 @@
-import { Interaction, UsesAbilities } from '@serenity-js/core/lib/screenplay';
+import { Interaction, UsesAbilities } from "@serenity-js/core/lib/screenplay";
 
 export class Log implements Interaction {
 

@@ -1,12 +1,12 @@
-'use strict';
-let config = require('../config/config');
-let debug = require('debug')(config.logNamespace('mailchimp:routes:campaigns'));
-let messageHandler = require('./messageHandler');
-let mcapi = require('mailchimp-api');
+"use strict";
+let config = require("../config/config");
+let debug = require("debug")(config.logNamespace("mailchimp:routes:campaigns"));
+let messageHandler = require("./messageHandler");
+let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
-let _ = require('underscore');
-let moment = require('moment-timezone');
-let _str = require('underscore.string');
+let _ = require("underscore");
+let moment = require("moment-timezone");
+let _str = require("underscore.string");
 /*
 
  campaigns/content (string apikey, string cid, struct options)
@@ -17,9 +17,9 @@ let _str = require('underscore.string');
 exports.content = function (req, res) {
   var requestData = {
     "cid": req.params.campaignId,
-    "seg_id": req.body.segmentId
+    "seg_id": req.body.segmentId,
   };
-  var messageType = 'campaign content';
+  var messageType = "campaign content";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.content(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -46,12 +46,12 @@ exports.create = function (req, res) {
       "subject": "EKWG website password reset instructions",
       "to_name": "*|FNAME|* *|LNAME|*",
       "template_id": req.body.templateId,
-      "authenticate": true
+      "authenticate": true,
     },
     "id": messageHandler.mapListTypeToId(req, debug),
-    "name": req.body.segmentName
+    "name": req.body.segmentName,
   };
-  var messageType = 'campaign add';
+  var messageType = "campaign add";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.create(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -68,14 +68,14 @@ exports.create = function (req, res) {
 
  */
 
-exports['delete'] = function (req, res) {
+exports["delete"] = function (req, res) {
   var requestData = {
-    "cid": req.params.campaignId
+    "cid": req.params.campaignId,
   };
 
-  var messageType = 'campaign delete';
+  var messageType = "campaign delete";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns['delete'](requestData, function (responseData) {
+  mc.campaigns["delete"](requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
   }, function (error) {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
@@ -92,23 +92,23 @@ exports['delete'] = function (req, res) {
 exports.list = function (req, res) {
   var requestData = {
     filters: {
-      status: req.query.status || 'save',
-      exact: req.query.exact || false
+      status: req.query.status || "save",
+      exact: req.query.exact || false,
     },
     start: req.query.start || 0,
-    limit: req.query.limit || 25
+    limit: req.query.limit || 25,
   };
-  var messageType = 'list campaigns';
+  var messageType = "list campaigns";
   debug(messageType, "req.query:", req.query);
 
-  addOptionalParameter('subject', requestData.filters);
-  addOptionalParameter('title', requestData.filters);
-  addOptionalParameter('exact', requestData.filters);
+  addOptionalParameter("subject", requestData.filters);
+  addOptionalParameter("title", requestData.filters);
+  addOptionalParameter("exact", requestData.filters);
   messageHandler.logRequestData(messageType, requestData, debug);
 
   function addOptionalParameter(key, object) {
     if (req.query[key]) {
-      object[key] = req.query[key]
+      object[key] = req.query[key];
     }
   }
 
@@ -116,7 +116,7 @@ exports.list = function (req, res) {
 
     function addDateField(campaign, fieldName, campaignResponse) {
       if (campaign[fieldName]) {
-        campaignResponse[fieldName] = moment(campaign[fieldName], moment.ISO_8601).tz('Europe/London').valueOf();
+        campaignResponse[fieldName] = moment(campaign[fieldName], moment.ISO_8601).tz("Europe/London").valueOf();
       }
     }
 
@@ -125,15 +125,15 @@ exports.list = function (req, res) {
       errors: responseData.errors,
       data: _.chain(responseData.data)
         .map(function (campaign) {
-          var campaignFields = _.pick(campaign, ['id', 'web_id', 'list_id', 'template_id', 'title', 'subject', 'saved_segment', 'status', 'from_name', 'archive_url_long']);
-          addDateField(campaign, 'create_time', campaignFields);
-          addDateField(campaign, 'send_time', campaignFields);
-          return campaignFields
+          var campaignFields = _.pick(campaign, ["id", "web_id", "list_id", "template_id", "title", "subject", "saved_segment", "status", "from_name", "archive_url_long"]);
+          addDateField(campaign, "create_time", campaignFields);
+          addDateField(campaign, "send_time", campaignFields);
+          return campaignFields;
 
-        })
+        }),
     } : responseData.data;
 
-    messageHandler.processSuccessfulResponse(req, res, filteredResponse, messageType + ' with ' + filteredResponse.total + ' data items -', debug);
+    messageHandler.processSuccessfulResponse(req, res, filteredResponse, messageType + " with " + filteredResponse.total + " data items -", debug);
   }, function (error) {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
@@ -148,9 +148,9 @@ exports.list = function (req, res) {
 
 exports.replicate = function (req, res) {
   var requestData = {
-    "cid": req.params.campaignId
+    "cid": req.params.campaignId,
   };
-  var messageType = 'campaign replicate';
+  var messageType = "campaign replicate";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.replicate(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -169,9 +169,9 @@ exports.replicate = function (req, res) {
 exports.scheduleBatch = function (req, res) {
   var requestData = {
     "cid": req.params.campaignId,
-    "seg_id": req.body.segmentId
+    "seg_id": req.body.segmentId,
   };
-  var messageType = 'segment reset';
+  var messageType = "segment reset";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.scheduleBatch(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -190,9 +190,9 @@ exports.scheduleBatch = function (req, res) {
 exports.schedule = function (req, res) {
   var requestData = {
     "cid": req.params.campaignId,
-    "get_counts": true
+    "get_counts": true,
   };
-  var messageType = 'list segments';
+  var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.schedule(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -211,9 +211,9 @@ exports.schedule = function (req, res) {
 exports.segmentTest = function (req, res) {
   var requestData = {
     "list_id": messageHandler.mapListTypeToId(req, debug),
-    "get_counts": true
+    "get_counts": true,
   };
-  var messageType = 'list segments';
+  var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.segmentTest(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -231,9 +231,9 @@ exports.segmentTest = function (req, res) {
 
 exports.send = function (req, res) {
   var requestData = {
-    "cid": req.params.campaignId
+    "cid": req.params.campaignId,
   };
-  var messageType = 'campaign send';
+  var messageType = "campaign send";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.send(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -252,9 +252,9 @@ exports.send = function (req, res) {
 exports.sendTest = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "get_counts": true
+    "get_counts": true,
   };
-  var messageType = 'campaign send test';
+  var messageType = "campaign send test";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.sendTest(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -272,9 +272,9 @@ exports.sendTest = function (req, res) {
 
 exports.templateContent = function (req, res) {
   var requestData = {
-    "cid": req.params.campaignId
+    "cid": req.params.campaignId,
   };
-  var messageType = 'campaign template content';
+  var messageType = "campaign template content";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.templateContent(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -293,9 +293,9 @@ exports.templateContent = function (req, res) {
 exports.unschedule = function (req, res) {
   var requestData = {
     "cid": req.params.campaignId,
-    "get_counts": true
+    "get_counts": true,
   };
-  var messageType = 'list segments';
+  var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.unschedule(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
@@ -320,10 +320,10 @@ exports.update = function (req, res) {
   //  options, content, segment_opts)
   var requestData = {
     "cid": req.params.campaignId,
-    name: req.body.updates.name, value: req.body.updates.value
+    name: req.body.updates.name, value: req.body.updates.value,
   };
 
-  var messageType = 'campaign update';
+  var messageType = "campaign update";
   messageHandler.logRequestData(messageType, requestData, debug);
   mc.campaigns.update(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);

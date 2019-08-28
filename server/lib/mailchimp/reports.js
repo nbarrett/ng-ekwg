@@ -1,7 +1,7 @@
-'use strict';
-let config = require('../config/config');
-let debug = require('debug')(config.logNamespace('mailchimp:routes:reports'));
-let mcapi = require('mailchimp-api');
+"use strict";
+let config = require("../config/config");
+let debug = require("debug")(config.logNamespace("mailchimp:routes:reports"));
+let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 
 /*
@@ -9,7 +9,7 @@ let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
  */
 
 exports.list = function (req, res) {
-  mc.campaigns.list({'status': 'sent'}, function (data) {
+  mc.campaigns.list({"status": "sent"}, function (data) {
     res.json(data.data);
   }, function (error) {
     if (error.error) {
@@ -32,7 +32,7 @@ exports.view = function (req, res) {
       res.json(reportData);
     }, function (error) {
       debug(error);
-      if (error.name == "Campaign_DoesNotExist") {
+      if (error.name === "Campaign_DoesNotExist") {
         req.session.error_flash = "The campaign does not exist";
       } else if (error.error) {
         req.session.error_flash = error.code + ": " + error.error;

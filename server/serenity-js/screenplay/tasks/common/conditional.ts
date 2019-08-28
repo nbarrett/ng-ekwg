@@ -1,4 +1,4 @@
-import { Activity, Actor, AnswersQuestions, Interaction, PerformsTasks, Question, UsesAbilities } from 'serenity-js/lib/screenplay';
+import { Activity, Actor, AnswersQuestions, Interaction, PerformsTasks, Question, UsesAbilities } from "serenity-js/lib/screenplay";
 
 export class SilentPerformable implements Interaction {
     performAs(actor: PerformsTasks | UsesAbilities | AnswersQuestions): PromiseLike<void> {
@@ -11,17 +11,17 @@ export abstract class ConditionalPerformable implements Activity {
     protected outcomeToPerform: { [key: string]: Activity[]; } = {};
 
     constructor() {
-        this.outcomeToPerform['true'] = [new SilentPerformable()];
-        this.outcomeToPerform['false'] = [new SilentPerformable()];
+        this.outcomeToPerform["true"] = [new SilentPerformable()];
+        this.outcomeToPerform["false"] = [new SilentPerformable()];
     }
 
     andIfSo = (...activities: Activity[]) => {
-        this.outcomeToPerform['true'] = activities;
+        this.outcomeToPerform["true"] = activities;
         return this;
     }
 
     otherwise = (...activities: Activity[]) => {
-        this.outcomeToPerform['false'] = activities;
+        this.outcomeToPerform["false"] = activities;
         return this;
     }
 
@@ -37,17 +37,17 @@ export abstract class ConditionalPerformablePromise implements Activity {
     protected outcomeToPerform: { [key: string]: Activity[]; } = {};
 
     constructor() {
-        this.outcomeToPerform['true'] = [new SilentPerformable()];
-        this.outcomeToPerform['false'] = [new SilentPerformable()];
+        this.outcomeToPerform["true"] = [new SilentPerformable()];
+        this.outcomeToPerform["false"] = [new SilentPerformable()];
     }
 
     andIfSo = (...activities: Activity[]) => {
-        this.outcomeToPerform['true'] = activities;
+        this.outcomeToPerform["true"] = activities;
         return this;
     }
 
     otherwise = (...activities: Activity[]) => {
-        this.outcomeToPerform['false'] = activities;
+        this.outcomeToPerform["false"] = activities;
         return this;
     }
 
