@@ -33,8 +33,10 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private walkExportTab0Active: boolean;
   private members: Member[];
   private walkExportTab1Active: boolean;
-  public notifyTarget: AlertTarget = {};
-  private notify: AlertInstance;
+  public walkExportTarget: AlertTarget = {};
+  private walkExportNotifier: AlertInstance;
+  public auditTarget: AlertTarget = {};
+  private auditNotifier: AlertInstance;
   public csvOptions: {
     headers: string[]; fieldSeparator?: string; useBom?: boolean;
     showTitle?: boolean; quoteStrings?: string; title?: string; removeNewLines?: boolean
@@ -55,13 +57,14 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.logger.info("ngOnInit");
     this.ramblersUploadAuditData = [];
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.walkExportNotifier = this.notifierService.createAlertInstance(this.walkExportTarget);
+    this.auditNotifier = this.notifierService.createAlertInstance(this.auditTarget);
     this.showAvailableWalkExports();
     this.showAllAudits();
     this.csvOptions = {
@@ -110,14 +113,14 @@ export class WalkExportComponent implements OnInit, OnDestroy {
             .map(auditItem => {
               if (auditItem.status === "complete" && this.subscription) {
                 this.logger.debug("Upload complete");
-                this.notify.success("Ramblers upload completed");
+                this.walkExportNotifier.success("Ramblers upload completed");
                 this.exportInProgress = false;
                 this.stopPolling();
                 this.showAvailableWalkExports();
               }
               return auditItem;
             });
-          this.notify.warning("Showing " + this.ramblersUploadAuditData.length + " audit items");
+          this.auditNotifier.warning("Showing " + this.ramblersUploadAuditData.length + " audit items");
         }
         this.finalStatusError = find(this.ramblersUploadAuditData, {status: "error"});
 
@@ -134,11 +137,11 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   populateWalkExport(walksForExport) {
     this.walksForExport = walksForExport;
-    this.notify.success({
+    this.walkExportNotifier.success({
       title: "Export status", message: "Found total of " + this.walksForExport.length + " walk(s), "
         + this.walksDownloadFile().length + " preselected for export"
     });
-    this.notify.clearBusy();
+    this.walkExportNotifier.clearBusy();
   }
 
   walksDownloadFile() {
@@ -146,7 +149,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   showAllAudits() {
-    this.notify.warning("Refreshing past download sessions", false, true);
+    this.walkExportNotifier.warning("Refreshing past download sessions", false, true);
     this.ramblersUploadAudit.all({limit: 1000, sort: {auditTime: -1}})
       .then((auditItems: RamblersUploadAudit[]) => {
         this.logger.debug("found total of", auditItems.length, "audit trail records");
@@ -159,14 +162,14 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   showAvailableWalkExports() {
     this.walksForExport = [];
-    this.notify.warning("Refreshing export status of future walks", false, true);
+    this.walkExportNotifier.warning("Refreshing export status of future walks", false, true);
     this.walksService.query({walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, {sort: {walkDate: -1}})
       .then(walks => {
         this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks, this.members)
           .then((walksForExport) => this.populateWalkExport(walksForExport))
           .catch(error => {
             this.logger.error("error->", error);
-            this.notify.error({title: "Problem with Ramblers export preparation", message: error});
+            this.walkExportNotifier.error({title: "Problem with Ramblers export preparation", message: error});
           });
       });
   }
@@ -174,9 +177,9 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   changeWalkExportSelection(walk: any) {
     if (walk.walkValidations.length === 0) {
       walk.selected = !walk.selected;
-      this.notify.hide();
+      this.walkExportNotifier.hide();
     } else {
-      this.notify.error({
+      this.walkExportNotifier.error({
         title: "You can\"t export the walk for " + this.displayDate.transform(walk.walk.walkDate),
         message: walk.walkValidations.join(", ")
       });
@@ -190,7 +193,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.walkExportTab0Active = false;
     this.walkExportTab1Active = true;
     this.exportInProgress = true;
-    this.ramblersWalksAndEventsService.uploadToRamblers(this.walksForExport, this.members, this.notify).then(fileName => {
+    this.ramblersWalksAndEventsService.uploadToRamblers(this.walksForExport, this.members, this.walkExportNotifier).then(fileName => {
       this.fileName = fileName;
       if (!this.fileNames.includes(this.fileName)) {
         this.fileNames.push(this.fileName);

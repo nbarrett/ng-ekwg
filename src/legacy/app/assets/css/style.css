@@ -5123,3 +5123,23 @@ input[type="radio"]:checked + label {
 .btn-toggle.btn-xs.btn-xs:after {
   display: none;
 }
+
+.checkbox input {
+  position: absolute;
+  left: -9999px;
+}
+
+.checkbox label {
+  display: block;
+  font-weight: bold;
+  padding-left: 26px;
+  background: url(../images/ramblers/but-checkbox.png) no-repeat 3px 0px;
+}
+
+.checkbox label.ui-state-active {
+  display: block;
+  font-weight: bold;
+  padding-left: 26px;
+  background: url("../images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
+}
+

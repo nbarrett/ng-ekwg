@@ -1,4 +1,4 @@
-<div [ngClass]="{'busy': notifyTarget.busy}">
+<div [ngClass]="{'busy': walkExportTarget.busy}">
   <div class="wrapper">
     <div id="page-body" role="main">
       <div class="body-header">
@@ -12,7 +12,7 @@
       </div>
       <div *ngIf="true">
         <tabset>
-          <tab active="true" heading="Walk export selection">
+          <tab active="true" heading="Walk upload selection">
             <div class="thumbnail thumbnail-admin-edit">
               <div class="row mb-12">
                 <div class="col-sm-12">
@@ -36,9 +36,9 @@
                 </div>
               </div>
               <div class="form-group modal-alert">
-                <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
-                  class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
-                  {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}"><i
+                  class="glyphicon {{walkExportTarget.alert.icon}}"> </i><strong *ngIf="walkExportTarget.alertTitle">
+                  {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
                 </div>
               </div>
               <div class="row">
@@ -73,47 +73,41 @@
               <div class="row">
                 <div class="col-sm-12">
                   <form class="form-inline">
-                    <div class="form-group col-sm-7">
-                      <div class="col-sm-4">
-                        <label for="fileName">Show Export Session: </label>
-                      </div>
-                      <div class="col-sm-7">
-                        <select class="form-control input-sm"
-                                id="fileName"
-                                name="filename"
-                                (change)="fileNameChanged()"
-                                [(ngModel)]="fileName"
-                                class="form-control input-sm" id="fileNames">
-                          <option *ngFor="let fileName of fileNames"
-                                  [ngValue]="fileName"
-                                  [textContent]="fileName">
-                          </option>
-                        </select>
-                      </div>
+                    <div class="form-group">
+                      <label for="fileName" class="export-label">Show upload session: </label>
+                      <select class="form-control input-sm"
+                              id="fileName"
+                              name="filename"
+                              (change)="fileNameChanged()"
+                              [(ngModel)]="fileName"
+                              class="form-control input-sm" id="fileNames">
+                        <option *ngFor="let fileName of fileNames"
+                                [ngValue]="fileName"
+                                [textContent]="fileName">
+                        </option>
+                      </select>
                     </div>
-                    <div class="form-group  col-sm-3">
-                      <div class="checkbox-group">
-                        <label [ngClass]="{'ui-state-active': showDetail}"
-                               (click)="refreshRamblersUploadAudit()"
-                               for="show-detailed-audit-messages">Show detailed audit messages
-                          <input [(ngModel)]="showDetail"
-                                 name="showDetail"
-                                 type="checkbox" id="show-detailed-audit-messages">
-                        </label>
-                      </div>
+                    <div class="checkbox">
+                      <label [ngClass]="{'ui-state-active': showDetail}"
+                             (click)="refreshRamblersUploadAudit()"
+                             for="show-detailed-audit-messages">Show details
+                        <input [(ngModel)]="showDetail"
+                               name="showDetail"
+                               type="checkbox" id="show-detailed-audit-messages">
+                      </label>
                     </div>
-                    <div class="col-sm-1">
+                    <div class="form-group">
                       <input type="submit" value="Back to walks" (click)="navigateBackToWalks()"
                              title="Back to walks"
-                             class="button-form button-form-left">
+                             class="button-form button-form-left mb-8">
                     </div>
                   </form>
                 </div>
               </div>
               <div class="form-group">
-                <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
-                  class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
-                  {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+                <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}"><i
+                  class="glyphicon {{auditTarget.alert.icon}}"> </i><strong *ngIf="auditTarget.alertTitle">
+                  {{auditTarget.alertTitle}}: </strong> {{auditTarget.alertMessage}}
                 </div>
               </div>
               <div class="row">
