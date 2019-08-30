@@ -1,0 +1,132 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="wrapper">
+    <div id="page-body" role="main">
+      <div class="body-header">
+        <div class="breadcrumbs">
+          <ul>
+            <li><a href="/" title="Home">Home</a></li>
+            <li><a href="/walks" title="Walks">Walks</a></li>
+            <li class="last">Add slots</li>
+          </ul>
+        </div>
+      </div>
+      <div class="thumbnail">
+        <h1>Add slots to walks programme</h1>
+        <div class="mb-12">
+
+          <p>This facility allows you to add any number of walk slots to the programme that
+            will then entice walk leaders to come forward and lead. Please choose how you would like to create the
+            slots.</p>
+          <div class="radio-inline map-radio-label">
+            <input id="create-in-bulk" type="radio"
+                   (click)="selectBulk(true)"
+                   [(ngModel)]="selectionMade"
+                   value="true"/>
+            <label for="create-in-bulk">Create Sunday slots in bulk</label>
+            <input id="create-non-standard" type="radio"
+                   (click)="selectBulk(false)"
+                   [(ngModel)]="selectionMade"
+                   value="false"/>
+            <label for="create-non-standard">Create non-standard slot</label>
+          </div>
+          <input *ngIf="!selectionMade" type="submit" value="Back to walks" (click)="backToWalks()"
+                 title="Back to walks"
+                 class="button-form">
+        </div>
+        <div class="main-body">
+          <div *ngIf="selectionMade && bulk">
+            <div class="green-bullets-no-rule">
+              <ul>
+                <li>You can choose the date up until you want slots created using the calendar below.</li>
+                <li>An email can optionally be sent to the group informing them of the new slots that can now be
+                  filled.
+                </li>
+              </ul>
+
+              <div class="form-inline">
+                <label for="add-slots-until">Add available slots until:</label>
+
+                <div class="input-group">
+                  <input [ngModel]="untilDate"
+                         (bsValueChange)="onUntilDateChange($event)"
+                         placeholder="enter date"
+                         #dp="bsDatepicker"
+                         bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
+                               containerClass: 'theme-ramblers'}"
+                         type="text" class="form-control input-sm"
+                         id="add-slots-until"/>
+                  <div class="input-group-btn">
+                    <button class="btn btn-default btn-sm"
+                            (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
+                      class="glyphicon glyphicon-calendar"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="selectionMade && !bulk">
+            <div class="green-bullets-no-rule">
+              <ul>
+                <li>Use this option to create a slot on any day rather than just on a Sunday.</li>
+              </ul>
+
+              <div class="form-inline">
+                <label for="add-single-slot">Add a slot on:</label>
+                <div class="input-group">
+                  <div class="input-group">
+                    <input [ngModel]="singleDate"
+                           (bsValueChange)="onSingleDateChange($event)"
+                           placeholder="enter date of walk"
+                           #dpSingle="bsDatepicker"
+                           bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
+                               containerClass: 'theme-ramblers'}"
+                           type="text" class="form-control input-sm"
+                           id="add-single-slot"/>
+                    <div class="input-group-btn">
+                      <button class="btn btn-default btn-sm"
+                              (click)="dpSingle.toggle()" [attr.aria-expanded]="dpSingle.isOpen"><i
+                        class="glyphicon glyphicon-calendar"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group modal-alert">
+                <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
+                  class="glyphicon {{notifyTarget.alert.icon}}"></i>
+                  <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}} mb-12"><i
+          class="glyphicon {{notifyTarget.alert.icon}}"></i>
+          <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+        </div>
+        <div class="mt-12">
+        <span *ngIf="selectionMade && bulk">
+          <input *ngIf="allowAddSlots()" [disabled]="!validDate(until)" type="submit" value="Add slots"
+                 (click)="addWalkSlots()" title="Add more available slots on the walks programme"
+                 [ngClass]="validDate(until) ? 'button-form green-confirm' : 'disabled-button-form button-form-left'">
+          <input *ngIf="confirmAction" type="submit" value="Confirm add slots" (click)="confirmAddWalkSlots()"
+                 title="Confirm to add more available slots on the walks programme"
+                 class="button-form green-confirm">
+          <input *ngIf="confirmAction" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
+                 title="Cancel this action" class="button-form amber-confirm">
+        </span>
+          <span *ngIf="selectionMade && !bulk">
+          <input *ngIf="allowAddSlot()" [disabled]="!validDate(singleSlot)" type="submit" value="Add slot"
+                 (click)="addWalkSlot()" title="Add new slot on the walks programme"
+                 [ngClass]="validDate(singleSlot) ? 'button-form green-confirm' : 'disabled-button-form button-form-left'">
+          <input *ngIf="confirmAction" type="submit" value="Confirm add slot" (click)="confirmAddWalkSlots()"
+                 title="Confirm to add new slot on the walks programme" class="button-form green-confirm">
+          <input *ngIf="confirmAction" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
+                 title="Cancel this action" class="button-form amber-confirm">
+        </span>
+          <input *ngIf="selectionMade" type="submit" value="Back to walks" (click)="backToWalks()" title="Back to walks"
+                 class="button-form">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

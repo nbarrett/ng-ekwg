@@ -22,7 +22,6 @@ import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
 import { WalkEditMode } from "../../../models/walk-edit-mode.model";
 import { SafeResourceUrl } from "@angular/platform-browser";
-import { UrlService } from "../../../services/url.service";
 
 interface DisplayMember {
   memberId: string;
@@ -61,7 +60,6 @@ export class WalkEditComponent implements OnInit {
     @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     public route: ActivatedRoute,
-    private urlService: UrlService,
     private committeeReferenceData: CommitteeReferenceDataService,
     private walksReferenceService: WalksReferenceService,
     private memberIdToFullNamePipe: MemberIdToFullNamePipe,

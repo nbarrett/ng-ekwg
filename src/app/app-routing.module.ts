@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { LoginComponent } from "./login/login.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
+import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
 import { LogoutComponent } from "./logout/logout.component";
@@ -26,6 +27,7 @@ const routes: Routes = [
   {path: "walks/edit/:walk-id", component: WalkEditFullPageComponent},
   {path: "walks/export/:walk-id", component: WalkExportComponent},
   {path: "walks/export", component: WalkExportComponent},
+  {path: "walks/add-walk-slots", component: WalkAddSlotsComponent},
   {path: "walks", component: WalkListComponent},
   {path: "**", component: NonRenderingComponent}
 ];

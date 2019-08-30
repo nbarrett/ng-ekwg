@@ -10,6 +10,29 @@
         </div>
       </div>
       <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
+        <app-accordion-group *ngIf="allowAdminEdits()"
+                             title="Walk Admin Tasks" initiallyOpen="true">
+          <div class="row thumbnail walk-admin-thumbnail">
+            <div class="col-sm-2">
+              <input type="submit" value="Ramblers export"
+                     (click)="selectWalksForExport()"
+                     title="Select walks to export in Ramblers format" class="button-form yellow-confirm  mb-6">
+            </div>
+            <div class="col-sm-10 green-bullets-no-rule">
+              <app-markdown-editor name="ramblers-export-help" description="Ramblers export help"></app-markdown-editor>
+            </div>
+          </div>
+          <div class="row thumbnail walk-admin-thumbnail">
+            <div class="col-sm-2">
+              <input type="submit" value="Add more walk slots"
+                     (click)="addWalkSlots()"
+                     title="Add more available slots on the walks programme" class="button-form green-confirm  mb-6">
+            </div>
+            <div class="col-sm-10 green-bullets-no-rule">
+              <app-markdown-editor name="add-walks-slots-help" description="Add walk slots help"></app-markdown-editor>
+            </div>
+          </div>
+        </app-accordion-group>
         <app-accordion-group title="Walks Programme" initiallyOpen="true">
           <div>
             <form *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
@@ -44,22 +67,6 @@
                 </div>
               </div>
             </form>
-            <div class="walk-action-button-group">
-              <div *ngIf="allowAdminEdits()" class="row">
-                <div class="col-sm-12">
-                  <form class="form-inline">
-                    <input *ngIf="!currentWalkId && allowAdminEdits()" type="submit" value="Ramblers export"
-                           (click)="selectWalksForExport()"
-                           title="Select walks to export in Ramblers format" class="button-form">
-                    <input *ngIf="allowAdminEdits()" type="submit" value="Add more walk slots"
-                           (click)="addWalkSlotsDialog()"
-                           title="Add more available slots on the walks programme" class="button-form">
-                    <input *ngIf="allowShowAll()" type="submit" value="Show All Walks"
-                           (click)="showAllWalks()" title="Show All Walks" class="button-form">
-                  </form>
-                </div>
-              </div>
-            </div>
             <div *ngFor="let walk of filteredWalks; let index = index">
               <div *ngIf="display.isExpanded(walk)" class="thumbnail event-thumbnail">
                 <app-walk-view [walk]="walk" *ngIf="!display.isEdit(walk)"></app-walk-view>

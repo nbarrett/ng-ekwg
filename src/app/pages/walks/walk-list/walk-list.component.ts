@@ -21,13 +21,14 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 
 @Component({
   selector: "app-walk-list",
-  templateUrl: "./walk-list.component.html"
+  templateUrl: "./walk-list.component.html",
+  styleUrls: ["./walk-list.component.sass"]
 })
 export class WalkListComponent implements OnInit {
   public currentWalkId: string;
   private logger: Logger;
   private searchChangeObservable: Subject<string>;
-  private todayValue: any;
+  private todayValue: number;
   private walks: Walk[];
   public filteredWalks: Walk[] = [];
   public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
@@ -119,8 +120,8 @@ export class WalkListComponent implements OnInit {
     this.urlService.navigateTo("walks", "add");
   }
 
-  addWalkSlotsDialog() {
-    this.broadcastService.broadcast("addWalkSlotsDialogOpen");
+  addWalkSlots() {
+    this.urlService.navigateTo("walks", "add-walk-slots");
   }
 
   allowShowAll(): boolean {
