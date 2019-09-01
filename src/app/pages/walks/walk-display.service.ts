@@ -200,7 +200,7 @@ export class WalkDisplayService {
     pop.show();
   }
 
-  eventTypeFor(walk: Walk): WalkEventType {
+  latestEventTypeFor(walk: Walk): WalkEventType {
     const latestEventWithStatusChange = this.walkNotificationService.latestEventWithStatusChange(walk);
     let lookupType: EventType;
     if (!isEmpty(latestEventWithStatusChange)) {

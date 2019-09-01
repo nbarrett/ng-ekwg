@@ -1,27 +1,27 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, OnInit } from "@angular/core";
-import { Walk } from "../../../models/walk.model";
-import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { NgxLoggerLevel } from "ngx-logger";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit } from "@angular/core";
+import { SafeResourceUrl } from "@angular/platform-browser";
+import { ActivatedRoute } from "@angular/router";
 import { clone, find, isEmpty, pick } from "lodash-es";
-import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
-import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ConfirmType, MeetupEvent, WalkDisplayService, WalkViewMode } from "../walk-display.service";
+import { Member } from "../../../models/member.model";
+import { WalkEditMode } from "../../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
+import { WalkEvent } from "../../../models/walk-event.model";
+import { Walk } from "../../../models/walk.model";
+import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
+import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
+import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
+import { EventNotePipe } from "../../../pipes/event-note.pipe";
+import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
+import { FullNamePipe } from "../../../pipes/full-name.pipe";
+import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
 import { CommitteeReferenceDataService } from "../../../services/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { Member } from "../../../models/member.model";
-import { ActivatedRoute } from "@angular/router";
-import { WalkEvent } from "../../../models/walk-event.model";
-import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
-import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
-import { EventNotePipe } from "../../../pipes/event-note.pipe";
-import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
-import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
-import { FullNamePipe } from "../../../pipes/full-name.pipe";
-import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
-import { WalkEditMode } from "../../../models/walk-edit-mode.model";
-import { SafeResourceUrl } from "@angular/platform-browser";
+import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
+import { ConfirmType, MeetupEvent, WalkDisplayService, WalkViewMode } from "../walk-display.service";
 
 interface DisplayMember {
   memberId: string;
@@ -32,11 +32,13 @@ interface DisplayMember {
   selector: "app-walk-edit",
   templateUrl: "./walk-edit.component.html",
   styleUrls: ["./walk-edit.component.sass"],
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalkEditComponent implements OnInit {
   @Input()
   public walk: Walk;
+  @Input()
+  public listcdr: ChangeDetectorRef;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
   public walkDate: Date;
@@ -72,8 +74,9 @@ export class WalkEditComponent implements OnInit {
     public display: WalkDisplayService,
     private displayDate: DisplayDatePipe,
     protected notifierService: NotifierService,
+    private cdr: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -99,6 +102,7 @@ export class WalkEditComponent implements OnInit {
       });
     }
     this.showWalk(this.walk);
+    this.cdr.detectChanges();
   }
 
   dataHasChanged() {
@@ -192,7 +196,6 @@ export class WalkEditComponent implements OnInit {
   ownedAndAwaitingWalkDetails() {
     return this.display.loggedInMemberIsLeadingWalk(this.walk) && this.status() === EventType.AWAITING_LEADER;
   }
-
 
   setWalkEditMode(walkEditMode: WalkEditMode) {
     this.currentWalkEditMode = walkEditMode;
@@ -318,6 +321,7 @@ export class WalkEditComponent implements OnInit {
     this.logger.debug("revertToPriorWalkStatus:", this.status(), "->", this.priorStatus);
     if (this.priorStatus) {
       this.setStatus(this.priorStatus);
+      this.cdr.detectChanges();
     }
   }
 
@@ -358,10 +362,6 @@ export class WalkEditComponent implements OnInit {
   insufficientDataToUploadToRamblers() {
     return this.loggedInMemberService.allowWalkAdminEdits() && this.walk
       && !(this.walk.gridReference || this.walk.postcode);
-  }
-
-  canExportToRamblers() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.validateWalk().selected;
   }
 
   validateWalk() {
@@ -477,6 +477,7 @@ export class WalkEditComponent implements OnInit {
   closeEditView() {
     this.confirmAction = ConfirmType.NONE;
     this.display.closeEditView(this.walk);
+    this.listcdr.detectChanges();
   }
 
   saveWalkDetails() {

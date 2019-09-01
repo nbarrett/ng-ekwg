@@ -90,7 +90,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   fileNameChanged() {
     this.logger.debug("filename changed to", this.fileName);
-    this.refreshRamblersUploadAudit();
+    this.refreshRamblersUploadAudit().then(() => this.walkExportNotifier.clearBusy());
   }
 
   startRamblersUploadAudit() {
@@ -101,11 +101,10 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   refreshRamblersUploadAudit() {
-    this.logger.debug("refreshing audit trail records related to", this.fileName);
+    this.walkExportNotifier.setBusy();
     return this.ramblersUploadAudit.query({fileName: this.fileName}, {sort: {auditTime: -1}})
       .then((auditItems: RamblersUploadAudit[]) => {
         if (auditItems) {
-          this.logger.debug("Filtering", auditItems.length, "audit trail records related to", this.fileName, auditItems);
           this.ramblersUploadAuditData = auditItems
             .filter(auditItem => {
               return this.showDetail || ["complete", "error", "success"].includes(auditItem.status);
@@ -113,7 +112,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
             .map(auditItem => {
               if (auditItem.status === "complete" && this.subscription) {
                 this.logger.debug("Upload complete");
-                this.walkExportNotifier.success("Ramblers upload completed");
+                this.auditNotifier.success("Ramblers upload completed");
                 this.exportInProgress = false;
                 this.stopPolling();
                 this.showAvailableWalkExports();
@@ -180,7 +179,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
-        title: "You can\"t export the walk for " + this.displayDate.transform(walk.walk.walkDate),
+        title: "You can\"t export the walk for " + this.displayDate.transform(walk.walkDisplay.walkDate),
         message: walk.walkValidations.join(", ")
       });
     }

@@ -6,7 +6,7 @@
           <ul>
             <li><a href="/" title="Home">Home</a></li>
             <li><a href="/walks" title="Walks">Walks</a></li>
-            <li>Export</li>
+            <li class="last">Export</li>
           </ul>
         </div>
       </div>
@@ -14,6 +14,12 @@
         <tabset>
           <tab active="true" heading="Walk upload selection">
             <div class="thumbnail thumbnail-admin-edit">
+              <div class="form-group modal-alert">
+                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}"><i
+                  class="glyphicon {{walkExportTarget.alert.icon}}"> </i><strong *ngIf="walkExportTarget.alertTitle">
+                  {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
+                </div>
+              </div>
               <div class="row mb-12">
                 <div class="col-sm-12">
                   <input *ngIf="walksDownloadFile().length > 0" type="submit"
@@ -35,19 +41,13 @@
                          class="button-form button-form-left">
                 </div>
               </div>
-              <div class="form-group modal-alert">
-                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}"><i
-                  class="glyphicon {{walkExportTarget.alert.icon}}"> </i><strong *ngIf="walkExportTarget.alertTitle">
-                  {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
-                </div>
-              </div>
               <div class="row">
                 <div class="col-sm-12">
                   <table class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
                     <thead>
                     <tr>
-                      <th>Export Walk</th>
-                      <th>Already Published</th>
+                      <th>Export</th>
+                      <th>Published</th>
                       <th>Walk Date</th>
                       <th>Description</th>
                       <th>Problems</th>
@@ -70,44 +70,47 @@
           </tab>
           <tab heading="Walk upload audit">
             <div class="thumbnail thumbnail-admin-edit">
-              <div class="row">
-                <div class="col-sm-12">
-                  <form class="form-inline">
-                    <div class="form-group">
-                      <label for="fileName" class="export-label">Show upload session: </label>
-                      <select class="form-control input-sm"
-                              id="fileName"
-                              name="filename"
-                              (change)="fileNameChanged()"
-                              [(ngModel)]="fileName"
-                              class="form-control input-sm" id="fileNames">
-                        <option *ngFor="let fileName of fileNames"
-                                [ngValue]="fileName"
-                                [textContent]="fileName">
-                        </option>
-                      </select>
-                    </div>
-                    <div class="checkbox">
-                      <label [ngClass]="{'ui-state-active': showDetail}"
-                             (click)="refreshRamblersUploadAudit()"
-                             for="show-detailed-audit-messages">Show details
-                        <input [(ngModel)]="showDetail"
-                               name="showDetail"
-                               type="checkbox" id="show-detailed-audit-messages">
-                      </label>
-                    </div>
-                    <div class="form-group">
-                      <input type="submit" value="Back to walks" (click)="navigateBackToWalks()"
-                             title="Back to walks"
-                             class="button-form button-form-left mb-8">
-                    </div>
-                  </form>
-                </div>
-              </div>
               <div class="form-group">
                 <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}"><i
                   class="glyphicon {{auditTarget.alert.icon}}"> </i><strong *ngIf="auditTarget.alertTitle">
                   {{auditTarget.alertTitle}}: </strong> {{auditTarget.alertMessage}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="button-group">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <label for="fileName" class="export-label">Show upload session: </label>
+                        <select class="form-control input-sm"
+                                id="fileName"
+                                name="filename"
+                                (change)="fileNameChanged()"
+                                [(ngModel)]="fileName"
+                                class="form-control input-sm" id="fileNames">
+                          <option *ngFor="let fileName of fileNames"
+                                  [ngValue]="fileName"
+                                  [textContent]="fileName">
+                          </option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <div class="checkbox-group">
+                          <label [ngClass]="{'ui-state-active': showDetail}"
+                                 (click)="fileNameChanged()"
+                                 for="show-detailed-audit-messages">Show details
+                            <input [(ngModel)]="showDetail"
+                                   name="showDetail" type="checkbox" id="show-detailed-audit-messages">
+                          </label>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <input type="submit" value="Back to walks" (click)="navigateBackToWalks()"
+                               title="Back to walks"
+                               class="button-form button-form-left">
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
               <div class="row">

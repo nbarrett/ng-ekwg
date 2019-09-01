@@ -1,95 +1,95 @@
-<app-panel-expander [walk]="walk" [collapsable]="true" [collapseAction]="'return to list view'">
+<app-panel-expander [walk]="walkDisplay.walk" [collapsable]="true" [collapseAction]="'return to list view'">
 </app-panel-expander>
 <div class="row row-eq-height-xs">
   <div class="col-sm-6 round">
     <div class="panel-toggle">
-      <h1><span [textContent]="walk.walkDate | displayDay" name="walkDate"></span> <span
-        [textContent]="durationInFutureFor(walk)" name="durationInFuture"
-        class="badge event-badge blue-badge"></span> <span *ngIf="display.isNextWalk(walk)"
+      <h1><span [textContent]="walkDisplay.walk.walkDate | displayDay" name="walkDate"></span> <span
+        [textContent]="durationInFutureFor(walkDisplay.walk)" name="durationInFuture"
+        class="badge event-badge blue-badge"></span> <span *ngIf="display.isNextWalk(walkDisplay.walk)"
                                                            class="badge event-badge next-event-badge"> Our next walk</span>
       </h1>
-      <div *ngIf="display.eventTypeFor(walk).showDetails">
+      <div *ngIf="walkDisplay.latestEventType.showDetails">
         <h2>
-                        <span [textContent]="walk.briefDescriptionAndStartPoint"
+                        <span [textContent]="walkDisplay.walk.briefDescriptionAndStartPoint"
                               name="briefDescriptionAndStartPoint"></span>
         </h2>
-        <h3 *ngIf="walk.startTime">Start Time:
+        <h3 *ngIf="walkDisplay.walk.startTime">Start Time:
           <span
-            [textContent]="walk.startTime" name="startTime"></span>
+            [textContent]="walkDisplay.walk.startTime" name="startTime"></span>
         </h3>
       </div>
     </div>
-    <input *ngIf="display.toWalkEditMode(walk)" type="submit"
-           value="{{display.toWalkEditMode(walk).caption}}"
-           (click)="display.edit(walk)"
-           title="{{display.toWalkEditMode(walk).caption}}"
+    <input *ngIf="walkDisplay.walkEditMode" type="submit"
+           value="{{walkDisplay.walkEditMode.caption}}"
+           (click)="display.edit(walkDisplay.walk)"
+           title="{{walkDisplay.walkEditMode.caption}}"
            class="button-form button-form-edit-event">
 
-    <div *ngIf="display.eventTypeFor(walk).showDetails" class="event-description">
+    <div *ngIf="walkDisplay.latestEventType.showDetails" class="event-description">
       <div class="green-bullets-no-rule">
-        <p markdown [data]="walk.longerDescription"></p>
+        <p markdown [data]="walkDisplay.walk.longerDescription"></p>
       </div>
     </div>
     <div
-      *ngIf="display.eventTypeFor(walk).showDetails && (walk.meetupEventUrl || walk.osMapsRoute || walk.osMapsRoute || walk.ramblersWalkId || display.walkLink(walk))"
+      *ngIf="walkDisplay.latestEventType.showDetails && (walkDisplay.walk.meetupEventUrl || walkDisplay.walk.osMapsRoute || walkDisplay.walk.osMapsRoute || walkDisplay.walk.ramblersWalkId || walkDisplay.walkLink)"
       class="event-panel round event-panel-inner">
       <h1>Related Links</h1>
 
-      <div *ngIf="walk.meetupEventUrl" class="row related-links-row">
+      <div *ngIf="walkDisplay.walk.meetupEventUrl" class="row related-links-row">
         <div class="col-sm-1">
           <img class="related-links-image"
                src="assets/images/local/meetup.ico"
-               alt="Meetup: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+               alt="Meetup: {{walkDisplay.walk.osMapsTitle || walkDisplay.walk.briefDescriptionAndStartPoint}}"/>
         </div>
         <div class="col-sm-11">
           <a target="_blank"
-             [href]="walk.meetupEventUrl">
+             [href]="walkDisplay.walk.meetupEventUrl">
                                     <span class="related-links-title"
                                           tooltip-placement="left"
                                           tooltip="Click to view the route for this walk on Meetup">
-                                  Meetup: {{walk.meetupEventTitle || walk.briefDescriptionAndStartPoint}}</span></a>
+                                  Meetup: {{walkDisplay.walk.meetupEventTitle || walkDisplay.walk.briefDescriptionAndStartPoint}}</span></a>
         </div>
       </div>
 
-      <div *ngIf="walk.ramblersWalkId" class="row related-links-row">
+      <div *ngIf="walkDisplay.walk.ramblersWalkId" class="row related-links-row">
         <div class="col-sm-1">
           <img class="related-links-image"
                src="assets/images/ramblers/favicon.ico"
-               alt="Ramblers: {{walk.briefDescriptionAndStartPoint}}"/>
+               alt="Ramblers: {{walkDisplay.walk.briefDescriptionAndStartPoint}}"/>
         </div>
         <div class="col-sm-11">
           <a target="_blank"
              class="follow"
 
-             [href]="display.ramblersLink(walk)"
+             [href]="walkDisplay.ramblersLink"
              title="Preview on Ramblers Walks and Events Manager">
                                     <span class="related-links-title"
                                           tooltip-placement="left"
                                           tooltip="Click to view on Ramblers Walks and Events Manager">
-                                  Ramblers: {{walk.briefDescriptionAndStartPoint}}</span></a>
+                                  Ramblers: {{walkDisplay.walk.briefDescriptionAndStartPoint}}</span></a>
         </div>
       </div>
-      <div *ngIf="walk.osMapsRoute" class="row related-links-row">
+      <div *ngIf="walkDisplay.walk.osMapsRoute" class="row related-links-row">
         <div class="col-sm-1">
           <img class="related-links-image"
                src="assets/images/local/ordnance-survey-untitled.png"
-               alt="Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}"/>
+               alt="Maps: {{walkDisplay.walk.osMapsTitle || walkDisplay.walk.briefDescriptionAndStartPoint}}"/>
         </div>
         <div class="col-sm-11">
           <a target="_blank"
-             [href]="walk.osMapsRoute">
+             [href]="walkDisplay.walk.osMapsRoute">
                                     <span class="related-links-title"
                                           tooltip-placement="left"
                                           tooltip="Click to view the route for this walk on Ordnance Survey Maps">
-                                  OS Maps: {{walk.osMapsTitle || walk.briefDescriptionAndStartPoint}}</span></a>
+                                  OS Maps: {{walkDisplay.walk.osMapsTitle || walkDisplay.walk.briefDescriptionAndStartPoint}}</span></a>
         </div>
       </div>
-      <div class="row related-links-row" *ngIf="display.walkLink(walk)">
+      <div class="row related-links-row" *ngIf="walkDisplay.walkLink">
         <div class="col-sm-12">
           <label>
             <a popover="Link has been copied to clipboard"
                triggers="" #pop="bs-popover"
-               (click)="display.copyWalkToClipboard(walk, pop)"
+               (click)="display.copyWalkToClipboard(walkDisplay.walk, pop)"
                [outsideClick]="true"
                placement="bottom">
               <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
@@ -97,16 +97,16 @@
                 tooltip="Click to copy link to clipboard"></span></i> copy link
             </a>
             to
-            this <a [href]="display.walkLink(walk)"
+            this <a [href]="walkDisplay.walkLink"
                     target="_blank">walk</a></label>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-sm-6 round" *ngIf="display.eventTypeFor(walk).showDetails">
+  <div class="col-sm-6 round" *ngIf="walkDisplay.latestEventType.showDetails">
     <input type="number" min="1" max="20" *ngIf="false"
            [ngModel]="display.googleMapsConfig.zoomLevel" name="zoomLevel">
-    <iframe *ngIf="walk.postcode" class="map-thumbnail-image" frameborder="0"
+    <iframe *ngIf="walkDisplay.walk.postcode" class="map-thumbnail-image" frameborder="0"
             style="border:0;border-radius: 10px;"
             [src]="googleMapsUrl" allowfullscreen></iframe>
     <div class="row thumbnail thumbnail-campaign-settings">
@@ -115,7 +115,7 @@
         <input id="show-start-point" type="radio"
                [ngModel]="mapDisplay" name="mapDisplay"
                value="show-start-point"/>
-        <label for="show-start-point">At start {{walk.postcode}}</label>
+        <label for="show-start-point">At start {{walkDisplay.walk.postcode}}</label>
         <input id="show-driving-directions" type="radio"
                [ngModel]="mapDisplay" name="mapDisplay"
                value="show-driving-directions"/>
@@ -133,32 +133,33 @@
   <div class="col-sm-6 round">
     <div class="event-panel round">
       <h1>Walk Leader</h1>
-      <div *ngIf="!display.eventTypeFor(walk).showDetails">
+      <div *ngIf="!walkDisplay.latestEventType.showDetails">
         <div class="col-sm-12">
-          <p [textContent]="display.eventTypeFor(walk).description" name="description"></p>
+          <p [textContent]="walkDisplay.latestEventType.description" name="description"></p>
         </div>
       </div>
-      <div *ngIf="display.eventTypeFor(walk).showDetails">
-        <p *ngIf="walk.contactEmail"><i
+      <div *ngIf="walkDisplay.latestEventType.showDetails">
+        <p *ngIf="walkDisplay.walk.contactEmail"><i
           class="glyphicon glyphicon-envelope markdown-preview-icon fa-lg"></i>
 
-          <a [href]="'mailto:' + walk.contactEmail">
-                                    <span tooltip-placement="left"
-                                          tooltip="Click to email {{walk.displayName}} at {{walk.contactEmail}}">
-                                        {{walk.displayName}}
-                                    </span></a>
-          <span class="tooltip-link"
+          <a *ngIf="loggedIn" [href]="'mailto:' + walkDisplay.walk.contactEmail">
+            <span tooltip-placement="left"
+                  tooltip="Click to email {{walkDisplay.walk.displayName}} at {{walkDisplay.walk.contactEmail}}">
+              {{walkDisplay.walk.displayName}}
+            </span>
+          </a>
+          <span *ngIf="!loggedIn" class="tooltip-link span-margin"
                 tooltip-placement="left"
                 tooltip-trigger="mouseenter"
-                tooltip="Login as an EKWG member and send an email to {{walk.displayName}}"
-                [textContent]="walk.displayName" name="displayName"></span>
+                tooltip="Login as an EKWG member and send an email to {{walkDisplay.walk.displayName}}">
+            {{walkDisplay.walk.displayName}}</span>
         </p>
-        <p *ngIf="display.eventTypeFor(walk).showDetails"><i
+        <p *ngIf="walkDisplay.latestEventType.showDetails"><i
           class="glyphicon glyphicon-phone markdown-preview-icon fa-lg"></i>
-          <a [href]="'tel:' + walk.contactPhone" name="contactPhone">
+          <a [href]="'tel:' + walkDisplay.walk.contactPhone" name="contactPhone">
                                         <span tooltip-placement="left"
-                                              tooltip="Click to ring {{walk.displayName}} on {{walk.contactPhone}} (mobile devices only)">
-                                            {{walk.contactPhone}}
+                                              tooltip="Click to ring {{walkDisplay.walk.displayName}} on {{walkDisplay.walk.contactPhone}} (mobile devices only)">
+                                            {{walkDisplay.walk.contactPhone}}
                                         </span>
           </a>
         </p>
@@ -168,37 +169,36 @@
   <div class="col-sm-6 round">
     <div class="event-panel round">
       <h1>Walk Details</h1>
-      <div *ngIf="!display.eventTypeFor(walk).showDetails">
+      <div *ngIf="!walkDisplay.latestEventType.showDetails">
         <div class="col-sm-12">
-          <p [textContent]="display.eventTypeFor(walk).description" name="description"></p>
+          <p [textContent]="walkDisplay.latestEventType.description" name="description"></p>
         </div>
       </div>
-      <div *ngIf="display.eventTypeFor(walk).showDetails">
+      <div *ngIf="walkDisplay.latestEventType.showDetails">
         <div class="row">
           <div class="col-sm-6">Postcode:
-            <span [textContent]="walk.location" name="location"></span>
-            <a [href]="'http://maps.google.co.uk/maps?q=' + walk.postcode"
+            <span [textContent]="walkDisplay.walk.location" name="location"></span>
+            <a [href]="'http://maps.google.co.uk/maps?q=' + walkDisplay.walk.postcode"
                target="_blank">
                                                 <span tooltip-placement="left"
-                                                      tooltip="Click to locate postcode {{walk.postcode}} on Google Maps">
-                                                    {{walk.postcode}}
+                                                      tooltip="Click to locate postcode {{walkDisplay.walk.postcode}} on Google Maps">
+                                                    {{walkDisplay.walk.postcode}}
                                                 </span></a>
           </div>
           <div class="col-sm-6">
-                                                <span *ngIf="walk.gridReference">Grid Ref: <a
-                                                  [href]="'http://gridreferencefinder.com/?gr=' + walk.gridReference"
+                                                <span *ngIf="walkDisplay.walk.gridReference">Grid Ref: <a
+                                                  [href]="'http://gridreferencefinder.com/?gr=' + walkDisplay.walk.gridReference"
                                                   target="_blank">
                                             <span tooltip-placement="left"
-                                                  tooltip="Click to locate grid reference {{walk.gridReference}} on UK Grid Reference Finder">
-                                                {{walk.gridReference}}
+                                                  tooltip="Click to locate grid reference {{walkDisplay.walk.gridReference}} on UK Grid Reference Finder">
+                                                {{walkDisplay.walk.gridReference}}
                                             </span></a>
                                                 </span>
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-6">Distance: <span [textContent]="walk.distance" name="distance"></span>
-          </div>
-          <div class="col-sm-6">Grade: <span [textContent]="walk.grade" name="grade"></span></div>
+          <div class="col-sm-6">Distance: {{walkDisplay.walk.distance}}</div>
+          <div class="col-sm-6">Grade: {{walkDisplay.walk.grade}}</div>
         </div>
       </div>
     </div>

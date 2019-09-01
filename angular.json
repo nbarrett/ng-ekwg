@@ -34,7 +34,7 @@
       },
       "architect": {
         "build": {
-          "builder": "angular-builder-custom-terser-options:browser-custom-terser",
+          "builder": "ngx-build-plus:build",
           "options": {
             "outputPath": "dist/ng-ekwg",
             "index": "src/index.html",
@@ -192,9 +192,6 @@
           },
           "configurations": {
             "production": {
-              "terserOptions": {
-                "keep_fnames": true
-              },
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -221,7 +218,7 @@
           }
         },
         "serve": {
-          "builder": "angular-builder-custom-terser-options:dev-server-custom-terser",
+          "builder": "ngx-build-plus:dev-server",
           "options": {
             "browserTarget": "ng-ekwg:build",
             "proxyConfig": "proxy.config.json"
@@ -239,7 +236,7 @@
           }
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "ngx-build-plus:karma",
           "options": {
             "main": "src/test.ts",
             "polyfills": "src/polyfills.ts",

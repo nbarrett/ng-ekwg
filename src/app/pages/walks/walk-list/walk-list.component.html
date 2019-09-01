@@ -67,14 +67,16 @@
                 </div>
               </div>
             </form>
-            <div *ngFor="let walk of filteredWalks; let index = index">
-              <div *ngIf="display.isExpanded(walk)" class="thumbnail event-thumbnail">
-                <app-walk-view [walk]="walk" *ngIf="!display.isEdit(walk)"></app-walk-view>
-                <app-walk-edit [walk]="walk" *ngIf="display.isEdit(walk)"></app-walk-edit>
+            <div *ngFor="let displayedWalk of filteredWalks; let index = index; trackBy: walkTracker">
+              <div *ngIf="display.isExpanded(displayedWalk.walk)" class="thumbnail event-thumbnail">
+                <app-walk-view [walkDisplay]="displayedWalk"
+                               *ngIf="!display.isEdit(displayedWalk.walk)"></app-walk-view>
+                <app-walk-edit [listcdr]="cdr" [walk]="displayedWalk.walk"
+                               *ngIf="display.isEdit(displayedWalk.walk)"></app-walk-edit>
               </div>
-              <table *ngIf="!display.isExpanded(walk)"
+              <table *ngIf="!display.isExpanded(displayedWalk.walk)"
                      class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
-                <thead *ngIf="showTableHeader(walk)" class="tbl-green-f">
+                <thead *ngIf="showTableHeader(displayedWalk)" class="tbl-green-f">
                 <tr>
                   <th *ngIf="loggedInMemberService.memberLoggedIn()" width="7%">Action</th>
                   <th width="13%">Walk Date</th>
@@ -87,60 +89,62 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr [ngClass]="{'active':tableRowOdd(walk), 'default':tableRowEven(walk)}">
+                <tr [ngClass]="tableRowEven(displayedWalk)? 'default': 'active'">
                   <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}"
                       class="nowrap"><input
-                    *ngIf="display.toWalkEditMode(walk)" type="submit"
-                    value="{{display.toWalkEditMode(walk).caption}}"
-                    (click)="display.edit(walk)"
-                    title="{{display.toWalkEditMode(walk).caption}}"
+                    *ngIf="displayedWalk.walkEditMode" type="submit"
+                    value="{{displayedWalk.walkEditMode.caption}}"
+                    (click)="display.edit(displayedWalk.walk)"
                     class="button-form">
                   </td>
-                  <td width="13%" (click)="display.view(walk)"
+                  <td width="13%" (click)="display.view(displayedWalk.walk)"
                       id="walkDate-{{index}}" class="nowrap">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
-                                  [textContent]="walk.walkDate|displayDate" name="walkDate"></span></td>
-                  <td width="7%" (click)="display.view(walk)"
+                                  [textContent]="displayedWalk.walk.walkDate|displayDate" name="walkDate"></span></td>
+                  <td width="7%" (click)="display.view(displayedWalk.walk)"
                       id="startTime-{{index}}">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
-                                  [textContent]="viewWalkField(walk, 'startTime')" name="startTime"></span></td>
-                  <td width="32%" (click)="display.view(walk)"
+                                  [textContent]="viewWalkField(displayedWalk, 'startTime')" name="startTime"></span>
+                  </td>
+                  <td width="32%" (click)="display.view(displayedWalk.walk)"
                       id="briefDescription-{{index}}">
                             <span tooltip-placement="left"
                                   tooltip="Click to show walk detail"
-                                  [textContent]="viewWalkField(walk, 'briefDescriptionAndStartPoint')"
+                                  [textContent]="viewWalkField(displayedWalk, 'briefDescriptionAndStartPoint')"
                                   name="briefDescriptionAndStartPoint"></span></td>
-                  <td width="7%" (click)="display.view(walk)" id="distance-{{index}}">
+                  <td width="7%" (click)="display.view(displayedWalk.walk)" id="distance-{{index}}">
                             <span tooltip-placement="left" tooltip="Click to show walk detail"
-                                  [textContent]="viewWalkField(walk, 'distance')" name="distance"></span></td>
+                                  [textContent]="viewWalkField(displayedWalk, 'distance')" name="distance"></span></td>
                   <td width="8%" id="postcode-{{index}}">
-                    <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(walk, 'postcode')"
+                    <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(displayedWalk, 'postcode')"
                        target="_blank">
                                 <span tooltip-placement="left"
-                                      tooltip="Click to locate postcode {{viewWalkField(walk, 'postcode')}} on Google Maps"
-                                      [textContent]="viewWalkField(walk, 'postcode')" name="postcode"></span></a></td>
+                                      tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"
+                                      [textContent]="viewWalkField(displayedWalk, 'postcode')"
+                                      name="postcode"></span></a></td>
                   <td width="12%" id="contactEmail-{{index}}">
-                    <a *ngIf="allowDetailView()" [href]="'mailto:'+ walk.contactEmail">
+                    <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail">
                                 <span tooltip-placement="left"
-                                      tooltip="Click to email {{walk.displayName}} at {{viewWalkField(walk, 'contactEmail')}}"
-                                      [textContent]="walk.displayName" name="displayName"></span></a>
+                                      tooltip="Click to email {{displayedWalk.walk.displayName}} at {{viewWalkField(displayedWalk, 'contactEmail')}}"
+                                      [textContent]="displayedWalk.walk.displayName" name="displayName"></span></a>
                     <span class="tooltip-link" *ngIf="!allowDetailView()" tooltip-placement="left"
                           (click)="loginOrLogout()" tooltip-trigger="mouseenter"
-                          tooltip="Click again to login as an EKWG member and send an email to {{walk.displayName}}"
-                          [textContent]="walk.displayName"></span></td>
+                          tooltip="Click again to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}"
+                          [textContent]="displayedWalk.walk.displayName"></span></td>
                   <td width="11%" id="contactPhone-{{index}}">
-                    <a *ngIf="allowDetailView()" [href]="'tel:' + walk.contactPhone">
+                    <a *ngIf="allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
                             <span tooltip-placement="left"
-                                  tooltip="Click to ring {{walk.displayName}} on {{viewWalkField(walk, 'contactPhone')}} (mobile devices only)"
-                                  [textContent]="viewWalkField(walk, 'contactPhone')" name="contactPhone"></span></a> <a
-                    *ngIf="!allowDetailView()" [href]="'tel:' + walk.contactPhone">
+                                  tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
+                                  [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
+                                  name="contactPhone"></span></a> <a
+                    *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
                                 <span tooltip-placement="left"
-                                      tooltip="Click to ring {{walk.displayName}} on {{viewWalkField(walk, 'contactPhone')}} (mobile devices only)"
-                                      [textContent]="viewWalkField(walk, 'contactPhone')"
+                                      tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
+                                      [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                       name="contactPhone"></span></a>
-                    <app-panel-expander [walk]="walk" [collapsable]="false" [expandable]="true"
+                    <app-panel-expander [walk]="displayedWalk.walk" [collapsable]="false" [expandable]="true"
                                         [expandAction]="'show full details of walk'">
                     </app-panel-expander>
                   </td>

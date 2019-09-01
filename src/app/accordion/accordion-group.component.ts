@@ -10,13 +10,13 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 export class AccordionGroupComponent implements OnInit {
 
   @Input() title: string;
-  @Input() initiallyOpen: boolean;
+  @Input() initiallyOpen: string;
 
   public open: boolean;
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(AccordionGroupComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(AccordionGroupComponent, NgxLoggerLevel.OFF);
   }
 
   toggle($event: any) {
@@ -25,9 +25,9 @@ export class AccordionGroupComponent implements OnInit {
 
   ngOnInit(): void {
     this.open = false;
-    if (this.initiallyOpen) {
+    if (this.initiallyOpen === "true") {
       this.logger.debug(this.title, "initiallyOpen -> ", this.initiallyOpen);
-      this.open = this.initiallyOpen;
+      this.open = true;
     }
   }
 }

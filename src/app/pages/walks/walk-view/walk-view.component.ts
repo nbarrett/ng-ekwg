@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, Inject, Input, OnInit } from "@angular/core";
-import { Walk } from "../../../models/walk.model";
-import { NgxLoggerLevel } from "ngx-logger";
-import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { WalkDisplayService } from "../walk-display.service";
-import { DateUtilsService } from "../../../services/date-utils.service";
-import { UrlService } from "../../../services/url.service";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { SafeResourceUrl } from "@angular/platform-browser";
+import { NgxLoggerLevel } from "ngx-logger";
+import { WalkDisplay } from "../../../models/walk-display.model";
+import { WalkEventType } from "../../../models/walk-event-type.model";
+import { Walk } from "../../../models/walk.model";
+import { BroadcastService } from "../../../services/broadcast-service";
+import { DateUtilsService } from "../../../services/date-utils.service";
+import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { UrlService } from "../../../services/url.service";
+import { WalkDisplayService } from "../walk-display.service";
 
 const SHOW_START_POINT = "show-start-point";
 const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
@@ -20,11 +22,12 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 
 export class WalkViewComponent implements OnInit {
   @Input()
-  walk: Walk;
+  walkDisplay: WalkDisplay;
   private logger: Logger;
   mapDisplay = SHOW_START_POINT;
   fromPostcode = "";
   public googleMapsUrl: SafeResourceUrl;
+  loggedIn: boolean;
 
   constructor(
     @Inject("LoggedInMemberService") private loggedInMemberService,
@@ -37,15 +40,18 @@ export class WalkViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("initialised with walk", this.walk);
+    this.logger.debug("initialised with walk", this.walkDisplay);
+    this.loggedIn = this.loggedInMemberService.memberLoggedIn();
     this.refreshHomePostcode();
     this.broadcastService.on("memberLoginComplete", () => {
       this.logger.debug("memberLoginComplete");
       this.display.refreshMembers();
+      this.loggedIn = true;
       this.refreshHomePostcode();
     });
-    if (this.display.eventTypeFor(this.walk).showDetails) {
-      this.googleMapsUrl = this.display.googleMapsUrl(this.walk, this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
+    if (this.walkDisplay.latestEventType.showDetails) {
+      this.googleMapsUrl = this.display.googleMapsUrl(this.walkDisplay.walk,
+        this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
     }
   }
 
