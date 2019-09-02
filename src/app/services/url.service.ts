@@ -1,13 +1,13 @@
+import { DOCUMENT } from "@angular/common";
+import { Inject, Injectable } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { first } from "lodash-es";
 import isArray from "lodash-es/isArray";
 import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
-import { ActivatedRoute, Router } from "@angular/router";
-import { DOCUMENT } from "@angular/common";
-import { Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "./logger-factory.service";
-import { first } from "lodash-es";
 
 @Injectable({
   providedIn: "root"
@@ -21,38 +21,39 @@ export class UrlService {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
   }
 
-  relativeUrlFirstSegment(optionalUrl?: string): string  {
+  relativeUrlFirstSegment(optionalUrl?: string): string {
     const url = new URL(optionalUrl || this.absUrl());
     return "/" + first(url.pathname.substring(1).split("/"));
   }
 
-  navigateTo(page?: string, area?: string): void  {
+  navigateTo(page?: string, area?: string): Promise<boolean> {
     const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
     this.logger.debug("navigating to page:", page, "area:", area, "->", url);
-    this.router.navigate([url], {relativeTo: this.route}).then(() => {
-      this.logger.debug("area is now", this.area());
+    return this.router.navigate([url], {relativeTo: this.route}).then((activated: boolean) => {
+      this.logger.debug("activated:", activated, "area is now:", this.area());
+      return activated;
     });
   }
 
-  absUrl(): string  {
+  absUrl(): string {
     this.logger.debug("absUrl: document.location.href", this.document.location.href);
     return this.document.location.href;
   }
 
-  baseUrl(optionalUrl?: string): string  {
+  baseUrl(optionalUrl?: string): string {
     const url = new URL(optionalUrl || this.absUrl());
     return `${url.protocol}//${url.host}`;
   }
 
-  relativeUrl(optionalUrl?: string): string  {
+  relativeUrl(optionalUrl?: string): string {
     return last((optionalUrl || this.absUrl()).split("/"));
   }
 
-  resourceUrl(area: string, type: string, id: string) : string {
+  resourceUrl(area: string, type: string, id: string): string {
     return this.baseUrl() + "/" + area + "/" + type + "Id/" + id;
   }
 
-  area(optionalUrl?: string): string  {
+  area(optionalUrl?: string): string {
     return this.relativeUrlFirstSegment(optionalUrl).substring(1);
   }
 
@@ -99,7 +100,6 @@ export class UrlService {
   noArea(): boolean {
     return this.areaUrl() === "";
   }
-
 
   areaUrl(): string {
     return tail(new URL(this.absUrl()).pathname.substring(1).split("/")).join("/");

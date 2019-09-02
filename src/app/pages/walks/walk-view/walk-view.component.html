@@ -111,7 +111,7 @@
             [src]="googleMapsUrl" allowfullscreen></iframe>
     <div class="row thumbnail thumbnail-campaign-settings">
       <div class="map-radio-heading map-radio-group">Show Map:</div>
-      <div class="radio-inline map-radio-group map-radio-label">
+      <div class="radio-inline map-radio-group map-radio-label" (click)="refreshView()">
         <input id="show-start-point" type="radio"
                [ngModel]="mapDisplay" name="mapDisplay"
                value="show-start-point"/>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { NgxLoggerLevel } from "ngx-logger";
 import { ActivatedRoute, Router } from "@angular/router";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { PageService } from "../services/page.service";
 import { UrlService } from "../services/url.service";
 
@@ -18,13 +18,8 @@ export class NonRenderingComponent implements OnInit {
     this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.OFF);
   }
 
-  isLegacyRoute() {
-    const route = this.route.snapshot.url.join("");
-    return !this.pageService.pageForArea(this.urlService.area()).upgraded;
-  }
-
   ngOnInit() {
     this.logger.debug("created for route.snapshot.url:", this.route.snapshot.url.map(segment => segment.toString()),
-      "area:", this.urlService.area(), "isLegacy:", this.isLegacyRoute());
+      "area:", this.urlService.area());
   }
 }

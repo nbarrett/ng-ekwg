@@ -1,4 +1,4 @@
-import { Component, Inject} from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { LoginService } from "../login/login.service";
 
 @Component({

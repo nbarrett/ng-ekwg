@@ -62,7 +62,7 @@ export class WalkListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
+    this.logger.debug("ngOnInit");
     this.todayValue = this.dateUtils.momentNowNoTime().valueOf();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -201,7 +201,7 @@ export class WalkListComponent implements OnInit {
     return this.query()
       .then(walks => {
         this.display.setNextWalkId(walks);
-        this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
+        this.logger.debug("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
         this.walks = this.currentWalkId ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();

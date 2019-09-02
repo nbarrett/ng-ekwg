@@ -20,12 +20,12 @@ export class Logger {
   constructor(private logger: NGXLogger, private className: string) {
   }
 
-  info(...additional: any[]) {
-    this.logger.debug(this.logPrefix(), ...additional);
-  }
-
   private logPrefix() {
     return this.className + " -";
+  }
+
+  info(...additional: any[]) {
+    this.logger.info(this.logPrefix(), ...additional);
   }
 
   debug(...additional: any[]) {

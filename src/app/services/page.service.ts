@@ -15,7 +15,7 @@ export class PageService {
     HOME,
     {href: "walks", title: "Walks"},
     {href: "social", title: "Social"},
-    {href: "join-us", title: "Join Us", upgraded: true},
+    {href: "join-us", title: "Join Us"},
     {href: "contact-us", title: "Contact Us"},
     {href: "committee", title: "Committee"},
     {href: "admin", title: "Admin"},

@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, Inject, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
 import { WalkDisplay } from "../../../models/walk-display.model";
-import { WalkEventType } from "../../../models/walk-event-type.model";
 import { Walk } from "../../../models/walk.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -35,6 +34,7 @@ export class WalkViewComponent implements OnInit {
     private dateUtils: DateUtilsService,
     private urlService: UrlService,
     private broadcastService: BroadcastService,
+    private cdr: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.INFO);
   }
@@ -49,6 +49,10 @@ export class WalkViewComponent implements OnInit {
       this.loggedIn = true;
       this.refreshHomePostcode();
     });
+    this.updateGoogleMap();
+  }
+
+  updateGoogleMap() {
     if (this.walkDisplay.latestEventType.showDetails) {
       this.googleMapsUrl = this.display.googleMapsUrl(this.walkDisplay.walk,
         this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
@@ -84,4 +88,9 @@ export class WalkViewComponent implements OnInit {
       : (this.dateUtils.asMoment(walk.walkDate).fromNow());
   }
 
+  refreshView() {
+    this.logger.debug("refreshing view");
+    this.updateGoogleMap();
+    this.cdr.detectChanges();
+  }
 }
