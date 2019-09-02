@@ -1,4 +1,4 @@
-import { ApplicationRef, NgModule } from "@angular/core";
+import { ApplicationRef, DoBootstrap, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
@@ -83,6 +83,7 @@ import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
+import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 @NgModule({
   declarations: [
@@ -113,11 +114,13 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
     NonRenderingComponent,
     PageNavigatorComponent,
     PageTitleComponent,
+    PanelExpanderComponent,
     SearchFilterPipe,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
     ValueOrDefaultPipe,
+    WalkAddSlotsComponent,
     WalkEditComponent,
     WalkEditFullPageComponent,
     WalkEventTypePipe,
@@ -125,8 +128,7 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
     WalkListComponent,
     WalkSummaryPipe,
     WalkViewComponent,
-    PanelExpanderComponent,
-    WalkAddSlotsComponent],
+  ],
   imports: [
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
@@ -178,6 +180,7 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
     ValueOrDefaultPipe,
     WalkEventTypePipe,
     WalkNotificationServiceProvider,
+    WalksAuthGuard,
     WalksServiceProvider,
     WalkSummaryPipe,
   ],
@@ -188,7 +191,7 @@ import { SiteNavigatorComponent } from "./site-navigator/site-navigator.componen
   ],
 })
 
-export class AppModule {
+export class AppModule implements DoBootstrap {
   private logger: Logger;
 
   constructor(private upgrade: UpgradeModule, private route: ActivatedRoute, loggerFactory: LoggerFactory) {
