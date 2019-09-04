@@ -449,11 +449,11 @@ export class WalkEditComponent implements OnInit {
   confirmDeleteWalkDetails() {
     this.setStatus(EventType.DELETED);
     return this.initiateEvent()
-      .then(() => this.displayedWalk.walk.$saveOrUpdate(() => this.closeEditView(), () => this.closeEditView()))
+      .then(() => this.displayedWalk.walk.$saveOrUpdate((walk: Walk) => this.emitSavedWalk(walk), (walk: Walk) => this.emitSavedWalk(walk)))
       .catch(error => this.notifyError(error));
   }
 
-  afterSaveWith(notificationSent) {
+  afterSaveWith(notificationSent: boolean) {
     return () => {
       this.logger.debug("invoking afterSaveWith:notificationSent", notificationSent);
       this.notify.clearBusy();
@@ -469,7 +469,11 @@ export class WalkEditComponent implements OnInit {
   private logDetectChanges() {
     this.logger.info("detectChanges");
     this.cdr.detectChanges();
-    // this.listcdr.detectChanges();
+  }
+
+  emitSavedWalk(walk: Walk): DisplayedWalk {
+    this.closeEditView();
+    return this.display.toDisplayedWalk(walk);
   }
 
   closeEditView() {
@@ -481,9 +485,9 @@ export class WalkEditComponent implements OnInit {
     }
   }
 
-  saveWalkDetails() {
+  saveWalkDetails(): DisplayedWalk {
     return this.initiateEvent()
-      .then(notificationSent => this.displayedWalk.walk.$saveOrUpdate(this.afterSaveWith(notificationSent),
+      .then((notificationSent: boolean) => this.displayedWalk.walk.$saveOrUpdate(this.afterSaveWith(notificationSent),
         this.afterSaveWith(notificationSent)))
       .catch(error => this.notifyError(error));
   }

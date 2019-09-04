@@ -5,7 +5,7 @@ angular.module("ekwgApp")
       var logger = $log.getInstance("ForgotPasswordController");
       $log.logLevels["ForgotPasswordController"] = $log.LEVEL.OFF;
       $scope.notify = {};
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
 
       $scope.showSubmit = true;
       $scope.FORGOTTEN_PASSWORD_SEGMENT = "Forgotten Password";
@@ -127,7 +127,7 @@ angular.module("ekwgApp")
           .then(saveSegmentDataToMailchimpConfig)
           .then(sendForgottenPasswordCampaign)
           .then(finalMessage)
-          .then(notify.clearBusy)
+          .then(notify.clearBusy.bind(notify))
           .catch(handleSendError);
       }
 

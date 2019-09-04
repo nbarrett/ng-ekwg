@@ -174,7 +174,7 @@ angular.module('ekwgApp')
               .reverse()
               .sortBy('createdDate')
               .value();
-          }, notify.error);
+          }, notify.error.bind(notify));
       }
 
       function filterCommitteeFiles(files) {

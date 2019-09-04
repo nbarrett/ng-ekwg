@@ -70,7 +70,7 @@ angular.module('ekwgApp')
             } else {
               notify.error('Upload Failed for file ' + fileNameData);
             }
-          }, notify.error, function (evt) {
+          }, notify.error.bind(notify), function (evt) {
             fileUpload.progress = parseInt(100.0 * evt.loaded / evt.total);
           });
         });

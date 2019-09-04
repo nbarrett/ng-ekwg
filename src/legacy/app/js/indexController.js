@@ -5,7 +5,7 @@ angular.module('ekwgApp')
     $log.logLevels["IndexController"] = $log.LEVEL.OFF;
     $scope.notify = {};
 
-    var notify = Notifier($scope.notify);
+    var notify = Notifier.createAlertInstance($scope.notify);
 
     logger.info('called IndexController');
     $scope.ready = false;

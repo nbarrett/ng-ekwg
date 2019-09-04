@@ -55,8 +55,8 @@ angular.module('ekwgApp')
       };
 
       $scope.itemAlert = {};
-      var notify = Notifier($scope);
-      var notifyItem = Notifier($scope.itemAlert);
+      var notify = Notifier.createAlertInstance($scope);
+      var notifyItem = Notifier.createAlertInstance($scope.itemAlert);
       notify.setBusy();
       var notificationsBaseUrl = 'partials/expenses/notifications';
 
@@ -385,7 +385,7 @@ angular.module('ekwgApp')
       }
 
       $scope.cancelExpenseChange = function () {
-        $scope.refreshExpenses().then($scope.hideExpenseClaim).then(notify.clearBusy);
+        $scope.refreshExpenses().then($scope.hideExpenseClaim).then(notify.clearBusy.bind(notify));
       };
 
       function showExpenseErrorAlert(message) {
@@ -421,7 +421,7 @@ angular.module('ekwgApp')
         $scope.setExpenseItemFields();
         return (optionalExpenseClaim || $scope.selected.expenseClaim()).$saveOrUpdate(showExpenseSaved, showExpenseSaved, showExpenseErrorAlert, showExpenseErrorAlert)
           .then($scope.hideExpenseClaim)
-          .then(notify.clearBusy);
+          .then(notify.clearBusy.bind(notify));
       };
 
       $scope.approveExpenseClaim = function () {
@@ -455,7 +455,7 @@ angular.module('ekwgApp')
         recalculateClaimCost();
         $scope.saveExpenseClaim()
           .then($scope.removeConfirm)
-          .then(notify.clearBusy);
+          .then(notify.clearBusy.bind(notify));
       };
 
       $scope.removeConfirm = function () {
@@ -475,7 +475,7 @@ angular.module('ekwgApp')
           .then(showExpenseDeleted)
           .then($scope.refreshExpenses)
           .then($scope.removeConfirm)
-          .then(notify.clearBusy);
+          .then(notify.clearBusy.bind(notify));
       };
 
       $scope.submitExpenseClaim = function (state) {
@@ -795,14 +795,14 @@ angular.module('ekwgApp')
             logger.debug('refreshExpenses finished', outcome);
             notify.clearBusy();
             return $scope.expenseClaims;
-          }, notify.error)
-          .catch(notify.error);
+          }, notify.error.bind(notify))
+          .catch(notify.error.bind(notify));
       };
 
       $q.when(refreshMembers())
         .then($scope.refreshExpenses)
-        .then(notify.setReady)
-        .catch(notify.error);
+        .then(notify.setReady.bind(notify))
+        .catch(notify.error.bind(notify));
 
     }
   );

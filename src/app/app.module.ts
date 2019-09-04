@@ -210,7 +210,8 @@ export class AppModule implements DoBootstrap {
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
       .factory("URLService", downgradeInjectable(UrlService))
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
-      .factory("DateUtils", downgradeInjectable(DateUtilsService));
+      .factory("DateUtils", downgradeInjectable(DateUtilsService))
+      .factory("Notifier", downgradeInjectable(NotifierService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade);
     appRef.bootstrap(AppComponent);

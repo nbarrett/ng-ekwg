@@ -7,7 +7,7 @@ angular.module('ekwgApp')
       var logger = $log.getInstance('CommitteeNotificationsController');
       $log.logLevels['CommitteeNotificationsController'] = $log.LEVEL.OFF;
       $scope.notify = {};
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
       notify.setBusy();
       $scope.members = [];
       $scope.committeeFile = committeeFile;

@@ -5,7 +5,7 @@ angular.module('ekwgApp')
     $log.logLevels["MailingPreferencesController"] = $log.LEVEL.OFF;
 
     $scope.notify = {};
-    var notify = Notifier($scope.notify);
+    var notify = Notifier.createAlertInstance($scope.notify);
 
     LoggedInMemberService.getMemberForMemberId(memberId)
       .then(function (member) {

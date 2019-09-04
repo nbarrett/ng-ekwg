@@ -29,6 +29,6 @@ export interface Walk {
 
   $id?(): any;
 
-  $saveOrUpdate?(hideWalkDialogAndRefreshWalks: () => void, hideWalkDialogAndRefreshWalks2: () => void): any;
+  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Walk;
 }
 

@@ -4,7 +4,7 @@ angular.module('ekwgApp')
     $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
 
     $scope.notify = {};
-    var notify = Notifier($scope.notify);
+    var notify = Notifier.createAlertInstance($scope.notify);
 
     notify.showContactUs(true);
     notify.error({

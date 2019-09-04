@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('ImageEditController', function($scope, $location, Upload, $http, $q, $routeParams, $window, LoggedInMemberService, ContentMetaDataService, Notifier, EKWGFileUpload) {
-    var notify = Notifier($scope);
+    var notify = Notifier.createAlertInstance($scope);
 
     $scope.imageSource = $routeParams.imageSource;
 
@@ -93,7 +93,7 @@ angular.module('ekwgApp')
 
 
     $scope.saveAll = function() {
-      ContentMetaDataService.saveMetaData($scope.imageMetaData, saveOrUpdateSuccessful, notify.error)
+      ContentMetaDataService.saveMetaData($scope.imageMetaData, saveOrUpdateSuccessful, notify.error.bind(notify))
         .then(function(contentMetaData) {
           $scope.exitBackToPreviousWindow();
         }, function(response) {

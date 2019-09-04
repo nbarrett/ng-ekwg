@@ -5,13 +5,11 @@ angular.module('ekwgApp')
               MailchimpCampaignService, MailchimpListService, Notifier, ErrorMessageService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
       var logger = $log.getInstance('MemberAdminController');
-      var noLogger = $log.getInstance('MemberAdminControllerNoLogger');
       $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
-      $log.logLevels['MemberAdminControllerNoLogger'] = $log.LEVEL.OFF;
       $scope.memberAdminBaseUrl = ContentMetaDataService.baseUrl('memberAdmin');
 
       $scope.notify = {};
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
       notify.setBusy();
 
       var DESCENDING = '▼';
@@ -45,7 +43,7 @@ angular.module('ekwgApp')
           .then(refreshMemberAudit)
           .then(refreshMemberBulkLoadAudit)
           .then(refreshMemberUpdateAudit)
-          .then(notify.clearBusy);
+          .then(notify.clearBusy.bind(notify));
       } else {
         notify.clearBusy();
       }
@@ -149,7 +147,7 @@ angular.module('ekwgApp')
       $scope.uploadSessionChanged = function () {
         notify.setBusy();
         notify.hide();
-        refreshMemberUpdateAudit().then(notify.clearBusy);
+        refreshMemberUpdateAudit().then(notify.clearBusy.bind(notify));
       };
 
       $scope.sortMembersUploadedBy = function (field) {
@@ -410,11 +408,11 @@ angular.module('ekwgApp')
       };
 
       function unsubscribeWalksList() {
-        return MailchimpListService.batchUnsubscribeMembers('walks', $scope.members, notify.success);
+        return MailchimpListService.batchUnsubscribeMembers('walks', $scope.members, notify.success.bind(notify));
       }
 
       function unsubscribeSocialEventsList(members) {
-        return MailchimpListService.batchUnsubscribeMembers('socialEvents', members, notify.success);
+        return MailchimpListService.batchUnsubscribeMembers('socialEvents', members, notify.success.bind(notify));
       }
 
       function unsubscribeGeneralList(members) {
@@ -424,14 +422,14 @@ angular.module('ekwgApp')
       $scope.updateMailchimpLists = function () {
         $scope.display.saveInProgress = true;
         return $q.when(notify.success('Sending updates to Mailchimp lists', true))
-          .then(refreshMembers, notify.error, notify.success)
-          .then(updateWalksList, notify.error, notify.success)
-          .then(updateSocialEventsList, notify.error, notify.success)
-          .then(updateGeneralList, notify.error, notify.success)
-          .then(unsubscribeWalksList, notify.error, notify.success)
-          .then(unsubscribeSocialEventsList, notify.error, notify.success)
-          .then(unsubscribeGeneralList, notify.error, notify.success)
-          .then(notifyUpdatesComplete, notify.error, notify.success)
+          .then(refreshMembers, notify.error.bind(notify), notify.success.bind(notify))
+          .then(updateWalksList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(updateSocialEventsList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(updateGeneralList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(unsubscribeWalksList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(unsubscribeSocialEventsList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(unsubscribeGeneralList, notify.error.bind(notify), notify.success.bind(notify))
+          .then(notifyUpdatesComplete, notify.error.bind(notify), notify.success.bind(notify))
           .then(resetSendFlags)
           .catch(mailchimpError);
       };
@@ -493,12 +491,12 @@ angular.module('ekwgApp')
         }
 
         function saveAndHide() {
-          return DbUtils.auditedSaveOrUpdate(member, hideMemberDialogAndRefreshMembers, notify.error)
+          return DbUtils.auditedSaveOrUpdate(member, hideMemberDialogAndRefreshMembers, notify.error.bind(notify))
         }
 
         $q.when(notify.success('Saving member', true))
-          .then(preProcessMemberBeforeSave, notify.error, notify.success)
-          .then(saveAndHide, notify.error, notify.success)
+          .then(preProcessMemberBeforeSave, notify.error.bind(notify), notify.success.bind(notify))
+          .then(saveAndHide, notify.error, notify.success.bind(notify))
           .then(resetSendFlags)
           .then(function () {
             return notify.success('Member saved successfully');
@@ -600,8 +598,8 @@ angular.module('ekwgApp')
       function hideMemberDialogAndRefreshMembers() {
         $q.when($('#member-admin-dialog').modal('hide'))
           .then(refreshMembers)
-          .then(notify.clearBusy)
-          .then(notify.hide)
+          .then(notify.clearBusy.bind(notify))
+          .then(notify.hide.bind(notify))
       }
 
       function refreshMembers() {

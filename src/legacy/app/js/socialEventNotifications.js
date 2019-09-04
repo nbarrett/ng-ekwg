@@ -6,7 +6,7 @@ angular.module('ekwgApp')
       var logger = $log.getInstance('SocialEventNotificationsController');
       $log.logLevels['SocialEventNotificationsController'] = $log.LEVEL.OFF;
       $scope.notify = {};
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
       notify.setBusy();
       logger.debug('created with social event', socialEvent);
       $scope.attachmentBaseUrl = ContentMetaDataService.baseUrl('socialEvents');

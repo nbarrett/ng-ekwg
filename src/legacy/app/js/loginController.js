@@ -5,7 +5,7 @@ angular.module('ekwgApp')
       var logger = $log.getInstance('LoginController');
       $log.logLevels['LoginController'] = $log.LEVEL.OFF;
 
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
       LoggedInMemberService.logout();
       $scope.actions = {
         submittable: function () {

@@ -4,7 +4,7 @@ angular.module('ekwgApp')
     var logger = $log.getInstance("HowToDialogController");
     $log.logLevels["HowToDialogController"] = $log.LEVEL.OFF;
     $scope.notify = {};
-    var notify = Notifier($scope.notify);
+    var notify = Notifier.createAlertInstance($scope.notify);
     notify.setBusy();
     $scope.fileUtils = FileUtils;
     $scope.mailchimpLinkService = MailchimpLinkService;
@@ -41,9 +41,9 @@ angular.module('ekwgApp')
     $scope.save = function () {
       notify.setBusy();
       logger.debug("save ->", $scope.memberResource);
-      return $scope.memberResource.$saveOrUpdate(notify.success, notify.success, notify.error, notify.error)
+      return $scope.memberResource.$saveOrUpdate(notify.success.bind(notify), notify.success.bind(notify), notify.error.bind(notify), notify.error.bind(notify))
         .then($scope.hideDialog)
-        .then(notify.clearBusy)
+        .then(notify.clearBusy.bind(notify))
         .catch(handleError);
 
       function handleError(errorResponse) {
@@ -57,7 +57,7 @@ angular.module('ekwgApp')
     };
 
     $scope.cancelChange = function () {
-      $q.when($scope.hideDialog()).then(notify.clearBusy);
+      $q.when($scope.hideDialog()).then(notify.clearBusy.bind(notify));
     };
 
     $scope.campaignDate = function (campaign) {
@@ -119,7 +119,7 @@ angular.module('ekwgApp')
     $scope.editMode = $scope.memberResource.$id() ? "Edit" : "Add";
     logger.debug("editMode:", $scope.editMode);
     if ($scope.memberResource.resourceType === "email" && $scope.memberResource.$id()) {
-      $scope.performCampaignSearch(false).then(notify.clearBusy)
+      $scope.performCampaignSearch(false).then(notify.clearBusy.bind(notify))
     } else {
       notify.clearBusy();
     }
@@ -132,7 +132,7 @@ angular.module('ekwgApp')
     var logger = $log.getInstance("HowToController");
     $log.logLevels["HowToController"] = $log.LEVEL.OFF;
     $scope.notify = {};
-    var notify = Notifier($scope.notify);
+    var notify = Notifier.createAlertInstance($scope.notify);
     notify.setBusy();
     $scope.fileUtils = FileUtils;
     $scope.memberResourcesReferenceData = MemberResourcesReferenceData;
@@ -195,11 +195,11 @@ angular.module('ekwgApp')
         return notify.success("member resource was deleted successfully");
       }
 
-      $scope.selected.memberResource.$remove(showDeleted, showDeleted, notify.error, notify.error)
+      $scope.selected.memberResource.$remove(showDeleted, showDeleted, notify.error.bind(notify), notify.error.bind(notify))
         .then($scope.hideDialog)
         .then(refreshMemberResources)
         .then(removeDeleteOrAddOrInProgressFlags)
-        .then(notify.clearBusy);
+        .then(notify.clearBusy.bind(notify));
     };
 
     $scope.selectMemberResource = function (memberResource) {

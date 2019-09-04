@@ -34,7 +34,7 @@ angular.module('ekwgApp')
 
     var logger = $log.getInstance('SocialEventsController');
     $log.logLevels['SocialEventsController'] = $log.LEVEL.OFF;
-    var notify = Notifier($scope);
+    var notify = Notifier.createAlertInstance($scope);
 
     $scope.attachmentBaseUrl = ContentMetaDataService.baseUrl('socialEvents');
     $scope.selectMembers = [];
@@ -91,10 +91,10 @@ angular.module('ekwgApp')
 
     $scope.saveSocialEventDetails = function () {
       $q.when(notify.progress({title: 'Save in progress', message: 'Saving social event'}, true))
-        .then(prepareToSave, notify.error, notify.progress)
-        .then(saveSocialEvent, notify.error, notify.progress)
-        .then(notify.clearBusy, notify.error, notify.progress)
-        .catch(notify.error);
+        .then(prepareToSave, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(saveSocialEvent, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(notify.clearBusy, notify.error.bind(notify), notify.progress.bind(notify))
+        .catch(notify.error.bind(notify));
     };
 
     function prepareToSave() {
@@ -107,10 +107,10 @@ angular.module('ekwgApp')
 
     $scope.confirmDeleteSocialEventDetails = function () {
       $q.when(notify.progress('Deleting social event', true))
-        .then(deleteMailchimpSegment, notify.error, notify.progress)
-        .then(removeSocialEventHideSocialEventDialogAndRefreshSocialEvents, notify.error, notify.progress)
-        .then(notify.clearBusy, notify.error, notify.progress)
-        .catch(notify.error);
+        .then(deleteMailchimpSegment, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(removeSocialEventHideSocialEventDialogAndRefreshSocialEvents, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(notify.clearBusy, notify.error.bind(notify), notify.progress.bind(notify))
+        .catch(notify.error.bind(notify));
     };
 
     var deleteMailchimpSegment = function () {

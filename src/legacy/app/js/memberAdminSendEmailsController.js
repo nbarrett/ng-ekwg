@@ -3,8 +3,8 @@ angular.module('ekwgApp')
                                                            EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService,
                                                            MailchimpConfig, Notifier, members, close) {
       var logger = $log.getInstance('MemberAdminSendEmailsController');
-      $log.logLevels['MemberAdminSendEmailsController'] = $log.LEVEL.OFF;
-      var notify = Notifier($scope);
+      $log.logLevels['MemberAdminSendEmailsController'] = $log.LEVEL.DEBUG;
+      var notify = Notifier.createAlertInstance($scope);
       notify.setBusy();
 
       var CAMPAIGN_TYPE_WELCOME = "welcome";
@@ -240,7 +240,7 @@ angular.module('ekwgApp')
           .then(saveSegmentDataToMailchimpConfig)
           .then(sendEmailCampaign)
           .then($scope.display.emailType.postSend)
-          .then(notify.clearBusy)
+          .then(notify.clearBusy.bind(notify))
           .then($scope.cancel)
           .then(resetSendFlags)
           .catch(handleSendError);

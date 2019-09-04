@@ -7,7 +7,7 @@ angular.module('ekwgApp')
     var logger = $log.getInstance('CommitteeController');
     $log.logLevels['CommitteeController'] = $log.LEVEL.OFF;
 
-    var notify = Notifier($scope);
+    var notify = Notifier.createAlertInstance($scope);
     notify.setBusy();
 
     $scope.emailingInProgress = false;
@@ -73,17 +73,17 @@ angular.module('ekwgApp')
     };
 
     $scope.cancelFileChange = function () {
-      $q.when($scope.hideCommitteeFileDialog()).then(refreshCommitteeFiles).then(notify.clearBusy);
+      $q.when($scope.hideCommitteeFileDialog()).then(refreshCommitteeFiles).then(notify.clearBusy.bind(notify));
     };
 
     $scope.saveCommitteeFile = function () {
       $scope.userEdits.saveInProgress = true;
       $scope.selected.committeeFile.eventDate = DateUtils.asValueNoTime($scope.selected.committeeFile.eventDate);
       logger.debug('saveCommitteeFile ->', $scope.selected.committeeFile);
-      return $scope.selected.committeeFile.$saveOrUpdate(notify.success, notify.success, notify.error, notify.error)
+      return $scope.selected.committeeFile.$saveOrUpdate(notify.success.bind(notify), notify.success.bind(notify), notify.error.bind(notify), notify.error.bind(notify))
         .then($scope.hideCommitteeFileDialog)
         .then(refreshCommitteeFiles)
-        .then(notify.clearBusy)
+        .then(notify.clearBusy.bind(notify))
         .catch(handleError);
 
       function handleError(errorResponse) {
@@ -128,11 +128,11 @@ angular.module('ekwgApp')
         return notify.success('File was deleted successfully');
       }
 
-      $scope.selected.committeeFile.$remove(showCommitteeFileDeleted, showCommitteeFileDeleted, notify.error, notify.error)
+      $scope.selected.committeeFile.$remove(showCommitteeFileDeleted, showCommitteeFileDeleted, notify.error.bind(notify), notify.error.bind(notify))
         .then($scope.hideCommitteeFileDialog)
         .then(refreshCommitteeFiles)
         .then(removeDeleteOrAddOrInProgressFlags)
-        .then(notify.clearBusy);
+        .then(notify.clearBusy.bind(notify));
     };
 
     $scope.selectCommitteeFile = function (committeeFile, committeeFiles) {

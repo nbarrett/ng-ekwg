@@ -5,7 +5,7 @@ angular.module("ekwgApp")
 
       $scope.notify = {};
       $scope.memberCredentials = {userName: userName};
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
 
       if (message) {
         notify.progress({

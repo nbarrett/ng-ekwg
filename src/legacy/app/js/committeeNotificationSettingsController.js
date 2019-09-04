@@ -8,7 +8,7 @@ angular.module('ekwgApp')
       $log.logLevels['CommitteeNotificationSettingsController'] = $log.LEVEL.OFF;
       $scope.notify = {};
       $scope.campaigns = [];
-      var notify = Notifier($scope.notify);
+      var notify = Notifier.createAlertInstance($scope.notify);
       var campaignSearchTerm = 'Master';
       notify.setBusy();
       notify.progress({
@@ -59,7 +59,7 @@ angular.module('ekwgApp')
 
       $scope.save = function () {
         logger.debug('saving config', $scope.config);
-        MailchimpConfig.saveConfig($scope.config).then(close).catch(notify.error);
+        MailchimpConfig.saveConfig($scope.config).then(close).catch(notify.error.bind(notify));
       };
 
       $scope.cancel = function () {
