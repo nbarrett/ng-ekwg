@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
-import { WalkDisplay } from "../../../models/walk-display.model";
+import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -21,7 +21,7 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 
 export class WalkViewComponent implements OnInit {
   @Input()
-  walkDisplay: WalkDisplay;
+  displayedWalk: DisplayedWalk;
   private logger: Logger;
   mapDisplay = SHOW_START_POINT;
   fromPostcode = "";
@@ -40,7 +40,7 @@ export class WalkViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("initialised with walk", this.walkDisplay);
+    this.logger.debug("initialised with walk", this.displayedWalk);
     this.loggedIn = this.loggedInMemberService.memberLoggedIn();
     this.refreshHomePostcode();
     this.broadcastService.on("memberLoginComplete", () => {
@@ -53,8 +53,8 @@ export class WalkViewComponent implements OnInit {
   }
 
   updateGoogleMap() {
-    if (this.walkDisplay.latestEventType.showDetails) {
-      this.googleMapsUrl = this.display.googleMapsUrl(this.walkDisplay.walk,
+    if (this.displayedWalk.latestEventType.showDetails) {
+      this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk,
         this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
     }
   }

@@ -5,7 +5,7 @@ import { clone, find, isEmpty, pick } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { WalkEditMode } from "../../../models/walk-edit-mode.model";
+import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
 import { Walk } from "../../../models/walk.model";
@@ -35,15 +35,16 @@ interface DisplayMember {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalkEditComponent implements OnInit {
+
   @Input()
-  public walk: Walk;
+  public displayedWalk: DisplayedWalk;
   @Input()
   public listcdr: ChangeDetectorRef;
+
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
   public walkDate: Date;
   private currentStatus: EventType;
-  private currentWalkEditMode: WalkEditMode;
   private priorStatus: EventType;
   protected logger: Logger;
   public notifyTarget: AlertTarget = {};
@@ -52,9 +53,9 @@ export class WalkEditComponent implements OnInit {
     url: string;
     title: string;
   };
-  private saveInProgress: boolean;
-  private sendNotifications: boolean;
-  private longerDescriptionPreview: boolean;
+  public saveInProgress = false;
+  public sendNotifications = false;
+  public longerDescriptionPreview: boolean;
 
   constructor(
     @Inject("WalksService") protected walksService,
@@ -76,7 +77,7 @@ export class WalkEditComponent implements OnInit {
     protected notifierService: NotifierService,
     private cdr: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -86,37 +87,28 @@ export class WalkEditComponent implements OnInit {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    if (this.walk) {
-      const walkId = this.walk.$id();
-      if (walkId) {
-        this.setWalkEditMode(this.walksReferenceService.walkEditModes.edit);
-      } else {
-        this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
+    this.showWalk(this.displayedWalk);
+    this.logDetectChanges();
+    setInterval(() => {
+      if (this.saveInProgress) {
+        this.logDetectChanges();
       }
-    } else {
-      this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
-      this.walk = new this.walksService({
-        status: EventType.AWAITING_LEADER,
-        walkType: this.display.walkTypes[0],
-        walkDate: this.dateUtils.momentNowNoTime().valueOf()
-      });
-    }
-    this.showWalk(this.walk);
-    this.cdr.detectChanges();
+    }, 3000);
   }
 
   dataHasChanged() {
-    const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.walk, this.status());
+    const dataAuditDelta = this.walkNotificationService.dataAuditDelta(this.displayedWalk.walk, this.status());
     this.logger.debug("dataHasChanged:", dataAuditDelta.notificationRequired);
     return dataAuditDelta.notificationRequired;
   }
 
-  editable() {
-    return this.confirmAction === ConfirmType.NONE && (this.allowAdminEdits() || this.display.loggedInMemberIsLeadingWalk(this.walk));
+  allowEdits() {
+    return this.confirmAction === ConfirmType.NONE && (this.allowAdminEdits() ||
+      this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk));
   }
 
   allowSave() {
-    return this.editable() && this.dataHasChanged();
+    return this.allowEdits() && this.dataHasChanged();
   }
 
   allowClose() {
@@ -133,19 +125,15 @@ export class WalkEditComponent implements OnInit {
 
   allowDelete() {
     return !this.saveInProgress && this.confirmAction === ConfirmType.NONE && this.loggedInMemberService.allowWalkAdminEdits()
-      && this.currentWalkEditMode && this.currentWalkEditMode.editEnabled;
+      && this.displayedWalk.walkEditMode && this.displayedWalk.walkEditMode.editEnabled;
   }
 
   allowNotifyConfirmation() {
-    return (this.allowSave() || this.confirmAction === ConfirmType.DELETE) && this.walk.walkLeaderMemberId;
-  }
-
-  allowEdits() {
-    return this.editable();
+    return (this.allowSave() || this.confirmAction === ConfirmType.DELETE) && this.displayedWalk.walk.walkLeaderMemberId;
   }
 
   allowHistoryView() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) || this.allowAdminEdits();
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) || this.allowAdminEdits();
   }
 
   allowDetailView() {
@@ -190,83 +178,84 @@ export class WalkEditComponent implements OnInit {
   }
 
   latestEventWithStatusChangeIs(eventType) {
-    return this.walkNotificationService.latestEventWithStatusChangeIs(this.walk, eventType);
+    return this.walkNotificationService.latestEventWithStatusChangeIs(this.displayedWalk.walk, eventType);
   }
 
   ownedAndAwaitingWalkDetails() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) && this.status() === EventType.AWAITING_LEADER;
-  }
-
-  setWalkEditMode(walkEditMode: WalkEditMode) {
-    this.currentWalkEditMode = walkEditMode;
-  }
-
-  walkEditMode(): WalkEditMode {
-    return this.currentWalkEditMode;
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) && this.status() === EventType.AWAITING_WALK_DETAILS;
   }
 
   setWalkLeaderToMe() {
-    this.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+    this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
     this.walkLeaderMemberIdChanged();
   }
 
   walkLeaderMemberIdChanged() {
     this.notify.hide();
     this.populateCopySourceFromWalkLeaderMemberId();
-    const memberId = this.walk.walkLeaderMemberId;
+    const memberId = this.displayedWalk.walk.walkLeaderMemberId;
     if (!memberId) {
       this.setStatus(EventType.AWAITING_LEADER);
-      delete this.walk.walkLeaderMemberId;
-      delete this.walk.contactId;
-      delete this.walk.displayName;
-      delete this.walk.contactPhone;
-      delete this.walk.contactEmail;
+      delete this.displayedWalk.walk.walkLeaderMemberId;
+      delete this.displayedWalk.walk.contactId;
+      delete this.displayedWalk.walk.displayName;
+      delete this.displayedWalk.walk.contactPhone;
+      delete this.displayedWalk.walk.contactEmail;
     } else {
       const selectedMember: Member = this.display.members.find((member: Member) => {
         return member.$id() === memberId;
       });
       if (selectedMember) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
-        this.walk.contactId = selectedMember.contactId;
-        this.walk.displayName = selectedMember.displayName;
-        this.walk.contactPhone = selectedMember.mobileNumber;
-        this.walk.contactEmail = selectedMember.email;
+        this.displayedWalk.walk.contactId = selectedMember.contactId;
+        this.displayedWalk.walk.displayName = selectedMember.displayName;
+        this.displayedWalk.walk.contactPhone = selectedMember.mobileNumber;
+        this.displayedWalk.walk.contactEmail = selectedMember.email;
         this.populateWalkTemplates(memberId);
       }
     }
   }
 
-  showWalk(walk) {
-    if (walk) {
-      this.walk = walk;
-      this.confirmAction = ConfirmType.NONE;
-      this.sendNotifications = true;
-      this.googleMapsUrl = this.display.googleMapsUrl(walk, false, walk.postcode);
-      this.walkDate = this.dateUtils.asDate(walk.walkDate);
-      if (this.walkEditMode().initialiseWalkLeader) {
-        this.setStatus(EventType.AWAITING_WALK_DETAILS);
-        walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
-        this.walkLeaderMemberIdChanged();
-        this.notify.success({
-          title: "Thanks for offering to lead this walk " + this.loggedInMemberService.loggedInMember().firstName + "!",
-          message: "Please complete as many details you can, then save to allocate this slot on the walks programme. " +
-            "It will be published to the public once it\"s approved. If you want to release this slot again, just click cancel."
-        });
-      } else {
-        const eventType: EventType = this.display.statusFor(this.walk);
-        if (!isEmpty(eventType)) {
-          this.setStatus(eventType);
-          this.priorStatus = eventType;
-        }
-        this.populateCopySourceFromWalkLeaderMemberId();
-        this.populateWalkTemplates();
-        this.meetupSelectSync(this.walk);
+  showWalk(displayedWalk: DisplayedWalk) {
+    if (!displayedWalk) {
+      this.displayedWalk = {
+        walkEditMode: this.walksReferenceService.walkEditModes.add,
+        latestEventType: null,
+        walk: new this.walksService({
+          status: EventType.AWAITING_LEADER,
+          walkType: this.display.walkTypes[0],
+          walkDate: this.dateUtils.momentNowNoTime().valueOf()
+        })
+      };
+    }
+    this.confirmAction = ConfirmType.NONE;
+    this.sendNotifications = true;
+    this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
+    this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
+    if (this.displayedWalk.walkEditMode.initialiseWalkLeader) {
+      this.setStatus(EventType.AWAITING_WALK_DETAILS);
+      this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+      this.walkLeaderMemberIdChanged();
+      this.notify.success({
+        title: "Thanks for offering to lead this walk " + this.loggedInMemberService.loggedInMember().firstName + "!",
+        message: "Please complete as many details you can, then click Save to allocate this slot on the walks programme. " +
+          "It will be published to the public once it\"s approved. If you want to release this slot again, just click Cancel."
+      });
+    } else {
+      const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
+      if (!isEmpty(eventType)) {
+        this.setStatus(eventType);
+        this.priorStatus = eventType;
       }
+      this.populateCopySourceFromWalkLeaderMemberId();
+      this.populateWalkTemplates();
+      this.meetupSelectSync(this.displayedWalk.walk);
     }
   }
 
   populateCopySourceFromWalkLeaderMemberId() {
-    this.copySourceFromWalkLeaderMemberId = this.walk.walkLeaderMemberId || this.loggedInMemberService.loggedInMember().memberId;
+    this.copySourceFromWalkLeaderMemberId = this.displayedWalk.walk.walkLeaderMemberId
+      || this.loggedInMemberService.loggedInMember().memberId;
   }
 
   walkEvents(walk: Walk) {
@@ -306,10 +295,11 @@ export class WalkEditComponent implements OnInit {
       delete walkTemplate.displayName;
       delete walkTemplate.contactPhone;
       delete walkTemplate.contactEmail;
-      Object.assign(this.walk, walkTemplate);
-      const event = this.walkNotificationService.createEventIfRequired(this.walk,
+      Object.assign(this.displayedWalk.walk, walkTemplate);
+      const event = this.walkNotificationService.createEventIfRequired(this.displayedWalk.walk,
         EventType.WALK_DETAILS_COPIED, "Copied from previous walk on " + templateDate);
-      this.walkNotificationService.writeEventIfRequired(this.walk, event);
+      this.setStatus(EventType.AWAITING_WALK_DETAILS);
+      this.walkNotificationService.writeEventIfRequired(this.displayedWalk.walk, event);
       this.notify.success({
         title: "Walk details were copied from " + templateDate + ".",
         message: "Make any further changes here and save when you are done."
@@ -321,18 +311,18 @@ export class WalkEditComponent implements OnInit {
     this.logger.debug("revertToPriorWalkStatus:", this.status(), "->", this.priorStatus);
     if (this.priorStatus) {
       this.setStatus(this.priorStatus);
-      this.cdr.detectChanges();
+      this.logDetectChanges();
     }
   }
 
   unlinkRamblersDataFromCurrentWalk() {
-    delete this.walk.ramblersWalkId;
+    delete this.displayedWalk.walk.ramblersWalkId;
     this.notify.progress("Previous Ramblers walk has now been unlinked.");
   }
 
   unlinkOSMapsFromCurrentWalk() {
-    delete this.walk.osMapsRoute;
-    delete this.walk.osMapsTitle;
+    delete this.displayedWalk.walk.osMapsRoute;
+    delete this.displayedWalk.walk.osMapsTitle;
     this.notify.progress("Previous OS Maps route has now been unlinked.");
   }
 
@@ -341,18 +331,18 @@ export class WalkEditComponent implements OnInit {
   }
 
   unlinkMeetup() {
-    delete this.walk.meetupEventTitle;
-    delete this.walk.meetupEventUrl;
+    delete this.displayedWalk.walk.meetupEventTitle;
+    delete this.displayedWalk.walk.meetupEventUrl;
     this.meetupEvent = null;
     this.notify.progress("Previous Meetup link has now been removed.");
   }
 
   canUnlinkMeetup() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.walk && this.walk.meetupEventUrl;
+    return this.loggedInMemberService.allowWalkAdminEdits() && this.displayedWalk.walk && this.displayedWalk.walk.meetupEventUrl;
   }
 
   canUnlinkOSMaps() {
-    return this.walk.osMapsRoute || this.walk.osMapsTitle;
+    return this.displayedWalk.walk.osMapsRoute || this.displayedWalk.walk.osMapsTitle;
   }
 
   notUploadedToRamblersYet() {
@@ -360,18 +350,18 @@ export class WalkEditComponent implements OnInit {
   }
 
   insufficientDataToUploadToRamblers() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.walk
-      && !(this.walk.gridReference || this.walk.postcode);
+    return this.loggedInMemberService.allowWalkAdminEdits() && this.displayedWalk.walk
+      && !(this.displayedWalk.walk.gridReference || this.displayedWalk.walk.postcode);
   }
 
   validateWalk() {
-    return this.ramblersWalksAndEventsService.validateWalk(this.walk, this.display.members);
+    return this.ramblersWalksAndEventsService.validateWalk(this.displayedWalk.walk, this.display.members);
   }
 
   walkValidations() {
     const walkValidations = this.validateWalk().walkValidations;
     return "This walk cannot be included in the Ramblers Walks and Events Manager export due to the following "
-      + walkValidations.length + " problem(s): " + walkValidations.join(", ") + ".";
+      + walkValidations.length + " reasons(s): " + walkValidations.join(", ") + ".";
   }
 
   meetupEventUrlChange(walk: Walk) {
@@ -399,7 +389,7 @@ export class WalkEditComponent implements OnInit {
     this.notify.warning({
       title: "Confirm delete of walk details.",
       message: "If you confirm this, the slot for " +
-        this.displayDate.transform(this.walk.walkDate) + " will be deleted from the site."
+        this.displayDate.transform(this.displayedWalk.walk.walkDate) + " will be deleted from the site."
     });
   }
 
@@ -408,7 +398,7 @@ export class WalkEditComponent implements OnInit {
     this.notify.warning({
       title: "Cancel changes.",
       message: "Click Confirm to lose any changes you\"ve just made for " +
-        this.displayDate.transform(this.walk.walkDate) + ", or Cancel to carry on editing."
+        this.displayDate.transform(this.displayedWalk.walk.walkDate) + ", or Cancel to carry on editing."
     });
   }
 
@@ -420,7 +410,7 @@ export class WalkEditComponent implements OnInit {
     this.notify.hide();
     this.logger.debug("isWalkReadyForStatusChangeTo ->", eventType);
     const walkValidations = this.validateWalk().walkValidations;
-    if (eventType.mustHaveLeader && !this.walk.walkLeaderMemberId) {
+    if (eventType.mustHaveLeader && !this.displayedWalk.walk.walkLeaderMemberId) {
       this.notify.warning(
         {
           title: "Walk leader needed",
@@ -432,7 +422,7 @@ export class WalkEditComponent implements OnInit {
       this.notify.warning(
         {
           title: "This walk is not ready to be " + eventType.readyToBe + " yet due to the following "
-            + walkValidations.length + " problem(s): ",
+            + walkValidations.length + " reasons(s): ",
           message: walkValidations.join(", ") +
             ". You can still save this walk, then come back later on to complete the rest of the details."
         });
@@ -444,9 +434,9 @@ export class WalkEditComponent implements OnInit {
 
   initiateEvent() {
     this.saveInProgress = true;
-    this.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
-    return this.walkNotificationService.createEventAndSendNotifications(this.display.members, this.walk, this.status(),
-      this.notify, this.sendNotifications && this.walk.walkLeaderMemberId);
+    this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
+    return this.walkNotificationService.createEventAndSendNotifications(this.display.members, this.displayedWalk.walk, this.status(),
+      this.notify, this.sendNotifications && this.displayedWalk.walk.walkLeaderMemberId);
   }
 
   setStatus(status: EventType) {
@@ -459,33 +449,50 @@ export class WalkEditComponent implements OnInit {
   confirmDeleteWalkDetails() {
     this.setStatus(EventType.DELETED);
     return this.initiateEvent()
-      .then(() => this.walk.$saveOrUpdate(this.closeEditView, this.closeEditView))
-      .catch(() => this.saveInProgress = false);
+      .then(() => this.displayedWalk.walk.$saveOrUpdate(() => this.closeEditView(), () => this.closeEditView()))
+      .catch(error => this.notifyError(error));
   }
 
   afterSaveWith(notificationSent) {
     return () => {
+      this.logger.debug("invoking afterSaveWith:notificationSent", notificationSent);
+      this.notify.clearBusy();
+      this.saveInProgress = false;
+      this.confirmAction = ConfirmType.NONE;
       if (!notificationSent) {
         this.closeEditView();
       }
-      this.notify.clearBusy();
-      this.confirmAction = ConfirmType.NONE;
-      this.display.saveInProgress = false;
+      this.logDetectChanges();
     };
   }
 
+  private logDetectChanges() {
+    this.logger.info("detectChanges");
+    this.cdr.detectChanges();
+    // this.listcdr.detectChanges();
+  }
+
   closeEditView() {
+    this.saveInProgress = false;
     this.confirmAction = ConfirmType.NONE;
-    this.display.closeEditView(this.walk);
-    this.listcdr.detectChanges();
+    this.display.closeEditView(this.displayedWalk.walk);
+    if (this.listcdr) {
+      this.listcdr.detectChanges();
+    }
   }
 
   saveWalkDetails() {
     return this.initiateEvent()
-      .then(notificationSent => this.walk.$saveOrUpdate(this.afterSaveWith(notificationSent), this.afterSaveWith(notificationSent)))
-      .catch(() => {
-        this.saveInProgress = false;
-      });
+      .then(notificationSent => this.displayedWalk.walk.$saveOrUpdate(this.afterSaveWith(notificationSent),
+        this.afterSaveWith(notificationSent)))
+      .catch(error => this.notifyError(error));
+  }
+
+  notifyError(error) {
+    this.logger.error(error);
+    this.saveInProgress = false;
+    this.confirmAction = ConfirmType.NONE;
+    this.notify.error(error);
   }
 
   confirmContactOther() {
@@ -519,8 +526,8 @@ export class WalkEditComponent implements OnInit {
       this.setStatus(eventType.eventType);
       switch (eventType.eventType) {
         case EventType.AWAITING_LEADER: {
-          const walkDate = this.walk.walkDate;
-          this.walk = new this.walksService(pick(this.walk, ["$id()", "events", "walkDate"]));
+          const walkDate = this.displayedWalk.walk.walkDate;
+          this.displayedWalk.walk = new this.walksService(pick(this.displayedWalk.walk, ["$id()", "events", "walkDate"]));
           return this.notify.success({
             title: "Walk details reset for " + this.displayDate.transform(walkDate) + ".",
             message: "Status is now " + this.walksReferenceService.toEventType(EventType.AWAITING_LEADER).description
@@ -579,16 +586,19 @@ export class WalkEditComponent implements OnInit {
   }
 
   myOrWalkLeader() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) ? "my" : this.walk && this.walk.displayName + "'s";
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) ? "my" :
+      this.displayedWalk.walk && this.displayedWalk.walk.displayName + "'s";
   }
 
   meOrWalkLeader() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) ? "me" : this.walk && this.walk.displayName;
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) ? "me" :
+      this.displayedWalk.walk && this.displayedWalk.walk.displayName;
   }
 
   personToNotify() {
-    return this.display.loggedInMemberIsLeadingWalk(this.walk) ? this.walksCoordinatorName() :
-      this.walk && this.walk.displayName;
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) ?
+      this.walksCoordinatorName() :
+      this.displayedWalk.walk && this.displayedWalk.walk.displayName;
   }
 
   walksCoordinatorName() {
@@ -601,7 +611,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   populateWalkTemplates(injectedMemberId?: string) {
-    const memberId = this.walk.walkLeaderMemberId || injectedMemberId;
+    const memberId = this.displayedWalk.walk.walkLeaderMemberId || injectedMemberId;
     let criteria;
     switch (this.copySource) {
       case "copy-selected-walk-leader": {
@@ -623,15 +633,20 @@ export class WalkEditComponent implements OnInit {
     this.walksService.query(criteria, {sort: {walkDate: -1}})
       .then(walks => {
         this.copyFrom.walkTemplates = walks;
+        this.logDetectChanges();
       });
   }
 
   onDateChange(date: Date) {
-    this.walkDate = date;
-    this.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
+    if (date) {
+      this.logger.debug("onDateChange:date", date);
+      this.walkDate = date;
+      this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
+    }
   }
 
   isExpandable(): boolean {
-    return this.display.walkMode(this.walk) === WalkViewMode.EDIT;
+    return this.display.walkMode(this.displayedWalk.walk) === WalkViewMode.EDIT;
   }
+
 }

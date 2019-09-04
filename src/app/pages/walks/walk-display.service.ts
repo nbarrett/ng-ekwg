@@ -1,18 +1,19 @@
 import { Inject, Injectable } from "@angular/core";
-import { EventType, WalksReferenceService } from "../../services/walks-reference-data.service";
-import { Walk } from "../../models/walk.model";
-import { WalkEditMode } from "../../models/walk-edit-mode.model";
-import { NgxLoggerLevel } from "ngx-logger";
-import { Logger, LoggerFactory } from "../../services/logger-factory.service";
-import { WalksQueryService } from "../../services/walks-query.service";
-import { WalkEventType } from "../../models/walk-event-type.model";
-import { ActivatedRoute, Router } from "@angular/router";
-import { UrlService } from "../../services/url.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { ActivatedRoute, Router } from "@angular/router";
 import { find, isEmpty, sortBy } from "lodash-es";
-import { Member } from "../../models/member.model";
-import { DateUtilsService } from "../../services/date-utils.service";
 import { PopoverDirective } from "ngx-bootstrap";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Member } from "../../models/member.model";
+import { DisplayedWalk } from "../../models/walk-displayed.model";
+import { WalkEditMode } from "../../models/walk-edit-mode.model";
+import { WalkEventType } from "../../models/walk-event-type.model";
+import { Walk } from "../../models/walk.model";
+import { DateUtilsService } from "../../services/date-utils.service";
+import { Logger, LoggerFactory } from "../../services/logger-factory.service";
+import { UrlService } from "../../services/url.service";
+import { WalksQueryService } from "../../services/walks-query.service";
+import { EventType, WalksReferenceService } from "../../services/walks-reference-data.service";
 
 @Injectable({
   providedIn: "root"
@@ -122,17 +123,6 @@ export class WalkDisplayService {
     return googleMapsUrl;
   }
 
-  toWalkEditMode(walk: Walk): WalkEditMode {
-    if (this.loggedInMemberService.memberLoggedIn()) {
-      if (this.loggedInMemberIsLeadingWalk(walk) ||
-        this.loggedInMemberService.allowWalkAdminEdits()) {
-        return this.walksReferenceService.walkEditModes.edit;
-      } else if (!walk.walkLeaderMemberId) {
-        return this.walksReferenceService.walkEditModes.lead;
-      }
-    }
-  }
-
   loggedInMemberIsLeadingWalk(walk: Walk) {
     return walk && walk.walkLeaderMemberId === this.loggedInMemberService.loggedInMember().memberId;
   }
@@ -152,9 +142,8 @@ export class WalkDisplayService {
     }
   }
 
-  edit(walk: Walk): ExpandedWalk {
-    this.logger.debug("editing walk:", walk);
-    return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT);
+  edit(walkDisplay: DisplayedWalk): ExpandedWalk {
+    return this.toggleExpandedViewFor(walkDisplay.walk, WalkViewMode.EDIT);
   }
 
   list(walk: Walk): ExpandedWalk {
@@ -171,9 +160,9 @@ export class WalkDisplayService {
   }
 
   editFullscreen(walk: Walk): Promise<ExpandedWalk> {
-    this.logger.debug("editing walk fullscreen:", walk);
+    this.logger.info("editing walk fullscreen:", walk);
     return this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
-      this.logger.debug("area is now", this.urlService.area());
+      this.logger.info("area is now", this.urlService.area());
       return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT_FULL_SCREEN);
     });
   }
@@ -218,6 +207,39 @@ export class WalkDisplayService {
     return eventType;
   }
 
+  walkLink(walk: Walk): string {
+    return walk && walk.$id() ? this.urlService.notificationHref({
+      type: "walk",
+      area: "walks",
+      id: walk.$id()
+    }) : undefined;
+  }
+
+  ramblersLink(walk: Walk): string {
+    return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
+  }
+
+  toWalkEditMode(walk: Walk): WalkEditMode {
+    if (this.loggedInMemberService.memberLoggedIn()) {
+      if (this.loggedInMemberIsLeadingWalk(walk) ||
+        this.loggedInMemberService.allowWalkAdminEdits()) {
+        return this.walksReferenceService.walkEditModes.edit;
+      } else if (!walk.walkLeaderMemberId) {
+        return this.walksReferenceService.walkEditModes.lead;
+      }
+    }
+  }
+
+  toDisplayedWalk(walk: Walk): DisplayedWalk {
+    return {
+      walk,
+      latestEventType: this.latestEventTypeFor(walk),
+      walkEditMode: this.toWalkEditMode(walk),
+      walkLink: this.walkLink(walk),
+      ramblersLink: this.ramblersLink(walk),
+    };
+  }
+
   isNextWalk(walk: Walk): boolean {
     return walk && walk.$id() === this.nextWalkId;
   }
@@ -228,18 +250,6 @@ export class WalkDisplayService {
 
   setExpandedWalks(expandedWalks: ExpandedWalk[]) {
     this.expandedWalks = expandedWalks;
-  }
-
-  walkLink(walk: Walk): string {
-    return walk && walk.$id() ? this.urlService.notificationHref({
-      type: "walk",
-      area: "walks",
-      id: walk.$id()
-    }) : undefined;
-  }
-
-  ramblersLink(walk: Walk): string {
-    return this.ramblersWalkBaseUrl + walk.ramblersWalkId;
   }
 
   closeEditView(walk: Walk) {

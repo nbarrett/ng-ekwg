@@ -1,19 +1,19 @@
-angular.module('ekwgApp')
-  .controller('WalkNotificationsController', function ($log, $scope, WalkNotificationService, RamblersWalksAndEventsService) {
+angular.module("ekwgApp")
+  .controller("WalkNotificationsController", function ($log, $scope, WalkNotificationService, RamblersWalksAndEventsService) {
     $scope.dataAuditDelta = WalkNotificationService.dataAuditDelta($scope.walk, $scope.status);
     $scope.validateWalk = RamblersWalksAndEventsService.validateWalk($scope.walk);
     RamblersWalksAndEventsService.walkBaseUrl().then(function (walkBaseUrl) {
       $scope.ramblersWalkBaseUrl = walkBaseUrl;
     });
   })
-  .factory('WalkNotificationService', function ($sce, $log, $timeout, $filter, $location, $rootScope, $q, $compile, $templateRequest, $routeParams,
+  .factory("WalkNotificationService", function ($sce, $log, $timeout, $filter, $location, $rootScope, $q, $compile, $templateRequest, $routeParams,
                                                 $cookieStore, URLService, MemberService, MailchimpConfig, MailchimpSegmentService, WalksReferenceService,
                                                 MemberAuditService, RamblersWalksAndEventsService, MailchimpCampaignService, LoggedInMemberService, DateUtils) {
 
-    var logger = $log.getInstance('WalkNotificationService');
-    $log.logLevels['WalkNotificationService'] = $log.LEVEL.OFF;
-    var basePartialsUrl = 'partials/walks/notifications';
-    var auditedFields = ['grade', 'walkDate', 'walkType', 'startTime', 'briefDescriptionAndStartPoint', 'longerDescription', 'distance', 'nearestTown', 'gridReference', 'meetupEventUrl', 'meetupEventTitle', 'osMapsRoute', 'osMapsTitle', 'postcode', 'walkLeaderMemberId', 'contactPhone', 'contactEmail', 'contactId', 'displayName', 'ramblersWalkId'];
+    var logger = $log.getInstance("WalkNotificationService");
+    $log.logLevels["WalkNotificationService"] = $log.LEVEL.OFF;
+    var basePartialsUrl = "partials/walks/notifications";
+    var auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription", "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "osMapsRoute", "osMapsTitle", "postcode", "walkLeaderMemberId", "contactPhone", "contactEmail", "contactId", "displayName", "ramblersWalkId"];
 
     function currentDataValues(walk) {
       return _.compactObject(_.pick(walk, auditedFields));
@@ -36,7 +36,7 @@ angular.module('ekwgApp')
       const eventType = _(eventsLatestFirst(walk)).find(function (event) {
         return (WalksReferenceService.toEventType(event.eventType) || {}).statusChange;
       });
-      logger.debug('latestEventWithStatusChange:walk', walk._id, 'eventType =>', eventType);
+      logger.debug("latestEventWithStatusChange:walk", walk._id, "eventType =>", eventType);
       return eventType || {};
     }
 
@@ -77,7 +77,7 @@ angular.module('ekwgApp')
     }
 
     function toEventTypeValue(eventType) {
-      return _.has(eventType, 'eventType') ? eventType.eventType : eventType;
+      return _.has(eventType, "eventType") ? eventType.eventType : eventType;
     }
 
     function latestEventForEventType(walk, eventType) {
@@ -94,7 +94,7 @@ angular.module('ekwgApp')
         if (_.isArray(walk.events)) {
           return walk
         } else {
-          var event = createEventIfRequired(walk, WalksReferenceService.eventTypes.approved.eventType, 'Marking past walk as approved');
+          var event = createEventIfRequired(walk, WalksReferenceService.eventTypes.approved.eventType, "Marking past walk as approved");
           writeEventIfRequired(walk, event);
           walk.$saveOrUpdate();
           return walk;
@@ -104,7 +104,7 @@ angular.module('ekwgApp')
 
     function createEventIfRequired(walk, status, reason) {
       var dataAuditDeltaInfo = dataAuditDelta(walk, status);
-      logger.debug('createEventIfRequired:', dataAuditDeltaInfo);
+      logger.debug("createEventIfRequired:", dataAuditDeltaInfo);
       if (dataAuditDeltaInfo.notificationRequired) {
         var event = {
           "date": DateUtils.nowAsValue(),
@@ -113,21 +113,21 @@ angular.module('ekwgApp')
           "eventType": dataAuditDeltaInfo.eventType
         };
         if (reason) event.reason = reason;
-        if (dataAuditDeltaInfo.dataChanged) event.description = 'Changed: ' + $filter('toAuditDeltaChangedItems')(dataAuditDeltaInfo.changedItems);
-        logger.debug('createEventIfRequired: event created:', event);
+        if (dataAuditDeltaInfo.dataChanged) event.description = "Changed: " + $filter("toAuditDeltaChangedItems")(dataAuditDeltaInfo.changedItems);
+        logger.debug("createEventIfRequired: event created:", event);
         return event;
       } else {
-        logger.debug('createEventIfRequired: event creation not necessary');
+        logger.debug("createEventIfRequired: event creation not necessary");
       }
     }
 
     function writeEventIfRequired(walk, event) {
       if (event) {
-        logger.debug('writing event', event);
+        logger.debug("writing event", event);
         if (!_.isArray(walk.events)) walk.events = [];
         walk.events.push(event);
       } else {
-        logger.debug('no event to write');
+        logger.debug("no event to write");
       }
     }
 
@@ -152,11 +152,11 @@ angular.module('ekwgApp')
             return true;
           })
           .catch(function (error) {
-            logger.debug('failed with error', error);
+            logger.debug("failed with error", error);
             return notify.error({title: error.message, message: error.error})
           });
       } else {
-        logger.debug('Not sending notification');
+        logger.debug("Not sending notification");
         return $q.when(writeEventIfRequired(walk, event))
           .then(function () {
             return false;
@@ -180,55 +180,58 @@ angular.module('ekwgApp')
 
         return LoggedInMemberService.getMemberForMemberId(walk.walkLeaderMemberId)
           .then(function (member) {
-            logger.debug('sendNotification:', 'memberId', walk.walkLeaderMemberId, 'member', member);
-            var walkLeaderName = $filter('fullNameWithAlias')(member);
-            var walkDate = $filter('displayDate')(walk.walkDate);
+            logger.debug("sendNotification:", "memberId", walk.walkLeaderMemberId, "member", member);
+            var walkLeaderName = $filter("fullNameWithAlias")(member);
+            var walkDate = $filter("displayDate")(walk.walkDate);
 
-            return $q.when(notify.progress('Preparing to send email notifications'))
+            return $q.when(notify.progress({
+              title: "Sending Notifications",
+              message: "Preparing to send email notifications"
+            }))
               .then(sendLeaderNotifications, notify.error, notify.progress)
               .then(sendCoordinatorNotifications, notify.error, notify.progress);
 
             function sendLeaderNotifications() {
               if (eventType.notifyLeader) return sendNotificationsTo({
-                templateUrl: templateForEvent('leader', eventType.eventType),
+                templateUrl: templateForEvent("leader", eventType.eventType),
                 memberIds: [walk.walkLeaderMemberId],
-                segmentType: 'walkLeader',
-                segmentName: MailchimpSegmentService.formatSegmentName('Walk leader notifications for ' + walkLeaderName),
-                emailSubject: 'Your walk on ' + walkDate,
-                destination: 'walk leader'
+                segmentType: "walkLeader",
+                segmentName: MailchimpSegmentService.formatSegmentName("Walk leader notifications for " + walkLeaderName),
+                emailSubject: "Your walk on " + walkDate,
+                destination: "walk leader"
               });
-              logger.debug('not sending leader notification');
+              logger.debug("not sending leader notification");
             }
 
             function sendCoordinatorNotifications() {
               if (eventType.notifyCoordinator) {
-                var memberIds = MemberService.allMemberIdsWithPrivilege('walkChangeNotifications', members);
+                var memberIds = MemberService.allMemberIdsWithPrivilege("walkChangeNotifications", members);
                 if (memberIds.length > 0) {
                   return sendNotificationsTo({
-                    templateUrl: templateForEvent('coordinator', eventType.eventType),
+                    templateUrl: templateForEvent("coordinator", eventType.eventType),
                     memberIds: memberIds,
-                    segmentType: 'walkCoordinator',
-                    segmentName: MailchimpSegmentService.formatSegmentName('Walk co-ordinator notifications for ' + walkLeaderName),
+                    segmentType: "walkCoordinator",
+                    segmentName: MailchimpSegmentService.formatSegmentName("Walk co-ordinator notifications for " + walkLeaderName),
                     emailSubject: walkLeaderName + "'s walk on " + walkDate,
-                    destination: 'walk co-ordinators'
+                    destination: "walk co-ordinators"
                   });
                 } else {
-                  logger.debug('not sending coordinator notifications as none are configured with walkChangeNotifications');
+                  logger.debug("not sending coordinator notifications as none are configured with walkChangeNotifications");
                 }
               } else {
-                logger.debug('not sending coordinator notifications as event type is', eventType.eventType);
+                logger.debug("not sending coordinator notifications as event type is", eventType.eventType);
               }
             }
 
             function templateForEvent(role, eventTypeString) {
-              return basePartialsUrl + '/' + role + '/' + s.dasherize(eventTypeString) + '.html';
+              return basePartialsUrl + "/" + role + "/" + s.dasherize(eventTypeString) + ".html";
             }
 
             function sendNotificationsTo(templateAndNotificationMembers) {
-              if (templateAndNotificationMembers.memberIds.length === 0) throw new Error('No members have been configured as ' + templateAndNotificationMembers.destination + ' therefore notifications cannot be sent');
-              var memberFullNames = $filter('memberIdsToFullNames')(templateAndNotificationMembers.memberIds, members);
-              logger.debug('sendNotificationsTo:', templateAndNotificationMembers);
-              var campaignName = templateAndNotificationMembers.emailSubject + ' (' + eventType.description + ')';
+              if (templateAndNotificationMembers.memberIds.length === 0) throw new Error("No members have been configured as " + templateAndNotificationMembers.destination + " therefore notifications cannot be sent");
+              var memberFullNames = $filter("memberIdsToFullNames")(templateAndNotificationMembers.memberIds, members);
+              logger.debug("sendNotificationsTo:", templateAndNotificationMembers);
+              var campaignName = templateAndNotificationMembers.emailSubject + " (" + eventType.description + ")";
               var segmentName = templateAndNotificationMembers.segmentName;
 
               return $templateRequest($sce.getTrustedResourceUrl(templateAndNotificationMembers.templateUrl))
@@ -237,7 +240,7 @@ angular.module('ekwgApp')
                 .then(sendNotification(templateAndNotificationMembers), notify.error);
 
               function populateContentSections(walkNotificationText) {
-                logger.debug('populateContentSections -> walkNotificationText', walkNotificationText);
+                logger.debug("populateContentSections -> walkNotificationText", walkNotificationText);
                 return {
                   sections: {
                     notification_text: walkNotificationText
@@ -253,7 +256,7 @@ angular.module('ekwgApp')
                     .then(notifyEmailSendComplete, notify.error, notify.success);
 
                   function createOrSaveMailchimpSegment() {
-                    return MailchimpSegmentService.saveSegment('walks', {segmentId: MailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType)}, templateAndNotificationMembers.memberIds, segmentName, members);
+                    return MailchimpSegmentService.saveSegment("walks", {segmentId: MailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType)}, templateAndNotificationMembers.memberIds, segmentName, members);
                   }
 
                   function saveSegmentDataToMember(segmentResponse) {
@@ -262,12 +265,14 @@ angular.module('ekwgApp')
                   }
 
                   function sendEmailCampaign() {
-                    notify.progress('Sending ' + campaignName);
+                    notify.progress({
+                      title: "Sending Notifications", message: "Sending " + campaignName
+                    });
                     return MailchimpConfig.getConfig()
                       .then(function (config) {
                         var campaignId = config.mailchimp.campaigns.walkNotification.campaignId;
                         var segmentId = MailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType);
-                        logger.debug('about to send campaign', campaignName, 'campaign Id', campaignId, 'segmentId', segmentId);
+                        logger.debug("about to send campaign", campaignName, "campaign Id", campaignId, "segmentId", segmentId);
                         return MailchimpCampaignService.replicateAndSendWithOptions({
                           campaignId: campaignId,
                           campaignName: campaignName,
@@ -276,12 +281,17 @@ angular.module('ekwgApp')
                         });
                       })
                       .then(function () {
-                        notify.progress('Sending of ' + campaignName + ' was successful', true);
+                        notify.progress({
+                          title: "Sending Notifications", message: "Sending of " + campaignName + " was successful"
+                        }, true);
                       });
                   }
 
                   function notifyEmailSendComplete() {
-                    notify.success('Sending of ' + campaignName + ' was successful. Check your inbox for details.');
+                    notify.success({
+                      title: "Sending Notifications",
+                      message: "Sending of " + campaignName + " was successful. Check your inbox for details."
+                    });
                     return true;
                   }
                 }

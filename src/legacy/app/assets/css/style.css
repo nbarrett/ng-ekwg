@@ -2677,6 +2677,17 @@ table.inactive th {
   position: relative;
 }
 
+.disabled {
+  background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999;
+  color: rgb(230, 230, 230);
+}
+
+.disabled:hover {
+  background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999;
+  color: rgb(230, 230, 230);
+  cursor: not-allowed;
+}
+
 .disabled-button-form:hover {
   background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999;
   cursor: not-allowed;

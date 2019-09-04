@@ -10,7 +10,7 @@
         </div>
       </div>
       <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-        <app-accordion-group *ngIf="allowAdminEdits()"
+        <app-accordion-group (click)="toggle($event)" *ngIf="allowAdminEdits()"
                              title="Walk Admin Tasks" initiallyOpen="false">
           <div class="row thumbnail walk-admin-thumbnail">
             <div class="col-sm-2">
@@ -33,7 +33,7 @@
             </div>
           </div>
         </app-accordion-group>
-        <app-accordion-group title="Walks Programme" initiallyOpen="true">
+        <app-accordion-group (click)="toggle($event)" title="Walks Programme" initiallyOpen="true">
           <div>
             <form *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
               <div class="form-group">
@@ -69,10 +69,10 @@
             </form>
             <div *ngFor="let displayedWalk of filteredWalks; let index = index; trackBy: walkTracker">
               <div *ngIf="display.isExpanded(displayedWalk.walk)" class="thumbnail event-thumbnail">
-                <app-walk-view [walkDisplay]="displayedWalk"
-                               *ngIf="!display.isEdit(displayedWalk.walk)"></app-walk-view>
-                <app-walk-edit [listcdr]="cdr" [walk]="displayedWalk.walk"
-                               *ngIf="display.isEdit(displayedWalk.walk)"></app-walk-edit>
+                <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
+                               [displayedWalk]="displayedWalk"></app-walk-view>
+                <app-walk-edit *ngIf="display.isEdit(displayedWalk.walk)"
+                               [listcdr]="cdr" [displayedWalk]="displayedWalk"></app-walk-edit>
               </div>
               <table *ngIf="!display.isExpanded(displayedWalk.walk)"
                      class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
@@ -94,7 +94,7 @@
                       class="nowrap"><input
                     *ngIf="displayedWalk.walkEditMode" type="submit"
                     value="{{displayedWalk.walkEditMode.caption}}"
-                    (click)="display.edit(displayedWalk.walk)"
+                    (click)="display.edit(displayedWalk)"
                     class="button-form">
                   </td>
                   <td width="13%" (click)="display.view(displayedWalk.walk)"
@@ -154,7 +154,7 @@
             </div>
           </div>
         </app-accordion-group>
-        <app-accordion-group title="Walks Information" initiallyOpen="true">
+        <app-accordion-group (click)="toggle($event)" title="Walks Information" initiallyOpen="true">
           <div class="body-content">
             <div class="row">
               <div class="col-sm-12">
@@ -174,7 +174,7 @@
             </div>
           </div>
         </app-accordion-group>
-        <app-accordion-group *ngIf="false" title="View our past and planned walks on Google Maps!">
+        <app-accordion-group (click)="toggle($event)" *ngIf="false" title="View our past and planned walks on Google Maps!">
           <p>If you are planning where to lead a walk and you want to make sure that you choose an area that
             hasn't been walked too much before,
             the map below provides you with a handy, visual way of verifying this.

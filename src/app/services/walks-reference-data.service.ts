@@ -16,7 +16,6 @@ export class WalksReferenceService {
   walkEditModes = {
     add: {caption: "add", title: "Add new"} as WalkEditMode,
     edit: {caption: "edit", title: "Edit existing", editEnabled: true} as WalkEditMode,
-    more: {caption: "more", title: "View"} as WalkEditMode,
     lead: {caption: "lead", title: "Lead this", initialiseWalkLeader: true} as WalkEditMode
   };
 

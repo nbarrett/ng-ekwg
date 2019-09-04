@@ -6,13 +6,13 @@
           <ul>
             <li><a href="/" title="Home">Home</a></li>
             <li><a href="/walks" title="Walks">Walks</a></li>
-            <li *ngIf="walk" class="last">{{walkEditMode().title}} walk ({{status()
+            <li *ngIf="displayedWalk" class="last">{{displayedWalk.walkEditMode.title}} walk ({{status()
               | walkEventType: 'description'}})
             </li>
           </ul>
         </div>
       </div>
-      <app-walk-edit *ngIf="walk" [walk]="walk"></app-walk-edit>
+      <app-walk-edit *ngIf="displayedWalk" [displayedWalk]="displayedWalk"></app-walk-edit>
     </div>
   </div>
 </div>

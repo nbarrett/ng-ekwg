@@ -179,7 +179,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
-        title: "You can\"t export the walk for " + this.displayDate.transform(walk.walkDisplay.walkDate),
+        title: "You can\"t export the walk for " + this.displayDate.transform(walk.displayedWalk.walkDate),
         message: walk.walkValidations.join(", ")
       });
     }

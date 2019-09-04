@@ -1,15 +1,15 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
-import { AlertInstance, NotifierService } from "../../../services/notifier.service";
-import { WalkDisplayService } from "../walk-display.service";
-import { DateUtilsService } from "../../../services/date-utils.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
-import { Walk } from "../../../models/walk.model";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { WalkEditMode } from "../../../models/walk-edit-mode.model";
+import { DisplayedWalk } from "../../../models/walk-displayed.model";
+import { Walk } from "../../../models/walk.model";
+import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
+import { DateUtilsService } from "../../../services/date-utils.service";
+import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
+import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
   selector: "app-walk-edit-full-page",
@@ -18,9 +18,8 @@ import { WalkEditMode } from "../../../models/walk-edit-mode.model";
 
 export class WalkEditFullPageComponent implements OnInit {
   private logger: Logger;
-  public walk: Walk;
+  public displayedWalk: DisplayedWalk;
   public notifyTarget: AlertTarget = {};
-  private currentWalkEditMode: WalkEditMode;
   private currentStatus: EventType;
   private notify: AlertInstance;
 
@@ -38,25 +37,24 @@ export class WalkEditFullPageComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("add")) {
-        this.setWalkEditMode(this.walksReferenceService.walkEditModes.add);
-        this.walk = new this.walksService({
-          status: EventType.AWAITING_LEADER,
-          walkType: this.display.walkTypes[0],
-          walkDate: this.dateUtils.momentNowNoTime().valueOf()
-        });
+        this.displayedWalk = {
+          walkEditMode: this.walksReferenceService.walkEditModes.add,
+          walk: this.walksService({
+            status: EventType.AWAITING_LEADER,
+            walkType: this.display.walkTypes[0],
+            walkDate: this.dateUtils.momentNowNoTime().valueOf()
+          })
+        };
       } else {
         const walkId = paramMap.get("walk-id");
         this.logger.debug("querying walk-id", walkId);
         this.walksService.getById(walkId)
           .then((walk: Walk) => {
-            this.setWalkEditMode(this.walksReferenceService.walkEditModes.edit);
             this.logger.debug("found walk", walk);
-            this.walk = walk;
-            const eventTypeIfExists: EventType = this.display.statusFor(this.walk);
-            if (eventTypeIfExists) {
-              this.setStatus(eventTypeIfExists);
+            this.displayedWalk = this.display.toDisplayedWalk(walk);
+            if (this.displayedWalk.latestEventType) {
+              this.setStatus(this.displayedWalk.latestEventType.eventType);
             }
-
           });
       }
     });
@@ -65,14 +63,6 @@ export class WalkEditFullPageComponent implements OnInit {
   setStatus(status: EventType) {
     this.logger.debug("setting status =>", status);
     this.currentStatus = status;
-  }
-
-  setWalkEditMode(walkEditMode: WalkEditMode) {
-    this.currentWalkEditMode = walkEditMode;
-  }
-
-  walkEditMode(): WalkEditMode {
-    return this.currentWalkEditMode;
   }
 
   status(): EventType {

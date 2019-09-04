@@ -44,4 +44,9 @@ export class BroadcastService {
 export class GlobalEvent {
   constructor(public key: string, public data?: any) {
   }
+
+  static named(key: any): GlobalEvent {
+    return new GlobalEvent(key);
+  }
+
 }

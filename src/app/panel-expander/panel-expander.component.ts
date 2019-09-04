@@ -41,11 +41,9 @@ export class PanelExpanderComponent implements OnInit {
 
   expand() {
     const viewMode = this.display.walkMode(this.walk);
-    this.logger.debug("expanding walk from current mode", viewMode);
+    this.logger.info("expanding walk from current mode", viewMode);
     if (viewMode === WalkViewMode.LIST) {
       this.display.view(this.walk);
-    } else if (viewMode === WalkViewMode.VIEW) {
-      this.display.edit(this.walk);
     } else if (viewMode === WalkViewMode.EDIT) {
       this.display.editFullscreen(this.walk);
     }
