@@ -1,9 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { CommitteeReferenceDataService } from "../services/committee-reference-data.service";
-import { UrlService } from "../services/url.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { Subscription } from "rxjs";
+import { CommitteeReferenceDataService } from "../services/committee/committee-reference-data.service";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-contact-us",
@@ -40,6 +40,8 @@ export class ContactUsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.dataSub.unsubscribe();
+    if (this.dataSub) {
+      this.dataSub.unsubscribe();
+    }
   }
 }

@@ -188,28 +188,28 @@ angular.module('ekwgApp')
       }
 
       function validateWalk(walk, members) {
-        var walkValidations = [];
+        var validationMessages = [];
         if (_.isEmpty(walk)) {
-          walkValidations.push('walk does not exist');
+          validationMessages.push('walk does not exist');
         } else {
-          if (_.isEmpty(walkTitle(walk))) walkValidations.push('title is missing');
-          if (_.isEmpty(walkDistanceMiles(walk))) walkValidations.push('distance is missing');
-          if (_.isEmpty(walk.startTime)) walkValidations.push('start time is missing');
-          if (walkStartTime(walk) === 'Invalid date') walkValidations.push('start time [' + walk.startTime + '] is invalid');
-          if (_.isEmpty(walk.grade)) walkValidations.push('grade is missing');
-          if (_.isEmpty(walk.longerDescription)) walkValidations.push('description is missing');
-          if (_.isEmpty(walk.postcode) && _.isEmpty(walk.gridReference)) walkValidations.push('both postcode and grid reference are missing');
+          if (_.isEmpty(walkTitle(walk))) validationMessages.push('title is missing');
+          if (_.isEmpty(walkDistanceMiles(walk))) validationMessages.push('distance is missing');
+          if (_.isEmpty(walk.startTime)) validationMessages.push('start time is missing');
+          if (walkStartTime(walk) === 'Invalid date') validationMessages.push('start time [' + walk.startTime + '] is invalid');
+          if (_.isEmpty(walk.grade)) validationMessages.push('grade is missing');
+          if (_.isEmpty(walk.longerDescription)) validationMessages.push('description is missing');
+          if (_.isEmpty(walk.postcode) && _.isEmpty(walk.gridReference)) validationMessages.push('both postcode and grid reference are missing');
           if (_.isEmpty(walk.contactId)) {
             var contactIdMessage = LoggedInMemberService.allowWalkAdminEdits() ? 'this can be supplied for this walk on Walk Leader tab' : 'this will need to be setup for you by ' + CommitteeReferenceData.contactUsField('walks', 'fullName');
-            walkValidations.push('walk leader has no Ramblers contact Id setup on their member record (' + contactIdMessage + ')');
+            validationMessages.push('walk leader has no Ramblers contact Id setup on their member record (' + contactIdMessage + ')');
           }
-          if (_.isEmpty(walk.displayName) && _.isEmpty(walk.displayName)) walkValidations.push('displayName for walk leader is missing');
+          if (_.isEmpty(walk.displayName) && _.isEmpty(walk.displayName)) validationMessages.push('displayName for walk leader is missing');
         }
         return {
           walk: walk,
-          walkValidations: walkValidations,
+          validationMessages: validationMessages,
           publishedOnRamblers: walk && !_.isEmpty(walk.ramblersWalkId),
-          selected: walk && walkValidations.length === 0 && _.isEmpty(walk.ramblersWalkId)
+          selected: walk && validationMessages.length === 0 && _.isEmpty(walk.ramblersWalkId)
         }
       }
 

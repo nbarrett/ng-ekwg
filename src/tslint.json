@@ -8,6 +8,10 @@
     "double"
   ],
   "rules": {
+    "max-line-length": [
+      false
+    ],
+    "no-shadowed-variable": false,
     "directive-selector": [
       true,
       "attribute",

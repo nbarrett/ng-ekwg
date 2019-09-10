@@ -16,8 +16,9 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
-import { WalksQueryService } from "../../../services/walks-query.service";
-import { WalksReferenceService } from "../../../services/walks-reference-data.service";
+import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
+import { WalksQueryService } from "../../../services/walks/walks-query.service";
+import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -40,9 +41,9 @@ export class WalkListComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") private walksService,
-    @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("MemberService") private memberService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
+    private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
     private loginService: LoginService,
     private displayDay: DisplayDayPipe,
@@ -56,7 +57,7 @@ export class WalkListComponent implements OnInit {
     private broadcastService: BroadcastService,
     private urlService: UrlService,
     private walksReferenceService: WalksReferenceService,
-    private cdr: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef,
     private siteEditService: SiteEditService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.INFO);
@@ -210,7 +211,7 @@ export class WalkListComponent implements OnInit {
   private logAndDetectChanges(event: GlobalEvent) {
     setTimeout(() => {
       this.logger.debug("detecting changes following", event);
-      this.cdr.detectChanges();
+      this.changeDetectorRef.detectChanges();
     }, 0);
   }
 

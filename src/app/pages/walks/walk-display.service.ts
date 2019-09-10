@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
-import { find, isEmpty, sortBy } from "lodash-es";
+import { find, sortBy } from "lodash-es";
 import { PopoverDirective } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
@@ -12,8 +12,9 @@ import { Walk } from "../../models/walk.model";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { UrlService } from "../../services/url.service";
-import { WalksQueryService } from "../../services/walks-query.service";
-import { EventType, WalksReferenceService } from "../../services/walks-reference-data.service";
+import { WalkEventService } from "../../services/walks/walk-event.service";
+import { WalksQueryService } from "../../services/walks/walks-query.service";
+import { EventType, WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 
 @Injectable({
   providedIn: "root"
@@ -42,7 +43,6 @@ export class WalkDisplayService {
     @Inject("ClipboardService") private clipboardService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
-    @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("MemberService") private memberService,
     @Inject("GoogleMapsConfig") private googleMapsConfigService,
     @Inject("MeetupService") private meetupService,
@@ -51,6 +51,7 @@ export class WalkDisplayService {
     private route: ActivatedRoute,
     private sanitiser: DomSanitizer,
     private dateUtils: DateUtilsService,
+    private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     private walksQueryService: WalksQueryService,
     loggerFactory: LoggerFactory) {
@@ -156,7 +157,7 @@ export class WalkDisplayService {
   }
 
   statusFor(walk: Walk): EventType {
-    return this.walkNotificationService.latestEventWithStatusChange(walk).eventType;
+    return this.walkEventService.latestEventWithStatusChange(walk).eventType;
   }
 
   editFullscreen(walk: Walk): Promise<ExpandedWalk> {
@@ -190,18 +191,18 @@ export class WalkDisplayService {
   }
 
   latestEventTypeFor(walk: Walk): WalkEventType {
-    const latestEventWithStatusChange = this.walkNotificationService.latestEventWithStatusChange(walk);
+    const latestEventWithStatusChange = this.walkEventService.latestEventWithStatusChange(walk);
     let lookupType: EventType;
-    if (!isEmpty(latestEventWithStatusChange)) {
+    if (latestEventWithStatusChange) {
       lookupType = latestEventWithStatusChange.eventType;
     } else if (walk.status) {
       lookupType = walk.status;
     } else {
       lookupType = EventType.AWAITING_WALK_DETAILS;
     }
-    const eventType = this.walksReferenceService.toEventType(lookupType) as WalkEventType;
+    const eventType = this.walksReferenceService.toWalkEventType(lookupType) as WalkEventType;
     if (!eventType) {
-      this.logger.debug("given lookupType", lookupType, "-> latestEventWithStatusChange",
+      this.logger.error("given lookupType", lookupType, "-> latestEventWithStatusChange",
         latestEventWithStatusChange, "eventType", eventType, "walk.events", walk.events);
     }
     return eventType;
@@ -233,8 +234,9 @@ export class WalkDisplayService {
   toDisplayedWalk(walk: Walk): DisplayedWalk {
     return {
       walk,
-      latestEventType: this.latestEventTypeFor(walk),
       walkEditMode: this.toWalkEditMode(walk),
+      status: this.statusFor(walk),
+      latestEventType: this.latestEventTypeFor(walk),
       walkLink: this.walkLink(walk),
       ramblersLink: this.ramblersLink(walk),
     };
@@ -258,6 +260,7 @@ export class WalkDisplayService {
     }
     this.toggleExpandedViewFor(walk, WalkViewMode.VIEW);
   }
+
 }
 
 export enum ConfirmType {

@@ -1,5 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { find } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { interval, Observable, Subscription } from "rxjs";
@@ -24,6 +24,7 @@ import { WalkDisplayService } from "../walk-display.service";
 })
 
 export class WalkExportComponent implements OnInit, OnDestroy {
+  @ViewChild("code") code: ElementRef;
   private logger: Logger;
   private ramblersUploadAuditData: RamblersUploadAudit[];
   private walksForExport: WalkExport[] = [];
@@ -174,13 +175,13 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   changeWalkExportSelection(walk: any) {
-    if (walk.walkValidations.length === 0) {
+    if (walk.validationMessages.length === 0) {
       walk.selected = !walk.selected;
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
         title: "You can\"t export the walk for " + this.displayDate.transform(walk.displayedWalk.walkDate),
-        message: walk.walkValidations.join(", ")
+        message: walk.validationMessages.join(", ")
       });
     }
   }
@@ -214,4 +215,5 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.document.getElementById("angular-2-csv")
       .getElementsByTagName("button")[0].click();
   }
+
 }

@@ -2,6 +2,9 @@
                     [expandAction]="'edit walk full-screen'" [expandable]="isExpandable()">
 </app-panel-expander>
 <div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="hidden">
+    <ng-template app-notification-template></ng-template>
+  </div>
   <tabset *ngIf="displayedWalk.walk">
     <tab heading="Main details">
       <div class="thumbnail thumbnail-admin-edit">
@@ -235,7 +238,7 @@
             <div class="form-group">
               <label for="walk-status">Walk Status</label>
               <select [disabled]="!allowAdminEdits()"
-                      [(ngModel)]="currentStatus"
+                      [(ngModel)]="displayedWalk.status"
                       (change)="walkStatusChange($event)"
                       class="form-control input-sm" id="walk-status">
                 <option *ngFor="let status of walkStatuses()"
@@ -497,7 +500,7 @@
     </tab>
   </tabset>
   <div class="form-group">
-    <div [hidden]="!notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+    <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
       <i class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong> {{notifyTarget.alertTitle}}: </strong>
       {{notifyTarget.alertMessage}}
     </div>
@@ -547,6 +550,11 @@
     <input *ngIf="allowRequestApproval()" [disabled]="saveInProgress" type="submit"
            value="Request Approval" (click)="requestApproval()"
            title="Mark walk details complete and request approval"
+           class="button-form"
+           [ngClass]="{'disabled':saveInProgress}">
+    <input *ngIf="allowApprove()" [disabled]="saveInProgress" type="submit"
+           value="Approve" (click)="approveWalkDetails()"
+           title="Approve walk and publish"
            class="button-form"
            [ngClass]="{'disabled':saveInProgress}">
     <input *ngIf="pendingRequestApproval()" [disabled]="saveInProgress"

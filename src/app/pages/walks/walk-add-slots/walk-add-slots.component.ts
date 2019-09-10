@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { difference, map, times } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { LoggedInMemberService, WalkNotificationService, WalksService } from "../../../ajs-upgraded-providers";
+import { LoggedInMemberService, WalksService } from "../../../ajs-upgraded-providers";
 import { LoginService } from "../../../login/login.service";
 import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -15,8 +15,10 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
-import { WalksQueryService } from "../../../services/walks-query.service";
-import { WalksReferenceService } from "../../../services/walks-reference-data.service";
+import { WalkEventService } from "../../../services/walks/walk-event.service";
+import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
+import { WalksQueryService } from "../../../services/walks/walks-query.service";
+import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -40,9 +42,9 @@ export class WalkAddSlotsComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") private walksService,
-    @Inject("WalkNotificationService") private walkNotificationService,
     @Inject("MemberService") private memberService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
+    private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
     private loginService: LoginService,
     private displayDay: DisplayDayPipe,
@@ -56,6 +58,7 @@ export class WalkAddSlotsComponent implements OnInit {
     private notifierService: NotifierService,
     private broadcastService: BroadcastService,
     private urlService: UrlService,
+    private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.INFO);
@@ -80,8 +83,8 @@ export class WalkAddSlotsComponent implements OnInit {
       const walk = new this.walksService({
         walkDate: date
       });
-      walk.events = [this.walkNotificationService.createEventIfRequired(walk,
-        this.walksReferenceService.eventTypes.awaitingLeader.eventType, "Walk slot created")];
+      walk.events = [this.walkEventService.createEventIfRequired(walk,
+        this.walksReferenceService.walkEventTypeMappings.awaitingLeader.eventType, "Walk slot created")];
       return walk;
     });
     this.logger.debug("requiredWalkSlots", this.requiredWalkSlots);

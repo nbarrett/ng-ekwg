@@ -79,64 +79,6 @@ angular.module('ekwgApp')
       return NumberUtils.sumValues(items, propertyName);
     }
   })
-  .filter('walkSummary', function ($filter) {
-    return function (walk) {
-      return walk === undefined ? null : $filter('displayDate')(walk.walkDate) + " led by " + (walk.displayName || walk.contactName || "unknown") + " (" + (walk.briefDescriptionAndStartPoint || 'no description') + ')';
-    }
-  })
-  .filter('meetupEventSummary', function ($filter) {
-    return function (meetupEvent) {
-      return meetupEvent ? $filter('displayDate')(meetupEvent.startTime) + " (" + meetupEvent.title + ')' : null;
-    }
-  })
-  .filter('asWalkEventType', function (WalksReferenceService) {
-    return function (eventTypeString, field) {
-      var eventType = WalksReferenceService.toEventType(eventTypeString);
-      return eventType && field ? eventType[field] : eventType;
-    }
-  })
-  .filter('asEventNote', function () {
-    return function (event) {
-      return _.compact([event.description, event.reason]).join(', ');
-    }
-  })
-  .filter('asChangedItemsTooltip', function ($filter) {
-    return function (event, members) {
-      return _(event.data).map(function (value, key) {
-        return s.humanize(key) + ': ' + $filter('toAuditDeltaValue')(value, key, members);
-      }).join(', ');
-    }
-  })
-  .filter('valueOrDefault', function () {
-    return function (value, defaultValue) {
-      return value || defaultValue || '(none)';
-    }
-  })
-  .filter('toAuditDeltaValue', function ($filter) {
-    return function (value, fieldName, members, defaultValue) {
-      switch (fieldName) {
-        case 'walkDate':
-          return $filter('displayDate')(value);
-        case 'walkLeaderMemberId':
-          return $filter('memberIdToFullName')(value, members, defaultValue);
-        default:
-          return $filter('valueOrDefault')(value, defaultValue);
-      }
-    }
-  })
-  .filter('toAuditDeltaChangedItems', function () {
-    return function (dataAuditDeltaInfoItems) {
-      return _(dataAuditDeltaInfoItems).pluck('fieldName').map(s.humanize).join(', ');
-    }
-  })
-  .filter('asWalkValidationsList', function () {
-    return function (walkValidations) {
-      var lastItem = _.last(walkValidations);
-      var firstItems = _.without(walkValidations, lastItem);
-      var joiner = firstItems.length > 0 ? ' and ' : '';
-      return firstItems.join(', ') + joiner + lastItem;
-    }
-  })
   .filter('idFromRecord', function () {
     return function (mongoRecord) {
       return mongoRecord.$id;

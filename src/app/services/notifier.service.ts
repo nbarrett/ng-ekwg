@@ -1,7 +1,8 @@
-import { Logger, LoggerFactory } from "./logger-factory.service";
+import { Injectable } from "@angular/core";
+import { isObject } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget, AlertType } from "../models/alert-target.model";
-import { Injectable } from "@angular/core";
+import { Logger, LoggerFactory } from "./logger-factory.service";
 
 const ALERT_ERROR: AlertType = {class: "alert-danger", icon: "glyphicon-exclamation-sign", failure: true};
 const ALERT_WARNING: AlertType = {class: "alert-warning", icon: "glyphicon-info-sign"};
@@ -58,7 +59,7 @@ export class AlertInstance {
 
   notifyAlertMessage(alertType: AlertType, message?: AlertMessage | string, append?: boolean, busy?: boolean) {
 
-    const messageText = this.isAlertMessage(message) ? message.message : message;
+    const messageText = this.isAlertMessage(message) ? message.message : isObject(message) ? JSON.stringify(message) : message;
 
     if (busy) {
       this.setBusy();

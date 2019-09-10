@@ -24,12 +24,14 @@ import {
   GoogleMapsConfigProvider,
   LegacyUrlService,
   LoggedInMemberServiceProvider,
+  MailchimpCampaignServiceProvider,
+  MailchimpConfigProvider,
+  MailchimpSegmentServiceProvider,
   MeetupServiceProvider,
   MemberServiceProvider,
   NotifierProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
-  WalkNotificationServiceProvider,
   WalksServiceProvider
 } from "./ajs-upgraded-providers";
 import { AppRoutingModule } from "./app-routing.module";
@@ -44,6 +46,23 @@ import { LogoutComponent } from "./logout/logout.component";
 import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
+import { NotificationUrlComponent } from "./notification-url/notification-url.component";
+import { NotificationDirective } from "./notifications/walks/notification.directive";
+import { WalkNotificationChangesComponent } from "./notifications/walks/templates/common/walk-notification-changes.component";
+import { WalkNotificationDetailsComponent } from "./notifications/walks/templates/common/walk-notification-details.component";
+import { WalkNotificationFooterComponent } from "./notifications/walks/templates/common/walk-notification-footer.component";
+import { WalkNotificationCoordinatorApprovedComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
+import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
+import { WalkNotificationCoordinatorAwaitingWalkDetailsComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-walk-details.component";
+import { WalkNotificationCoordinatorDeletedComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-deleted.component";
+import { WalkNotificationCoordinatorRequestedComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-requested.component";
+import { WalkNotificationCoordinatorUpdatedComponent } from "./notifications/walks/templates/coordinator/walk-notification-coordinator-updated.component";
+import { WalkNotificationLeaderApprovedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-approved.component";
+import { WalkNotificationLeaderAwaitingApprovalComponent } from "./notifications/walks/templates/leader/walk-notification-leader-awaiting-approval.component";
+import { WalkNotificationLeaderAwaitingWalkDetailsComponent } from "./notifications/walks/templates/leader/walk-notification-leader-awaiting-walk-details.component";
+import { WalkNotificationLeaderDeletedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-deleted.component";
+import { WalkNotificationLeaderRequestedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-requested.component";
+import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-updated.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
@@ -54,6 +73,7 @@ import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.compo
 import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
 import { WalkViewComponent } from "./pages/walks/walk-view/walk-view.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
+import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
 import { ChangedItemsPipe } from "./pipes/changed-items.pipe";
 import { DisplayDateAndTimePipe } from "./pipes/display-date-and-time.pipe";
@@ -64,21 +84,25 @@ import { EventNotePipe } from "./pipes/event-note.pipe";
 import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pipe";
 import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
+import { HumanisePipe } from "./pipes/humanise.pipe";
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
+import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
+import { WalkValidationsListPipe } from "./pipes/walk-validations.pipe";
 import { BroadcastService } from "./services/broadcast-service";
-import { CommitteeReferenceDataService } from "./services/committee-reference-data.service";
+import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NotifierService } from "./services/notifier.service";
 import { RouterHistoryService } from "./services/router-history.service";
 import { UrlService } from "./services/url.service";
-import { WalksQueryService } from "./services/walks-query.service";
-import { WalksReferenceService } from "./services/walks-reference-data.service";
+import { WalkNotificationService } from "./services/walks/walk-notification.service";
+import { WalksQueryService } from "./services/walks/walks-query.service";
+import { WalksReferenceService } from "./services/walks/walks-reference-data.service";
 import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
@@ -89,6 +113,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   declarations: [
     AccordionGroupComponent,
     AppComponent,
+    AuditDeltaChangedItemsPipePipe,
+    AuditDeltaValuePipe,
     AuditDeltaValuePipe,
     ChangedItemsPipe,
     ContactUsComponent,
@@ -101,6 +127,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
+    HumanisePipe,
     JoinUsComponent,
     LoginComponent,
     LoginPanelComponent,
@@ -110,8 +137,11 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     MainTitleComponent,
     MarkdownEditorComponent,
     MeetupEventSummaryPipe,
+    MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
     NonRenderingComponent,
+    NotificationDirective,
+    NotificationUrlComponent,
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
@@ -126,19 +156,35 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkEventTypePipe,
     WalkExportComponent,
     WalkListComponent,
+    WalkNotificationChangesComponent,
+    WalkNotificationCoordinatorApprovedComponent,
+    WalkNotificationCoordinatorAwaitingApprovalComponent,
+    WalkNotificationCoordinatorAwaitingWalkDetailsComponent,
+    WalkNotificationCoordinatorDeletedComponent,
+    WalkNotificationCoordinatorRequestedComponent,
+    WalkNotificationCoordinatorUpdatedComponent,
+    WalkNotificationDetailsComponent,
+    WalkNotificationFooterComponent,
+    WalkNotificationLeaderApprovedComponent,
+    WalkNotificationLeaderAwaitingApprovalComponent,
+    WalkNotificationLeaderAwaitingWalkDetailsComponent,
+    WalkNotificationLeaderDeletedComponent,
+    WalkNotificationLeaderRequestedComponent,
+    WalkNotificationLeaderUpdatedComponent,
     WalkSummaryPipe,
+    WalkValidationsListPipe,
     WalkViewComponent,
   ],
   imports: [
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
+    Angular2CsvModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     BrowserModule,
     BsDatepickerModule.forRoot(),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
-    Angular2CsvModule,
     PopoverModule.forRoot(),
     TabsModule.forRoot(),
     TooltipModule.forRoot(),
@@ -146,6 +192,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     UpgradeModule,
   ],
   providers: [
+    AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
     BroadcastService,
@@ -164,10 +211,16 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
+    HumanisePipe,
+    WalkValidationsListPipe,
     GoogleMapsConfigProvider,
     LoggedInMemberServiceProvider,
+    MailchimpCampaignServiceProvider,
+    MailchimpConfigProvider,
+    MailchimpSegmentServiceProvider,
     MeetupEventSummaryPipe,
     MeetupServiceProvider,
+    MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
     MemberServiceProvider,
     NotifierProvider,
@@ -179,7 +232,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     SiteEditService,
     ValueOrDefaultPipe,
     WalkEventTypePipe,
-    WalkNotificationServiceProvider,
+    WalkNotificationService,
     WalksAuthGuard,
     WalksServiceProvider,
     WalkSummaryPipe,
@@ -187,6 +240,21 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   entryComponents: [
     AppComponent,
     ContactUsComponent,
+    WalkNotificationChangesComponent,
+    WalkNotificationCoordinatorApprovedComponent,
+    WalkNotificationCoordinatorAwaitingApprovalComponent,
+    WalkNotificationCoordinatorAwaitingWalkDetailsComponent,
+    WalkNotificationCoordinatorDeletedComponent,
+    WalkNotificationCoordinatorRequestedComponent,
+    WalkNotificationCoordinatorUpdatedComponent,
+    WalkNotificationDetailsComponent,
+    WalkNotificationFooterComponent,
+    WalkNotificationLeaderApprovedComponent,
+    WalkNotificationLeaderAwaitingApprovalComponent,
+    WalkNotificationLeaderAwaitingWalkDetailsComponent,
+    WalkNotificationLeaderDeletedComponent,
+    WalkNotificationLeaderRequestedComponent,
+    WalkNotificationLeaderUpdatedComponent,
     MarkdownEditorComponent
   ],
 })

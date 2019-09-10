@@ -8,7 +8,7 @@ import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
-import { EventType, WalksReferenceService } from "../../../services/walks-reference-data.service";
+import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -20,7 +20,6 @@ export class WalkEditFullPageComponent implements OnInit {
   private logger: Logger;
   public displayedWalk: DisplayedWalk;
   public notifyTarget: AlertTarget = {};
-  private currentStatus: EventType;
   private notify: AlertInstance;
 
   constructor(@Inject("WalksService") private walksService,
@@ -43,7 +42,8 @@ export class WalkEditFullPageComponent implements OnInit {
             status: EventType.AWAITING_LEADER,
             walkType: this.display.walkTypes[0],
             walkDate: this.dateUtils.momentNowNoTime().valueOf()
-          })
+          }),
+          status: EventType.AWAITING_LEADER
         };
       } else {
         const walkId = paramMap.get("walk-id");
@@ -62,11 +62,11 @@ export class WalkEditFullPageComponent implements OnInit {
 
   setStatus(status: EventType) {
     this.logger.debug("setting status =>", status);
-    this.currentStatus = status;
+    this.displayedWalk.status = status;
   }
 
   status(): EventType {
-    return this.currentStatus;
+    return this.displayedWalk.status;
   }
 
 }

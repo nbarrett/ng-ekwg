@@ -1,4 +1,5 @@
-import { EventType } from "../services/walks-reference-data.service";
+import { EventType } from "../services/walks/walks-reference-data.service";
+import { WalkEvent } from "./walk-event.model";
 
 export interface Walk {
   contactName?: string;
@@ -10,7 +11,7 @@ export interface Walk {
   contactPhone?: string;
   displayName?: string;
   distance?: string;
-  events: [];
+  events: WalkEvent[];
   grade?: string;
   gridReference?: string;
   location?: string;
@@ -29,6 +30,6 @@ export interface Walk {
 
   $id?(): any;
 
-  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Walk;
+  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Walk>;
 }
 

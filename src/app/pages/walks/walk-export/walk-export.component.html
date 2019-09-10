@@ -60,7 +60,7 @@
                       <td [ngClass]="walk.publishedOnRamblers ? 'checkbox-on' : 'checkbox-off'"></td>
                       <td class="nowrap">{{walk.walk.walkDate | displayDate}}</td>
                       <td>{{walk.walk.briefDescriptionAndStartPoint}}</td>
-                      <td>{{walk.walkValidations.join(", ")}}</td>
+                      <td>{{walk.validationMessages.join(", ")}}</td>
                     </tr>
                     </tbody>
                   </table>

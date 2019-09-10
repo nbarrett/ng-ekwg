@@ -1,13 +1,25 @@
 import { TestBed } from "@angular/core/testing";
-
-import { WalkDisplayService } from "./walk-display.service";
-import { LoggerTestingModule } from "ngx-logger";
 import { RouterTestingModule } from "@angular/router/testing";
 import { UpgradeModule } from "@angular/upgrade/static";
+import { LoggerTestingModule } from "ngx-logger";
+import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
+import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
+import { DisplayDatePipe } from "../../pipes/display-date.pipe";
+import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
+import { FullNamePipe } from "../../pipes/full-name.pipe";
+import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
+import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
+
+import { WalkDisplayService } from "./walk-display.service";
 
 const googleConfig = {
   getConfig: () => {
   }
+};
+
+const meetupService = {
+  config: () => Promise.resolve(),
+  eventsForStatus: () => Promise.resolve()
 };
 
 const ramblersWalksAndEventsService = {
@@ -38,9 +50,20 @@ describe("WalkDisplayService", () => {
         UpgradeModule
       ],
       providers: [
+        AuditDeltaChangedItemsPipePipe,
+        FullNameWithAliasPipe,
+        FullNamePipe,
+        AuditDeltaValuePipe,
+        DisplayDatePipe,
+        MemberIdToFullNamePipe,
+        ValueOrDefaultPipe,
         {provide: "RamblersWalksAndEventsService", useValue: ramblersWalksAndEventsService},
         {provide: "LoggedInMemberService", useValue: loggedInMemberService},
         {provide: "WalkNotificationService", useValue: {}},
+        {provide: "MailchimpSegmentService", useValue: {}},
+        {provide: "MailchimpConfig", useValue: {}},
+        {provide: "MailchimpCampaignService", useValue: {}},
+        {provide: "MeetupService", useValue: meetupService},
         {provide: "ClipboardService", useValue: {}},
         {provide: "MemberService", useValue: memberService},
         {provide: "GoogleMapsConfig", useValue: googleConfig}]

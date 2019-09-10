@@ -1,4 +1,4 @@
-import { EventType } from "../services/walks-reference-data.service";
+import { EventType } from "../services/walks/walks-reference-data.service";
 
 export interface WalkEventType {
   eventType: EventType;
@@ -10,4 +10,10 @@ export interface WalkEventType {
   description: string;
   notifyLeader?: boolean;
   notifyCoordinator?: boolean;
+}
+
+export interface WalkEventNotificationMapping {
+  eventType: EventType;
+  notifyLeader?: object;
+  notifyCoordinator?: object;
 }

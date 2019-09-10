@@ -70,13 +70,33 @@ export const WalksServiceProvider = {
   deps: ["$injector"]
 };
 
-export function WalkNotificationService($injector) {
-  return $injector.get("WalkNotificationService");
+export function MailchimpSegmentService($injector) {
+  return $injector.get("MailchimpSegmentService");
 }
 
-export const WalkNotificationServiceProvider = {
-  provide: "WalkNotificationService",
-  useFactory: WalkNotificationService,
+export const MailchimpSegmentServiceProvider = {
+  provide: "MailchimpSegmentService",
+  useFactory: MailchimpSegmentService,
+  deps: ["$injector"]
+};
+
+export function MailchimpCampaignService($injector) {
+  return $injector.get("MailchimpCampaignService");
+}
+
+export const MailchimpCampaignServiceProvider = {
+  provide: "MailchimpCampaignService",
+  useFactory: MailchimpCampaignService,
+  deps: ["$injector"]
+};
+
+export function MailchimpConfig($injector) {
+  return $injector.get("MailchimpConfig");
+}
+
+export const MailchimpConfigProvider = {
+  provide: "MailchimpConfig",
+  useFactory: MailchimpConfig,
   deps: ["$injector"]
 };
 
