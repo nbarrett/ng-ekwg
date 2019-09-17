@@ -75,13 +75,15 @@ export class AlertInstance {
     this.alertTarget.alertClass = alertType.class;
     this.alertTarget.showAlert = this.alertTarget.alertMessages.length > 0;
     this.alertTarget.alertMessage = this.alertTarget.alertMessages.join(", ");
-    if (alertType === ALERT_ERROR && this.isAlertMessage(message) && !message.continue) {
-      this.logger.error("notifyAlertMessage:", "class =", alertType, "messageText =", messageText, "append =", append);
+    if (alertType === ALERT_ERROR) {
       this.clearBusy();
-      throw message;
-    } else {
-      return this.logger.debug("notifyAlertMessage:", "class =", alertType, "messageText =",
-        messageText, "alertMessages", this.alertTarget.alertMessages, "append =", append, "showAlert =", this.alertTarget.showAlert);
+      if (this.isAlertMessage(message) && !message.continue) {
+        this.logger.error("notifyAlertMessage:", "class =", alertType, "messageText =", messageText, "append =", append);
+        throw message;
+      } else {
+        return this.logger.debug("notifyAlertMessage:", "class =", alertType, "messageText =",
+          messageText, "alertMessages", this.alertTarget.alertMessages, "append =", append, "showAlert =", this.alertTarget.showAlert);
+      }
     }
   }
 

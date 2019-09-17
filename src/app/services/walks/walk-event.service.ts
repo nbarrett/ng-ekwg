@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@angular/core";
 import { clone, compact, isArray, isNil, last, omitBy, pick } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
+import { ChangedItem } from "../../models/changed-item.model";
 import { WalkDataAudit } from "../../models/walk-data-audit.model";
 import { WalkEvent } from "../../models/walk-event.model";
 import { Walk } from "../../models/walk.model";
@@ -26,7 +27,7 @@ export class WalkEventService {
     private walksReferenceService: WalksReferenceService,
     private auditDeltaChangedItems: AuditDeltaChangedItemsPipePipe,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEventService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEventService, NgxLoggerLevel.OFF);
   }
 
   public latestEventWithStatusChange(walk): WalkEvent {
@@ -61,12 +62,13 @@ export class WalkEventService {
     if (!walk) {
       return false;
     }
-    return this.latestEventWithStatusChange(walk).eventType === this.walksReferenceService.toEventType(eventType);
+    const walkEvent = this.latestEventWithStatusChange(walk);
+    return walkEvent ? walkEvent.eventType === this.walksReferenceService.toEventType(eventType) : false;
   }
 
   public createEventIfRequired(walk: Walk, status: EventType, reason: string): WalkEvent {
     const walkDataAudit = this.walkDataAuditFor(walk, status);
-    this.logger.info("createEventIfRequired given status:", status, "walkDataAudit:", walkDataAudit);
+    this.logger.debug("createEventIfRequired given status:", status, "walkDataAudit:", walkDataAudit);
     if (walkDataAudit.notificationRequired) {
       const event = {
         date: this.dateUtils.nowAsValue(),
@@ -80,22 +82,26 @@ export class WalkEventService {
       if (walkDataAudit.dataChanged) {
         event.description = "Changed: " + this.auditDeltaChangedItems.transform(walkDataAudit.changedItems);
       }
-      this.logger.info("createEventIfRequired: event created:", event);
+      this.logger.debug("createEventIfRequired: event created:", event);
       return event;
     } else {
-      this.logger.info("createEventIfRequired: event creation not necessary");
+      this.logger.debug("createEventIfRequired: event creation not necessary");
     }
   }
 
-  public writeEventIfRequired(walk: Walk, event: WalkEvent) {
+  public writeEventIfRequired(walk: Walk, event: WalkEvent): void {
     if (event) {
-      this.logger.info("writing event", event);
       if (!isArray(walk.events)) {
         walk.events = [];
       }
-      walk.events.push(event);
+      if (walk.events.includes(event)) {
+        this.logger.warn("walk already contains event", event);
+      } else {
+        this.logger.debug("writing event", event);
+        walk.events.push(event);
+      }
     } else {
-      this.logger.info("no event to write");
+      this.logger.debug("no event to write");
     }
   }
 
@@ -120,7 +126,7 @@ export class WalkEventService {
     return walk.events && clone(walk.events).reverse() || [];
   }
 
-  private calculateChangedItems(currentData, previousData) {
+  private calculateChangedItems(currentData, previousData): ChangedItem[] {
     return compact(auditedFields.map((key) => {
       const currentValue = currentData[key];
       const previousValue = previousData && previousData[key];

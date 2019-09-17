@@ -61,7 +61,7 @@ export class WalkAddSlotsComponent implements OnInit {
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -93,7 +93,7 @@ export class WalkAddSlotsComponent implements OnInit {
       this.confirmAction = true;
       this.notify.warning(message);
     } else {
-      this.notify.error({
+      this.notify.warning({
         title: "Nothing to do!",
         message: "All slots are already created between today and " + this.displayDate.transform(this.until)
       });
@@ -104,8 +104,11 @@ export class WalkAddSlotsComponent implements OnInit {
 
   addWalkSlots() {
     this.notify.setBusy();
+    this.notify.hide();
     this.walksService.query({walkDate: {$gte: this.todayValue}}, {fields: {events: 1, walkDate: 1}, sort: {walkDate: 1}})
+      .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
+        this.notify.clearBusy();
         const sunday = this.dateUtils.momentNowNoTime().day(7);
         const untilDate = this.dateUtils.asMoment(this.until).startOf("day");
         const weeks = untilDate.clone().diff(sunday, "weeks");
@@ -129,10 +132,25 @@ export class WalkAddSlotsComponent implements OnInit {
   }
 
   addWalkSlot() {
-    this.createSlots([this.dateUtils.asValueNoTime(this.singleSlot)], {
-      title: "Add walk slots",
-      message: " - You are about to add a walk slot for " + this.displayDate.transform(this.singleSlot)
-    });
+    this.notify.setBusy();
+    this.notify.hide();
+    this.walksService.query({walkDate: {$eq: this.dateUtils.asValueNoTime(this.singleSlot)}}, {fields: {events: 1, walkDate: 1}, sort: {walkDate: 1}})
+      .then(walks => this.walksQueryService.activeWalks(walks))
+      .then(walks => {
+        this.notify.clearBusy();
+        if (walks.length === 0) {
+          this.createSlots([this.dateUtils.asValueNoTime(this.singleSlot)], {
+            title: "Add walk slots",
+            message: " - You are about to add a walk slot for " + this.displayDate.transform(this.singleSlot)
+          });
+        } else {
+          this.notify.warning({
+            title: "Nothing to do!",
+            message: walks.length + " slot(s) are already created for " + this.displayDate.transform(this.singleSlot)
+          });
+        }
+      });
+
   }
 
   selectBulk(bulk) {
@@ -167,8 +185,9 @@ export class WalkAddSlotsComponent implements OnInit {
     Promise.all(this.requiredWalkSlots.map((slot) => {
       return slot.$saveOrUpdate();
     })).then(() => {
-      this.notify.success({title: "Done!", message: "Choose Close to see your newly created slots"});
+      this.notify.success({title: "Done!", message: "Choose Back to walks to see your newly created slots"});
       delete this.confirmAction;
+      this.broadcastService.broadcast("walkSlotsCreated");
     });
   }
 

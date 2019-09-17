@@ -3,7 +3,7 @@ import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
 import { clone, find, isEmpty, pick } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
+import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
 import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
@@ -19,6 +19,7 @@ import { EventNotePipe } from "../../../pipes/event-note.pipe";
 import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
 import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -82,9 +83,10 @@ export class WalkEditComponent implements OnInit {
     public display: WalkDisplayService,
     private displayDate: DisplayDatePipe,
     protected notifierService: NotifierService,
-    private cdr: ChangeDetectorRef,
+    private broadcastService: BroadcastService,
+    private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -444,33 +446,39 @@ export class WalkEditComponent implements OnInit {
   }
 
   setStatus(status: EventType) {
-    this.logger.info("setting status =>", status);
+    this.logger.debug("setting status =>", status);
     this.displayedWalk.status = status;
     this.priorStatus = clone(this.displayedWalk.status);
-    this.logger.info("setting status =>", status, "this.priorStatus", this.priorStatus);
+    this.logger.debug("setting status =>", status, "this.priorStatus", this.priorStatus);
   }
 
-  confirmDeleteWalkDetails() {
+  async confirmDeleteWalkDetails() {
     this.setStatus(EventType.DELETED);
-    return this.sendNotificationsSaveAndCloseIfNotSent();
+    try {
+      return this.sendNotificationsSaveAndCloseIfNotSent();
+    } catch (error) {
+      return this.notifyError(error);
+    }
   }
 
-  private sendNotificationsSaveAndCloseIfNotSent() {
-    return this.createEventAndSendNotifications()
-      .then(notificationSent => this.saveAndCloseIfNotSent(notificationSent))
-      .catch(error => this.notifyError({title: "Sending of notifications failed", message: error}));
+  private async sendNotificationsSaveAndCloseIfNotSent(): Promise<boolean> {
+    const notificationSent: boolean = await this.createEventAndSendNotifications();
+    return await this.saveAndCloseIfNotSent(notificationSent);
   }
 
-  private saveAndCloseIfNotSent(notificationSent: boolean) {
-    this.logger.info("saveAndCloseIfNotSent:saving walk:notificationSent", notificationSent);
-    return this.displayedWalk.walk.$saveOrUpdate().then(() => this.afterSaveWith(notificationSent));
+  private async saveAndCloseIfNotSent(notificationSent: boolean): Promise<boolean> {
+    this.logger.debug("saveAndCloseIfNotSent:saving walk:notificationSent", notificationSent);
+    await this.displayedWalk.walk.$saveOrUpdate();
+    this.afterSaveWith(notificationSent);
+    return notificationSent;
   }
 
-  afterSaveWith(notificationSent: boolean) {
-    this.logger.info("afterSaveWith:notificationSent", notificationSent);
+  afterSaveWith(notificationSent: boolean): void {
+    this.logger.debug("afterSaveWith:notificationSent", notificationSent);
     this.notify.clearBusy();
     this.saveInProgress = false;
     this.confirmAction = ConfirmType.NONE;
+    this.display.refreshDisplayedWalk(this.displayedWalk);
     if (!notificationSent) {
       this.closeEditView();
     }
@@ -478,13 +486,8 @@ export class WalkEditComponent implements OnInit {
   }
 
   private logDetectChanges() {
-    this.logger.info("detectChanges");
-    this.cdr.detectChanges();
-  }
-
-  emitSavedWalk(walk: Walk): DisplayedWalk {
-    this.closeEditView();
-    return this.display.toDisplayedWalk(walk);
+    this.logger.debug("detectChanges");
+    this.changeDetectorRef.detectChanges();
   }
 
   closeEditView() {
@@ -494,16 +497,19 @@ export class WalkEditComponent implements OnInit {
     if (this.walkListComponentChangeDetectorRef) {
       this.walkListComponentChangeDetectorRef.detectChanges();
     }
+    this.broadcastService.broadcast(this.displayedWalk.walk.$id());
   }
 
-  saveWalkDetails(): Promise<any> {
-    return this.sendNotificationsSaveAndCloseIfNotSent();
+  public saveWalkDetails(): void {
+    this.sendNotificationsSaveAndCloseIfNotSent()
+      .catch(error => this.notifyError(error));
   }
 
-  notifyError(message: AlertMessage) {
+  private notifyError(message: any) {
     this.saveInProgress = false;
     this.confirmAction = ConfirmType.NONE;
-    this.notify.error(message);
+    this.notify.error({continue: true, title: "Sending of notifications failed", message});
+    this.logDetectChanges();
   }
 
   confirmContactOther() {

@@ -72,7 +72,8 @@
                 <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
                                [displayedWalk]="displayedWalk"></app-walk-view>
                 <app-walk-edit *ngIf="display.isEdit(displayedWalk.walk)"
-                               [walkListComponentChangeDetectorRef]="changeDetectorRef" [displayedWalk]="displayedWalk"></app-walk-edit>
+                               [walkListComponentChangeDetectorRef]="changeDetectorRef"
+                               [displayedWalk]="displayedWalk"></app-walk-edit>
               </div>
               <table *ngIf="!display.isExpanded(displayedWalk.walk)"
                      class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
@@ -138,8 +139,8 @@
                             <span tooltip-placement="left"
                                   tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                   [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
-                                  name="contactPhone"></span></a> <a
-                    *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
+                                  name="contactPhone"></span></a>
+                    <a *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
                                 <span tooltip-placement="left"
                                       tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                       [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
@@ -174,7 +175,8 @@
             </div>
           </div>
         </app-accordion-group>
-        <app-accordion-group (click)="toggle($event)" *ngIf="false" title="View our past and planned walks on Google Maps!">
+        <app-accordion-group (click)="toggle($event)" *ngIf="false"
+                             title="View our past and planned walks on Google Maps!">
           <p>If you are planning where to lead a walk and you want to make sure that you choose an area that
             hasn't been walked too much before,
             the map below provides you with a handy, visual way of verifying this.

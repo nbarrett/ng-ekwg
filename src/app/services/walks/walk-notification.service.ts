@@ -50,53 +50,23 @@ export class WalkNotificationService {
     private auditDeltaValuePipe: AuditDeltaValuePipe,
     private displayDatePipe: DisplayDatePipe,
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkNotificationService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkNotificationService, NgxLoggerLevel.OFF);
   }
 
-  public createEventAndSendNotifications(notify: AlertInstance, members: Member[], notificationDirective: NotificationDirective,
-                                         displayedWalk: DisplayedWalk, sendNotification: boolean, reason?: string): Promise<boolean> {
+  public async createEventAndSendNotifications(notify: AlertInstance, members: Member[], notificationDirective: NotificationDirective,
+                                               displayedWalk: DisplayedWalk, sendNotification: boolean, reason?: string): Promise<boolean> {
     notify.setBusy();
     const event = this.walkEventService.createEventIfRequired(displayedWalk.walk, displayedWalk.status, reason);
-
     if (event && sendNotification) {
       const walkEventType = this.walksReferenceService.toWalkEventType(event.eventType);
-      this.logger.info("walkEventType", walkEventType, "from event:", event);
-      return this.sendNotificationsToAllRoles(members, notificationDirective, displayedWalk, walkEventType, notify)
-        .then(() => {
-          this.walkEventService.writeEventIfRequired(displayedWalk.walk, event);
-          return true;
-        })
-        .then(() => {
-          return true;
-        });
-      // .catch((error) => {
-      //   notify.error({title: "Sending of notifications failed", message: error});
-      //   return false;
-      // });
+      this.logger.debug("walkEventType", walkEventType, "from event:", event);
+      await this.sendNotificationsToAllRoles(members, notificationDirective, displayedWalk, walkEventType, notify);
+      this.walkEventService.writeEventIfRequired(displayedWalk.walk, event);
+      return true;
     } else {
       this.logger.debug("Not sending notification sendNotification:", sendNotification, "event:", event);
-      return Promise.resolve(this.walkEventService.writeEventIfRequired(displayedWalk.walk, event))
-        .then(() => {
-          return false;
-        });
-    }
-
-  }
-
-  public loadNotification(displayedWalk: DisplayedWalk, members: Member[], notificationDirective: NotificationDirective, walkEventType: WalkEventType) {
-    const walkNotification: WalkNotification = this.toWalkNotification(displayedWalk, members);
-    if (walkEventType) {
-      if (walkEventType.notifyCoordinator) {
-        const coordinatorHTML = this.generateNotificationHTML(walkNotification, notificationDirective, this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyCoordinator as WalkNotificationDetailsComponent);
-        this.logger.info("coordinatorHTML", coordinatorHTML);
-      }
-      if (walkEventType.notifyLeader) {
-        const component = this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyLeader as WalkNotificationDetailsComponent;
-        const leaderHTML = this.generateNotificationHTML(walkNotification, notificationDirective, component);
-        this.logger.info("leaderHTML", leaderHTML);
-      }
-    } else {
-      this.logger.info("no notification required for", walkEventType && walkEventType.description);
+      await Promise.resolve(this.walkEventService.writeEventIfRequired(displayedWalk.walk, event));
+      return false;
     }
   }
 
@@ -140,7 +110,7 @@ export class WalkNotificationService {
       validationMessages: this.ramblersWalksAndEventsService.validateWalk(displayedWalk.walk, members).validationMessages,
       reason
     };
-    this.logger.info("toWalkNotification ->", data);
+    this.logger.debug("toWalkNotification ->", data);
     return data;
   }
 
@@ -157,21 +127,14 @@ export class WalkNotificationService {
     return html;
   }
 
-  private sendNotificationsToAllRoles(members: Member[], notificationDirective: NotificationDirective, displayedWalk: DisplayedWalk, walkEventType: WalkEventType, notify: AlertInstance): Promise<void> {
-    notify.progress({
-      title: "Sending Notifications",
-      message: "Preparing to send email notifications"
-    });
+  private async sendNotificationsToAllRoles(members: Member[], notificationDirective: NotificationDirective, displayedWalk: DisplayedWalk, walkEventType: WalkEventType, notify: AlertInstance): Promise<void> {
     const walkNotification: WalkNotification = this.toWalkNotification(displayedWalk, members);
-    return this.loggedInMemberService.getMemberForMemberId(displayedWalk.walk.walkLeaderMemberId)
-      .then((member: Member) => {
-        this.logger.debug("sendNotification:", "memberId", displayedWalk.walk.walkLeaderMemberId, "member", member);
-        const walkLeaderName = this.fullNameWithAliasPipe.transform(member);
-        const walkDate = this.displayDatePipe.transform(displayedWalk.walk.walkDate);
-        return Promise.resolve()
-          .then(() => this.sendLeaderNotifications(notify, member, members, notificationDirective, walkNotification, walkEventType, walkLeaderName, walkDate))
-          .then(() => this.sendCoordinatorNotifications(notify, member, members, notificationDirective, walkNotification, walkEventType, walkLeaderName, walkDate));
-      });
+    const member = await this.loggedInMemberService.getMemberForMemberId(displayedWalk.walk.walkLeaderMemberId);
+    this.logger.debug("sendNotification:", "memberId", displayedWalk.walk.walkLeaderMemberId, "member", member);
+    const walkLeaderName = this.fullNameWithAliasPipe.transform(member);
+    const walkDate = this.displayDatePipe.transform(displayedWalk.walk.walkDate);
+    await this.sendLeaderNotifications(notify, member, members, notificationDirective, walkNotification, walkEventType, walkLeaderName, walkDate);
+    return await this.sendCoordinatorNotifications(notify, member, members, notificationDirective, walkNotification, walkEventType, walkLeaderName, walkDate);
   }
 
   private sendLeaderNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: NotificationDirective,

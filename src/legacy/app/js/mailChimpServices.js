@@ -574,7 +574,7 @@ angular.module('ekwgApp')
     }
 
     function sendCampaign(campaignId) {
-      if (!MAILCHIMP_APP_CONSTANTS.allowSendCampaign) throw new Error('You cannot send campaign ' + campaignId + ' as sending has been disabled');
+      if (!MAILCHIMP_APP_CONSTANTS.allowSendCampaign) throw new Error('You cannot send campaigns as sending has been disabled in this release of the application');
       return MailchimpHttpService.call('Sending Mailchimp campaign ' + campaignId, 'POST', 'api/mailchimp/campaigns/' + campaignId + '/send');
     }
 

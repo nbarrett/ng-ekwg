@@ -76,6 +76,7 @@ export class WalkListComponent implements OnInit {
     this.refreshWalks();
     this.broadcastService.on("memberLoginComplete", () => this.refreshWalks());
     this.broadcastService.on("walkSlotsCreated", () => this.refreshWalks());
+    this.broadcastService.on("walkUpdated", () => this.refreshWalks());
     this.siteEditService.events.subscribe(item => this.logAndDetectChanges(item));
     this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
@@ -116,11 +117,11 @@ export class WalkListComponent implements OnInit {
     this.urlService.navigateTo("walks", "export");
   }
 
-  viewWalkField(walk: DisplayedWalk, field) {
-    if (walk.latestEventType.showDetails) {
-      return walk.walk[field] || "";
+  viewWalkField(displayedWalk: DisplayedWalk, field) {
+    if (displayedWalk.latestEventType.showDetails) {
+      return displayedWalk.walk[field] || "";
     } else if (field === "briefDescriptionAndStartPoint") {
-      return walk.latestEventType.description;
+      return displayedWalk.latestEventType.description;
     } else {
       return "";
     }

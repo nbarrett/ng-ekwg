@@ -34,9 +34,9 @@ export class WalkViewComponent implements OnInit {
     private dateUtils: DateUtilsService,
     private urlService: UrlService,
     private broadcastService: BroadcastService,
-    private cdr: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -91,6 +91,6 @@ export class WalkViewComponent implements OnInit {
   refreshView() {
     this.logger.debug("refreshing view");
     this.updateGoogleMap();
-    this.cdr.detectChanges();
+    this.changeDetectorRef.detectChanges();
   }
 }

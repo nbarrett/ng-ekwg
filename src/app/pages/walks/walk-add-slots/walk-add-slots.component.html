@@ -51,7 +51,7 @@
                          (bsValueChange)="onUntilDateChange($event)"
                          placeholder="enter date"
                          #dp="bsDatepicker"
-                         bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
+                         bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
                                containerClass: 'theme-ramblers'}"
                          type="text" class="form-control input-sm"
                          id="add-slots-until"/>
@@ -78,7 +78,7 @@
                            (bsValueChange)="onSingleDateChange($event)"
                            placeholder="enter date of walk"
                            #dpSingle="bsDatepicker"
-                           bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
+                           bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
                                containerClass: 'theme-ramblers'}"
                            type="text" class="form-control input-sm"
                            id="add-single-slot"/>
@@ -90,18 +90,12 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group">
-                <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
-                  class="glyphicon {{notifyTarget.alert.icon}}"></i>
-                  <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
-                </div>
-              </div>
             </div>
           </div>
         </div>
         <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}} mb-12"><i
-          class="glyphicon {{notifyTarget.alert.icon}}"></i>
-          <strong>{{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+          class="glyphicon {{notifyTarget.alert.icon}}">
+        </i> <strong> {{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
         </div>
         <div class="mt-12">
         <span *ngIf="selectionMade && bulk">

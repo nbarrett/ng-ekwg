@@ -242,6 +242,14 @@ export class WalkDisplayService {
     };
   }
 
+  refreshDisplayedWalk(displayedWalk: DisplayedWalk): void {
+    displayedWalk.walkEditMode = this.toWalkEditMode(displayedWalk.walk);
+    displayedWalk.status = this.statusFor(displayedWalk.walk);
+    displayedWalk.latestEventType = this.latestEventTypeFor(displayedWalk.walk);
+    displayedWalk.walkLink = this.walkLink(displayedWalk.walk);
+    displayedWalk.ramblersLink = this.ramblersLink(displayedWalk.walk);
+  }
+
   isNextWalk(walk: Walk): boolean {
     return walk && walk.$id() === this.nextWalkId;
   }

@@ -24,25 +24,44 @@ describe("WalksEventService", () => {
       {provide: "LoggedInMemberService", useValue: loggedInMemberService}]
   }));
 
-  it("dataAuditDelta.changedItems should correctly calculate difference", () => {
-    const service: WalkEventService = TestBed.get(WalkEventService);
-    const walk: Walk = {
-      walkDate: 12,
-      gridReference: "123",
-      postcode: "TN26 3HF",
-      nearestTown: "this",
-      events: [{
-        eventType: EventType.AWAITING_APPROVAL, date: 23, memberId: "12",
-        data: {nearestTown: "that"}
-      }]
-    };
-    expect(service.walkDataAuditFor(walk, EventType.AWAITING_APPROVAL).changedItems)
-      .toEqual([
-        {fieldName: "walkDate", previousValue: undefined, currentValue: 12},
-        {fieldName: "nearestTown", previousValue: "that", currentValue: "this"},
-        {fieldName: "gridReference", previousValue: undefined, currentValue: "123"},
-        {fieldName: "postcode", previousValue: undefined, currentValue: "TN26 3HF"},
-      ]);
+  describe("dataAuditDelta", () => {
+    it("changedItems should correctly calculate difference", () => {
+      const service: WalkEventService = TestBed.get(WalkEventService);
+      const walk: Walk = {
+        walkDate: 12,
+        gridReference: "123",
+        postcode: "TN26 3HF",
+        nearestTown: "this",
+        events: [{
+          eventType: EventType.AWAITING_APPROVAL, date: 23, memberId: "12",
+          data: {nearestTown: "that"}
+        }]
+      };
+      expect(service.walkDataAuditFor(walk, EventType.AWAITING_APPROVAL).changedItems)
+        .toEqual([
+          {fieldName: "walkDate", previousValue: undefined, currentValue: 12},
+          {fieldName: "nearestTown", previousValue: "that", currentValue: "this"},
+          {fieldName: "gridReference", previousValue: undefined, currentValue: "123"},
+          {fieldName: "postcode", previousValue: undefined, currentValue: "TN26 3HF"},
+        ]);
+    });
   });
-})
-;
+
+  describe("latestEventWithStatusChangeIs", () => {
+    it("should return a value if there is no existing event with status change", () => {
+      const service: WalkEventService = TestBed.get(WalkEventService);
+      const walk: Walk = {
+        walkDate: 12,
+        gridReference: "123",
+        postcode: "TN26 3HF",
+        nearestTown: "this",
+        events: [{
+          eventType: EventType.WALK_DETAILS_COPIED, date: 23, memberId: "12",
+          data: {nearestTown: "that"}
+        }]
+      };
+      expect(service.latestEventWithStatusChangeIs(walk, EventType.AWAITING_APPROVAL))
+        .toBe(false);
+    });
+  });
+});
