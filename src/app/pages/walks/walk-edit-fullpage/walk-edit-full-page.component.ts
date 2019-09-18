@@ -25,7 +25,6 @@ export class WalkEditFullPageComponent implements OnInit {
   constructor(@Inject("WalksService") private walksService,
               private route: ActivatedRoute, private dateUtils: DateUtilsService,
               private display: WalkDisplayService,
-              private walksReferenceService: WalksReferenceService,
               private notifierService: NotifierService,
               displayDate: DisplayDatePipe, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkEditFullPageComponent, NgxLoggerLevel.INFO);
@@ -37,7 +36,7 @@ export class WalkEditFullPageComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("add")) {
         this.displayedWalk = {
-          walkEditMode: this.walksReferenceService.walkEditModes.add,
+          walkAccessMode: WalksReferenceService.walkAccessModes.add,
           walk: this.walksService({
             status: EventType.AWAITING_LEADER,
             walkType: this.display.walkTypes[0],

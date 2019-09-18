@@ -2,6 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { LoggerTestingModule } from "ngx-logger";
+import { MeetupEvent } from "../../models/meetup-event.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
@@ -9,8 +10,12 @@ import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
-
+import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "./walk-display.service";
+
+const anyWalkDate = 123364;
+const walkLeaderMemberId = "walk-leader-id";
+const dontCare = [];
 
 const googleConfig = {
   getConfig: () => {
@@ -19,7 +24,7 @@ const googleConfig = {
 
 const meetupService = {
   config: () => Promise.resolve(),
-  eventsForStatus: () => Promise.resolve()
+  eventsForStatus: () => Promise.resolve([] as MeetupEvent[])
 };
 
 const ramblersWalksAndEventsService = {
@@ -28,10 +33,10 @@ const ramblersWalksAndEventsService = {
 };
 
 const loggedInMemberService = {
-  memberLoggedIn: () => true,
+  memberLoggedIn: () => false,
   loggedInMember: () => {
   },
-  allowWalkAdminEdits: () => true
+  allowWalkAdminEdits: () => false
 };
 
 const memberService = {
@@ -68,26 +73,41 @@ describe("WalkDisplayService", () => {
         {provide: "MemberService", useValue: memberService},
         {provide: "GoogleMapsConfig", useValue: googleConfig}]
     });
-    spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "123"});
     spy = spyOn(googleConfig, "getConfig").and.returnValue(Promise.resolve({}));
     spy = spyOn(ramblersWalksAndEventsService, "walkBaseUrl").and.returnValue(Promise.resolve({}));
   });
 
-  describe("toWalkEditMode", () => {
+  describe("toWalkAccessMode", () => {
 
-    it("should return lead if user is logged in", () => {
+    it("should return edit if user is logged in and admin", () => {
+      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(true);
+      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "some-other-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
-      expect(service.toWalkEditMode({walkLeaderMemberId: "1w3", events: [], walkDate: 123364})).toEqual({
-        caption: "edit",
-        title: "Edit existing",
-        editEnabled: true
-      });
+      expect(service.toWalkAccessMode({walkLeaderMemberId: "any-walk-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
     });
 
-    it("should return undefined if user is not logged in", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(false);
+    it("should return edit if user is logged in and not admin but is leader", () => {
+      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
-      expect(service.toWalkEditMode({walkLeaderMemberId: "1w3", events: [], walkDate: 123364})).toBeUndefined();
+      expect(service.toWalkAccessMode({walkLeaderMemberId: "leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
+    });
+
+    it("should return lead if user is logged in and not admin and walk doest have a leader", () => {
+      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
+      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      expect(service.toWalkAccessMode({events: dontCare, walkDate: 0})).toEqual(WalksReferenceService.walkAccessModes.lead);
+    });
+
+    it("should return view if user is not logged in", () => {
+      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(false);
+      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
+      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      expect(service.toWalkAccessMode({walkLeaderMemberId, events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });
   });
 

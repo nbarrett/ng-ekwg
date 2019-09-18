@@ -19,10 +19,10 @@
         </h3>
       </div>
     </div>
-    <input *ngIf="displayedWalk.walkEditMode" type="submit"
-           value="{{displayedWalk.walkEditMode.caption}}"
+    <input *ngIf="displayedWalk.walkAccessMode.editEnabled" type="submit"
+           value="{{displayedWalk.walkAccessMode.caption}}"
            (click)="display.edit(displayedWalk)"
-           title="{{displayedWalk.walkEditMode.caption}}"
+           title="{{displayedWalk.walkAccessMode.caption}}"
            class="button-form button-form-edit-event">
 
     <div *ngIf="displayedWalk.latestEventType.showDetails" class="event-description">

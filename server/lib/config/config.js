@@ -45,10 +45,12 @@ module.exports = {
     },
   },
   meetup: {
-    apiKey: validatedEnvironmentVariable("MEETUP_APIKEY"),
-    apiUrl: config.meetup.apiUrl,
     group: config.meetup.group,
     url: config.meetup.url,
+    apiUrl: config.meetup.apiUrl,
+    oauth: {
+      accessToken: validatedEnvironmentVariable("MEETUP_ACCESS_TOKEN")
+    }
   },
   mongo: {
     apiKey: validatedEnvironmentVariable("MONGOLAB_APIKEY"),

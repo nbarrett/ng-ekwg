@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { WalkEditMode } from "../../models/walk-edit-mode.model";
+import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 
@@ -10,13 +10,14 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 
 export class WalksReferenceService {
 
-  private logger: Logger;
-
-  walkEditModes = {
-    add: {caption: "add", title: "Add new"} as WalkEditMode,
-    edit: {caption: "edit", title: "Edit existing", editEnabled: true} as WalkEditMode,
-    lead: {caption: "lead", title: "Lead this", initialiseWalkLeader: true} as WalkEditMode
+  static walkAccessModes = {
+    view: {caption: "view", title: "View"} as WalkAccessMode,
+    add: {caption: "add", title: "Add new"} as WalkAccessMode,
+    edit: {caption: "edit", title: "Edit existing", editEnabled: true} as WalkAccessMode,
+    lead: {caption: "lead", title: "Lead this", initialiseWalkLeader: true} as WalkAccessMode
   };
+
+  private logger: Logger;
 
   walkEventTypeMappings = {
     awaitingLeader: {

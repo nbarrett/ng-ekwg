@@ -6,7 +6,7 @@
           <ul>
             <li><a href="/" title="Home">Home</a></li>
             <li><a href="/walks" title="Walks">Walks</a></li>
-            <li *ngIf="displayedWalk" class="last">{{displayedWalk.walkEditMode.title}} walk ({{status()
+            <li *ngIf="displayedWalk" class="last">{{displayedWalk.walkAccessMode.title}} walk ({{status()
               | walkEventType: 'description'}})
             </li>
           </ul>

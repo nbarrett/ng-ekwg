@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
-import { clone, find, isEmpty, pick } from "lodash-es";
+import { clone, isEmpty, pick } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { MeetupEvent } from "../../../models/meetup-event.model";
 import { Member } from "../../../models/member.model";
 import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
@@ -27,7 +28,7 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
-import { ConfirmType, MeetupEvent, WalkDisplayService, WalkViewMode } from "../walk-display.service";
+import { ConfirmType, WalkDisplayService, WalkViewMode } from "../walk-display.service";
 
 interface DisplayMember {
   memberId: string;
@@ -55,10 +56,7 @@ export class WalkEditComponent implements OnInit {
   protected logger: Logger;
   public notifyTarget: AlertTarget = {};
   protected notify: AlertInstance;
-  private meetupEvent: {
-    url: string;
-    title: string;
-  };
+  private meetupEvent: MeetupEvent;
   public saveInProgress = false;
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
@@ -86,7 +84,7 @@ export class WalkEditComponent implements OnInit {
     private broadcastService: BroadcastService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -99,6 +97,7 @@ export class WalkEditComponent implements OnInit {
     this.walkEventTypes = this.walksReferenceService.walkEventTypes();
     this.showWalk(this.displayedWalk);
     this.logDetectChanges();
+    this.broadcastService.on("meetupDataRefreshed", () => this.meetupSelectSync(this.displayedWalk.walk));
     setInterval(() => {
       if (this.saveInProgress) {
         this.logDetectChanges();
@@ -135,7 +134,7 @@ export class WalkEditComponent implements OnInit {
 
   allowDelete() {
     return !this.saveInProgress && this.confirmAction === ConfirmType.NONE && this.loggedInMemberService.allowWalkAdminEdits()
-      && this.displayedWalk.walkEditMode && this.displayedWalk.walkEditMode.editEnabled;
+      && this.displayedWalk.walkAccessMode && this.displayedWalk.walkAccessMode.editEnabled;
   }
 
   allowNotifyConfirmation() {
@@ -223,9 +222,30 @@ export class WalkEditComponent implements OnInit {
   }
 
   showWalk(displayedWalk: DisplayedWalk) {
-    if (!displayedWalk) {
+    if (displayedWalk) {
+      this.confirmAction = ConfirmType.NONE;
+      this.sendNotifications = true;
+      this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
+      this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
+      if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
+        this.setStatus(EventType.AWAITING_WALK_DETAILS);
+        this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+        this.walkLeaderMemberIdChanged();
+        this.notify.success({
+          title: "Thanks for offering to lead this walk " + this.loggedInMemberService.loggedInMember().firstName + "!",
+          message: "Please complete as many details you can, then click Save to allocate this slot on the walks programme. " +
+            "It will be published to the public once it\"s approved. If you want to release this slot again, just click Cancel."
+        });
+      } else {
+        const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
+        if (!isEmpty(eventType)) {
+          this.setStatus(eventType);
+          this.priorStatus = eventType;
+        }
+      }
+    } else {
       this.displayedWalk = {
-        walkEditMode: this.walksReferenceService.walkEditModes.add,
+        walkAccessMode: WalksReferenceService.walkAccessModes.add,
         latestEventType: null,
         walk: new this.walksService({
           status: EventType.AWAITING_LEADER,
@@ -235,29 +255,9 @@ export class WalkEditComponent implements OnInit {
         status: EventType.AWAITING_LEADER,
       };
     }
-    this.confirmAction = ConfirmType.NONE;
-    this.sendNotifications = true;
-    this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
-    this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
-    if (this.displayedWalk.walkEditMode.initialiseWalkLeader) {
-      this.setStatus(EventType.AWAITING_WALK_DETAILS);
-      this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
-      this.walkLeaderMemberIdChanged();
-      this.notify.success({
-        title: "Thanks for offering to lead this walk " + this.loggedInMemberService.loggedInMember().firstName + "!",
-        message: "Please complete as many details you can, then click Save to allocate this slot on the walks programme. " +
-          "It will be published to the public once it\"s approved. If you want to release this slot again, just click Cancel."
-      });
-    } else {
-      const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
-      if (!isEmpty(eventType)) {
-        this.setStatus(eventType);
-        this.priorStatus = eventType;
-      }
-      this.populateCopySourceFromWalkLeaderMemberId();
-      this.populateWalkTemplates();
-      this.meetupSelectSync(this.displayedWalk.walk);
-    }
+    this.populateCopySourceFromWalkLeaderMemberId();
+    this.populateWalkTemplates();
+    this.meetupSelectSync(this.displayedWalk.walk);
   }
 
   populateCopySourceFromWalkLeaderMemberId() {
@@ -371,16 +371,16 @@ export class WalkEditComponent implements OnInit {
       + walkValidations.length + " reasons(s): " + walkValidations.join(", ") + ".";
   }
 
-  meetupEventUrlChange(walk: Walk) {
-    walk.meetupEventTitle = this.meetupEvent.title;
-    walk.meetupEventUrl = this.meetupEvent.url;
+  meetupEventUrlChange(meetupEvent: MeetupEvent) {
+    this.displayedWalk.walk.meetupEventTitle = meetupEvent.title;
+    this.displayedWalk.walk.meetupEventUrl = meetupEvent.link;
+    this.logger.debug("meetupEventUrlChange:", meetupEvent);
   }
 
   meetupSelectSync(walk: Walk) {
-    this.logger.debug("meetupSelectSync");
-    const criteria = {url: walk.meetupEventUrl};
-    this.meetupEvent = find(this.display.meetupEvents, criteria) as MeetupEvent;
-    this.logger.debug("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, criteria, "=>", this.meetupEvent);
+    const meetupEventUrl = walk.meetupEventUrl || "";
+    this.meetupEvent = this.display.meetupEvents && this.display.meetupEvents.find(event => meetupEventUrl.includes(event.link)) as MeetupEvent;
+    this.logger.debug("meetupSelectSync:this.display.meetupEvents", this.display.meetupEvents, "=>", this.meetupEvent);
   }
 
   ramblersWalkExists() {

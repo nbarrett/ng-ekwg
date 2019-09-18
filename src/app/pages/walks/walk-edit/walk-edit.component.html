@@ -142,10 +142,10 @@
                 <label for="meetup-event-url">Link to Meetup event:</label>
                 <select class="form-control input-sm"
                         [(ngModel)]="meetupEvent"
-                        (change)="meetupEventUrlChange(displayedWalk.walk)"
+                        (ngModelChange)="meetupEventUrlChange($event)"
                         class="form-control"
                         id="meetup-event-url">
-                  <option *ngFor="let meetupEvent of display.meetupEvents"
+                  <option *ngFor="let meetupEvent of display.meetupEvents;"
                           [ngValue]="meetupEvent"
                           [textContent]="meetupEvent | meetupEventSummary">
                   </option>
@@ -153,7 +153,7 @@
               </div>
               <div *ngIf="false" class="form-group">
                 <label for="meetup-title">Meetup event title</label>
-                <input [(ngModel)]="displayedWalk.walk.meetupEventTitle"
+                <input [ngModel]="displayedWalk.walk.meetupEventTitle"
                        type="text" value="" class="form-control input-sm"
                        id="meetup-title"
                        placeholder="Enter optional title for Meetup event">

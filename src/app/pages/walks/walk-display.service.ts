@@ -4,11 +4,15 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { find, sortBy } from "lodash-es";
 import { PopoverDirective } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
+import { MeetupErrorResponse } from "../../models/meetup-error-response.model";
+import { MeetupEvent } from "../../models/meetup-event.model";
 import { Member } from "../../models/member.model";
 import { DisplayedWalk } from "../../models/walk-displayed.model";
-import { WalkEditMode } from "../../models/walk-edit-mode.model";
+import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
+import { ExpandedWalk } from "../../models/walk-expanded-view.model";
 import { Walk } from "../../models/walk.model";
+import { BroadcastService } from "../../services/broadcast-service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { UrlService } from "../../services/url.service";
@@ -54,6 +58,7 @@ export class WalkDisplayService {
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     private walksQueryService: WalksQueryService,
+    private broadcastService: BroadcastService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.INFO);
     this.refreshGoogleMapsConfig();
@@ -76,10 +81,15 @@ export class WalkDisplayService {
           this.logger.error("failed to get meetup past events - response:", pastEvents);
         } else {
           this.meetupService.eventsForStatus("upcoming")
-            .then((futureEvents: MeetupEvent[]) => {
-              const events: MeetupEvent[] = pastEvents.concat(futureEvents);
-              this.meetupEvents = sortBy(events, "date,").reverse();
-              this.logger.debug("refreshMeetupData:meetupEvents", this.meetupEvents);
+            .then((futureEvents: MeetupEvent[] | MeetupErrorResponse) => {
+              if (this.isMeetupErrorResponse(futureEvents)) {
+                this.logger.error("failed to get meetup future events - response:", futureEvents);
+              } else {
+                const events: MeetupEvent[] = pastEvents.concat(futureEvents);
+                this.meetupEvents = sortBy(events, "date,").reverse();
+                this.logger.debug("refreshMeetupData:meetupEvents", this.meetupEvents);
+                this.broadcastService.broadcast("meetupDataRefreshed");
+              }
             });
         }
       });
@@ -161,9 +171,9 @@ export class WalkDisplayService {
   }
 
   editFullscreen(walk: Walk): Promise<ExpandedWalk> {
-    this.logger.info("editing walk fullscreen:", walk);
+    this.logger.debug("editing walk fullscreen:", walk);
     return this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
-      this.logger.info("area is now", this.urlService.area());
+      this.logger.debug("area is now", this.urlService.area());
       return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT_FULL_SCREEN);
     });
   }
@@ -220,21 +230,23 @@ export class WalkDisplayService {
     return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
   }
 
-  toWalkEditMode(walk: Walk): WalkEditMode {
+    toWalkAccessMode(walk: Walk): WalkAccessMode {
     if (this.loggedInMemberService.memberLoggedIn()) {
       if (this.loggedInMemberIsLeadingWalk(walk) ||
         this.loggedInMemberService.allowWalkAdminEdits()) {
-        return this.walksReferenceService.walkEditModes.edit;
+        return WalksReferenceService.walkAccessModes.edit;
       } else if (!walk.walkLeaderMemberId) {
-        return this.walksReferenceService.walkEditModes.lead;
+        return WalksReferenceService.walkAccessModes.lead;
       }
+    } else {
+      return WalksReferenceService.walkAccessModes.view;
     }
   }
 
   toDisplayedWalk(walk: Walk): DisplayedWalk {
     return {
       walk,
-      walkEditMode: this.toWalkEditMode(walk),
+      walkAccessMode: this.toWalkAccessMode(walk),
       status: this.statusFor(walk),
       latestEventType: this.latestEventTypeFor(walk),
       walkLink: this.walkLink(walk),
@@ -243,7 +255,7 @@ export class WalkDisplayService {
   }
 
   refreshDisplayedWalk(displayedWalk: DisplayedWalk): void {
-    displayedWalk.walkEditMode = this.toWalkEditMode(displayedWalk.walk);
+    displayedWalk.walkAccessMode = this.toWalkAccessMode(displayedWalk.walk);
     displayedWalk.status = this.statusFor(displayedWalk.walk);
     displayedWalk.latestEventType = this.latestEventTypeFor(displayedWalk.walk);
     displayedWalk.walkLink = this.walkLink(displayedWalk.walk);
@@ -286,34 +298,3 @@ export enum WalkViewMode {
   LIST = "list"
 }
 
-export interface ExpandedWalk {
-  walkId: string;
-  mode?: WalkViewMode;
-}
-
-export interface MeetupEvent {
-  id: string;
-  url: string;
-  title: string;
-  description: string;
-  date: number;
-  startTime: number;
-  duration: number;
-}
-
-export interface MeetupErrorResponse {
-  status: number;
-  response: {
-    req: {
-      method: string,
-      url: string,
-      headers: {
-        "user-agent": string,
-        accept: string
-      },
-    },
-    header: object,
-    status: number,
-    text?: { details: string; code: string; problem: string }
-  };
-}
