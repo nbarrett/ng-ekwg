@@ -112,7 +112,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   allowEdits() {
-    return this.confirmAction === ConfirmType.NONE && (this.allowAdminEdits() ||
+    return this.confirmAction === ConfirmType.NONE && !this.saveInProgress && (this.allowAdminEdits() ||
       this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk));
   }
 
@@ -324,13 +324,13 @@ export class WalkEditComponent implements OnInit {
 
   unlinkRamblersDataFromCurrentWalk() {
     delete this.displayedWalk.walk.ramblersWalkId;
-    this.notify.progress("Previous Ramblers walk has now been unlinked.");
+    this.notify.progress({title: "Unlink walk", message: "Previous Ramblers walk has now been unlinked."});
   }
 
   unlinkOSMapsFromCurrentWalk() {
     delete this.displayedWalk.walk.osMapsRoute;
     delete this.displayedWalk.walk.osMapsTitle;
-    this.notify.progress("Previous OS Maps route has now been unlinked.");
+    this.notify.progress({title: "Unlink walk", message: "Previous OS Maps route has now been unlinked."});
   }
 
   canUnlinkRamblers() {
@@ -341,7 +341,7 @@ export class WalkEditComponent implements OnInit {
     delete this.displayedWalk.walk.meetupEventTitle;
     delete this.displayedWalk.walk.meetupEventUrl;
     this.meetupEvent = null;
-    this.notify.progress("Previous Meetup link has now been removed.");
+    this.notify.progress({title: "Unlink walk", message: "Previous Meetup link has now been removed."});
   }
 
   canUnlinkMeetup() {

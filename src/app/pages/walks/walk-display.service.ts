@@ -135,7 +135,7 @@ export class WalkDisplayService {
   }
 
   loggedInMemberIsLeadingWalk(walk: Walk) {
-    return walk && walk.walkLeaderMemberId === this.loggedInMemberService.loggedInMember().memberId;
+    return this.loggedInMemberService.memberLoggedIn() && walk && walk.walkLeaderMemberId === this.loggedInMemberService.loggedInMember().memberId;
   }
 
   refreshRamblersConfig() {
@@ -230,7 +230,7 @@ export class WalkDisplayService {
     return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
   }
 
-    toWalkAccessMode(walk: Walk): WalkAccessMode {
+  toWalkAccessMode(walk: Walk): WalkAccessMode {
     if (this.loggedInMemberService.memberLoggedIn()) {
       if (this.loggedInMemberIsLeadingWalk(walk) ||
         this.loggedInMemberService.allowWalkAdminEdits()) {
