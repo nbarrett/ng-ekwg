@@ -93,7 +93,7 @@
                 <tr [ngClass]="tableRowEven(displayedWalk)? 'default': 'active'">
                   <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}"
                       class="nowrap"><input
-                    *ngIf="displayedWalk.walkAccessMode.editEnabled" type="submit"
+                    *ngIf="displayedWalk.walkAccessMode.walkWritable" type="submit"
                     value="{{displayedWalk.walkAccessMode.caption}}"
                     (click)="display.edit(displayedWalk)"
                     class="button-form">

@@ -231,16 +231,16 @@ export class WalkDisplayService {
   }
 
   toWalkAccessMode(walk: Walk): WalkAccessMode {
+    let returnValue = WalksReferenceService.walkAccessModes.view;
     if (this.loggedInMemberService.memberLoggedIn()) {
       if (this.loggedInMemberIsLeadingWalk(walk) ||
         this.loggedInMemberService.allowWalkAdminEdits()) {
-        return WalksReferenceService.walkAccessModes.edit;
+        returnValue = WalksReferenceService.walkAccessModes.edit;
       } else if (!walk.walkLeaderMemberId) {
-        return WalksReferenceService.walkAccessModes.lead;
+        returnValue = WalksReferenceService.walkAccessModes.lead;
       }
-    } else {
-      return WalksReferenceService.walkAccessModes.view;
     }
+    return returnValue;
   }
 
   toDisplayedWalk(walk: Walk): DisplayedWalk {

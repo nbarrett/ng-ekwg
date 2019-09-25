@@ -19,7 +19,7 @@
         </h3>
       </div>
     </div>
-    <input *ngIf="displayedWalk.walkAccessMode.editEnabled" type="submit"
+    <input *ngIf="displayedWalk.walkAccessMode.walkWritable" type="submit"
            value="{{displayedWalk.walkAccessMode.caption}}"
            (click)="display.edit(displayedWalk)"
            title="{{displayedWalk.walkAccessMode.caption}}"

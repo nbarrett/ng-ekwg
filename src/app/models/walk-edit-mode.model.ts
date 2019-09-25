@@ -1,6 +1,6 @@
 export interface WalkAccessMode {
   caption: string;
   title: string;
-  editEnabled?: boolean;
+  walkWritable?: boolean;
   initialiseWalkLeader?: boolean;
 }

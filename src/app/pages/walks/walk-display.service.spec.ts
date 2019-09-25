@@ -109,6 +109,14 @@ describe("WalkDisplayService", () => {
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId, events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });
+
+    it("should return view if user is not member admin and not leading the walk", () => {
+      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
+      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      expect(service.toWalkAccessMode({walkLeaderMemberId: "another-walk-leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
+    });
   });
 
 });

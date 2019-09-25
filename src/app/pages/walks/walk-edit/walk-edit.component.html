@@ -15,7 +15,7 @@
 
               <div class="input-group">
                 <input [ngModel]="walkDate"
-                       [disabled]="!allowEdits()"
+                       [disabled]="!allowAdminEdits()"
                        (bsValueChange)="onDateChange($event)"
                        placeholder="enter date of walk"
                        #dp="bsDatepicker"
@@ -585,7 +585,7 @@
         <div class="checkbox-group checkbox-group-in-footer">
           <label [ngClass]="{'ui-state-active': sendNotifications}"
                  for="send-notification">Notify {{personToNotify()}} about this change
-            <input [disabled]="!allowNotifyConfirmation() ||saveInProgress "
+            <input [disabled]="!allowAdminEdits() ||saveInProgress "
                    [(ngModel)]="sendNotifications"
                    type="checkbox" id="send-notification">
           </label>
