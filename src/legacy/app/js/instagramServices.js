@@ -1,8 +1,8 @@
 angular.module('ekwgApp')
-  .factory('InstagramService', function ($http, HTTPResponseService) {
+  .factory('InstagramService', function ($http, HttpResponseService) {
 
     function recentMedia() {
-      return $http.get('/api/instagram/recent-media').then(HTTPResponseService.returnResponse);
+      return $http.get('/api/instagram/recent-media').then(HttpResponseService.returnResponse.bind(HttpResponseService));
     }
 
     return {
