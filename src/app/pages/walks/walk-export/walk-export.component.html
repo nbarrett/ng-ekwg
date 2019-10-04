@@ -54,13 +54,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let walk of walksForExport">
-                      <td (click)="changeWalkExportSelection(walk)"
-                          [ngClass]="walk.selected ? 'checkbox-on' : 'checkbox-off'"></td>
-                      <td [ngClass]="walk.publishedOnRamblers ? 'checkbox-on' : 'checkbox-off'"></td>
-                      <td class="nowrap">{{walk.walk.walkDate | displayDate}}</td>
-                      <td>{{walk.walk.briefDescriptionAndStartPoint}}</td>
-                      <td>{{walk.validationMessages.join(", ")}}</td>
+                    <tr *ngFor="let walkExport of walksForExport">
+                      <td (click)="changeWalkExportSelection(walkExport)"
+                          [ngClass]="walkExport.selected ? 'checkbox-on' : 'checkbox-off'"></td>
+                      <td [ngClass]="walkExport.publishedOnRamblers ? 'checkbox-on' : 'checkbox-off'"></td>
+                      <td class="nowrap">{{walkExport.walk.walkDate | displayDate}}</td>
+                      <td>{{walkExport.walk.briefDescriptionAndStartPoint}}</td>
+                      <td>{{walkExport.validationMessages.join(", ")}}</td>
                     </tr>
                     </tbody>
                   </table>

@@ -58,7 +58,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -136,6 +136,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   populateWalkExport(walksForExport) {
+    this.logger.debug("populateWalkExport: found", walksForExport.length, "walks:", walksForExport);
     this.walksForExport = walksForExport;
     this.walkExportNotifier.success({
       title: "Export status", message: "Found total of " + this.walksForExport.length + " walk(s), "

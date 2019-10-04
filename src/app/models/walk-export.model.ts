@@ -2,7 +2,7 @@ import { Walk } from "./walk.model";
 
 export interface WalkExport {
   walk: Walk;
-  walkValidations: [];
+  validationMessages: [];
   publishedOnRamblers: boolean;
   selected: boolean;
 }

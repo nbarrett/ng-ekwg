@@ -209,7 +209,7 @@ angular.module('ekwgApp')
           walk: walk,
           validationMessages: validationMessages,
           publishedOnRamblers: walk && !_.isEmpty(walk.ramblersWalkId),
-          selected: walk && validationMessages.length === 0 && _.isEmpty(walk.ramblersWalkId)
+          selected: walk && walk.ramblersPublish && validationMessages.length === 0 && _.isEmpty(walk.ramblersWalkId)
         }
       }
 
