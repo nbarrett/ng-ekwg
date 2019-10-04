@@ -1,11 +1,12 @@
-import map from "lodash-es/map";
-import find from "lodash-es/find";
 import filter from "lodash-es/filter";
-import mapValues from "lodash-es/mapValues";
-import toPairs from "lodash-es/toPairs";
-import orderBy from "lodash-es/orderBy";
+import find from "lodash-es/find";
 import groupBy from "lodash-es/groupBy";
+import map from "lodash-es/map";
+import mapValues from "lodash-es/mapValues";
+import orderBy from "lodash-es/orderBy";
+import reduce from "lodash-es/reduce";
 import sortBy from "lodash-es/sortBy";
+import toPairs from "lodash-es/toPairs";
 import unique from "lodash-es/uniq";
 
 const supportedFunctions = {
@@ -14,6 +15,7 @@ const supportedFunctions = {
   find,
   filter,
   toPairs,
+  reduce,
   orderBy,
   groupBy,
   sortBy,

@@ -368,6 +368,10 @@ body {
   margin: 0px 0px 0px 0px;
 }
 
+.related-links-gylph-title {
+  margin: 0px 0px 0px 9px;
+}
+
 .related-links-row {
   min-height: 26px;
   padding-bottom: 6px;
@@ -558,6 +562,12 @@ img {
 .thumbnail-campaign-settings {
   padding: 13px 10px 12px 15px;
   margin: 18px 0px 20px 0px;
+  border-radius: 6px;
+}
+
+.thumbnail-walk-edit {
+  padding: 13px 10px 0px 15px;
+  margin: 6px 0px 12px 0px;
   border-radius: 6px;
 }
 
@@ -2608,6 +2618,13 @@ img[src~="bordered"] {
   text-align: center;
 }
 
+.glyphicon-icon {
+  color: #A8B400;
+  display: inline-block;
+  text-align: center;
+  margin-right: 6px;
+}
+
 .minimise-icon {
   position: relative;
   top: 0px;
@@ -3925,7 +3942,7 @@ ul.sbOptions li.last a {
 
 .checkbox-group label {
   display: block;
-  margin-top: 6px;
+  margin-bottom: 5px;
   padding: 2px 10px 5px 30px;
   background: url(../images/ramblers/but-checkbox.png) no-repeat 3px 0px;
 }
@@ -3943,6 +3960,10 @@ ul.sbOptions li.last a {
 .checkbox-on {
   background: url("../images/ramblers/but-checkbox-active.png") no-repeat;
   background-position: center;
+}
+
+.inline-label {
+  margin-left: 12px;
 }
 
 .txt-box-mid {

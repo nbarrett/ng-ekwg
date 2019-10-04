@@ -111,33 +111,6 @@ angular.module('ekwgApp')
       icon: icon
     }
 
-  })
-  .factory('StringUtils', function (DateUtils, $filter) {
-
-    function replaceAll(find, replace, str) {
-      return str ? str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace) : str;
-    }
-
-    function stripLineBreaks(str, andTrim) {
-      var replacedValue = str.replace(/(\r\n|\n|\r)/gm, '');
-      return andTrim && replacedValue ? replacedValue.trim() : replacedValue;
-    }
-
-    function left(str, chars) {
-      return str.substr(0, chars);
-    }
-
-    function formatAudit(who, when, members) {
-      var by = who ? 'by ' + $filter('memberIdToFullName')(who, members) : '';
-      return (who || when) ? by + (who && when ? ' on ' : '') + DateUtils.displayDateAndTime(when) : '(not audited)';
-    }
-
-    return {
-      left: left,
-      replaceAll: replaceAll,
-      stripLineBreaks: stripLineBreaks,
-      formatAudit: formatAudit
-    }
   }).factory('ValidationUtils', function () {
   function fieldPopulated(object, path) {
     return (_.property(path)(object) || "").length > 0;
@@ -147,42 +120,6 @@ angular.module('ekwgApp')
     fieldPopulated: fieldPopulated,
   }
 })
-  .factory('NumberUtils', function ($log) {
-
-    var logger = $log.getInstance('NumberUtils');
-    $log.logLevels['NumberUtils'] = $log.LEVEL.OFF;
-
-    function sumValues(items, fieldName) {
-      if (!items) return 0;
-      return _.chain(items).pluck(fieldName).reduce(function (memo, num) {
-        return memo + asNumber(num);
-      }, 0).value();
-    }
-
-    function generateUid() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
-
-    function asNumber(numberString, decimalPlaces) {
-      if (!numberString) return 0;
-      var isNumber = typeof numberString === 'number';
-      if (isNumber && !decimalPlaces) return numberString;
-      var number = isNumber ? numberString : parseFloat(numberString.replace(/[^\d\.\-]/g, ""));
-      if (isNaN(number)) return 0;
-      var returnValue = (decimalPlaces) ? (parseFloat(number).toFixed(decimalPlaces)) / 1 : number;
-      logger.debug('asNumber:', numberString, decimalPlaces, '->', returnValue);
-      return returnValue;
-    }
-
-    return {
-      asNumber: asNumber,
-      sumValues: sumValues,
-      generateUid: generateUid
-    };
-  })
   .factory('ContentMetaData', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('contentMetaData');
   })

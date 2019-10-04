@@ -11,8 +11,10 @@ function validatedEnvironmentVariable(variableName) {
   return variableValue;
 }
 
+const env = validatedEnvironmentVariable("NODE_ENV");
+
 function logNamespace(moduleName) {
-  return `ekwg:${validatedEnvironmentVariable("NODE_ENV")}:${moduleName || ""}`;
+  return `ekwg:${env}:${moduleName || ""}`;
 }
 
 module.exports = {
@@ -25,7 +27,9 @@ module.exports = {
     secretAccessKey: validatedEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
     uploadUrl: "https://" + config.aws.bucket + ".s3.amazonaws.com",
   },
-  env: validatedEnvironmentVariable("NODE_ENV"),
+  env: env,
+  dev: env !== "production",
+  production: env === "production",
   googleMaps: {
     apiKey: validatedEnvironmentVariable("GOOGLE_MAPS_APIKEY"),
   },

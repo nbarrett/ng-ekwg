@@ -1,10 +1,9 @@
-export interface MeetupEvent {
+export interface MeetupEventResponse {
   id: string;
   link: string;
-  url: string;
   title: string;
   description: string;
   date: number;
   startTime: number;
-  duration: number;
+  endTime: number;
 }

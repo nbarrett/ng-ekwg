@@ -1,3 +1,4 @@
+import { HttpClientModule } from "@angular/common/http";
 import { ApplicationRef, DoBootstrap, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -90,15 +91,19 @@ import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
+import { VenueIconPipe } from "./pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
 import { WalkValidationsListPipe } from "./pipes/walk-validations.pipe";
 import { BroadcastService } from "./services/broadcast-service";
 import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
 import { DateUtilsService } from "./services/date-utils.service";
+import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NotifierService } from "./services/notifier.service";
+import { NumberUtilsService } from "./services/number-utils.service";
 import { RouterHistoryService } from "./services/router-history.service";
+import { StringUtilsService } from "./services/string-utils.service";
 import { UrlService } from "./services/url.service";
 import { WalkNotificationService } from "./services/walks/walk-notification.service";
 import { WalksQueryService } from "./services/walks/walks-query.service";
@@ -108,6 +113,7 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
+import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.component";
 
 @NgModule({
   declarations: [
@@ -150,6 +156,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     SiteEditComponent,
     SiteNavigatorComponent,
     ValueOrDefaultPipe,
+    VenueIconPipe,
     WalkAddSlotsComponent,
     WalkEditComponent,
     WalkEditFullPageComponent,
@@ -174,6 +181,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkSummaryPipe,
     WalkValidationsListPipe,
     WalkViewComponent,
+    WalkVenueComponent,
   ],
   imports: [
     AccordionModule.forRoot(),
@@ -183,6 +191,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     BrowserAnimationsModule,
     BrowserModule,
     BsDatepickerModule.forRoot(),
+    HttpClientModule,
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     PopoverModule.forRoot(),
@@ -231,6 +240,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     SearchFilterPipe,
     SiteEditService,
     ValueOrDefaultPipe,
+    VenueIconPipe,
     WalkEventTypePipe,
     WalkNotificationService,
     WalksAuthGuard,
@@ -271,6 +281,9 @@ export class AppModule implements DoBootstrap {
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
       .factory("LegacyUrlService", LegacyUrlService)
+      .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
+      .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
+      .factory("StringUtils", downgradeInjectable(StringUtilsService))
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))

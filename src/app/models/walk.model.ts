@@ -1,5 +1,5 @@
-import { EventType } from "../services/walks/walks-reference-data.service";
 import { WalkEvent } from "./walk-event.model";
+import { WalkVenue } from "./walk-venue.model";
 
 export interface Walk {
   contactName?: string;
@@ -18,15 +18,17 @@ export interface Walk {
   longerDescription?: string;
   meetupEventTitle?: string;
   meetupEventUrl?: string;
+  meetupPublish?: boolean;
   nearestTown?: string;
   osMapsRoute?: string;
   osMapsTitle?: string;
   postcode?: string;
   ramblersWalkId?: string;
+  ramblersPublish?: boolean;
   startTime?: string;
-  status?: EventType;
   walkDate: number;
   walkLeaderMemberId?: string;
+  venue?: WalkVenue;
 
   $id?(): any;
 

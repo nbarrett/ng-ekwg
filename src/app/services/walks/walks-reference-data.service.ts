@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
+import { VenueType } from "../../models/walk-venue.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 
 @Injectable({
@@ -93,6 +94,10 @@ export class WalksReferenceService {
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalksReferenceService, NgxLoggerLevel.OFF);
+  }
+
+  venueTypes(): VenueType[] {
+    return [{type: "Pub", icon: "glyphicon-cutlery"}, {type: "Meeting place", icon: "glyphicon-map-marker"}];
   }
 
   toWalkEventType(eventType: EventType | string): WalkEventType {

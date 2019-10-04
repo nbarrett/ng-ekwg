@@ -1,11 +1,9 @@
 import { Inject, Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
-import { find, sortBy } from "lodash-es";
+import { find } from "lodash-es";
 import { PopoverDirective } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
-import { MeetupErrorResponse } from "../../models/meetup-error-response.model";
-import { MeetupEvent } from "../../models/meetup-event.model";
 import { Member } from "../../models/member.model";
 import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
@@ -34,8 +32,6 @@ export class WalkDisplayService {
   public walkTypes = ["Circular", "Linear"];
   private nextWalkId: string;
   public members: Member [] = [];
-  private meetupConfig: any;
-  public meetupEvents: MeetupEvent[] = [];
   public ramblersWalkBaseUrl: string;
   public googleMapsConfig: {
     apiKey: string;
@@ -49,7 +45,6 @@ export class WalkDisplayService {
     @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("MemberService") private memberService,
     @Inject("GoogleMapsConfig") private googleMapsConfigService,
-    @Inject("MeetupService") private meetupService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -64,39 +59,8 @@ export class WalkDisplayService {
     this.refreshGoogleMapsConfig();
     this.refreshRamblersConfig();
     this.refreshMembers();
-    this.refreshMeetupData();
     this.logger.debug("this.loggedInMemberService", this.loggedInMemberService.loggedInMember());
     this.loggedIn = loggedInMemberService.memberLoggedIn();
-  }
-
-  refreshMeetupData() {
-    this.meetupService.config().then(meetupConfig => {
-      this.meetupConfig = meetupConfig;
-      this.logger.debug("refreshMeetupData:meetupConfig", meetupConfig);
-    });
-    this.logger.debug("refreshMeetupData");
-    this.meetupService.eventsForStatus("past")
-      .then((pastEvents: MeetupEvent[] | MeetupErrorResponse) => {
-        if (this.isMeetupErrorResponse(pastEvents)) {
-          this.logger.error("failed to get meetup past events - response:", pastEvents);
-        } else {
-          this.meetupService.eventsForStatus("upcoming")
-            .then((futureEvents: MeetupEvent[] | MeetupErrorResponse) => {
-              if (this.isMeetupErrorResponse(futureEvents)) {
-                this.logger.error("failed to get meetup future events - response:", futureEvents);
-              } else {
-                const events: MeetupEvent[] = pastEvents.concat(futureEvents);
-                this.meetupEvents = sortBy(events, "date,").reverse();
-                this.logger.debug("refreshMeetupData:meetupEvents", this.meetupEvents);
-                this.broadcastService.broadcast("meetupDataRefreshed");
-              }
-            });
-        }
-      });
-  }
-
-  private isMeetupErrorResponse(message: MeetupEvent[] | MeetupErrorResponse): message is MeetupErrorResponse {
-    return message && (message as MeetupErrorResponse).status !== undefined;
   }
 
   findWalk(walk: Walk): ExpandedWalk {
@@ -205,8 +169,6 @@ export class WalkDisplayService {
     let lookupType: EventType;
     if (latestEventWithStatusChange) {
       lookupType = latestEventWithStatusChange.eventType;
-    } else if (walk.status) {
-      lookupType = walk.status;
     } else {
       lookupType = EventType.AWAITING_WALK_DETAILS;
     }
@@ -288,6 +250,7 @@ export enum ConfirmType {
   REQUEST_APPROVAL = "requestApproval",
   CANCEL = "cancel",
   CONTACT_OTHER = "contactOther",
+  PUBLISH_MEETUP = "publishMeetup",
   NONE = "none"
 }
 

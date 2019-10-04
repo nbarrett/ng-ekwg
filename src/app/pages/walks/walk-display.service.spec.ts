@@ -2,7 +2,7 @@ import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { LoggerTestingModule } from "ngx-logger";
-import { MeetupEvent } from "../../models/meetup-event.model";
+import { MeetupEventResponse } from "../../models/meetup-event-response.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
@@ -24,7 +24,7 @@ const googleConfig = {
 
 const meetupService = {
   config: () => Promise.resolve(),
-  eventsForStatus: () => Promise.resolve([] as MeetupEvent[])
+  eventsForStatus: () => Promise.resolve([] as MeetupEventResponse[])
 };
 
 const ramblersWalksAndEventsService = {

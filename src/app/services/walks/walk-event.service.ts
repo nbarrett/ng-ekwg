@@ -8,12 +8,13 @@ import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { StringUtilsService } from "../string-utils.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
 
 const auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription",
   "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "osMapsRoute", "osMapsTitle", "postcode",
   "walkLeaderMemberId", "contactPhone", "contactEmail", "contactId", "displayName",
-  "ramblersWalkId"];
+  "ramblersWalkId", "ramblersPublish", "meetupPublish", "venue"];
 
 @Injectable({
   providedIn: "root"
@@ -25,6 +26,7 @@ export class WalkEventService {
     @Inject("LoggedInMemberService") private loggedInMemberService,
     private dateUtils: DateUtilsService,
     private walksReferenceService: WalksReferenceService,
+    private stringUtils: StringUtilsService,
     private auditDeltaChangedItems: AuditDeltaChangedItemsPipePipe,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkEventService, NgxLoggerLevel.OFF);
@@ -130,7 +132,7 @@ export class WalkEventService {
     return compact(auditedFields.map((key) => {
       const currentValue = currentData[key];
       const previousValue = previousData && previousData[key];
-      if (previousValue !== currentValue) {
+      if (this.stringUtils.stringifyObject(previousValue) !== this.stringUtils.stringifyObject(currentValue)) {
         return {
           fieldName: key,
           previousValue,

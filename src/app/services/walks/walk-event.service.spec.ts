@@ -3,6 +3,10 @@ import { LoggerTestingModule } from "ngx-logger";
 import { LoggedInMemberService } from "../../ajs-upgraded-providers";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
+import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
+import { FullNamePipe } from "../../pipes/full-name.pipe";
+import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
+import { StringUtilsService } from "../string-utils.service";
 
 import { WalkEventService } from "./walk-event.service";
 import { EventType } from "./walks-reference-data.service";
@@ -20,8 +24,10 @@ describe("WalksEventService", () => {
       LoggerTestingModule
     ],
     providers: [
-      AuditDeltaChangedItemsPipePipe,
-      {provide: "LoggedInMemberService", useValue: loggedInMemberService}]
+      AuditDeltaChangedItemsPipePipe, StringUtilsService, MemberIdToFullNamePipe, FullNameWithAliasPipe, FullNamePipe,
+      {provide: "LoggedInMemberService", useValue: loggedInMemberService},
+      {provide: "MemberService", useValue: loggedInMemberService}
+      ]
   }));
 
   describe("dataAuditDelta", () => {

@@ -1,7 +1,10 @@
+import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
-import { NgxLoggerLevel } from "ngx-logger";
-import { Logger, LoggerFactory } from "./logger-factory.service";
 import * as moment from "moment-timezone";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Walk } from "../models/walk.model";
+import { Logger, LoggerFactory } from "./logger-factory.service";
+import { NumberUtilsService } from "./number-utils.service";
 
 @Injectable({
   providedIn: "root"
@@ -10,7 +13,8 @@ import * as moment from "moment-timezone";
 export class DateUtilsService {
   private logger: Logger;
 
-  constructor(private loggerFactory: LoggerFactory) {
+  constructor(private numberUtils: NumberUtilsService,
+              private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.INFO);
   }
 
@@ -100,6 +104,26 @@ export class DateUtilsService {
       this.logger.debug(inputValue, "is not a date - no conversion");
       return inputValue;
     }
+  }
+
+  parseTime(startTime: string): Time {
+    const parsedTime = startTime.replace(".", ":");
+    const timeValues = parsedTime.split(":");
+    let hours = this.numberUtils.asNumber(timeValues[0]);
+    const minutes = this.numberUtils.asNumber(timeValues[1]);
+    if (parsedTime.toLowerCase().includes("pm") && hours < 12) {
+      hours += 12;
+    }
+    return {hours, minutes};
+  }
+
+  durationForDistance(distance: any): number {
+    return this.numberUtils.asNumber(distance) / 2.5 * 60 * 60 * 1000;
+  }
+
+  startTime(walk: Walk): number {
+    const startTime: Time = this.parseTime(walk.startTime);
+    return this.asMoment(walk.walkDate).add(startTime.hours, "hours").add(startTime.minutes, "minutes").valueOf();
   }
 
 }

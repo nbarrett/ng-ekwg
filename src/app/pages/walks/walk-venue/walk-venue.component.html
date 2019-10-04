@@ -1,0 +1,102 @@
+<div class="col-sm-12">
+  <div class="row thumbnail thumbnail-campaign-settings">
+    <div class="thumbnail-heading">Venue</div>
+    <div class="row">
+      <div class="col-sm-12 green-bullets-no-rule">
+<!--        <app-markdown-editor name="venue-help" description="Walk venue or pub"></app-markdown-editor>-->
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="type">Type</label>
+          <select [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish" class="form-control input-sm"
+                  [(ngModel)]="displayedWalk.walk.venue.type"
+                  class="form-control"
+                  id="type">
+            <option *ngFor="let type of venueTypes; trackBy: venueTracker"
+                    [ngValue]="type.type"
+                    [textContent]="type.type">
+            </option>
+          </select>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+                 [(ngModel)]="displayedWalk.walk.venue.name"
+                 type="text" class="form-control input-sm"
+                 id="name"
+                 placeholder="Enter name of venue or pub">
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="address1">Address 1</label>
+          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+                 [(ngModel)]="displayedWalk.walk.venue.address1"
+                 type="text" class="form-control input-sm"
+                 id="address1"
+                 placeholder="Enter first line of the address">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="address2">Address 2</label>
+          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+                 [(ngModel)]="displayedWalk.walk.venue.address2"
+                 type="text" class="form-control input-sm"
+                 id="address2"
+                 placeholder="Enter second line of the address">
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="postcode">Postcode</label>
+          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+                 [(ngModel)]="displayedWalk.walk.venue.postcode"
+                 type="text" class="form-control input-sm"
+                 id="postcode"
+                 placeholder="Enter postcode">
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="form-group">
+          <label for="url">Web address</label>
+          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+                 [(ngModel)]="displayedWalk.walk.venue.url"
+                 type="text" class="form-control input-sm"
+                 id="url"
+                 placeholder="Enter web address">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4" *ngIf="allowEdits()">
+        <div class="checkbox-group">
+          <label [ngClass]="{'ui-state-active': displayedWalk.walk.venue.venuePublish}"
+                 for="walk-publish-venue">Publish venue on site
+            <input [disabled]="!allowEdits()"
+                   [(ngModel)]="displayedWalk.walk.venue.venuePublish"
+                   type="checkbox" id="walk-publish-venue">
+          </label>
+        </div>
+      </div>
+      <div class="col-sm-8" *ngIf="allowEdits()">
+        <div class="form-group" *ngIf="displayedWalk.walk.venue.url">
+          <label>Link preview:
+            <i class="glyphicon {{displayedWalk.walk.venue.type | toVenueIcon}} glyphicon-icon fa-lg">
+            </i>
+            <a [href]="displayedWalk.walk.venue.url" target="_blank">
+            <span class="related-links-title" tooltip-placement="left"
+                  tooltip="Click to visit {{displayedWalk.walk.venue.name}}"></span>{{displayedWalk.walk.venue.name}}
+            </a>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

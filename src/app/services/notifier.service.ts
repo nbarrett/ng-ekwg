@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { isObject } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget, AlertType } from "../models/alert-target.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { StringUtilsService } from "./string-utils.service";
 
 const ALERT_ERROR: AlertType = {class: "alert-danger", icon: "glyphicon-exclamation-sign", failure: true};
 const ALERT_WARNING: AlertType = {class: "alert-warning", icon: "glyphicon-info-sign"};
@@ -15,11 +15,11 @@ const ALERT_SUCCESS: AlertType = {class: "alert-success", icon: "glyphicon-ok"};
 
 export class NotifierService {
 
-  constructor(private loggerFactory: LoggerFactory) {
+  constructor(private stringUtils: StringUtilsService, private loggerFactory: LoggerFactory) {
   }
 
   createAlertInstance(alertTarget: AlertTarget, level?: NgxLoggerLevel): AlertInstance {
-    return new AlertInstance(alertTarget, level, this.loggerFactory);
+    return new AlertInstance(alertTarget, level, this.loggerFactory, this.stringUtils);
   }
 
 }
@@ -27,7 +27,7 @@ export class NotifierService {
 export class AlertInstance {
   private logger: Logger;
 
-  constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory) {
+  constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
     this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.INFO);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;
     this.alertTarget.alert = ALERT_SUCCESS;
@@ -53,13 +53,9 @@ export class AlertInstance {
     return this.alertTarget.showContactUs = state;
   }
 
-  private isAlertMessage(message: AlertMessage | string): message is AlertMessage {
-    return message && (message as AlertMessage).message !== undefined;
-  }
-
   notifyAlertMessage(alertType: AlertType, message?: AlertMessage | string, append?: boolean, busy?: boolean) {
 
-    const messageText = this.isAlertMessage(message) ? message.message : isObject(message) ? JSON.stringify(message) : message;
+    const messageText = this.stringUtils.stringify(message);
 
     if (busy) {
       this.setBusy();
@@ -70,14 +66,14 @@ export class AlertInstance {
     if (messageText) {
       this.alertTarget.alertMessages.push(messageText);
     }
-    this.alertTarget.alertTitle = this.isAlertMessage(message) ? message.title : undefined;
+    this.alertTarget.alertTitle = this.stringUtils.isAlertMessage(message) ? message.title : undefined;
     this.alertTarget.alert = alertType;
     this.alertTarget.alertClass = alertType.class;
     this.alertTarget.showAlert = this.alertTarget.alertMessages.length > 0;
     this.alertTarget.alertMessage = this.alertTarget.alertMessages.join(", ");
     if (alertType === ALERT_ERROR) {
       this.clearBusy();
-      if (this.isAlertMessage(message) && !message.continue) {
+      if (this.stringUtils.isAlertMessage(message) && !message.continue) {
         this.logger.error("notifyAlertMessage:", "class =", alertType, "messageText =", messageText, "append =", append);
         throw message;
       } else {

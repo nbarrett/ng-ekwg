@@ -18,6 +18,6 @@ export interface AlertType {
 
 export interface AlertMessage {
   title: string;
-  message: string;
+  message: any;
   continue?: boolean;
 }

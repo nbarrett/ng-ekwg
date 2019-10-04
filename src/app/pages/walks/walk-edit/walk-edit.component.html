@@ -84,7 +84,7 @@
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-12">
-            <div class="thumbnail thumbnail-campaign-settings">
+            <div class="thumbnail thumbnail-walk-edit">
               <div class="thumbnail-heading">Ramblers</div>
               <div class="form-group">
                 <p *ngIf="!insufficientDataToUploadToRamblers() && !ramblersWalkExists()">
@@ -109,43 +109,64 @@
                   </div>
                 </div>
               </div>
-              <div class="form-group" *ngIf="ramblersWalkExists()">
-                <label>Link preview:
-                  <img class="related-links-image"
-                       src="assets/images/ramblers/favicon.ico"
-                       alt="Click to view on Ramblers Walks and Events Manager"/>
-                  <a target="_blank"
-                     [href]="display.ramblersLink(displayedWalk.walk)">
+              <div class="row">
+                <div class="col-sm-4" *ngIf="allowEdits()">
+                  <div class="checkbox-group">
+                    <label [ngClass]="{'ui-state-active': displayedWalk.walk.ramblersPublish}"
+                           for="publish-ramblers">Publish to Ramblers
+                      <input [disabled]="!allowEdits() || saveInProgress"
+                             [(ngModel)]="displayedWalk.walk.ramblersPublish"
+                             type="checkbox" id="publish-ramblers">
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-8" *ngIf="ramblersWalkExists()">
+                  <div class="form-group">
+                    <label>Link preview:
+                      <img class="related-links-image"
+                           src="assets/images/ramblers/favicon.ico"
+                           alt="Click to view on Ramblers Walks and Events Manager"/>
+                      <a target="_blank"
+                         [href]="display.ramblersLink(displayedWalk.walk)">
                                             <span class="related-links-title"
                                                   tooltip-placement="left"
                                                   tooltip="Click to view on Ramblers Walks and Events Manager">
                                           Ramblers: {{displayedWalk.walk.briefDescriptionAndStartPoint}}</span></a></label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <app-walk-venue [displayedWalk]="displayedWalk"></app-walk-venue>
           <div class="col-sm-12">
-            <div class="row thumbnail thumbnail-campaign-settings">
+            <div class="row thumbnail thumbnail-walk-edit">
               <div class="thumbnail-heading">Meetup</div>
               <div class="row">
-                <div class="col-sm-1">
-                  <input type="submit" value="Unlink"
-                         (click)="unlinkMeetup()"
-                         title="Remove link between this walk and Meetup"
-                         [disabled]="!canUnlinkMeetup()"
-                         [ngClass]="canUnlinkMeetup() ? 'mt-6 button-form': 'mt-6 disabled-button-form'">
-                </div>
-                <div class="col-sm-11 green-bullets-no-rule">
+                <div class="col-sm-12 green-bullets-no-rule">
                   <app-markdown-editor name="meetup-help" description="Linking to Meetup"></app-markdown-editor>
                 </div>
               </div>
-              <div *ngIf="allowAdminEdits() " class="form-group mt-8">
-                <label for="meetup-event-url">Link to Meetup event:</label>
+              <div *ngIf="false" class="form-inline mt-8">
+                <label for="meetup-event-url">Link to <select [disabled]="!displayedWalk.walk.meetupPublish"
+                                                              class="form-control input-sm"
+                                                              [(ngModel)]="meetupEventStatus"
+                                                              (ngModelChange)="meetupEventStatusChanged($event)"
+                                                              class="form-control"
+                                                              id="meetup-event-status">
+                  <option *ngFor="let meetupEventStatus of meetupService.meetupEventStatuses() ;"
+                          [ngValue]="meetupEventStatus"
+                          [textContent]="meetupEventStatus">
+                  </option>
+                </select> Meetup event:</label>
+              </div>
+              <div *ngIf="false" class="form-group mt-6">
                 <select class="form-control input-sm"
+                        [disabled]="!displayedWalk.walk.meetupPublish"
                         [(ngModel)]="meetupEvent"
                         (ngModelChange)="meetupEventUrlChange($event)"
                         class="form-control"
                         id="meetup-event-url">
-                  <option *ngFor="let meetupEvent of display.meetupEvents;"
+                  <option *ngFor="let meetupEvent of meetupEvents;"
                           [ngValue]="meetupEvent"
                           [textContent]="meetupEvent | meetupEventSummary">
                   </option>
@@ -153,36 +174,44 @@
               </div>
               <div *ngIf="false" class="form-group">
                 <label for="meetup-title">Meetup event title</label>
-                <input [disabled]="!allowEdits()" [ngModel]="displayedWalk.walk.meetupEventTitle"
+                <input [disabled]="!allowEdits() && !displayedWalk.walk.meetupPublish"
+                       [ngModel]="displayedWalk.walk.meetupEventTitle"
                        type="text" value="" class="form-control input-sm"
                        id="meetup-title"
                        placeholder="Enter optional title for Meetup event">
               </div>
-              <div class="form-group" *ngIf="displayedWalk.walk.meetupEventUrl">
-                <label>Link preview:
-                  <img class="related-links-image" src="assets/images/local/meetup.ico"
-                       alt=""/>
-                  <a target="_blank"
-                     [href]="displayedWalk.walk.meetupEventUrl">
+              <div class="row">
+                <div class="col-sm-4" *ngIf="allowEdits()">
+                  <div class="checkbox-group">
+                    <label [ngClass]="{'ui-state-active': displayedWalk.walk.meetupPublish}"
+                           for="walk-publish-meetup">Publish this walk to Meetup
+                      <input [disabled]="!allowEdits() || saveInProgress"
+                             [(ngModel)]="displayedWalk.walk.meetupPublish"
+                             type="checkbox" id="walk-publish-meetup">
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-8" *ngIf="allowEdits()">
+                  <div class="form-group" *ngIf="displayedWalk.walk.meetupEventUrl">
+                    <label>Link preview:
+                      <img class="related-links-image" src="assets/images/local/meetup.ico"
+                           alt=""/>
+                      <a target="_blank"
+                         [href]="displayedWalk.walk.meetupEventUrl">
                                             <span class="related-links-title"
                                                   tooltip-placement="left"
                                                   tooltip="Click to view this walk in Meetup">
                                           Meetup: {{displayedWalk.walk.meetupEventTitle || displayedWalk.walk.briefDescriptionAndStartPoint}}</span></a></label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-sm-12">
-            <div class="row thumbnail thumbnail-campaign-settings">
+            <div class="row thumbnail thumbnail-walk-edit">
               <div class="thumbnail-heading">OS Maps</div>
               <div class="row">
-                <div class="col-sm-1">
-                  <input type="submit" value="Unlink"
-                         (click)="unlinkOSMapsFromCurrentWalk()"
-                         title="Remove link between this walk and OS Maps"
-                         [disabled]="!canUnlinkOSMaps()|| !allowEdits()"
-                         [ngClass]="canUnlinkOSMaps() ? 'button-form': 'button-form disabled-button-form'">
-                </div>
-                <div class="col-sm-11">
+                <div class="col-sm-12">
                   <div class="green-bullets-no-rule">
                     <app-markdown-editor name="os-maps-help" description="Linking to OS Maps"></app-markdown-editor>
                   </div>
@@ -211,7 +240,14 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-4">
+                  <input type="submit" value="Unlink"
+                         (click)="unlinkOSMapsFromCurrentWalk()"
+                         title="Remove link between this walk and OS Maps"
+                         [disabled]="!canUnlinkOSMaps()|| !allowEdits()"
+                         [ngClass]="canUnlinkOSMaps() ? 'button-form': 'button-form disabled-button-form'">
+                </div>
+                <div class="col-sm-8">
                   <div class="form-group">
                     <div *ngIf="displayedWalk.walk.osMapsRoute">
                       <label>Link preview: </label>
