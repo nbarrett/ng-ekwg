@@ -128,10 +128,11 @@
                            alt="Click to view on Ramblers Walks and Events Manager"/>
                       <a target="_blank"
                          [href]="display.ramblersLink(displayedWalk.walk)">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view on Ramblers Walks and Events Manager">
-                                          Ramblers: {{displayedWalk.walk.briefDescriptionAndStartPoint}}</span></a></label>
+                        <span class="related-links-title"
+                              tooltip-placement="left"
+                              tooltip="Click to view on Ramblers Walks and Events Manager">View walk on Ramblers
+                        </span>
+                      </a></label>
                   </div>
                 </div>
               </div>
@@ -198,10 +199,11 @@
                            alt=""/>
                       <a target="_blank"
                          [href]="displayedWalk.walk.meetupEventUrl">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view this walk in Meetup">
-                                          Meetup: {{displayedWalk.walk.meetupEventTitle || displayedWalk.walk.briefDescriptionAndStartPoint}}</span></a></label>
+                        <span class="related-links-title"
+                               tooltip-placement="left"
+                               tooltip="Click to view this walk in Meetup">
+                          View event on Meetup</span>
+                      </a></label>
                   </div>
                 </div>
               </div>
@@ -256,10 +258,12 @@
                            alt=""/>
                       <a target="_blank"
                          [href]="displayedWalk.walk.osMapsRoute" class="text1">
-                                            <span class="related-links-title"
-                                                  tooltip-placement="left"
-                                                  tooltip="Click to view the route for this walk on Ordnance Survey Maps">
-                                          Maps: {{displayedWalk.walk.osMapsTitle || displayedWalk.walk.briefDescriptionAndStartPoint}}</span></a>
+                        <span class="related-links-title"
+                              tooltip-placement="left"
+                              tooltip="Click to view the route for this walk on Ordnance Survey Maps">
+                          View map on OS Maps
+                        </span>
+                      </a>
                     </div>
                   </div>
                 </div>

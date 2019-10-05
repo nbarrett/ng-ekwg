@@ -30,7 +30,7 @@ export class WalkVenueComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("venue is", this.displayedWalk.walk.venue);
+    this.logger.debug("venue is", this.displayedWalk.walk.venue);
     this.venueTypes = this.walksReferenceService.venueTypes();
   }
 

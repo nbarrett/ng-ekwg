@@ -14,6 +14,7 @@ import { MeetupVenueConflictResponse, MeetupVenueCreatedResponse, MeetupVenueRes
 import { Walk } from "../models/walk.model";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { AlertInstance } from "./notifier.service";
 import { StringUtilsService } from "./string-utils.service";
 
 @Injectable({
@@ -27,7 +28,7 @@ export class MeetupService {
   constructor(private dateUtils: DateUtilsService,
               private stringUtils: StringUtilsService,
               private http: HttpClient, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MeetupService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MeetupService, NgxLoggerLevel.INFO);
   }
 
   config() {
@@ -73,25 +74,25 @@ export class MeetupService {
     return this.eventsUpdated.asObservable();
   }
 
-  async createOrDeleteMeetupEvent(walk: Walk): Promise<any> {
-    this.logger.info("createOrDeleteMeetupEvent:meetupPublish", walk.meetupPublish, "meetupEventUrl", walk.meetupEventUrl);
+  async createOrDeleteMeetupEvent(notify: AlertInstance, walk: Walk): Promise<any> {
     if (walk.meetupPublish) {
-      const eventExists = await this.eventExists(walk);
+      const eventExists = await this.eventExists(notify, walk);
       if (eventExists) {
-        return this.updateEvent(walk);
+        return this.updateEvent(notify, walk);
       } else {
-        return this.createEvent(walk);
+        return this.createEvent(notify, walk);
       }
     } else if (walk.meetupEventUrl) {
-      return this.deleteEvent(walk);
+      return this.deleteEvent(notify, walk);
     } else {
       const reason = "no action taken as meetupPublish was false and walk had no existing publish status";
-      this.logger.info(reason);
+      this.logger.debug(reason);
       return Promise.resolve(reason);
     }
   }
 
-  async deleteEvent(walk: Walk): Promise<MeetupEventResponse> {
+  async deleteEvent(notify: AlertInstance, walk: Walk): Promise<MeetupEventResponse> {
+    notify.progress({title: "Meetup", message: "Deleting existing event"});
     const eventId = this.eventIdFrom(walk);
     const apiResponse: ApiResponse = await this.http.delete<ApiResponse>("/api/meetup/events/delete/" + eventId).toPromise();
     this.logger.debug("delete event API response", apiResponse);
@@ -100,8 +101,9 @@ export class MeetupService {
     return apiResponse.response;
   }
 
-  async createEvent(walk: Walk): Promise<MeetupEventResponse> {
-    const eventRequest = await this.eventRequestFor(walk);
+  async createEvent(notify: AlertInstance, walk: Walk): Promise<MeetupEventResponse> {
+    notify.progress({title: "Meetup", message: "Creating new event"});
+    const eventRequest = await this.eventRequestFor(notify, walk);
     const apiResponse = await this.http.post<ApiResponse>("/api/meetup/events/create", eventRequest).toPromise();
     this.logger.debug("create event API response", apiResponse);
     const eventResponse: MeetupEventResponse = apiResponse.response;
@@ -110,7 +112,8 @@ export class MeetupService {
     return eventResponse;
   }
 
-  async createOrMatchVenue(walk: Walk): Promise<MeetupVenueResponse> {
+  async createOrMatchVenue(notify: AlertInstance, walk: Walk): Promise<MeetupVenueResponse> {
+    notify.progress({title: "Meetup", message: "Creating new event"});
     const venueRequest = this.venueRequestFor(walk);
     try {
       const createResponse = await this.http.post<ApiResponse>("/api/meetup/venues/create", venueRequest).toPromise();
@@ -130,33 +133,35 @@ export class MeetupService {
   }
 
   extractErrorsFrom(httpErrorResponse: HttpErrorResponse): string {
-    this.logger.info("api response was", httpErrorResponse);
+    this.logger.debug("api response was", httpErrorResponse);
     return httpErrorResponse.error.response.errors.map(error => this.stringUtils.stringifyObject(error));
   }
 
-  async updateEvent(walk: Walk): Promise<MeetupEventResponse> {
-    this.logger.info("updateEvent for", walk);
-    const request = await this.eventRequestFor(walk);
+  async updateEvent(notify: AlertInstance, walk: Walk): Promise<MeetupEventResponse> {
+    notify.progress({title: "Meetup", message: "Updating existing event"});
+    this.logger.debug("updateEvent for", walk);
+    const request = await this.eventRequestFor(notify, walk);
     const eventId = this.eventIdFrom(walk);
     const apiResponse = await this.http.patch<ApiResponse>("/api/meetup/events/update/" + eventId, request).toPromise();
-    this.logger.info("event update response for event id", eventId, "is", apiResponse);
+    this.logger.debug("event update response for event id", eventId, "is", apiResponse);
     return apiResponse.response;
   }
 
-  async eventExists(walk: Walk): Promise<boolean> {
+  async eventExists(notify: AlertInstance, walk: Walk): Promise<boolean> {
+    notify.progress({title: "Meetup", message: "Checking for existence of event"});
     const eventId = this.eventIdFrom(walk);
     if (eventId) {
       const apiResponse = await this.http.get<ApiResponse>("/api/meetup/events/" + eventId).toPromise();
-      this.logger.info("event query response for event id", eventId, "is", apiResponse);
+      this.logger.debug("event query response for event id", eventId, "is", apiResponse);
       return apiResponse.apiStatusCode === 200;
     } else {
       return false;
     }
   }
 
-  async eventRequestFor(walk: Walk): Promise<MeetupEventRequest> {
-    const venueResponse: MeetupVenueResponse = await this.createOrMatchVenue(walk);
-    this.logger.info("venue for", walk.postcode, "is", venueResponse);
+  async eventRequestFor(notify: AlertInstance, walk: Walk): Promise<MeetupEventRequest> {
+    const venueResponse: MeetupVenueResponse = await this.createOrMatchVenue(notify, walk);
+    this.logger.debug("venue for", walk.postcode, "is", venueResponse);
     const eventRequest = {
       venue_id: venueResponse.id,
       time: this.dateUtils.startTime(walk),
@@ -168,7 +173,7 @@ export class MeetupService {
       name: walk.briefDescriptionAndStartPoint,
       description: walk.longerDescription
     };
-    this.logger.info("request about to be submitted for walk is", eventRequest);
+    this.logger.debug("request about to be submitted for walk is", eventRequest);
     return eventRequest;
   }
 
@@ -183,7 +188,7 @@ export class MeetupService {
     if (walk.venue.address2) {
       venueRequest.address_2 = walk.venue.address2;
     }
-    this.logger.info("venue request prepared for walk is", venueRequest);
+    this.logger.debug("venue request prepared for walk is", venueRequest);
     return venueRequest;
   }
 

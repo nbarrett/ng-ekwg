@@ -229,9 +229,9 @@ export class WalkEditComponent implements OnInit {
 
   showWalk(displayedWalk: DisplayedWalk) {
     if (displayedWalk) {
-      this.logger.info("showWalk", displayedWalk.walk);
+      this.logger.debug("showWalk", displayedWalk.walk);
       if (!displayedWalk.walk.venue) {
-        this.logger.info("initialising walk venue");
+        this.logger.debug("initialising walk venue");
         displayedWalk.walk.venue = {type: this.walksReferenceService.venueTypes()[0].type, postcode: displayedWalk.walk.postcode};
       }
       this.confirmAction = ConfirmType.NONE;
@@ -395,7 +395,7 @@ export class WalkEditComponent implements OnInit {
   meetupSelectSync(walk: Walk) {
     const meetupEventUrl = walk.meetupEventUrl || "";
     this.meetupEvent = this.meetupEvents.find(event => meetupEventUrl.includes(event.link)) as MeetupEventResponse;
-    this.logger.info("meetupSelectSync:this.meetupEvents", this.meetupEvents, "=>", this.meetupEvent);
+    this.logger.debug("meetupSelectSync:this.meetupEvents", this.meetupEvents, "=>", this.meetupEvent);
   }
 
   ramblersWalkExists() {
@@ -516,7 +516,9 @@ export class WalkEditComponent implements OnInit {
   }
 
   public saveWalkDetails(): void {
-    this.meetupService.createOrDeleteMeetupEvent(this.displayedWalk.walk)
+    this.notify.setBusy();
+    this.saveInProgress = true;
+    this.meetupService.createOrDeleteMeetupEvent(this.notify, this.displayedWalk.walk)
       .then(() => this.sendNotificationsSaveAndCloseIfNotSent())
       .catch(error => this.notifyError(error));
   }
@@ -687,11 +689,11 @@ export class WalkEditComponent implements OnInit {
 
   meetupEventStatusChanged(status: string) {
     this.notify.setBusy();
-    this.logger.info("meetupEventStatusChanged:", status);
+    this.logger.debug("meetupEventStatusChanged:", status);
     this.meetupService.eventsForStatus(status);
     this.meetupEventsSub = this.meetupService.eventsListener()
       .subscribe((events: MeetupEventResponse[]) => {
-        this.logger.info("meetupService returned event:", events);
+        this.logger.debug("meetupService returned event:", events);
         this.meetupEvents = events;
         this.meetupSelectSync(this.displayedWalk.walk);
         this.notify.clearBusy();

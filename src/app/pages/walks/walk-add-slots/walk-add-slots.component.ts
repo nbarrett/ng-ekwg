@@ -61,7 +61,7 @@ export class WalkAddSlotsComponent implements OnInit {
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
