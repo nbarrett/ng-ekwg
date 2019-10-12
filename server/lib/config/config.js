@@ -67,8 +67,7 @@ module.exports = {
       userName: validatedEnvironmentVariable("RAMBLERS_GWEM_USER"),
     },
     listWalksPath: config.ramblers.listWalksPath,
-    url: config.ramblers.url,
-    walkDescriptionPrefix: config.ramblers.walkDescriptionPrefix,
+    url: config.ramblers.url
   },
   server: {
     cookieSecret: config.server.cookieSecret,

@@ -1,18 +1,23 @@
 "use strict";
 const config = require("../config/config");
-const messageHandlers = require("./message-handlers");
+const messageHandlers = require("../shared/message-handlers");
 const debug = require("debug")(config.logNamespace("event-update"));
+const requestDefaults = require("./request-defaults");
 
 exports.updateEvent = function (req, res) {
+  const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   messageHandlers.httpRequest({
-    debug: debug,
+    apiRequest: {
+      hostname: defaultOptions.hostname,
+      protocol: defaultOptions.protocol,
+      headers: defaultOptions.headers,
+      method: "patch",
+      path: `/${config.meetup.group}/events/${req.params.eventId}`,
+    },
     body: req.body,
     res: res,
     req: req,
-    requestOptions: {
-      method: "patch",
-      path: `/${config.meetup.group}/events/${req.params.eventId}`
-    },
+    debug: debug
   }).then(response => res.json(response))
     .catch(error => res.json(error));
 };

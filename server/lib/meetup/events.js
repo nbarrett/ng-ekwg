@@ -2,34 +2,43 @@
 const config = require("../config/config");
 const debug = require("debug")(config.logNamespace("meetup:events"));
 const moment = require("moment-timezone");
-const messageHandlers = require("./message-handlers");
+const messageHandlers = require("../shared/message-handlers");
+const requestDefaults = require("./request-defaults");
 
 exports.all = function (req, res) {
+  const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   const detail = req.query.detail && (req.query.detail === "true");
   const status = req.query.status || "upcoming";
   debug("detail type", typeof req.query.detail)
   messageHandlers.httpRequest({
-    debug: debug,
+    apiRequest: {
+      hostname: defaultOptions.hostname,
+      protocol: defaultOptions.protocol,
+      headers: defaultOptions.headers,
+      method: "get",
+      path: `/${config.meetup.group}/events?&sign=true&photo-host=public&page=20&status=${status}`
+    },
+    mapper: detail ? undefined : toConciseResponse,
     res: res,
     req: req,
-    requestOptions: {
-      method: "get",
-      path: `/${config.meetup.group}/events?&sign=true&photo-host=public&page=20&status=${status}`,
-    },
-    mapper: detail ? undefined : toConciseResponse
+    debug: debug
   }).then(response => res.json(response))
     .catch(error => res.json(error));
 };
 
 exports.single = function (req, res) {
+  const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   messageHandlers.httpRequest({
-    debug: debug,
-    res: res,
-    req: req,
-    requestOptions: {
+    apiRequest: {
+      hostname: defaultOptions.hostname,
+      protocol: defaultOptions.protocol,
+      headers: defaultOptions.headers,
       method: "get",
       path: `/${config.meetup.group}/events/${req.params.eventId}`
-    }
+    },
+    res: res,
+    req: req,
+    debug: debug
   }).then(response => res.json(response))
     .catch(error => res.json(error));
 };

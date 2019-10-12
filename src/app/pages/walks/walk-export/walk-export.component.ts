@@ -170,7 +170,11 @@ export class WalkExportComponent implements OnInit, OnDestroy {
           .then((walksForExport) => this.populateWalkExport(walksForExport))
           .catch(error => {
             this.logger.error("error->", error);
-            this.walkExportNotifier.error({title: "Problem with Ramblers export preparation", message: error});
+            this.walkExportNotifier.error({
+              title: "Problem with Ramblers export preparation",
+              continue: true,
+              message: error.data.response.error + " - " + error.data.message
+            });
           });
       });
   }

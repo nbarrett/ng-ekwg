@@ -2,7 +2,7 @@ ramblers:
   url:  https://www.ramblers.org.uk
   walkDescriptionPrefix: Age range 20s-40s
   groupCode: KT50
-  listWalksPath: api/lbs/walks?groups=KT50
+  listWalksPath: /api/lbs/walks?groups=KT50
 meetup:
   url: https://www.meetup.com
   apiUrl: https://api.meetup.com

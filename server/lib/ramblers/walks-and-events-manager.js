@@ -1,31 +1,31 @@
-let config = require("../config/config");
-let debug = require("debug")(config.logNamespace("ramblers:walksAndEventsManager"));
-var url = require("url");
-let _ = require("underscore");
-let moment = require("moment-timezone");
-let https = require("https");
+"use strict";
+const config = require("../config/config");
 let ramblersConfig = config.ramblers;
+const debug = require("debug")(config.logNamespace("ramblers:gwem"));
+const moment = require("moment-timezone");
+const messageHandlers = require("../shared/message-handlers");
+const requestDefaults = require("./request-defaults");
 
-debug("Proxying requests at", ramblersConfig.url);
-
-var createRequestOptions = function (req, requestUrl) {
-  var ramblersUrl = url.parse(ramblersConfig.url);
-  var requestOptions = {
-    path: ramblersConfig.url + "/" + requestUrl,
-    hostname: ramblersUrl.hostname,
-    protocol: ramblersUrl.protocol,
-    method: req.method,
-    headers: {
-      "Content-Type": "application/json",
+exports.listWalks = function (req, res) {
+  const defaultOptions = requestDefaults.createApiRequestOptions()
+  messageHandlers.httpRequest({
+    apiRequest: {
+      hostname: defaultOptions.hostname,
+      protocol: defaultOptions.protocol,
+      headers: defaultOptions.headers,
+      method: "get",
+      path: ramblersConfig.listWalksPath
     },
-  };
-  debug("mapping Request from client path", req.method, req.url, "-> server path", requestOptions.path);
-  if (!_.isEmpty(req.body)) debug("request body: ", req.body);
-  return requestOptions;
+    debug: debug,
+    res: res,
+    req: req,
+    mapper: transformListWalksResponse
+  }).then(response => res.json(response))
+    .catch(error => res.json(error));
 };
 
-function transformListWalksResponse(res, req, rawJson) {
-  var walks = _(JSON.parse(rawJson)).map(function (walk) {
+function transformListWalksResponse(jsonData) {
+  return jsonData.map(function (walk) {
     var walkMoment = moment(walk.date, moment.ISO_8601).tz("Europe/London");
     return {
       ramblersWalkId: walk.id.toString(),
@@ -34,54 +34,8 @@ function transformListWalksResponse(res, req, rawJson) {
       ramblersWalkDateValue: walkMoment.valueOf(),
     };
   });
-  var returnData = {responseData: walks, information: "Found " + walks.length + " walk(s)"};
-  debug("returning", returnData);
-  res.json(returnData);
 }
-
-function createErrorResponse(errorMessage) {
-  debug(errorMessage);
-  return {responseData: [], error: errorMessage};
-}
-
-function sendRequest(requestOptions, res, req, transformFunction) {
-  try {
-    var dbReq = https.request(requestOptions, function (dbRes) {
-      var responseData = "";
-      dbRes.setEncoding("utf8");
-      dbRes.on("data", function (chunk) {
-        responseData = (responseData + chunk).trim();
-      });
-      dbRes.on("error", function (error) {
-        debug("ERROR: ", error);
-      });
-      dbRes.on("end", function () {
-        res.headers = dbRes.headers;
-        res.header("Content-Type", "application/json");
-        res.statusCode = dbRes.statusCode;
-        res.httpVersion = dbRes.httpVersion;
-        res.trailers = dbRes.trailers;
-        transformFunction(res, req, responseData);
-        res.end();
-      });
-    });
-    dbReq.end();
-  } catch (error) {
-    debug("ERROR: ", error.stack);
-    res.json(createErrorResponse(error));
-    res.end();
-  }
-}
-
-exports.listWalks = function (req, res) {
-  sendRequest(createRequestOptions(req, ramblersConfig.listWalksPath), res, req, transformListWalksResponse);
-};
 
 exports.walkBaseUrl = function (req, res) {
   return res.send(ramblersConfig.url + "/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=");
 };
-
-exports.walkDescriptionPrefix = function (req, res) {
-  return res.send(ramblersConfig.walkDescriptionPrefix);
-};
-

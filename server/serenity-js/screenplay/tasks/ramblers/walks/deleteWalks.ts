@@ -54,7 +54,7 @@ export class DeleteUnpublishedOrWalksWithIds implements Task {
                 .andIfSo(SelectWalks.notPublishedOrWithIds(this.walkIds),
                     Unpublish.selectedWalks(),
                     Delete.selectedWalks())
-                .otherwise(Log.message(`it"s not possible to delete walks ${this.walkIds}`)));
+                .otherwise(Log.message(`it's not possible to delete walks ${this.walkIds}`)));
     };
 
 }

@@ -51,7 +51,6 @@ angular.module('ekwgApp')
 
     function walkTitle(walk) {
       var walkDescription = [];
-      if (walk.includeWalkDescriptionPrefix) walkDescription.push(walk.walkDescriptionPrefix);
       if (walk.briefDescriptionAndStartPoint) walkDescription.push(walk.briefDescriptionAndStartPoint);
       return _.chain(walkDescription).map(replaceSpecialCharacters).value().join('. ');
     }
