@@ -1,6 +1,7 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { isEmpty, last } from "lodash-es";
+import isEmpty from "lodash-es/isEmpty";
+import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { mergeMap } from "rxjs/operators";

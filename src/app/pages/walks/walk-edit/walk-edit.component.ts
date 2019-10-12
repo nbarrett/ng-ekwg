@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
-import { clone, isEmpty, pick } from "lodash-es";
+import clone from "lodash-es/clone";
+import isEmpty from "lodash-es/isEmpty";
+import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";

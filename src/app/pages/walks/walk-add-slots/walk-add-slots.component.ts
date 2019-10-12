@@ -1,6 +1,8 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { difference, map, times } from "lodash-es";
+import difference from "lodash-es/difference";
+import map from "lodash-es/map";
+import times from "lodash-es/times";
 import { NgxLoggerLevel } from "ngx-logger";
 import { LoggedInMemberService, WalksService } from "../../../ajs-upgraded-providers";
 import { LoginService } from "../../../login/login.service";
@@ -134,7 +136,10 @@ export class WalkAddSlotsComponent implements OnInit {
   addWalkSlot() {
     this.notify.setBusy();
     this.notify.hide();
-    this.walksService.query({walkDate: {$eq: this.dateUtils.asValueNoTime(this.singleSlot)}}, {fields: {events: 1, walkDate: 1}, sort: {walkDate: 1}})
+    this.walksService.query({walkDate: {$eq: this.dateUtils.asValueNoTime(this.singleSlot)}}, {
+      fields: {events: 1, walkDate: 1},
+      sort: {walkDate: 1}
+    })
       .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
         this.notify.clearBusy();

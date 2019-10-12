@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { isNaN } from "lodash-es";
+import isNaN from "lodash-es/isNaN";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../functions/chain";
 import { Logger, LoggerFactory } from "./logger-factory.service";

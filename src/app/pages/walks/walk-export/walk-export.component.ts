@@ -1,6 +1,7 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { find } from "lodash-es";
+import find from "lodash-es/find";
+import get from "lodash-es/get";
 import { NgxLoggerLevel } from "ngx-logger";
 import { interval, Observable, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
@@ -173,11 +174,11 @@ export class WalkExportComponent implements OnInit, OnDestroy {
             this.walkExportNotifier.error({
               title: "Problem with Ramblers export preparation",
               continue: true,
-              message: error.data.response.error + " - " + error.data.message
+              message: get(error, "data.response.error") + " - " + get(error, "data.message")
             });
           });
       });
-  }
+  };
 
   changeWalkExportSelection(walk: any) {
     if (walk.validationMessages.length === 0) {

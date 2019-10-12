@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { NavigationEnd, Router } from "@angular/router";
-import { first } from "lodash-es";
+import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { filter } from "rxjs/operators";
 import { Logger, LoggerFactory } from "./logger-factory.service";

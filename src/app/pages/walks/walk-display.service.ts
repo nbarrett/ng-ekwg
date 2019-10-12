@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
-import { find } from "lodash-es";
+import find from "lodash-es/find";
 import { PopoverDirective } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";

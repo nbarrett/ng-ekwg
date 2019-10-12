@@ -1,5 +1,5 @@
 import { Inject, Pipe, PipeTransform } from "@angular/core";
-import { map } from "lodash-es";
+import map from "lodash-es/map";
 import { humanize } from "underscore.string";
 import { Member } from "../models/member.model";
 import { WalkEvent } from "../models/walk-event.model";

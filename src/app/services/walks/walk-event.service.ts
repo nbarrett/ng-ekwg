@@ -1,5 +1,11 @@
 import { Inject, Injectable } from "@angular/core";
-import { clone, compact, isArray, isNil, last, omitBy, pick } from "lodash-es";
+import clone from "lodash-es/clone";
+import compact from "lodash-es/compact";
+import isArray from "lodash-es/isArray";
+import isNil from "lodash-es/isNil";
+import last from "lodash-es/last";
+import omitBy from "lodash-es/omitBy";
+import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ChangedItem } from "../../models/changed-item.model";
 import { WalkDataAudit } from "../../models/walk-data-audit.model";

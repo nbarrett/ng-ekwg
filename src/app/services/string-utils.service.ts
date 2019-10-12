@@ -1,5 +1,8 @@
 import { Injectable } from "@angular/core";
-import { escapeRegExp, isNumber, isObject, map } from "lodash-es";
+import escapeRegExp from "lodash-es/escapeRegExp";
+import isNumber from "lodash-es/isNumber";
+import isObject from "lodash-es/isObject";
+import map from "lodash-es/map";
 import { humanize } from "underscore.string";
 import { AlertMessage } from "../models/alert-target.model";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";

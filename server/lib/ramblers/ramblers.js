@@ -1,7 +1,6 @@
 const express = require("express");
 const walksAndEventsManager = require("./walks-and-events-manager");
 const ramblersWalkUpload = require("./ramblers-walk-upload");
-
 const memberBulkLoad = require("./member-bulk-load");
 const config = require("../config/config");
 const multer = require("multer");
