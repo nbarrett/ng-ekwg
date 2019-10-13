@@ -13,7 +13,6 @@ angular.module('ekwgApp')
         if (responseData.error) {
           deferredTask.reject(response);
         } else {
-          deferredTask.notify(responseData.information);
           deferredTask.resolve(responseData)
         }
       }).catch(function (response) {
@@ -29,7 +28,7 @@ angular.module('ekwgApp')
   .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, LoggedInMemberService, CommitteeReferenceData) {
 
       var logger = $log.getInstance('RamblersWalksAndEventsService');
-      $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.DEBUG;
+      $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.OFF;
 
       function uploadRamblersWalks(data) {
         return RamblersHttpService.call('Upload Ramblers walks', 'POST', 'api/ramblers/gwem/upload-walks', data);
@@ -38,10 +37,6 @@ angular.module('ekwgApp')
       function listRamblersWalks() {
         return RamblersHttpService.call('List Ramblers walks', 'GET', 'api/ramblers/gwem/list-walks');
       }
-
-      var walkDescriptionPrefix = function () {
-        return RamblersHttpService.call('Ramblers description Prefix', 'GET', 'api/ramblers/gwem/walk-description-prefix');
-      };
 
       var walkBaseUrl = function () {
         return RamblersHttpService.call('Ramblers walk url', 'GET', 'api/ramblers/gwem/walk-base-url');
@@ -78,35 +73,35 @@ angular.module('ekwgApp')
 
       function updateWalksWithRamblersWalkData(walks) {
         var unreferencedList = collectExistingRamblersIdsFrom(walks);
-        logger.debug(unreferencedList.length, ' existing ramblers walk(s) found', unreferencedList);
+        logger.info(unreferencedList.length, ' existing ramblers walk(s) found', unreferencedList);
         return function (ramblersWalksResponses) {
           var savePromises = [];
-          _(ramblersWalksResponses.responseData).each(function (ramblersWalksResponse) {
+          _(ramblersWalksResponses.response).each(function (ramblersWalksResponse) {
             var foundWalk = _.find(walks, function (walk) {
               return DateUtils.asString(walk.walkDate, undefined, 'dddd, Do MMMM YYYY') === ramblersWalksResponse.ramblersWalkDate
             });
 
             if (!foundWalk) {
-              logger.debug('no match found for ramblersWalksResponse', ramblersWalksResponse);
+              logger.info('no match found for ramblersWalksResponse', ramblersWalksResponse);
             } else {
               unreferencedList = _.without(unreferencedList, ramblersWalksResponse.ramblersWalkId);
               if (foundWalk && foundWalk.ramblersWalkId !== ramblersWalksResponse.ramblersWalkId) {
-                logger.debug('updating walk from', foundWalk.ramblersWalkId || 'empty', '->', ramblersWalksResponse.ramblersWalkId, 'on', $filter('displayDate')(foundWalk.walkDate));
+                logger.info('updating walk from', foundWalk.ramblersWalkId || 'empty', '->', ramblersWalksResponse.ramblersWalkId, 'on', $filter('displayDate')(foundWalk.walkDate));
                 foundWalk.ramblersWalkId = ramblersWalksResponse.ramblersWalkId;
                 savePromises.push(foundWalk.$saveOrUpdate())
               } else {
-                logger.debug('no update required for walk', foundWalk.ramblersWalkId, foundWalk.walkDate, DateUtils.displayDay(foundWalk.walkDate));
+                logger.info('no update required for walk', foundWalk.ramblersWalkId, foundWalk.walkDate, DateUtils.displayDay(foundWalk.walkDate));
               }
             }
           });
 
           if (unreferencedList.length > 0) {
-            logger.debug('removing old ramblers walk(s)', unreferencedList, 'from existing walks');
+            logger.info('removing old ramblers walk(s)', unreferencedList, 'from existing walks');
             _.chain(unreferencedList)
               .each(function (ramblersWalkId) {
                 var walk = _.findWhere(walks, {ramblersWalkId: ramblersWalkId});
                 if (walk) {
-                  logger.debug('removing ramblers walk', walk.ramblersWalkId, 'from walk on', $filter('displayDate')(walk.walkDate));
+                  logger.info('removing ramblers walk', walk.ramblersWalkId, 'from walk on', $filter('displayDate')(walk.walkDate));
                   delete walk.ramblersWalkId;
                   savePromises.push(walk.$saveOrUpdate())
                 }
@@ -146,7 +141,7 @@ angular.module('ekwgApp')
 
       function uploadToRamblers(walkExports, members, notify) {
         notify.setBusy();
-        logger.debug('sourceData', walkExports);
+        logger.info('sourceData', walkExports);
         var deleteWalks = _.chain(exportableWalks(walkExports)).pluck('walk')
           .filter(function (walk) {
             return walk.ramblersWalkId;
@@ -162,7 +157,7 @@ angular.module('ekwgApp')
           deleteWalks: deleteWalks,
           ramblersUser: LoggedInMemberService.loggedInMember().firstName
         };
-        logger.debug('exporting', data);
+        logger.info('exporting', data);
         notify.warning({
           title: 'Ramblers walks upload',
           message: 'Uploading ' + rows.length + ' walk(s) to Ramblers...'
@@ -173,12 +168,12 @@ angular.module('ekwgApp')
               title: 'Ramblers walks upload',
               message: 'Upload of ' + rows.length + ' walk(s) to Ramblers has been submitted. Monitor the Walk upload audit tab for progress'
             });
-            logger.debug('success response data', response);
+            logger.info('success response data', response);
             notify.clearBusy();
             return fileName;
           })
           .catch(function (response) {
-            logger.debug('error response data', response);
+            logger.info('error response data', response);
             notify.error({
               title: 'Ramblers walks upload failed',
               message: response
@@ -249,7 +244,7 @@ angular.module('ekwgApp')
           });
 
           var returnValue = member && member.contactId;
-          logger.debug('contactId: for walkLeaderMemberId', walk.walkLeaderMemberId, '->', returnValue);
+          logger.info('contactId: for walkLeaderMemberId', walk.walkLeaderMemberId, '->', returnValue);
           return returnValue;
         }
       }
@@ -334,7 +329,6 @@ angular.module('ekwgApp')
       return {
         uploadToRamblers: uploadToRamblers,
         validateWalk: validateWalk,
-        walkDescriptionPrefix: walkDescriptionPrefix,
         walkBaseUrl: walkBaseUrl,
         exportWalksFileName: exportWalksFileName,
         createWalksForExportPrompt: createWalksForExportPrompt,

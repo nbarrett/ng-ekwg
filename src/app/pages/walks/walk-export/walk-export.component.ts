@@ -40,7 +40,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   public auditTarget: AlertTarget = {};
   private auditNotifier: AlertInstance;
   public csvOptions: {
-    headers: string[]; fieldSeparator?: string; useBom?: boolean;
+    headers: string[]; keys: string[]; fieldSeparator?: string; useBom?: boolean;
     showTitle?: boolean; quoteStrings?: string; title?: string; removeNewLines?: boolean
   };
   private intervalJob: Observable<any>;
@@ -59,7 +59,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -73,6 +73,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       fieldSeparator: ",",
       quoteStrings: "\"",
       headers: this.walksDownloadHeader(),
+      keys: this.walksDownloadHeader(),
       showTitle: false,
       useBom: false,
       removeNewLines: true
@@ -178,7 +179,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
             });
           });
       });
-  };
+  }
 
   changeWalkExportSelection(walk: any) {
     if (walk.validationMessages.length === 0) {

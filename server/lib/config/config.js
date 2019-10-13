@@ -66,6 +66,7 @@ module.exports = {
       password: validatedEnvironmentVariable("RAMBLERS_GWEM_PASSWORD"),
       userName: validatedEnvironmentVariable("RAMBLERS_GWEM_USER"),
     },
+    groupCode: config.ramblers.groupCode,
     listWalksPath: config.ramblers.listWalksPath,
     url: config.ramblers.url
   },
