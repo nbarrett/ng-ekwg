@@ -26,10 +26,10 @@ exports.listWalks = function (req, res) {
 
 function transformListWalksResponse(jsonData) {
   return jsonData.map(function (walk) {
-    var walkMoment = moment(walk.Date, moment.ISO_8601).tz("Europe/London");
+    var walkMoment = moment(walk.date, moment.ISO_8601).tz("Europe/London");
     return {
-      ramblersWalkId: walk.Id.toString(),
-      ramblersWalkTitle: walk.Title,
+      ramblersWalkId: walk.id.toString(),
+      ramblersWalkTitle: walk.title,
       ramblersWalkDate: walkMoment.format("dddd, Do MMMM YYYY"),
       ramblersWalkDateValue: walkMoment.valueOf(),
     };
