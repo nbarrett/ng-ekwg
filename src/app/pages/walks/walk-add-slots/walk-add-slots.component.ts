@@ -63,7 +63,7 @@ export class WalkAddSlotsComponent implements OnInit {
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkAddSlotsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -83,7 +83,8 @@ export class WalkAddSlotsComponent implements OnInit {
   createSlots(requiredSlots, message: AlertMessage) {
     this.requiredWalkSlots = requiredSlots.map(date => {
       const walk = new this.walksService({
-        walkDate: date
+        walkDate: date,
+        ramblersPublish: true
       });
       walk.events = [this.walkEventService.createEventIfRequired(walk,
         this.walksReferenceService.walkEventTypeMappings.awaitingLeader.eventType, "Walk slot created")];

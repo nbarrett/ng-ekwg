@@ -15,6 +15,7 @@ exports.updateEvent = function (req, res) {
       path: `/${config.meetup.group}/events/${req.params.eventId}`,
     },
     body: req.body,
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug

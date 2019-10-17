@@ -12,7 +12,7 @@ export class LoginComponent implements OnInit {
 
   constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
               public route: ActivatedRoute, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(LoginComponent, NgxLoggerLevel.OFF);
     this.logger.debug("constructed");
   }
 

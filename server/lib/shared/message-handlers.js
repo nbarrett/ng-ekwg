@@ -1,6 +1,5 @@
 "use strict";
 const config = require("../config/config");
-const successStatusCodes = [409, 410, 200, 201, 202, 204, 304];
 const https = require("https");
 const _ = require("underscore");
 const querystring = require("querystring");
@@ -19,7 +18,7 @@ exports.httpRequest = (options) => new Promise((resolve, reject) => {
     response.on("end", () => {
       const returnValue = {apiStatusCode: response.statusCode};
       let debugPrefix;
-      if (successStatusCodes.includes(response.statusCode)) {
+      if ((options.successStatusCodes || [200]).includes(response.statusCode)) {
         if (response.statusCode !== 200) {
           debugPrefix = "REMAPPED " + response.statusCode + " -> " + 200;
         } else {

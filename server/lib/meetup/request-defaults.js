@@ -4,6 +4,7 @@ const url = require("url");
 const querystring = require("querystring");
 
 exports.createApiRequestOptions = function (body) {
+  const successStatusCodes = [409, 410, 200, 201, 202, 204, 304];
   const meetupApiUrl = url.parse(config.meetup.apiUrl);
   let headers;
   if (body) {
@@ -21,6 +22,7 @@ exports.createApiRequestOptions = function (body) {
   }
 
   return {
+    successStatusCodes,
     hostname: meetupApiUrl.host,
     protocol: meetupApiUrl.protocol,
     headers: headers

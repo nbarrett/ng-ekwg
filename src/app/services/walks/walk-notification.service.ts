@@ -101,7 +101,7 @@ export class WalkNotificationService {
     return mappings.find(mapping => mapping.eventType === eventType);
   }
 
-  private toWalkNotification(displayedWalk: DisplayedWalk, members: Member[], reason?: string): WalkNotification {
+  public toWalkNotification(displayedWalk: DisplayedWalk, members: Member[], reason?: string): WalkNotification {
     const data = {
       walk: displayedWalk.walk,
       status: displayedWalk.status,
@@ -114,7 +114,7 @@ export class WalkNotificationService {
     return data;
   }
 
-  private generateNotificationHTML(walkNotification: WalkNotification, notificationDirective: NotificationDirective, component): string {
+  public generateNotificationHTML(walkNotification: WalkNotification, notificationDirective: NotificationDirective, component): string {
     const componentAndData = new ComponentAndData(component, walkNotification);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentAndData.component);
     const viewContainerRef = notificationDirective.viewContainerRef;

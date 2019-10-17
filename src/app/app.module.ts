@@ -21,7 +21,8 @@ import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
   CommitteeConfigProvider,
-  ContentTextProvider,
+  ConfigDataProvider,
+  ContentTextServiceProvider,
   GoogleMapsConfigProvider,
   LegacyUrlService,
   LoggedInMemberServiceProvider,
@@ -64,14 +65,19 @@ import { WalkNotificationLeaderAwaitingWalkDetailsComponent } from "./notificati
 import { WalkNotificationLeaderDeletedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-deleted.component";
 import { WalkNotificationLeaderRequestedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-requested.component";
 import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-updated.component";
+import { MeetupDescriptionComponent } from "./notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
+import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
 import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
 import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.component";
 import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
+import { WalkMeetupSettingsComponent } from "./pages/walks/walk-meetup-settings/walk-meetup-settings.component";
+import { WalkMeetupComponent } from "./pages/walks/walk-meetup/walk-meetup.component";
+import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.component";
 import { WalkViewComponent } from "./pages/walks/walk-view/walk-view.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
@@ -90,6 +96,7 @@ import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
+import { SnakeCasePipe } from "./pipes/snakecase.pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { VenueIconPipe } from "./pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
@@ -97,6 +104,8 @@ import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
 import { WalkValidationsListPipe } from "./pipes/walk-validations.pipe";
 import { BroadcastService } from "./services/broadcast-service";
 import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
+import { ConfigService } from "./services/config.service";
+import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
@@ -113,7 +122,7 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
-import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.component";
+import { WalkMeetupConfigParametersComponent } from "./pages/walks/walk-meetup-config-parameters/walk-meetup-config-parameters.component";
 
 @NgModule({
   declarations: [
@@ -134,6 +143,7 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    SnakeCasePipe,
     JoinUsComponent,
     LoginComponent,
     LoginPanelComponent,
@@ -164,6 +174,7 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
     WalkExportComponent,
     WalkListComponent,
     WalkNotificationChangesComponent,
+    MeetupDescriptionComponent,
     WalkNotificationCoordinatorApprovedComponent,
     WalkNotificationCoordinatorAwaitingApprovalComponent,
     WalkNotificationCoordinatorAwaitingWalkDetailsComponent,
@@ -182,6 +193,10 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
     WalkValidationsListPipe,
     WalkViewComponent,
     WalkVenueComponent,
+    WalkMeetupComponent,
+    WalkAdminComponent,
+    WalkMeetupSettingsComponent,
+    WalkMeetupConfigParametersComponent,
   ],
   imports: [
     AccordionModule.forRoot(),
@@ -209,7 +224,8 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
     ClipboardServiceProvider,
     CommitteeConfigProvider,
     CommitteeReferenceDataService,
-    ContentTextProvider,
+    ContentTextServiceProvider,
+    ConfigDataProvider,
     CookieService,
     CustomNGXLoggerService,
     DisplayDateAndTimePipe,
@@ -221,6 +237,7 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    SnakeCasePipe,
     WalkValidationsListPipe,
     GoogleMapsConfigProvider,
     LoggedInMemberServiceProvider,
@@ -250,6 +267,7 @@ import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.componen
   entryComponents: [
     AppComponent,
     ContactUsComponent,
+    MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,
     WalkNotificationCoordinatorAwaitingApprovalComponent,
@@ -273,7 +291,7 @@ export class AppModule implements DoBootstrap {
   private logger: Logger;
 
   constructor(private upgrade: UpgradeModule, private route: ActivatedRoute, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(AppComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(AppComponent, NgxLoggerLevel.OFF);
   }
 
   ngDoBootstrap(appRef: ApplicationRef) {
@@ -284,6 +302,8 @@ export class AppModule implements DoBootstrap {
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
       .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
+      .factory("ContentText", downgradeInjectable(ContentTextService))
+      .factory("Config", downgradeInjectable(ConfigService))
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))

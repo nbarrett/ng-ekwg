@@ -126,55 +126,15 @@ angular.module('ekwgApp')
   .factory('ConfigData', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('config');
   })
-  .factory('Config', function ($log, ConfigData, ErrorMessageService) {
-    var logger = $log.getInstance('Config');
-    $log.logLevels['Config'] = $log.LEVEL.OFF;
-
-    function getConfig(key, defaultOnEmpty) {
-
-      logger.debug('getConfig:', key, 'defaultOnEmpty:', defaultOnEmpty);
-
-      var queryObject = {};
-      queryObject[key] = {$exists: true};
-      return ConfigData.query(queryObject, {limit: 1})
-        .then(function (results) {
-          if (results && results.length > 0) {
-            return results[0];
-          } else {
-            queryObject[key] = {};
-            return new ConfigData(defaultOnEmpty || queryObject);
-          }
-        }, function (response) {
-          throw new Error('Query of ' + key + ' config failed: ' + response);
-        });
-
-    }
-
-    function saveConfig(key, config, saveCallback, errorSaveCallback) {
-      logger.debug('saveConfig:', key);
-      if (_.has(config, key)) {
-        return config.$saveOrUpdate(saveCallback, saveCallback, errorSaveCallback || saveCallback, errorSaveCallback || saveCallback);
-      } else {
-        throw new Error('Attempt to save ' + ErrorMessageService.stringify(key) + ' config when ' + ErrorMessageService.stringify(key) + ' parent key not present in data: ' + ErrorMessageService.stringify(config));
-      }
-
-    }
-
-    return {
-      getConfig: getConfig,
-      saveConfig: saveConfig
-    }
-
-  })
   .factory('ExpenseClaimsService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('expenseClaims');
   })
   .factory('RamblersUploadAudit', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('ramblersUploadAudit');
   })
-  .factory('ErrorTransformerService', function (ErrorMessageService) {
+  .factory('ErrorTransformerService', function (StringUtilsService) {
     function transform(errorResponse) {
-      var message = ErrorMessageService.stringify(errorResponse);
+      var message = StringUtilsService.stringify(errorResponse);
       var duplicate = s.include(errorResponse, 'duplicate');
 
       if (duplicate) {
@@ -185,30 +145,3 @@ angular.module('ekwgApp')
 
     return {transform: transform}
   })
-  .factory('ErrorMessageService', function () {
-
-    function stringify(message) {
-      return _.isObject(message) ? JSON.stringify(message, censor(message)) : message;
-    }
-
-    function censor(censor) {
-      var i = 0;
-
-      return function (key, value) {
-        if (i !== 0 && typeof (censor) === 'object' && typeof (value) === 'object' && censor === value)
-          return '[Circular]';
-
-        if (i >= 29) // seems to be a hard maximum of 30 serialized objects?
-          return '[Unknown]';
-
-        ++i; // so we know we aren't using the original object anymore
-
-        return value;
-      }
-    }
-
-    return {
-      stringify: stringify
-    }
-
-  });

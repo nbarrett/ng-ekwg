@@ -15,7 +15,7 @@ export class DateUtilsService {
 
   constructor(private numberUtils: NumberUtilsService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.OFF);
   }
 
   public formats = {

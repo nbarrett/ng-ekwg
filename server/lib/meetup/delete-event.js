@@ -14,6 +14,7 @@ exports.deleteEvent = function (req, res) {
       method: "delete",
       path: `/${config.meetup.group}/events/${req.params.eventId}`
     },
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug

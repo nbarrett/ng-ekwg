@@ -28,7 +28,7 @@ export class AlertInstance {
   private logger: Logger;
 
   constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
-    this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.OFF);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;
     this.alertTarget.alert = ALERT_SUCCESS;
   }
@@ -56,7 +56,7 @@ export class AlertInstance {
   notifyAlertMessage(alertType: AlertType, message?: AlertMessage | string, append?: boolean, busy?: boolean) {
 
     const messageText = this.stringUtils.stringify(message);
-
+    this.logger.debug("notifyAlertMessage:alertType:", alertType, "message:", message);
     if (busy) {
       this.setBusy();
     }

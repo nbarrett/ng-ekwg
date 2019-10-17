@@ -1,3 +1,4 @@
+import { MeetupConfigParameters } from "./meetup-config.model";
 import { WalkEvent } from "./walk-event.model";
 import { WalkVenue } from "./walk-venue.model";
 
@@ -16,7 +17,9 @@ export interface Walk {
   gridReference?: string;
   location?: string;
   longerDescription?: string;
+  config?: { meetup: MeetupConfigParameters };
   meetupEventTitle?: string;
+  meetupEventDescription?: string;
   meetupEventUrl?: string;
   meetupPublish?: boolean;
   nearestTown?: string;

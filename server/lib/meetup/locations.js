@@ -14,6 +14,7 @@ exports.locations = function (req, res) {
       method: "get",
       path: `/find/locations?&sign=true&photo-host=public&query=${encodeURIComponent(req.query.query)}`
     },
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug

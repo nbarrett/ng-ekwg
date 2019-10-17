@@ -3,18 +3,23 @@ import escapeRegExp from "lodash-es/escapeRegExp";
 import isNumber from "lodash-es/isNumber";
 import isObject from "lodash-es/isObject";
 import map from "lodash-es/map";
+import { NgxLoggerLevel } from "ngx-logger";
 import { humanize } from "underscore.string";
 import { AlertMessage } from "../models/alert-target.model";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
 import { DateUtilsService } from "./date-utils.service";
+import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class StringUtilsService {
+  private logger: Logger;
 
   constructor(private memberIdToFullNamePipe: MemberIdToFullNamePipe,
-              private dateUtils: DateUtilsService) {
+              private dateUtils: DateUtilsService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.OFF);
   }
 
   replaceAll(find: any, replace: any, str: any): string | number {
@@ -33,14 +38,40 @@ export class StringUtilsService {
 
   stringify(message: AlertMessage | string): string {
     const extractedMessage = this.isAlertMessage(message) ? message.message : message;
-    return isObject(extractedMessage) ? JSON.stringify(extractedMessage) : extractedMessage;
+    const returnValue = extractedMessage instanceof TypeError ? extractedMessage.toString() : isObject(extractedMessage) ? JSON.stringify(extractedMessage) : extractedMessage;
+    this.logger.debug("stringify:message", message, "returnValue:", returnValue);
+    return returnValue;
   }
 
-  stringifyObject(value): string {
-    if (typeof value === "object") {
-      return map(value, (value, key) => `${humanize(key)}: ${value}`).join(", ");
-    } else {
+  censor(censor) {
+    let i = 0;
+
+    return (key, value) => {
+      if (i !== 0 && typeof (censor) === "object" && typeof (value) === "object" && censor === value) {
+        return "[Circular]";
+      }
+
+      if (i >= 29) {// seems to be a hard maximum of 30 serialized objects?
+        return "[Unknown]";
+      }
+
+      ++i; // so we know we aren"t using the original object anymore
+
       return value;
+    };
+  }
+
+  stringifyObject(inputValue): string {
+    if (typeof inputValue === "object") {
+      return map(inputValue, (value, key) => {
+        if (isObject(value)) {
+          return `${humanize(key)} -> ${this.stringifyObject(value)}`;
+        } else {
+          return `${humanize(key)}: ${value}`;
+        }
+      }).join(", ");
+    } else {
+      return inputValue;
     }
   }
 

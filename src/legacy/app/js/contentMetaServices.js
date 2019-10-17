@@ -60,13 +60,4 @@ angular.module("ekwgApp")
   .factory("ContentTextService", function ($mongolabResourceHttp) {
     return $mongolabResourceHttp("contentText");
   })
-  .factory("ContentText", function (ContentTextService) {
-    function forName(name) {
-      return ContentTextService.query({name: name}, {limit: 1}).then(function (contentDocuments) {
-        return _.first(contentDocuments) || new ContentTextService({name: name});
-      });
-    }
 
-    return {forName: forName}
-
-  });

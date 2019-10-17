@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
-import clone from "lodash-es/clone";
+import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { MeetupEventResponse } from "../../../models/meetup-event-response.model";
+import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
 import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
@@ -16,6 +15,7 @@ import { WalkEvent } from "../../../models/walk-event.model";
 import { WalkValidations } from "../../../models/walk-validations.model";
 import { Walk } from "../../../models/walk.model";
 import { NotificationDirective } from "../../../notifications/walks/notification.directive";
+import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
 import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -23,15 +23,18 @@ import { EventNotePipe } from "../../../pipes/event-note.pipe";
 import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
 import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
-import { BroadcastService } from "../../../services/broadcast-service";
+import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/broadcast-service";
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
+import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MeetupService, MeetupStatus } from "../../../services/meetup.service";
+import { MeetupService } from "../../../services/meetup.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
+import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { ConfirmType, WalkDisplayService, WalkViewMode } from "../walk-display.service";
 
 interface DisplayMember {
@@ -46,13 +49,17 @@ interface DisplayMember {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalkEditComponent implements OnInit {
+  private publishStatuses: string[] = [];
 
-  @Input()
-  public displayedWalk: DisplayedWalk;
-  @Input()
-  public walkListComponentChangeDetectorRef: ChangeDetectorRef;
+  @Input("displayedWalk")
+  set cloneWalk(displayedWalk: DisplayedWalk) {
+    this.logger.debug("cloning walk for edit");
+    this.displayedWalk = cloneDeep(displayedWalk);
+  }
 
   @ViewChild(NotificationDirective) notificationDirective: NotificationDirective;
+
+  public displayedWalk: DisplayedWalk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
   public walkDate: Date;
@@ -60,19 +67,18 @@ export class WalkEditComponent implements OnInit {
   protected logger: Logger;
   public notifyTarget: AlertTarget = {};
   protected notify: AlertInstance;
-  private meetupEvent: MeetupEventResponse;
   public saveInProgress = false;
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
   private walkEventTypes: WalkEventType[];
-  private meetupEventsSub: Subscription;
-  public meetupEvents: MeetupEventResponse[] = [];
+  public meetupConfig: MeetupConfig;
 
   constructor(
     @Inject("WalksService") protected walksService,
     @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     public route: ActivatedRoute,
+    private walksQueryService: WalksQueryService,
     private meetupService: MeetupService,
     private walkNotificationService: WalkNotificationService,
     private walkEventService: WalkEventService,
@@ -88,24 +94,27 @@ export class WalkEditComponent implements OnInit {
     public display: WalkDisplayService,
     private displayDate: DisplayDatePipe,
     protected notifierService: NotifierService,
+    private configService: ConfigService,
     private broadcastService: BroadcastService,
+    private siteEditService: SiteEditService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";
   copySourceFromWalkLeaderMemberId: undefined;
   private copyFrom: any = {};
-  meetupEventStatus: string;
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.publishStatuses = this.meetupService.publishStatuses();
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.walkEventTypes = this.walksReferenceService.walkEventTypes();
+    this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
     this.logDetectChanges();
-    this.meetupEventStatus = MeetupStatus.UPCOMING;
+    this.siteEditService.events.subscribe(item => this.logDetectChanges());
     setInterval(() => {
       if (this.saveInProgress) {
         this.logDetectChanges();
@@ -159,7 +168,8 @@ export class WalkEditComponent implements OnInit {
 
   allowApprove() {
     return this.confirmAction === ConfirmType.NONE && this.loggedInMemberService.allowWalkAdminEdits() &&
-      this.walkEventService.latestEventWithStatusChangeIs(this.displayedWalk.walk, EventType.AWAITING_APPROVAL) && this.status() !== EventType.APPROVED;
+      this.walkEventService.latestEventWithStatusChangeIs(this.displayedWalk.walk, EventType.AWAITING_APPROVAL)
+      && this.status() !== EventType.APPROVED;
   }
 
   allowContactOther() {
@@ -240,11 +250,6 @@ export class WalkEditComponent implements OnInit {
       this.sendNotifications = true;
       this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
       this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
-      if (this.displayedWalk.walk.walkDate >= this.dateUtils.momentNowNoTime().valueOf()) {
-        this.meetupEventStatus = MeetupStatus.UPCOMING;
-      } else {
-        this.meetupEventStatus = MeetupStatus.PAST;
-      }
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
         this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
@@ -308,7 +313,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   populateCurrentWalkFromTemplate() {
-    const walkTemplate = clone(this.copyFrom.walkTemplate) as Walk;
+    const walkTemplate = cloneDeep(this.copyFrom.walkTemplate) as Walk;
     if (walkTemplate) {
       const templateDate = this.displayDate.transform(walkTemplate.walkDate);
       delete walkTemplate._id;
@@ -354,17 +359,6 @@ export class WalkEditComponent implements OnInit {
     return this.loggedInMemberService.allowWalkAdminEdits() && this.ramblersWalkExists();
   }
 
-  unlinkMeetup() {
-    delete this.displayedWalk.walk.meetupEventTitle;
-    delete this.displayedWalk.walk.meetupEventUrl;
-    this.meetupEvent = null;
-    this.notify.progress({title: "Unlink walk", message: "Previous Meetup link has now been removed."});
-  }
-
-  canUnlinkMeetup() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.displayedWalk.walk && this.displayedWalk.walk.meetupEventUrl;
-  }
-
   canUnlinkOSMaps() {
     return this.displayedWalk.walk.osMapsRoute || this.displayedWalk.walk.osMapsTitle;
   }
@@ -386,18 +380,6 @@ export class WalkEditComponent implements OnInit {
     const walkValidations = this.validateWalk().validationMessages;
     return "This walk cannot be included in the Ramblers Walks and Events Manager export due to the following "
       + walkValidations.length + " reasons(s): " + walkValidations.join(", ") + ".";
-  }
-
-  meetupEventUrlChange(meetupEvent: MeetupEventResponse) {
-    this.displayedWalk.walk.meetupEventTitle = meetupEvent.title;
-    this.displayedWalk.walk.meetupEventUrl = meetupEvent.link;
-    this.logger.debug("meetupEventUrlChange:", meetupEvent);
-  }
-
-  meetupSelectSync(walk: Walk) {
-    const meetupEventUrl = walk.meetupEventUrl || "";
-    this.meetupEvent = this.meetupEvents.find(event => meetupEventUrl.includes(event.link)) as MeetupEventResponse;
-    this.logger.debug("meetupSelectSync:this.meetupEvents", this.meetupEvents, "=>", this.meetupEvent);
   }
 
   ramblersWalkExists() {
@@ -465,7 +447,7 @@ export class WalkEditComponent implements OnInit {
   setStatus(status: EventType) {
     this.logger.debug("setting status =>", status);
     this.displayedWalk.status = status;
-    this.priorStatus = clone(this.displayedWalk.status);
+    this.priorStatus = cloneDeep(this.displayedWalk.status);
     this.logger.debug("setting status =>", status, "this.priorStatus", this.priorStatus);
   }
 
@@ -485,7 +467,8 @@ export class WalkEditComponent implements OnInit {
 
   private async saveAndCloseIfNotSent(notificationSent: boolean): Promise<boolean> {
     this.logger.debug("saveAndCloseIfNotSent:saving walk:notificationSent", notificationSent);
-    await this.displayedWalk.walk.$saveOrUpdate();
+    const savedWalk: Walk = await this.displayedWalk.walk.$saveOrUpdate();
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.WALK_SAVED, savedWalk));
     this.afterSaveWith(notificationSent);
     return notificationSent;
   }
@@ -511,16 +494,15 @@ export class WalkEditComponent implements OnInit {
     this.saveInProgress = false;
     this.confirmAction = ConfirmType.NONE;
     this.display.closeEditView(this.displayedWalk.walk);
-    if (this.walkListComponentChangeDetectorRef) {
-      this.walkListComponentChangeDetectorRef.detectChanges();
-    }
-    this.broadcastService.broadcast(this.displayedWalk.walk.$id());
   }
 
-  public saveWalkDetails(): void {
-    this.notify.setBusy();
-    this.saveInProgress = true;
-    this.meetupService.createOrDeleteMeetupEvent(this.notify, this.displayedWalk.walk)
+  public async saveWalkDetails(): Promise<void> {
+    Promise.resolve().then(() => {
+      this.notify.setBusy();
+      this.saveInProgress = true;
+      const walkNotification = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
+      return this.walkNotificationService.generateNotificationHTML(walkNotification, this.notificationDirective, MeetupDescriptionComponent);
+    }).then((meetupDescription: string) => this.meetupService.synchroniseWalkWithEvent(this.notify, this.displayedWalk, meetupDescription))
       .then(() => this.sendNotificationsSaveAndCloseIfNotSent())
       .catch(error => this.notifyError(error));
   }
@@ -528,9 +510,9 @@ export class WalkEditComponent implements OnInit {
   private notifyError(message: any) {
     this.saveInProgress = false;
     this.confirmAction = ConfirmType.NONE;
-    const reason = "Save of walk failed";
-    this.logger.error(reason, message);
-    this.notify.error({continue: true, title: reason, message});
+    const title = "Save of walk failed";
+    this.logger.error(title, message);
+    this.notify.error({continue: true, title, message});
     this.logDetectChanges();
   }
 
@@ -671,6 +653,7 @@ export class WalkEditComponent implements OnInit {
     }
     this.logger.debug("selecting walks", this.copySource, criteria);
     this.walksService.query(criteria, {sort: {walkDate: -1}})
+      .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
         this.copyFrom.walkTemplates = walks;
         this.logDetectChanges();
@@ -687,19 +670,6 @@ export class WalkEditComponent implements OnInit {
 
   isExpandable(): boolean {
     return this.display.walkMode(this.displayedWalk.walk) === WalkViewMode.EDIT;
-  }
-
-  meetupEventStatusChanged(status: string) {
-    this.notify.setBusy();
-    this.logger.debug("meetupEventStatusChanged:", status);
-    this.meetupService.eventsForStatus(status);
-    this.meetupEventsSub = this.meetupService.eventsListener()
-      .subscribe((events: MeetupEventResponse[]) => {
-        this.logger.debug("meetupService returned event:", events);
-        this.meetupEvents = events;
-        this.meetupSelectSync(this.displayedWalk.walk);
-        this.notify.clearBusy();
-      });
   }
 
 }

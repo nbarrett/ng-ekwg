@@ -6,6 +6,7 @@ import { Walk } from "../../../models/walk.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MeetupService } from "../../../services/meetup.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -32,6 +33,7 @@ export class WalkViewComponent implements OnInit {
     @Inject("LoggedInMemberService") private loggedInMemberService,
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
+    public meetupService: MeetupService,
     private urlService: UrlService,
     private broadcastService: BroadcastService,
     private changeDetectorRef: ChangeDetectorRef,
@@ -93,4 +95,5 @@ export class WalkViewComponent implements OnInit {
     this.updateGoogleMap();
     this.changeDetectorRef.detectChanges();
   }
+
 }

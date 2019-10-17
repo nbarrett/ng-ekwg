@@ -18,7 +18,7 @@ export class UrlService {
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
-    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
 
   relativeUrlFirstSegment(optionalUrl?: string): string {

@@ -1,20 +1,23 @@
-import { EventEmitter, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { CookieService } from "ngx-cookie-service";
+import { Observable, Subject } from "rxjs";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { GlobalEvent } from "../services/broadcast-service";
+import { NamedEvent, NamedEventType } from "../services/broadcast-service";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class SiteEditService {
-  public events: EventEmitter<GlobalEvent>;
+  private subject: Subject<NamedEvent>;
   private logger: Logger;
+  public events: Observable<NamedEvent>;
 
   constructor(private cookieService: CookieService, private loggerFactory: LoggerFactory) {
-    this.events = new EventEmitter();
-    this.logger = loggerFactory.createLogger(SiteEditService, NgxLoggerLevel.INFO);
+    this.subject = new Subject();
+    this.events = this.subject.asObservable();
+    this.logger = loggerFactory.createLogger(SiteEditService, NgxLoggerLevel.OFF);
   }
 
   active() {
@@ -27,7 +30,7 @@ export class SiteEditService {
   toggle(state: boolean) {
     const priorState = this.active();
     const newState = String(state);
-    this.events.emit(new GlobalEvent("editSite", state));
+    this.subject.next(NamedEvent.withData(NamedEventType.EDIT_STATE, state));
     this.logger.debug("toggle:priorState", priorState, "newState", newState);
     this.cookieService.set("editSite", newState);
   }

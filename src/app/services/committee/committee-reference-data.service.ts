@@ -3,7 +3,7 @@ import map from "lodash-es/map";
 import { Inject, Injectable } from "@angular/core";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { BehaviorSubject, Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { CommitteeMember } from "./committee-member.model";
 import { FileType } from "./committee-file-type.model";
 
@@ -12,10 +12,9 @@ import { FileType } from "./committee-file-type.model";
 })
 
 export class CommitteeReferenceDataService {
-
-  private messageSource = new BehaviorSubject({});
+  private messageSource = new Subject<CommitteeMember[]>();
   private logger: Logger;
-  public events: Observable<object>;
+  public events: Observable<CommitteeMember[]>;
   private localFileTypes: FileType[] = [];
   private localCommitteeMembers: CommitteeMember[] = [];
   private referenceData: object = {};
@@ -40,7 +39,7 @@ export class CommitteeReferenceDataService {
       }));
       this.referenceData = referenceData;
       this.logger.debug("queryData:localCommitteeMembers", this.localCommitteeMembers);
-      this.messageSource.next(referenceData);
+      this.messageSource.next(this.localCommitteeMembers);
     });
   }
 

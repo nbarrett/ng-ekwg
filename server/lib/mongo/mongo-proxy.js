@@ -63,6 +63,9 @@ module.exports = function () {
           }
         });
       });
+      dbReq.on("error", error => {
+        debug("on.ERROR: ", error.stack);
+      });
       dbReq.end(JSON.stringify(req.body));
     } catch (error) {
       debug("ERROR: ", error.stack);

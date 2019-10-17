@@ -11,7 +11,7 @@ import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pip
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { BroadcastService, GlobalEvent } from "../../../services/broadcast-service";
+import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -60,7 +60,7 @@ export class WalkListComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private siteEditService: SiteEditService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 
@@ -73,10 +73,10 @@ export class WalkListComponent implements OnInit {
       this.logger.debug("walk-id from route params:", this.currentWalkId);
     });
     this.display.refreshMembers();
-    this.refreshWalks();
-    this.broadcastService.on("memberLoginComplete", () => this.refreshWalks());
-    this.broadcastService.on("walkSlotsCreated", () => this.refreshWalks());
-    this.broadcastService.on("walkUpdated", () => this.refreshWalks());
+    this.refreshWalks("ngOnInit");
+    this.broadcastService.on(NamedEventType.MEMBER_LOGIN_COMPLETE, () => this.refreshWalks(NamedEventType.MEMBER_LOGIN_COMPLETE));
+    this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
+    this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
     this.siteEditService.events.subscribe(item => this.logAndDetectChanges(item));
     this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
@@ -113,10 +113,6 @@ export class WalkListComponent implements OnInit {
     return this.loggedInMemberService.memberLoggedIn();
   }
 
-  selectWalksForExport() {
-    this.urlService.navigateTo("walks", "export");
-  }
-
   viewWalkField(displayedWalk: DisplayedWalk, field) {
     if (displayedWalk.latestEventType.showDetails) {
       return displayedWalk.walk[field] || "";
@@ -129,10 +125,6 @@ export class WalkListComponent implements OnInit {
 
   addWalk() {
     this.urlService.navigateTo("walks", "add");
-  }
-
-  addWalkSlots() {
-    this.urlService.navigateTo("walks", "add-walk-slots");
   }
 
   allowShowAll(): boolean {
@@ -195,7 +187,18 @@ export class WalkListComponent implements OnInit {
     return !this.tableRowOdd(walk);
   }
 
-  refreshWalks(notificationSent?: any) {
+  private replaceWalkInList(walk: Walk) {
+    this.logger.debug("Received updated walk", walk);
+    const existingWalk: Walk = this.walks.find(listedWalk => listedWalk.$id() === walk.$id());
+    if (existingWalk) {
+      this.walks[(this.walks.indexOf(existingWalk))] = walk;
+      this.applyFilterToWalks();
+    }
+    this.logAndDetectChanges("updated walk");
+  }
+
+  refreshWalks(event?: any) {
+    this.logger.debug("Refreshing walks due to", event);
     this.notify.progress("Refreshing walks...", true);
     return this.query()
       .then(walks => {
@@ -204,12 +207,11 @@ export class WalkListComponent implements OnInit {
         this.walks = this.currentWalkId ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();
-        this.display.saveInProgress = false;
-        this.logAndDetectChanges(GlobalEvent.named("walks query"));
+        this.logAndDetectChanges("walks query");
       });
   }
 
-  private logAndDetectChanges(event: GlobalEvent) {
+  private logAndDetectChanges(event: any) {
     setTimeout(() => {
       this.logger.debug("detecting changes following", event);
       this.changeDetectorRef.detectChanges();
@@ -225,6 +227,7 @@ export class WalkListComponent implements OnInit {
   }
 
   toggle($event) {
-    this.logAndDetectChanges(GlobalEvent.named(event));
+    // this.logAndDetectChanges(GlobalEvent.named($event + "ooi!?"));
   }
+
 }

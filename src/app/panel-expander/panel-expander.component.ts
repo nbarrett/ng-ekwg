@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { WalkDisplayService, WalkViewMode } from "../pages/walks/walk-display.service";
-import { Walk } from "../models/walk.model";
-import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Walk } from "../models/walk.model";
+import { WalkDisplayService, WalkViewMode } from "../pages/walks/walk-display.service";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-panel-expander",
@@ -16,10 +16,6 @@ export class PanelExpanderComponent implements OnInit {
   @Input()
   walk: Walk;
   @Input()
-  expandable: boolean;
-  @Input()
-  collapsable: boolean;
-  @Input()
   expandAction: string;
   @Input()
   collapseAction: string;
@@ -27,7 +23,7 @@ export class PanelExpanderComponent implements OnInit {
   private logger: Logger;
 
   constructor(public display: WalkDisplayService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PanelExpanderComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PanelExpanderComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -44,6 +40,8 @@ export class PanelExpanderComponent implements OnInit {
     this.logger.debug("expanding walk from current mode", viewMode);
     if (viewMode === WalkViewMode.LIST) {
       this.display.view(this.walk);
+    } else if (viewMode === WalkViewMode.VIEW) {
+      this.display.toggleExpandedViewFor(this.walk, WalkViewMode.EDIT);
     } else if (viewMode === WalkViewMode.EDIT) {
       this.display.editFullscreen(this.walk);
     }

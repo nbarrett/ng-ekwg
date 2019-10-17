@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { WalkEventService } from "./walk-event.service";
-import { WalkNotificationService } from "./walk-notification.service";
 import { EventType } from "./walks-reference-data.service";
 import { chain } from "../../functions/chain";
 import { Walk } from "../../models/walk.model";

@@ -1618,7 +1618,7 @@ table.tbl-brown-e td {
 }
 
 /* =============================================================================
-   Primary styles 
+   Primary styles
    ========================================================================== */
 
 .wrapper {
@@ -3962,8 +3962,20 @@ ul.sbOptions li.last a {
   background-position: center;
 }
 
-.inline-label {
-  margin-left: 12px;
+.checkbox-inline input {
+  position: absolute;
+  left: -9999px;
+}
+
+.checkbox-inline label {
+  display: block;
+  margin-bottom: 0px;
+  padding: 0px 3px 0px 27px;
+  background: url(../images/ramblers/but-checkbox.png) no-repeat 3px 0px;
+}
+
+.checkbox-inline label.ui-state-active {
+  background: url("../images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
 }
 
 .txt-box-mid {
@@ -4815,16 +4827,40 @@ input[type="radio"]:checked + label {
 
 /* Bootstrap 4 equivalents */
 
-.mt-8 {
-  margin-top: 8px;
+.mt-0 {
+  margin-top: 0px;
 }
 
 .mt-6 {
   margin-top: 6px;
 }
 
+.mt-8 {
+  margin-top: 8px;
+}
+
 .mt-12 {
   margin-top: 12px;
+}
+
+.mt-22 {
+  margin-top: 22px;
+}
+
+.mr-0 {
+  margin-right: 0px;
+}
+
+.mr-6 {
+  margin-right: 6px;
+}
+
+.mr-8 {
+  margin-right: 8px;
+}
+
+.mr-12 {
+  margin-right: 12px;
 }
 
 .mb-0 {

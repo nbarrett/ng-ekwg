@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
+import { WalkMeetupSettingsComponent } from "./pages/walks/walk-meetup-settings/walk-meetup-settings.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
@@ -28,6 +29,7 @@ const routes: Routes = [
   {path: "walks/edit/:walk-id", component: WalkEditFullPageComponent},
   {path: "walks/export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
   {path: "walks/add-walk-slots", component: WalkAddSlotsComponent, canActivate: [WalksAuthGuard]},
+  {path: "walks/meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
   {path: "walks", component: WalkListComponent},
   {path: "**", component: NonRenderingComponent}
 ];
@@ -41,7 +43,7 @@ export class AppRoutingModule {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(AppRoutingModule, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(AppRoutingModule, NgxLoggerLevel.OFF);
   }
 
 }

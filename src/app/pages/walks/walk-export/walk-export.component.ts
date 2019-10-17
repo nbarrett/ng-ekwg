@@ -16,6 +16,7 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
+import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -55,6 +56,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private notifierService: NotifierService,
               private displayDateAndTime: DisplayDateAndTimePipe,
               private displayDate: DisplayDatePipe,
+              private walksQueryService: WalksQueryService,
               private display: WalkDisplayService,
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
@@ -167,6 +169,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.walksForExport = [];
     this.walkExportNotifier.warning("Refreshing export status of future walks", false, true);
     this.walksService.query({walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, {sort: {walkDate: -1}})
+      .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
         this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks, this.members)
           .then((walksForExport) => this.populateWalkExport(walksForExport))

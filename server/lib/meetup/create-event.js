@@ -15,6 +15,7 @@ exports.createEvent = function (req, res) {
       path: `/${config.meetup.group}/events`,
     },
     body: req.body,
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug

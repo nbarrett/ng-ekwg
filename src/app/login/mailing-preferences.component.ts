@@ -13,7 +13,7 @@ export class MailingPreferencesComponent implements OnInit {
   constructor(@Inject("AuthenticationModalsService") private authenticationModalsService,
               @Inject("LoggedInMemberService") private loggedInMemberService,
               private route: ActivatedRoute, private router: Router, private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailingPreferencesComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MailingPreferencesComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

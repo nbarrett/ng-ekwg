@@ -9,44 +9,57 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 })
 
 export class BroadcastService {
-  observable: Observable<GlobalEvent>;
-  observer: Observer<GlobalEvent>;
+  observable: Observable<NamedEvent>;
+  observer: Observer<NamedEvent>;
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.INFO);
-    const temp = Observable.create((observer: Observer<GlobalEvent>) => {
+    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
+    const temp = Observable.create((observer: Observer<NamedEvent>) => {
       this.observer = observer;
     });
     this.observable = temp.pipe(share());
   }
 
-  broadcast(event: GlobalEvent | string): void {
+  broadcast(event: NamedEvent | string): void {
     if (this.observer) {
       this.logger.debug("broadcast:", event, "observer", this.observer);
-      if (event instanceof GlobalEvent) {
+      if (event instanceof NamedEvent) {
         this.observer.next(event);
       } else {
-        this.observer.next(new GlobalEvent(event));
+        this.observer.next(new NamedEvent(event));
       }
-    } else {
-      this.logger.warn("broadcast:", event, "occurred before observer created");
     }
   }
 
   on(eventName, callback) {
     this.observable.pipe(
-      filter((event: GlobalEvent) => event.key === eventName)
+      filter((event: NamedEvent) => event.name === eventName)
     ).subscribe(callback);
   }
 }
 
-export class GlobalEvent {
-  constructor(public key: string, public data?: any) {
+export class NamedEvent {
+  static named(name: any): NamedEvent {
+    return new NamedEvent(name);
   }
 
-  static named(key: any): GlobalEvent {
-    return new GlobalEvent(key);
+  constructor(public name: any, public data?: any) {
   }
 
+  static withData(key: NamedEventType, value: any) {
+    return new NamedEvent(key, value);
+  }
 }
+
+export enum NamedEventType {
+  EDIT_STATE = "editSite",
+  MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
+  MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
+  MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
+  MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
+  MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
+  WALK_SAVED = "walkSaved",
+  WALK_SLOTS_CREATED = "walkSlotsCreated"
+}
+

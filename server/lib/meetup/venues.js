@@ -16,6 +16,7 @@ exports.create = function (req, res) {
       path: `/${config.meetup.group}/venues`
     },
     debug: debug,
+    successStatusCodes: defaultOptions.successStatusCodes,
     body: req.body,
     res: res,
     req: req,

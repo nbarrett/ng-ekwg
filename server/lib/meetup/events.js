@@ -19,6 +19,7 @@ exports.all = function (req, res) {
       path: `/${config.meetup.group}/events?&sign=true&photo-host=public&page=20&status=${status}`
     },
     mapper: detail ? undefined : toConciseResponse,
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug
@@ -36,6 +37,7 @@ exports.single = function (req, res) {
       method: "get",
       path: `/${config.meetup.group}/events/${req.params.eventId}`
     },
+    successStatusCodes: defaultOptions.successStatusCodes,
     res: res,
     req: req,
     debug: debug

@@ -27,7 +27,7 @@ export class WalkEditFullPageComponent implements OnInit {
               private display: WalkDisplayService,
               private notifierService: NotifierService,
               displayDate: DisplayDatePipe, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditFullPageComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditFullPageComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

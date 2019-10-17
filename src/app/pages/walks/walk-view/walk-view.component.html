@@ -1,4 +1,4 @@
-<app-panel-expander [walk]="displayedWalk.walk" [collapsable]="true" [collapseAction]="'return to list view'">
+<app-panel-expander [walk]="displayedWalk.walk" [collapseAction]="'return to list view'">
 </app-panel-expander>
 <div class="row row-eq-height-xs">
   <div class="col-sm-6 round">
@@ -39,7 +39,7 @@
         <div class="col-sm-1">
           <img class="related-links-image"
                src="assets/images/local/meetup.ico"
-               alt="View event on Meetup"/>
+               alt="View {{meetupService.meetupPublishedStatus(displayedWalk)}} event on Meetup"/>
         </div>
         <div class="col-sm-11">
           <a target="_blank"
@@ -47,7 +47,7 @@
             <span class="related-links-title"
                    tooltip-placement="left"
                    tooltip="Click to view the route for this walk on Meetup">
-              View event on Meetup
+              View {{meetupService.meetupPublishedStatus(displayedWalk)}} event on Meetup
             </span>
           </a>
         </div>

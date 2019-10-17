@@ -10,29 +10,7 @@
         </div>
       </div>
       <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-        <app-accordion-group (click)="toggle($event)" *ngIf="allowAdminEdits()"
-                             title="Walk Admin Tasks" initiallyOpen="false">
-          <div class="row thumbnail walk-admin-thumbnail">
-            <div class="col-sm-2">
-              <input type="submit" value="Ramblers export"
-                     (click)="selectWalksForExport()"
-                     title="Select walks to export in Ramblers format" class="button-form yellow-confirm  mb-6">
-            </div>
-            <div class="col-sm-10 green-bullets-no-rule">
-              <app-markdown-editor name="ramblers-export-help" description="Ramblers export help"></app-markdown-editor>
-            </div>
-          </div>
-          <div class="row thumbnail walk-admin-thumbnail">
-            <div class="col-sm-2">
-              <input type="submit" value="Add more walk slots"
-                     (click)="addWalkSlots()"
-                     title="Add more available slots on the walks programme" class="button-form green-confirm  mb-6">
-            </div>
-            <div class="col-sm-10 green-bullets-no-rule">
-              <app-markdown-editor name="add-walks-slots-help" description="Add walk slots help"></app-markdown-editor>
-            </div>
-          </div>
-        </app-accordion-group>
+        <app-walk-admin></app-walk-admin>
         <app-accordion-group (click)="toggle($event)" title="Walks Programme" initiallyOpen="true">
           <div>
             <form *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
@@ -44,7 +22,7 @@
                        type="text" placeholder="Quick Search">
               </div>
               <div class="form-group">
-                <select [(ngModel)]="filterParameters.selectType" (change)="refreshWalks()" name="selectType"
+                <select [(ngModel)]="filterParameters.selectType" (change)="refreshWalks('change filterParameters.selectType')" name="selectType"
                         class="form-control round spaced-controls">
                   <option selected="selected" value="1">Walks Today Onwards</option>
                   <option value="2">Past Walks</option>
@@ -54,7 +32,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <select [(ngModel)]="filterParameters.ascending" (change)="refreshWalks()" name="ascending"
+                <select [(ngModel)]="filterParameters.ascending" (change)="refreshWalks('change filterParameters.ascending')" name="ascending"
                         class="form-control round spaced-controls">
                   <option selected value="true">Sort (date ascending)</option>
                   <option value="false">Sort (date descending)</option>
@@ -72,7 +50,6 @@
                 <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
                                [displayedWalk]="displayedWalk"></app-walk-view>
                 <app-walk-edit *ngIf="display.isEdit(displayedWalk.walk)"
-                               [walkListComponentChangeDetectorRef]="changeDetectorRef"
                                [displayedWalk]="displayedWalk"></app-walk-edit>
               </div>
               <table *ngIf="!display.isExpanded(displayedWalk.walk)"
@@ -82,7 +59,7 @@
                   <th *ngIf="loggedInMemberService.memberLoggedIn()" width="7%">Action</th>
                   <th width="13%">Walk Date</th>
                   <th width="7%">Start Time</th>
-                  <th width="32%">Description</th>
+                  <th width="32%">Walk Title</th>
                   <th width="7%">Distance</th>
                   <th width="8%">Postcode</th>
                   <th width="12%">Walk Leader</th>
@@ -145,7 +122,7 @@
                                       tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                       [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                       name="contactPhone"></span></a>
-                    <app-panel-expander [walk]="displayedWalk.walk" [collapsable]="false" [expandable]="true"
+                    <app-panel-expander [walk]="displayedWalk.walk"
                                         [expandAction]="'show full details of walk'">
                     </app-panel-expander>
                   </td>

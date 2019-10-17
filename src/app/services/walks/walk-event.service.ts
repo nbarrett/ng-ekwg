@@ -18,9 +18,9 @@ import { StringUtilsService } from "../string-utils.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
 
 const auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription",
-  "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "osMapsRoute", "osMapsTitle", "postcode",
+  "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "meetupEventDescription", "osMapsRoute", "osMapsTitle", "postcode",
   "walkLeaderMemberId", "contactPhone", "contactEmail", "contactId", "displayName",
-  "ramblersWalkId", "ramblersPublish", "meetupPublish", "venue"];
+  "ramblersWalkId", "ramblersPublish", "meetupPublish", "venue", "config"];
 
 @Injectable({
   providedIn: "root"

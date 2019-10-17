@@ -9,7 +9,7 @@ export class HttpResponseService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HttpResponseService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(HttpResponseService, NgxLoggerLevel.OFF);
   }
 
   returnResponse(response) {

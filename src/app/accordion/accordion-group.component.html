@@ -3,8 +3,7 @@
     <img src="assets/images/ramblers/icon-gowalking.png" class="accordion-image"
          alt="{{title}}" accordion-group>{{title}}
     <div accordion-heading class="pull-right darkred">
-      <i *ngIf="open" class="pull-right fa fa-lg fa-minus-circle accordion-state-image"></i>
-      <i *ngIf="!open" class="pull-right fa fa-lg fa-plus-circle accordion-state-image"></i>
+      <i [ngClass]="open? 'pull-right fa fa-lg fa-minus-circle accordion-state-image':'pull-right fa fa-lg fa-plus-circle accordion-state-image'"></i>
     </div>
   </div>
   <ng-content></ng-content>

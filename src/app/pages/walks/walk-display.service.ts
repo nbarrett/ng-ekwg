@@ -25,7 +25,6 @@ export class WalkDisplayService {
 
   expandedWalks: ExpandedWalk [] = [];
   longerDescriptionPreview = true;
-  saveInProgress = false;
 
   private logger: Logger;
   public grades = ["Easy access", "Easy", "Leisurely", "Moderate", "Strenuous", "Technical"];
@@ -55,7 +54,7 @@ export class WalkDisplayService {
     private walksQueryService: WalksQueryService,
     private broadcastService: BroadcastService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
     this.refreshGoogleMapsConfig();
     this.refreshRamblersConfig();
     this.refreshMembers();
@@ -131,7 +130,8 @@ export class WalkDisplayService {
   }
 
   statusFor(walk: Walk): EventType {
-    return this.walkEventService.latestEventWithStatusChange(walk).eventType;
+    const walkEvent = this.walkEventService.latestEventWithStatusChange(walk);
+    return walkEvent && walkEvent.eventType;
   }
 
   editFullscreen(walk: Walk): Promise<ExpandedWalk> {

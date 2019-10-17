@@ -1,7 +1,3 @@
-export interface MeetupVenueResponse {
-  id: number;
-}
-
 export interface MeetupVenuePotentialMatch {
   "rating_count": number;
   "rating": number;
@@ -25,12 +21,13 @@ export interface MeetupVenueConflictResponse {
     }];
 }
 
-export interface MeetupVenueCreatedResponse {
+export interface MeetupVenueResponse {
   "rating_count": number;
   "rating": number;
   "visibility": string;
   "name": string;
   "lon": string;
+  "repinned": boolean;
   "lat": string;
   "localized_country_name": string;
   "country": string;

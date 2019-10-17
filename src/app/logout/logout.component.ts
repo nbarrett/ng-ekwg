@@ -17,7 +17,7 @@ export class LogoutComponent implements OnInit {
               private routerHistoryService: RouterHistoryService,
               private broadcastService: BroadcastService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LogoutComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(LogoutComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

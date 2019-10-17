@@ -32,6 +32,23 @@ describe("StringUtilsService", () => {
     });
   });
 
+  describe("stringifyObjectNested", () => {
+    it("should return an object nested objects each with humanised key, values", () => {
+      const service: StringUtilsService = TestBed.get(StringUtilsService);
+      expect(service.stringifyObject({
+        title: "a Brief Description and Start Point",
+        config: {
+          meetup: {
+            announce: true,
+            defaultContent: "Prompt to join after 3 walks",
+            publishStatus: "published",
+            guestLimit: 7
+          }
+        }
+      })).toEqual("Title: a Brief Description and Start Point, Config -> Meetup -> Announce: true, Default content: Prompt to join after 3 walks, Publish status: published, Guest limit: 7");
+    });
+  });
+
   describe("left", () => {
     it("should return the left X characters of string regardless of length", () => {
       const service: StringUtilsService = TestBed.get(StringUtilsService);

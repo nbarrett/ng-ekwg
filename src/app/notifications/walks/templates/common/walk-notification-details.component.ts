@@ -24,14 +24,14 @@ export class WalkNotificationDetailsComponent implements OnInit, AfterViewInit {
   public validationMessages: string[];
   public reason: string;
 
-  private logger: Logger;
+  protected logger: Logger;
   public members: Member[];
   public ramblersWalkBaseUrl: string;
 
   constructor(
-    private display: WalkDisplayService,
+    public display: WalkDisplayService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkNotificationDetailsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

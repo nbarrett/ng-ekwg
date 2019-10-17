@@ -2,7 +2,7 @@ import { Component } from "@angular/core";
 import { SiteEditService } from "./site-edit.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { GlobalEvent } from "../services/broadcast-service";
+import { NamedEvent } from "../services/broadcast-service";
 
 @Component({
   selector: "app-site-edit",
@@ -29,7 +29,7 @@ export class SiteEditComponent {
     return this.siteEditService.active() ? "editing site" : "edit site";
   }
 
-  private onItemEvent(event: GlobalEvent) {
+  private onItemEvent(event: NamedEvent) {
     this.logger.debug("event occurred", event);
   }
 
