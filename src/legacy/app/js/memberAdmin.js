@@ -103,10 +103,6 @@ angular.module('ekwgApp')
         return applyAllowEdits();
       }
 
-      $scope.showPasswordResetAlert = function () {
-        return $scope.notify.showAlert && $scope.alertTypeResetPassword;
-      };
-
       $scope.uploadSessionStatuses = [
         {title: "All"},
         {status: "created", title: "Created"},
@@ -416,7 +412,7 @@ angular.module('ekwgApp')
       }
 
       function unsubscribeGeneralList(members) {
-        return MailchimpListService.batchUnsubscribeMembers('general', members, notify.success);
+        return MailchimpListService.batchUnsubscribeMembers('general', members, notify.success.bind(notify));
       }
 
       $scope.updateMailchimpLists = function () {
@@ -496,7 +492,7 @@ angular.module('ekwgApp')
 
         $q.when(notify.success('Saving member', true))
           .then(preProcessMemberBeforeSave, notify.error.bind(notify), notify.success.bind(notify))
-          .then(saveAndHide, notify.error, notify.success.bind(notify))
+          .then(saveAndHide, notify.error.bind(notify), notify.success.bind(notify))
           .then(resetSendFlags)
           .then(function () {
             return notify.success('Member saved successfully');
