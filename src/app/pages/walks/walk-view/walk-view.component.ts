@@ -23,11 +23,12 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 export class WalkViewComponent implements OnInit {
   @Input()
   displayedWalk: DisplayedWalk;
-  private logger: Logger;
-  mapDisplay = SHOW_START_POINT;
   fromPostcode = "";
+  mapDisplay = SHOW_START_POINT;
+  private logger: Logger;
+  public allowWalkAdminEdits: false;
   public googleMapsUrl: SafeResourceUrl;
-  loggedIn: boolean;
+  public loggedIn: boolean;
 
   constructor(
     @Inject("LoggedInMemberService") private loggedInMemberService,
@@ -44,11 +45,13 @@ export class WalkViewComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("initialised with walk", this.displayedWalk);
     this.loggedIn = this.loggedInMemberService.memberLoggedIn();
+    this.allowWalkAdminEdits = this.loggedInMemberService.allowWalkAdminEdits();
     this.refreshHomePostcode();
     this.broadcastService.on("memberLoginComplete", () => {
       this.logger.debug("memberLoginComplete");
       this.display.refreshMembers();
       this.loggedIn = true;
+      this.allowWalkAdminEdits = this.loggedInMemberService.allowWalkAdminEdits();
       this.refreshHomePostcode();
     });
     this.updateGoogleMap();

@@ -22,7 +22,8 @@
                        type="text" placeholder="Quick Search">
               </div>
               <div class="form-group">
-                <select [(ngModel)]="filterParameters.selectType" (change)="refreshWalks('change filterParameters.selectType')" name="selectType"
+                <select [(ngModel)]="filterParameters.selectType"
+                        (change)="refreshWalks('change filterParameters.selectType')" name="selectType"
                         class="form-control round spaced-controls">
                   <option selected="selected" value="1">Walks Today Onwards</option>
                   <option value="2">Past Walks</option>
@@ -32,7 +33,8 @@
                 </select>
               </div>
               <div class="form-group">
-                <select [(ngModel)]="filterParameters.ascending" (change)="refreshWalks('change filterParameters.ascending')" name="ascending"
+                <select [(ngModel)]="filterParameters.ascending"
+                        (change)="refreshWalks('change filterParameters.ascending')" name="ascending"
                         class="form-control round spaced-controls">
                   <option selected value="true">Sort (date ascending)</option>
                   <option value="false">Sort (date descending)</option>
@@ -122,7 +124,7 @@
                                       tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                       [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                       name="contactPhone"></span></a>
-                    <app-panel-expander [walk]="displayedWalk.walk"
+                    <app-panel-expander [walk]="displayedWalk.walk" [expandable]="true"
                                         [expandAction]="'show full details of walk'">
                     </app-panel-expander>
                   </td>

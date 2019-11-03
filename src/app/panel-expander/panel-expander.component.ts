@@ -16,6 +16,10 @@ export class PanelExpanderComponent implements OnInit {
   @Input()
   walk: Walk;
   @Input()
+  expandable: boolean;
+  @Input()
+  collapsable: boolean;
+  @Input()
   expandAction: string;
   @Input()
   collapseAction: string;

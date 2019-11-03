@@ -1,5 +1,5 @@
-<app-panel-expander [walk]="displayedWalk.walk" [collapseAction]="'exit edit and return to view'"
-                    [expandAction]="'edit walk full-screen'">
+<app-panel-expander [walk]="displayedWalk.walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'"
+                    [expandAction]="'edit walk full-screen'" [expandable]="isExpandable()">
 </app-panel-expander>
 <div [ngClass]="{'busy': notifyTarget.busy}">
   <div class="hidden">

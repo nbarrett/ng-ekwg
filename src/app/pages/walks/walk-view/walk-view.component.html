@@ -1,4 +1,5 @@
-<app-panel-expander [walk]="displayedWalk.walk" [collapseAction]="'return to list view'">
+<app-panel-expander [walk]="displayedWalk.walk" [expandable]="allowWalkAdminEdits"
+                    [collapsable]="true" [collapseAction]="'return to list view'">
 </app-panel-expander>
 <div class="row row-eq-height-xs">
   <div class="col-sm-6 round">
