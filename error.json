@@ -1,0 +1,34 @@
+{
+  "request": {
+    "parameters": {},
+    "url": "/venues/create",
+    "body": {
+      "name": "The White Lion",
+      "address_1": "The Street, Selling",
+      "city": "ME13 9RQ",
+      "web_url": "https://www.whitelionselling.co.uk/",
+      "country": "gb",
+      "address_2": "Faversham, Kent"
+    },
+    "apiRequest": {
+      "hostname": "api.meetup.com",
+      "protocol": "https:",
+      "headers": {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Length": 168,
+        "Authorization": "Bearer 64ddcb85e68c10580d6ba1ab61c88da9"
+      },
+      "method": "post",
+      "path": "/Kent-Ramblers/venues"
+    }
+  },
+  "apiStatusCode": 400,
+  "response": {
+    "errors": [
+      {
+        "code": "address_1_error",
+        "message": "invalid"
+      }
+    ]
+  }
+}
