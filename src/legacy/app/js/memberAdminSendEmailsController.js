@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('MemberAdminSendEmailsController', function ($log, $q, $scope, $filter, DateUtils, DbUtils, LoggedInMemberService, ErrorMessageService,
+  .controller('MemberAdminSendEmailsController', function ($log, $q, $scope, $filter, DateUtils, DbUtils, LoggedInMemberService, StringUtils,
                                                            EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService,
                                                            MailchimpConfig, Notifier, members, close) {
       var logger = $log.getInstance('MemberAdminSendEmailsController');
@@ -301,7 +301,7 @@ angular.module('ekwgApp')
         $scope.display.saveInProgress = false;
         notify.error({
           title: 'Your notification could not be sent',
-          message: (errorResponse.message || errorResponse) + (errorResponse.error ? ('. Error was: ' + ErrorMessageService.stringify(errorResponse.error)) : '')
+          message: (errorResponse.message || errorResponse) + (errorResponse.error ? ('. Error was: ' + StringUtils.stringify(errorResponse.error)) : '')
         });
         notify.clearBusy();
       }

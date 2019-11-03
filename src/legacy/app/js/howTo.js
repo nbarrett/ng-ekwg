@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller("HowToDialogController", function ($rootScope, $log, $q, $scope, $filter, FileUtils, DateUtils, EKWGFileUpload, DbUtils, LoggedInMemberService, ErrorMessageService,
+  .controller("HowToDialogController", function ($rootScope, $log, $q, $scope, $filter, FileUtils, DateUtils, EKWGFileUpload, DbUtils, LoggedInMemberService, StringUtils,
                                                  MailchimpLinkService, MailchimpCampaignService, Notifier, MemberResourcesReferenceData, memberResource, close) {
     var logger = $log.getInstance("HowToDialogController");
     $log.logLevels["HowToDialogController"] = $log.LEVEL.OFF;

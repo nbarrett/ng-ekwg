@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .factory('MemberBulkUploadService', function ($log, $q, $filter, MemberService, MemberUpdateAuditService, MemberBulkLoadAuditService, ErrorMessageService, EmailSubscriptionService, DateUtils, DbUtils, MemberNamingService) {
+  .factory('MemberBulkUploadService', function ($log, $q, $filter, MemberService, MemberUpdateAuditService, MemberBulkLoadAuditService, EmailSubscriptionService, DateUtils, DbUtils, MemberNamingService) {
 
     var logger = $log.getInstance('MemberBulkUploadService');
     var noLogger = $log.getInstance('NoLogger');

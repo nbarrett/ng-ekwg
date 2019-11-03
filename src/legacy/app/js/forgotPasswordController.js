@@ -134,7 +134,7 @@ angular.module("ekwgApp")
       function handleSendError(errorResponse) {
         notify.error({
           title: "Your email could not be sent",
-          message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + ErrorMessageService.stringify(errorResponse.error)) : "")
+          message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + StringUtils.stringify(errorResponse.error)) : "")
         });
       }
 

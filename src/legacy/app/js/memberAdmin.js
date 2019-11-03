@@ -1,8 +1,8 @@
 angular.module('ekwgApp')
   .controller('MemberAdminController',
-    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, StringUtils, DbUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, MemberAuditService,
+    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, DbUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, MemberAuditService,
               MemberBulkLoadAuditService, MemberUpdateAuditService, ProfileConfirmationService, EmailSubscriptionService, DateUtils, MailchimpConfig, MailchimpSegmentService, MemberNamingService,
-              MailchimpCampaignService, MailchimpListService, Notifier, ErrorMessageService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
+              MailchimpCampaignService, MailchimpListService, Notifier, StringUtils, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
       var logger = $log.getInstance('MemberAdminController');
       $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
@@ -83,7 +83,7 @@ angular.module('ekwgApp')
       function handleSaveError(errorResponse) {
         $scope.display.saveInProgress = false;
         applyAllowEdits();
-        var message = ErrorMessageService.stringify(errorResponse);
+        var message = StringUtils.stringify(errorResponse);
         var duplicate = s.include(message, 'duplicate');
         logger.debug('errorResponse', errorResponse, 'duplicate', duplicate);
         if (duplicate) {
@@ -434,7 +434,7 @@ angular.module('ekwgApp')
         resetSendFlags();
         notify.error({
           title: 'Mailchimp updates failed',
-          message: (errorResponse.message || errorResponse) + (errorResponse.error ? ('. Error was: ' + ErrorMessageService.stringify(errorResponse.error)) : '')
+          message: (errorResponse.message || errorResponse) + (errorResponse.error ? ('. Error was: ' + StringUtils.stringify(errorResponse.error)) : '')
         });
         notify.clearBusy();
       }
