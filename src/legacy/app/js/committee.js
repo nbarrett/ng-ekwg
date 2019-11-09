@@ -25,9 +25,15 @@ angular.module('ekwgApp')
       committeeFiles: []
     };
 
-    CommitteeReferenceData.events.subscribe(function (referenceData) {
-      $scope.fileTypes = referenceData && CommitteeReferenceData.fileTypes();
+    function assignFileTypes() {
+      $scope.fileTypes = CommitteeReferenceData.fileTypes();
       logger.info('fileTypes ->', $scope.fileTypes);
+    }
+
+    CommitteeReferenceData.events.subscribe(function (referenceData) {
+      if (referenceData) {
+        assignFileTypes();
+      }
     });
 
     $scope.userEdits = {
@@ -298,6 +304,7 @@ angular.module('ekwgApp')
     }
 
     function refreshAll() {
+      assignFileTypes();
       refreshCommitteeFiles();
       refreshMembers();
     }
