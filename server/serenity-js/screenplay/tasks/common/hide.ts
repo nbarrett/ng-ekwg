@@ -1,19 +1,19 @@
-import { step } from "@serenity-js/core/lib/recording";
-import { PerformsTasks, Task, UsesAbilities } from "serenity-js/lib/screenplay";
-import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
+import { AnswersQuestions, PerformsActivities, Question, Task, UsesAbilities } from "@serenity-js/core";
+import { ExecuteScript } from "@serenity-js/protractor";
+import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
+import { ElementFinder } from "protractor";
 
 export class Hide implements Task {
 
-    static target(target: Target): Task {
-        return new Hide(target);
-    }
+  static target(target: Question<ElementFinder> | ElementFinder): Task {
+    return new Hide(target);
+  }
 
-    constructor(private target: Target) {
-    }
+  constructor(private target: Question<ElementFinder> | ElementFinder) {
+  }
 
-    performAs(actor: PerformsTasks & UsesAbilities): PromiseLike<void> {
-        const browseTheWeb = BrowseTheWeb.as(actor);
-        const element = browseTheWeb.locate(this.target);
-        return element.isPresent().then(present => present && browseTheWeb.executeScript("arguments[0].style.visibility='hidden'", element));
-    }
+  performAs(actor: AnswersQuestions & PerformsActivities & UsesAbilities): Promise<void> {
+    return promiseOf(this.target.answeredBy(actor).isPresent()
+      .then(present => present && actor.attemptsTo(ExecuteScript.sync(`arguments[0].style.visibility='hidden'`).withArguments(this.target))));
+  }
 }

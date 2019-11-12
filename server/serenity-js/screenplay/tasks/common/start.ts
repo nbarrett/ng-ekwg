@@ -1,24 +1,31 @@
-import { StartContacts } from "../ekwg/startContacts";
-import { StartWalksAndEventsManager } from "../ekwg/startWalksAndEventsManager";
-import { StartWalksProgramme } from "../ekwg/startWalksProgramme";
-import { StartRamblersLogin } from "../ramblers/common/startRamblersLogin";
+import { Task } from "@serenity-js/core/lib/screenplay/Task";
+import { Navigate } from "@serenity-js/protractor";
+import { StartWithNavigation } from "./startWithNavigation";
 
 export class Start {
 
-    static onWalksProgramme() {
-        return new StartWalksProgramme();
-    }
+  static onWalksProgramme(): Task {
+    return Task.where("#actor starts on the walks tab",
+      Navigate.to("/#/walks"),
+    );
+  }
 
-    static onRamblersLoginPage() {
-        return new StartRamblersLogin();
-    }
+  static onRamblersLoginPage(): Task {
+    return Task.where("#actor starts on the ramblers login page",
+      StartWithNavigation.to("https://www.ramblers.org.uk/login.aspx"),
+    );
+  }
 
-    static onContacts() {
-        return new StartContacts();
-    }
+  static onContacts(): Task {
+    return Task.where("#actor starts on ramblers contacts page",
+      StartWithNavigation.to("http://www.ramblers.org.uk/group-walks-and-events-manager.aspx?tab=Contacts"),
+    );
+  }
 
-    static onWalksAndEventsManager() {
-        return new StartWalksAndEventsManager();
-    }
+  static onWalksAndEventsManager(): Task {
+    return Task.where("#actor starts on the walks and events manager",
+      StartWithNavigation.to("http://www.ramblers.org.uk/group-walks-and-events-manager.aspx"),
+    );
+  }
 
 }

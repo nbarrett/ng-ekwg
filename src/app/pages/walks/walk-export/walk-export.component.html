@@ -81,7 +81,7 @@
                   <div class="button-group">
                     <form class="form-inline">
                       <div class="form-group">
-                        <label for="fileName" class="export-label">Show upload session: </label>
+                        <label for="fileName" class="inline-label">Show upload session: </label>
                         <select class="form-control input-sm"
                                 id="fileName"
                                 name="filename"
@@ -135,7 +135,7 @@
                         <i class="glyphicon glyphicon-info-sign blue-icon"></i>
                       <td *ngIf="audit.status==='error'">
                         <i class="glyphicon glyphicon-remove-circle red-icon"></i>
-                      <td>{{audit.message}}</td>
+                      <td>{{audit.message}}<span *ngIf="audit.errorResponse">: {{audit.errorResponse | valueOrDefault}}</span></td>
                     </tr>
                     </tbody>
                   </table>

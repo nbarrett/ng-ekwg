@@ -1,63 +1,58 @@
-import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
-
+import { contain, Ensure } from "@serenity-js/assertions";
+import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core";
+import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
 import { by } from "protractor";
-import { Question, UsesAbilities } from "serenity-js/lib/screenplay";
-import { expect } from "../../../expect";
-import { WalksProgrammeTargets } from "../../ui/ekwg/walksProgrammeTargets";
+import { WalksTargets } from "../../ui/ramblers/walksTargets";
 
 export class WalkSummary {
 
-    constructor(public action: string,
-                public walkDate: string,
-                public startTime: string,
-                public briefDescription: string,
-                public longerDescription: string,
-                public distance: string,
-                public gridReference: string,
-                public postcode: string,
-                public contactEmail: string,
-                public contactPhone: string) {
-    }
+  constructor(public action: string,
+              public walkDate: string,
+              public startTime: string,
+              public briefDescription: string,
+              public longerDescription: string,
+              public distance: string,
+              public gridReference: string,
+              public postcode: string,
+              public contactEmail: string,
+              public contactPhone: string) {
+  }
 
 }
 
-export class WalkSummaries implements Question<PromiseLike<WalkSummary[]>> {
+export class WalkSummaries implements Question<Promise<WalkSummary[]>> {
 
-    static displayed = () => new WalkSummaries();
+  static displayed = () => new WalkSummaries();
 
-    answeredBy(actor: UsesAbilities): PromiseLike<WalkSummary[]> {
+  answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<WalkSummary[]> {
+    return promiseOf(WalksTargets.walks.answeredBy(actor)
+      .all(by.tagName("td")).getText()
+      .then(columns => {
+        console.log("columns", columns);
+        return ({
+          action: columns[0],
+          walkDate: columns[1],
+          startTime: columns[2],
+          briefDescription: columns[3],
+          longerDescription: columns[4],
+          distance: columns[5],
+          gridReference: columns[6],
+          postcode: columns[7],
+          contactEmail: columns[8],
+          contactPhone: columns[9],
+        });
+      })) as Promise<WalkSummary[]>;
+  }
 
-        return BrowseTheWeb.as(actor).locateAll(
-            WalksProgrammeTargets.walks).map(result => result.all(by.tagName("td")).getText().then(function (columns) {
-            console.log("columns", columns);
-            return ({
-                action: columns[0],
-                walkDate: columns[1],
-                startTime: columns[2],
-                briefDescription: columns[3],
-                longerDescription: columns[4],
-                distance: columns[5],
-                gridReference: columns[6],
-                postcode: columns[7],
-                contactEmail: columns[8],
-                contactPhone: columns[9],
-            });
-        })) as PromiseLike<WalkSummary[]>;
-    }
-
-    toString = () => `displayed walks`;
+  toString = () => `displayed walks`;
 }
 
 export const showsAWalkOn = (expectedDate: string) => showWalksOnAllOf([expectedDate]);
 export const showWalksOnAllOf = (expectedDates: string[]) => foundWalks => {
-    return foundWalks.then(walks => {
-        console.log("walks:", walks);
-        const walkDates = walks.map(walk => walk.walkDate);
-        console.log("walks dates:", walkDates);
-        expect(walkDates).to.include.members(expectedDates);
-        // walks.forEach(walk => {
-        //     console.log("walk:", walk);
-        //     expect(walk.walkDate).to.be.oneOf(expectedDates);
-        // });
-    });
+  return foundWalks.then(walks => {
+    console.log("walks:", walks);
+    const walkDates = walks.map(walk => walk.walkDate);
+    console.log("walks dates:", walkDates);
+    Ensure.that(walkDates, contain(expectedDates));
+  });
 };

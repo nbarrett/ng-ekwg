@@ -1,8 +1,8 @@
-import { PerformsTasks, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { AnswersQuestions, PerformsActivities, Question, UsesAbilities } from "@serenity-js/core";
+import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
 import { by } from "protractor";
-import { BrowseTheWeb } from "serenity-js/lib/serenity-protractor";
-import { SaveBrowserSource } from "../../tasks/common/saveBrowserSource";
 import { ContactsTargets } from "../../ui/ramblers/contactsTargets";
+import { tail } from "../../util/util";
 
 export class Contact {
   constructor(public firstName: string,
@@ -29,41 +29,31 @@ export class ContactSummary extends Contact {
 
 }
 
-export class ContactListing implements Question<PromiseLike<ContactSummary[]>> {
+export class ContactListing implements Question<Promise<ContactSummary[]>> {
 
   static displayed = () => new ContactListing();
 
-  answeredBy(actor: PerformsTasks & UsesAbilities): PromiseLike<ContactSummary[]> {
-
-    const extractSummaryRow = (result, rowIndex) => {
-      return result.all(by.css("[class^='col - ']")).getText()
-        .then(columns => {
-          const contactInfo = columns[4].split("\n");
-          return ({
-            rowIndex,
-            firstName: columns[1],
-            lastName: columns[2],
-            displayName: columns[3],
-            emailAddress: contactInfo[0],
-            contactNumber: contactInfo[1],
-            contactId: columns[5],
-            checkboxTarget: ContactsTargets.checkboxSelector(rowIndex),
-          });
+  extractSummaryRow(result, rowIndex): Promise<ContactSummary> {
+    return result.all(by.css("[class^='col - ']")).getText()
+      .then(columns => {
+        const contactInfo = columns[4].split("\n");
+        return ({
+          rowIndex,
+          firstName: columns[1],
+          lastName: columns[2],
+          displayName: columns[3],
+          emailAddress: contactInfo[0],
+          contactNumber: contactInfo[1],
+          contactId: columns[5],
+          checkboxTarget: ContactsTargets.checkboxSelector(rowIndex),
         });
-    };
+      });
+  }
 
-    return actor.attemptsTo(
-      SaveBrowserSource.toFile("html-contact-source.html"))
-      .then(_ => {
-          return BrowseTheWeb.as(actor).locateAll(
-            ContactsTargets.contacts)
-            .map((result, rowIndex) => extractSummaryRow(result, rowIndex)).then(results => {
-              const [head, ...tail] = results;
-              return tail;
-            }) as PromiseLike<ContactSummary[]>;
-        },
-      );
-
+  answeredBy(actor: PerformsActivities & AnswersQuestions & UsesAbilities): Promise<ContactSummary[]> {
+    return promiseOf(ContactsTargets.contacts.answeredBy(actor)
+      .map((result, rowIndex) => this.extractSummaryRow(result, rowIndex))
+      .then(results => tail(results))) as Promise<ContactSummary[]>;
   }
 
   toString = () => `displayed contacts`;

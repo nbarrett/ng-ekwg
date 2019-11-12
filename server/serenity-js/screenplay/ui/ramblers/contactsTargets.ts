@@ -1,7 +1,6 @@
-import { Target } from "serenity-js/lib/screenplay-protractor";
-import { lpad } from "underscore.string";
-
+import { Target } from "@serenity-js/protractor";
 import { by } from "protractor";
+import { lpad } from "underscore.string";
 
 export class ContactsTargets {
 
@@ -35,7 +34,7 @@ export class ContactsTargets {
   public static userName = Target.the("user name")
     .located(by.css("#layout_0_content_0_innerleft_1_txtUsername"));
 
-  public static contacts = Target.the("ramblers contacts")
+  public static contacts = Target.all("ramblers contacts")
     .located(by.css(".lbs-search-row"));
 
   public static page1 = Target.the("page 1")
@@ -47,8 +46,10 @@ export class ContactsTargets {
   public static page3 = Target.the("page 3")
     .located(by.css("#layout_0_content_1_innerleft_2_tabContacts_btm3"));
 
-  public static checkboxSelector = (rowIndex: number) => Target.the("checkbox index " +
-    rowIndex).located(by.css("#layout_0_content_1_innerleft_2_tabContacts_rptResults_ctl01_chkSelectedContact" +
-    lpad((rowIndex + 1).toString(), 2, "0") +
-    "_chkSelectedContact"));
+  public static checkboxSelector(rowIndex: number) {
+    return Target.the("checkbox index " +
+      rowIndex).located(by.css("#layout_0_content_1_innerleft_2_tabContacts_rptResults_ctl01_chkSelectedContact" +
+      lpad((rowIndex + 1).toString(), 2, "0") +
+      "_chkSelectedContact"));
+  }
 }

@@ -1,7 +1,6 @@
 const contentText = require("../models/content-text");
 const config = require("../../config/config");
 const transforms = require("./transforms");
-const _ = require("underscore");
 const debug = require("debug")(config.logNamespace("context-text"));
 
 exports.create = (req, res) => {

@@ -1,13 +1,13 @@
-import { PerformsTasks, Task, UsesAbilities } from "serenity-js/lib/screenplay";
+import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
 import { ContactListing } from "../../../questions/ramblers/contactsFound";
 
 export class ListContacts implements Task {
 
-  static andAppendTo(results: Array<object>) {
+  static andAppendTo(results: object[]) {
     return new ListContacts(results);
   }
 
-  performAs(actor: PerformsTasks & UsesAbilities): PromiseLike<void> {
+  performAs(actor: PerformsActivities & UsesAbilities & AnswersQuestions): Promise<void> {
     console.log("now attempting to list contacts");
     return ContactListing.displayed().answeredBy(actor).then(contacts => {
       const mapped = contacts.map(contact => {
@@ -19,7 +19,7 @@ export class ListContacts implements Task {
     });
   }
 
-  constructor(private results: Array<object>) {
+  constructor(private results: object[]) {
   }
 
 }

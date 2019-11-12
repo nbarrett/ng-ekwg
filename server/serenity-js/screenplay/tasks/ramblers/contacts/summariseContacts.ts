@@ -1,19 +1,19 @@
-import { FileSystem } from "@serenity-js/core/lib/io/file_system";
-import { PerformsTasks, Task, UsesAbilities } from "serenity-js/lib/screenplay";
+import { PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
+import { FileSystem, Path } from "@serenity-js/core/lib/io";
 
 export class SummariseContacts implements Task {
 
-  static toFile(results: Array<object>) {
+  static toFile(results: object[]) {
     return new SummariseContacts(results);
   }
 
-  performAs(actor: PerformsTasks & UsesAbilities): PromiseLike<void> {
+  performAs(actor: PerformsActivities & UsesAbilities): Promise<void> {
     console.log("Saving", this.results.length, "contacts");
-    new FileSystem("./").store("all-contacts.json", JSON.stringify(this.results));
+    new FileSystem(new Path("./")).store(new Path("all-contacts.json"), JSON.stringify(this.results));
     return Promise.resolve();
   }
 
-  constructor(private results: Array<object>) {
+  constructor(private results: object[]) {
   }
 
 }

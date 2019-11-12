@@ -1,4 +1,4 @@
-import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
+import { PerformsActivities, Task } from "@serenity-js/core";
 import { Contact } from "../../../questions/ramblers/contactsFound";
 import { CreateContact } from "./createContact";
 
@@ -8,7 +8,7 @@ export class CreateContacts implements Task {
     return new CreateContacts(contacts);
   }
 
-  performAs(actor: PerformsTasks): PromiseLike<void> {
+  performAs(actor: PerformsActivities): Promise<void> {
     return actor.attemptsTo(
       ...this.contacts.map(
         contact => CreateContact.usingData(new Contact(contact.firstName, contact.lastName, contact.displayName, contact.email, contact.contactNumber))));

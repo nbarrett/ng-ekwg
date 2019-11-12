@@ -29,9 +29,8 @@ module.exports = {
     secretAccessKey: validatedEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
     uploadUrl: "https://" + config.aws.bucket + ".s3.amazonaws.com",
   },
-  env: env,
   dev: env !== "production",
-  production: env === "production",
+  env: env,
   googleMaps: {
     apiKey: validatedEnvironmentVariable("GOOGLE_MAPS_APIKEY"),
   },
@@ -51,12 +50,12 @@ module.exports = {
     },
   },
   meetup: {
-    group: config.meetup.group,
-    url: config.meetup.url,
     apiUrl: config.meetup.apiUrl,
+    group: config.meetup.group,
     oauth: {
-      accessToken: validatedEnvironmentVariable("MEETUP_ACCESS_TOKEN")
-    }
+      accessToken: validatedEnvironmentVariable("MEETUP_ACCESS_TOKEN"),
+    },
+    url: config.meetup.url,
   },
   mongo: {
     apiKey: validatedEnvironmentVariable("MONGOLAB_APIKEY"),
@@ -64,14 +63,15 @@ module.exports = {
     dbUrl: config.mongo.dbUrl,
     uri: validatedEnvironmentVariable("MONGODB_URI"),
   },
+  production: env === "production",
   ramblers: {
+    groupCode: config.ramblers.groupCode,
     gwem: {
       password: validatedEnvironmentVariable("RAMBLERS_GWEM_PASSWORD"),
       userName: validatedEnvironmentVariable("RAMBLERS_GWEM_USER"),
     },
-    groupCode: config.ramblers.groupCode,
     listWalksPath: config.ramblers.listWalksPath,
-    url: config.ramblers.url
+    url: config.ramblers.url,
   },
   server: {
     cookieSecret: config.server.cookieSecret,

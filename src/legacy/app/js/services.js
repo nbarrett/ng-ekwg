@@ -82,9 +82,6 @@ angular.module('ekwgApp')
     fieldPopulated: fieldPopulated,
   }
 })
-  .factory('RamblersUploadAudit', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('ramblersUploadAudit');
-  })
   .factory('ErrorTransformerService', function (StringUtilsService) {
     function transform(errorResponse) {
       var message = StringUtilsService.stringify(errorResponse);

@@ -1,8 +1,13 @@
 {
   "extends": "tslint:latest",
+  "semicolon": [
+    false
+  ],
   "rulesDirectory": "node_modules/tslint-microsoft-contrib",
   "rules": {
     "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
     "no-string-literal": false,
     "no-console": false,
     "quotemark": [true, "double", "avoid-escape"],

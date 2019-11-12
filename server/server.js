@@ -8,9 +8,9 @@ const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 const compression = require("compression")
 const errorHandler = require("errorhandler");
-const mongoose = require("mongoose");
 const passport = require("passport");
 const ramblers = require("./lib/ramblers/ramblers");
+const mongooseClient = require("./lib/mongo/mongoose-client");
 const migration = require("./lib/migration/migration-controller");
 const aws = require("./lib/aws/aws");
 const database = require("./lib/mongo/database");
@@ -25,6 +25,7 @@ const member = require("./lib/mongo/routes/member");
 const memberBulkLoadAudit = require("./lib/mongo/routes/member-bulk-load-update");
 const memberUpdateAuditRoutes = require("./lib/mongo/routes/member-update-audit");
 const memberAuthAuditRoutes = require("./lib/mongo/routes/member-auth-audit");
+const ramblersUploadAudit = require("./lib/mongo/routes/ramblers-upload-audit");
 const contentMetadata = require("./lib/mongo/routes/content-metadata");
 const expenseClaim = require("./lib/mongo/routes/expense-claim");
 const configRoutes = require("./lib/mongo/routes/config");
@@ -56,6 +57,7 @@ app.use("/api/database/member", member);
 app.use("/api/database/member-bulk-load-audit", memberBulkLoadAudit);
 app.use("/api/database/member-auth-audit", memberAuthAuditRoutes);
 app.use("/api/database/member-update-audit", memberUpdateAuditRoutes);
+app.use("/api/database/ramblers-upload-audit", ramblersUploadAudit);
 app.use("/api/database/config", configRoutes);
 app.use("/api/logs", logs);
 app.use("/", express.static(config.server.distFolder));
@@ -65,15 +67,7 @@ app.use((req, res, next) => {
 if (app.get("env") === "dev") {
   app.use(errorHandler());
 }
-
-mongoose.connect(config.mongo.uri, {useFindAndModify: false, keepAlive: 1, useNewUrlParser: true, useCreateIndex: true})
-  .then((response) => {
-    debug("Connected to database:", config.mongo.uri);
-  })
-  .catch((error) => {
-    debug("Connection failed:", config.mongo.uri, error);
-  });
-
+  mongooseClient.connect();
 app.listen(app.get("port"), function () {
   debug("listening on port " + config.server.listenPort);
 });

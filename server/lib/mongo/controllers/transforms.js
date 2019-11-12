@@ -52,6 +52,7 @@ exports.parseQueryStringParameters = (req) => {
   return {
     criteria: exports.parse(req, "criteria"),
     select: exports.parse(req, "select"),
+    limit: exports.parse(req, "limit"),
     sort: exports.parse(req, "sort")
   }
 };

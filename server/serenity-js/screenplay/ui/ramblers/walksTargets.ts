@@ -1,5 +1,5 @@
+import { Target } from "@serenity-js/protractor";
 import { by } from "protractor";
-import { Target } from "serenity-js/lib/screenplay-protractor";
 import { lpad } from "underscore.string";
 
 const walksViewParent = "#layout_0_content_2_innerleft_2_tabWalks";
@@ -33,7 +33,7 @@ export class WalksTargets {
   public static showAllWalks = Target.the("show all walks")
     .located(by.css(walksViewParent + "_lstPageSize-menu > li.ui-corner-bottom > a"));
 
-  public static walks = Target.the("ramblers walks")
+  public static walks = Target.all("ramblers walks")
     .located(by.css("[id^=layout_0_content_2_innerleft_2_tabWalks_rptResults_ctl].lbs-search-row"));
 
   public static walkIds = Target.the("ramblers walk Ids")
@@ -63,7 +63,7 @@ export class WalksTargets {
   public static publishSelected = Target.the("publish selected walks awaiting approval button")
     .located(by.css(walksViewParent + "_btnPublishSubmittedWalks"));
 
-  public static fileUploadSelectFile = Target.the("CSV file select dialog button")
+  public static chooseFilesButton = Target.the("Choose Files button")
     .located(by.css(walksViewParent + "_filUploadWalks"));
 
   public static uploadWalksButton = Target.the("CSV upload button")
@@ -72,7 +72,7 @@ export class WalksTargets {
   public static accordionUpload = Target.the("CSV file accordion expander")
     .located(by.css("#accordion-upload > h3 > a"));
 
-  public static uploadResultTableRows = Target.the("Upload result table rows")
+  public static uploadResultTableRows = Target.all("Upload result table rows")
     .located(by.css(walksViewParent + "_pnlUploadResult tr"));
 
   public static uploadResultSummary = Target.the("Upload result summary")

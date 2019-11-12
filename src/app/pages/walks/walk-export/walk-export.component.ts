@@ -8,7 +8,7 @@ import { switchMap } from "rxjs/operators";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { RamblersUploadAudit } from "../../../models/ramblers-upload-audit.model";
+import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
 import { WalkExport } from "../../../models/walk-export.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -16,6 +16,7 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
+import { RamblersUploadAuditService } from "../../../services/walks/ramblers-upload-audit.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -50,8 +51,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(DOCUMENT) private document: Document,
               @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-              @Inject("RamblersUploadAudit") private ramblersUploadAudit,
               @Inject("WalksService") private walksService,
+              private ramblersUploadAuditService: RamblersUploadAuditService,
               private notifierService: NotifierService,
               private displayDateAndTime: DisplayDateAndTimePipe,
               private displayDate: DisplayDatePipe,
@@ -106,25 +107,23 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   refreshRamblersUploadAudit() {
     this.walkExportNotifier.setBusy();
-    return this.ramblersUploadAudit.query({fileName: this.fileName}, {sort: {auditTime: -1}})
-      .then((auditItems: RamblersUploadAudit[]) => {
-        if (auditItems) {
-          this.ramblersUploadAuditData = auditItems
-            .filter(auditItem => {
-              return this.showDetail || ["complete", "error", "success"].includes(auditItem.status);
-            })
-            .map(auditItem => {
-              if (auditItem.status === "complete" && this.subscription) {
-                this.logger.debug("Upload complete");
-                this.auditNotifier.success("Ramblers upload completed");
-                this.exportInProgress = false;
-                this.stopPolling();
-                this.showAvailableWalkExports();
-              }
-              return auditItem;
-            });
-          this.auditNotifier.warning(`Showing ${this.ramblersUploadAuditData.length} audit items`);
-        }
+    return this.ramblersUploadAuditService.all({criteria: {fileName: this.fileName}, sort: {auditTime: -1}})
+      .then((auditItems: RamblersUploadAuditApiResponse) => {
+        this.ramblersUploadAuditData = auditItems.response
+          .filter(auditItem => {
+            return this.showDetail || ["complete", "error", "success"].includes(auditItem.status);
+          })
+          .map(auditItem => {
+            if (auditItem.status === "complete" && this.subscription) {
+              this.logger.debug("Upload complete");
+              this.auditNotifier.success("Ramblers upload completed");
+              this.exportInProgress = false;
+              this.stopPolling();
+              this.showAvailableWalkExports();
+            }
+            return auditItem;
+          });
+        this.auditNotifier.warning(`Showing ${this.ramblersUploadAuditData.length} audit items`);
         this.finalStatusError = find(this.ramblersUploadAuditData, {status: "error"});
       });
   }
@@ -152,10 +151,10 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   showAllAudits() {
     this.walkExportNotifier.warning("Refreshing past download sessions", false, true);
-    this.ramblersUploadAudit.all({limit: 1000, sort: {auditTime: -1}})
-      .then((auditItems: RamblersUploadAudit[]) => {
-        this.logger.debug("found total of", auditItems.length, "audit trail records:", auditItems);
-        this.fileNames = chain(auditItems).map("fileName").unique().value();
+    this.ramblersUploadAuditService.all({limit: 1000, sort: {auditTime: -1}})
+      .then((auditItems: RamblersUploadAuditApiResponse) => {
+        this.logger.debug("found total of", auditItems.response.length, "audit trail records:", auditItems.response);
+        this.fileNames = chain(auditItems.response).map("fileName").unique().value();
         this.logger.debug("found total of", this.fileNames.length, "fileNames:", this.fileNames);
         this.fileName = this.fileNames[0];
         this.fileNameChanged();

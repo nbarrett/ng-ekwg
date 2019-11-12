@@ -1,15 +1,16 @@
-import { Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
-import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
+import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
+import { ElementFinder } from "protractor";
 
-export class CheckedValue implements Question<PromiseLike<boolean>> {
-    static of = (target: Target) => new CheckedValue(target);
+export class CheckedValue implements Question<Promise<boolean>> {
+  static of = (target: Question<ElementFinder> | ElementFinder) => new CheckedValue(target);
 
-    answeredBy(actor: UsesAbilities): PromiseLike<boolean> {
-        return BrowseTheWeb.as(actor).locate(this.target).isSelected();
-    }
+  answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<boolean> {
+    return promiseOf(this.target.answeredBy(actor).isSelected());
+  }
 
-    constructor(private target: Target) {
-    }
+  constructor(private target: Question<ElementFinder> | ElementFinder) {
+  }
 
-    toString = () => `the checked value of ${ this.target }`;
+  toString = () => `the checked value of ${this.target}`;
 }

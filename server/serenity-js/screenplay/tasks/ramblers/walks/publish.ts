@@ -1,6 +1,5 @@
-import { step } from "@serenity-js/core/lib/recording";
-import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
-import { Click } from "serenity-js/lib/serenity-protractor";
+import { PerformsActivities, Task } from "@serenity-js/core";
+import { Click} from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { WaitFor } from "../common/waitFor";
 import { SelectWalks } from "./selectWalks";
@@ -19,20 +18,25 @@ export class Publish {
 
 export class PublishSelectedWalks implements Task {
 
-  @step("{0} publishes selected walks")
-  performAs(actor: PerformsTasks): PromiseLike<void> {
+  performAs(actor: PerformsActivities): Promise<void> {
     return actor.attemptsTo(
       Click.on(WalksTargets.publishSelected),
       WaitFor.selectedWalksToReachStatus("Published"));
+  }
+  toString() {
+    return "#actor publishes selected walks";
   }
 }
 
 export class PublishWalksAwaitingApproval implements Task {
 
-  @step("{0} publishes walks awaiting approval")
-  performAs(actor: PerformsTasks): PromiseLike<void> {
+  performAs(actor: PerformsActivities): Promise<void> {
     return actor.attemptsTo(
       SelectWalks.withStatus("Awaiting approval"),
       Publish.selectedWalks());
+  }
+
+  toString() {
+    return "#actor publishes walks awaiting approval";
   }
 }

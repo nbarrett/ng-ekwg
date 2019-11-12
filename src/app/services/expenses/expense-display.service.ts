@@ -188,7 +188,7 @@ export class ExpenseDisplayService {
     return this.saveExpenseClaim(confirm, notify, expenseClaim);
   }
 
-  saveExpenseClaim(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim,) {
+  saveExpenseClaim(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim) {
     this.recalculateClaimCost(expenseClaim);
     return this.expenseClaimService.createOrUpdate(expenseClaim)
       .then(() => this.removeConfirm(confirm))

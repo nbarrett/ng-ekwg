@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.get("/gwem/walk-base-url", walksAndEventsManager.walkBaseUrl);
 router.get("/gwem/list-walks", walksAndEventsManager.listWalks);
-router.post("/gwem/upload-walks", ramblersWalkUpload.uploadWalks);
+router.post("/gwem/upload-walks", authConfig.authenticate(), ramblersWalkUpload.uploadWalks);
 router.post("/monthly-reports/upload", authConfig.authenticate(), multer({dest: config.server.uploadDir}).any(), memberBulkLoad.uploadRamblersData)
 module.exports = router;

@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { RamblersUploadAuditProvider, RamblersWalksAndEventsServiceProvider, WalksServiceProvider } from "../../ajs-upgraded-providers";
+import { RamblersWalksAndEventsServiceProvider, WalksServiceProvider } from "../../ajs-upgraded-providers";
 import { WalkNotificationChangesComponent } from "../../notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationFooterComponent } from "../../notifications/walks/templates/common/walk-notification-footer.component";
@@ -74,7 +74,6 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     SharedModule
   ],
   providers: [
-    RamblersUploadAuditProvider,
     RamblersWalksAndEventsServiceProvider,
     VenueIconPipe,
     WalkEventTypePipe,

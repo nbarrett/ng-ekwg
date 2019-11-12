@@ -18,16 +18,6 @@ export const ClipboardServiceProvider = {
   deps: ["$injector"]
 };
 
-export function RamblersUploadAudit($injector) {
-  return $injector.get("RamblersUploadAudit");
-}
-
-export const RamblersUploadAuditProvider = {
-  provide: "RamblersUploadAudit",
-  useFactory: RamblersUploadAudit,
-  deps: ["$injector"]
-};
-
 export function WalksService($injector) {
   return $injector.get("WalksService");
 }

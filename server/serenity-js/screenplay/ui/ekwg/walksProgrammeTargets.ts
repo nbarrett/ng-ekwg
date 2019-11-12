@@ -1,5 +1,4 @@
-import { Target } from "serenity-js/lib/screenplay-protractor";
-
+import { Target } from "@serenity-js/protractor";
 import { by } from "protractor";
 
 export class WalksProgrammeTargets {

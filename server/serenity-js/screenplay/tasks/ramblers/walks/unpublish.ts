@@ -1,22 +1,18 @@
-import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
-import { Click } from "serenity-js/lib/serenity-protractor";
-import { Alert } from "serenity-js/lib/serenity-protractor/screenplay/interactions/alert";
-import { WaitForAlert } from "serenity-js/lib/serenity-protractor/screenplay/interactions/waitForAlert";
+import { equals } from "@serenity-js/assertions";
+import { Task } from "@serenity-js/core";
+import { Click, Wait } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { Accept } from "../../replace-with-serenty-js-when-released/Accept";
+import { Alert } from "../../replace-with-serenty-js-when-released/Alert";
 import { WaitFor } from "../common/waitFor";
 
-export class Unpublish implements Task {
+export class Unpublish {
 
-  static selectedWalks() {
-    return new Unpublish();
-  }
-
-  performAs(actor: PerformsTasks): PromiseLike<void> {
-    console.log("Unpublishing walks");
-    return actor.attemptsTo(
+  static selectedWalks(): Task {
+    return Task.where("#actor unpublishes selected walks",
       Click.on(WalksTargets.unPublishSelected),
-      WaitForAlert.toBePresent(),
-      Alert.accept(),
+      Wait.until(Alert.visibility(), equals(true)),
+      Accept.alert(),
       WaitFor.noSelectedWalksToHaveStatus("Published"));
   }
 }

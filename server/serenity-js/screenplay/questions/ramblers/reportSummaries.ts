@@ -1,8 +1,7 @@
-import { PerformsTasks, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { AnswersQuestions, PerformsActivities, Question, UsesAbilities } from "@serenity-js/core";
 import { by } from "protractor";
-import { BrowseTheWeb } from "serenity-js/lib/serenity-protractor";
-import { SaveBrowserSource } from "../../tasks/common/saveBrowserSource";
 import { WalksTargets } from "../../ui/ramblers/walksTargets";
+import { tail } from "../../util/util";
 
 export class UploadError {
   constructor(public rowNumber: number,
@@ -13,31 +12,18 @@ export class UploadError {
 
 }
 
-export class UploadErrors implements Question<PromiseLike<UploadError[]>> {
+export class UploadErrors implements Question<Promise<UploadError[]>> {
 
   static displayed = () => new UploadErrors();
 
-  answeredBy(actor: PerformsTasks & UsesAbilities): PromiseLike<UploadError[]> {
-
-    const extractUploadError = result => {
-      return result.all(by.css("td")).getAttribute("textContent")
+  answeredBy(actor: PerformsActivities & AnswersQuestions & UsesAbilities): Promise<UploadError[]> {
+    return WalksTargets.uploadResultTableRows.answeredBy(actor)
+      .map(result => result.all(by.css("td")).getAttribute("textContent")
         .then(columns => ({
           rowNumber: columns[0],
           message: columns[1],
-        }));
-    };
-
-    return actor.attemptsTo(
-      SaveBrowserSource.toFile("upload-errors-source.html"))
-      .then(_ => {
-          return BrowseTheWeb.as(actor).locateAll(
-            WalksTargets.uploadResultTableRows)
-            .map((result, rowIndex) => extractUploadError(result)).then(results => {
-              const [head, ...tail] = results;
-              return tail;
-            }) as PromiseLike<UploadError[]>;
-        },
-      );
+        })))
+      .then(results => tail(results)) as Promise<UploadError[]>;
   }
 
   toString = () => `upload errors`;

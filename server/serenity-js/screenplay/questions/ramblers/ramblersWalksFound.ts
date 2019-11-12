@@ -1,6 +1,7 @@
-import { Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core";
+import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
+import { TargetElement } from "@serenity-js/protractor/lib/screenplay/questions/targets";
 import { by } from "protractor";
-import { BrowseTheWeb, Target } from "serenity-js/lib/serenity-protractor";
 import { WalksTargets } from "../../ui/ramblers/walksTargets";
 import { CheckedValue } from "./checkedValue";
 
@@ -14,20 +15,21 @@ export class RamblersWalkSummary {
               public distanceMiles: string,
               public distanceKm: string,
               public status: string,
-              public checkboxTarget: Target,
+              public checkboxTarget: TargetElement,
               public currentlySelected: boolean) {
   }
 
 }
 
-export class RamblersWalkSummaries implements Question<PromiseLike<RamblersWalkSummary[]>> {
+export class RamblersWalkSummaries implements Question<Promise<RamblersWalkSummary[]>> {
 
   static displayed = () => new RamblersWalkSummaries();
 
-  answeredBy(actor: UsesAbilities): PromiseLike<RamblersWalkSummary[]> {
+  answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<RamblersWalkSummary[]> {
 
     const extractSummaryRow = (result, rowIndex) => {
-      return result.all(by.css("[class^='col-']")).getText()
+      return result.all(by.css("[class^='col-']"))
+        .map(element => element.getText())
         .then(columns => ({
           rowIndex,
           walkDate: columns[0],
@@ -42,26 +44,22 @@ export class RamblersWalkSummaries implements Question<PromiseLike<RamblersWalkS
 
     const addWalkId = result => {
       return summaryObject => result.all(by.css("div[style='display: none']")).getAttribute("innerText")
-        .then(walkIds => Object.assign(summaryObject, {walkId: parseInt(walkIds[0], 10)}));
+        .then(walkIds => ({...summaryObject, walkId: parseInt(walkIds[0], 10)}));
     };
 
     const addCheckedStatus = summaryObject => {
       return CheckedValue.of(summaryObject.checkboxTarget).answeredBy(actor)
-        .then(selected => Object.assign(summaryObject, {currentlySelected: selected}));
+        .then(selected => ({...summaryObject, currentlySelected: selected}));
     };
 
-    return BrowseTheWeb.as(actor).locateAll(
-      WalksTargets.walks)
+    return promiseOf(WalksTargets.walks.answeredBy(actor)
       .map((result, rowIndex) => extractSummaryRow(result, rowIndex)
         .then(addWalkId(result))
-        .then(addCheckedStatus)).catch(error => {
-        if (error.name === "StaleElementReferenceError") {
-          return RamblersWalkSummaries.displayed().answeredBy(actor);
-        } else {
-          throw error;
-        }
-      }) as PromiseLike<RamblersWalkSummary[]>;
-
+        .then(addCheckedStatus))
+      .catch(error => {
+        console.log("retrying", this.toString(), "due to", error.name);
+        return this.answeredBy(actor) as Promise<any>;
+      }));
   }
 
   toString = () => `displayed walks`;

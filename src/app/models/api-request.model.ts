@@ -5,6 +5,7 @@ export interface ApiRequest {
 }
 
 export interface DataQueryOptions {
+  limit?: number;
   criteria?: object;
   select?: object;
   sort?: object;

@@ -1,9 +1,9 @@
-import { step } from "@serenity-js/core/lib/recording";
-import { UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { Ensure, equals } from "@serenity-js/assertions";
+import { AnswersQuestions, PerformsActivities, Question, Task, UsesAbilities } from "@serenity-js/core/lib/screenplay";
 import * as moment from "moment-timezone";
 import * as path from "path";
-import { PerformsTasks, Task } from "serenity-js/lib/screenplay";
-import * as localMongo from "../../../../../lib/mongo/localMongo";
+import * as ramblersUploadAudit from "../../../../../lib/mongo/models/ramblers-upload-audit";
+import * as mongooseClient from "../../../../../lib/mongo/mongoose-client";
 import { UploadErrors } from "../../../questions/ramblers/reportSummaries";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
 
@@ -11,13 +11,12 @@ export class ReportOn implements Task {
 
   static uploadErrors = () => new ReportOn();
 
-  @step("{0} reports on upload")
-  performAs(actor: PerformsTasks & UsesAbilities): PromiseLike<void> {
-    return UploadErrors.displayed().answeredBy(actor)
+  performAs(actor: PerformsActivities & UsesAbilities & AnswersQuestions): Promise<void> {
+    return actor.answer(UploadErrors.displayed())
       .then(errors => {
         const fileName = path.basename(RequestParameterExtractor.extract().fileName);
         if (errors.length === 0) {
-          localMongo.post("ramblersUploadAudit", {
+          mongooseClient.create(ramblersUploadAudit, {
             auditTime: moment().tz("Europe/London").valueOf(),
             fileName,
             type: "step",
@@ -25,16 +24,39 @@ export class ReportOn implements Task {
             message: "No errors were found following upload",
           });
         } else {
-          localMongo.post("ramblersUploadAudit", {
+          mongooseClient.create(ramblersUploadAudit, {
             auditTime: moment().tz("Europe/London").valueOf(),
             fileName,
             type: "step",
             status: "error",
-            message: `Found ${errors.length} errors following upload: ${JSON.stringify(errors)}`,
+            message: `Found ${errors.length} errors following upload`,
+            errorResponse: errors,
           });
-          throw new Error(`Found ${errors.length} errors following upload: ${JSON.stringify(errors)}`);
         }
+        return actor.attemptsTo(Ensure.that(CountOfErrors.displayed(errors.length), equals(0)));
       });
-  };
+  }
+
+  toString() {
+    return "#actor reports on upload";
+  }
+
+}
+
+class CountOfErrors implements Question<number> {
+  constructor(private count: number) {
+  }
+
+  static displayed(count): Question<number> {
+    return new CountOfErrors(count);
+  }
+
+  answeredBy(actor: UsesAbilities): number {
+    return this.count;
+  }
+
+  toString() {
+    return "the count of upload errors";
+  }
 
 }
