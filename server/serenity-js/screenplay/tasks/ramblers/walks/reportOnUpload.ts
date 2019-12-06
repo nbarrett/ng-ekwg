@@ -32,7 +32,7 @@ export class ReportOn implements Task {
             status: "error",
             message: `Found ${errors.length} errors following upload: ${JSON.stringify(errors)}`,
           });
-          throw new Error("Upload failed - see previous audit errors");
+          throw new Error(`Found ${errors.length} errors following upload: ${JSON.stringify(errors)}`);
         }
       });
   };

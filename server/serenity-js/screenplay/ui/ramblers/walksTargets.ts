@@ -45,6 +45,9 @@ export class WalksTargets {
   public static progressIndicator = Target.the("progress indicator")
     .located(by.css(".lbs-progress-msg"));
 
+  public static loaderIndicator = Target.the("loader indicator")
+    .located(by.css("[src$='ajax-loader.gif']"));
+
   public static selectAll = Target.the("select all walks button")
     .located(by.css(walksViewParent + "_btnSelectAll"));
 
@@ -75,6 +78,8 @@ export class WalksTargets {
   public static uploadResultSummary = Target.the("Upload result summary")
     .located(by.css(walksViewParent + "_pnlUploadResult p"));
 
-  public static checkboxSelector = (rowIndex: number, date: string) => Target.the("checkbox for " + date + " walk")
-    .located(by.css(walksViewParent + "_rptResults_ctl" + lpad((rowIndex + 1).toString(), 2, "0") + "_chkSelected"));
+  public static checkboxSelector(rowIndex: number, date: string) {
+    return Target.the("checkbox for " + date + " walk")
+      .located(by.css(walksViewParent + "_rptResults_ctl" + lpad((rowIndex + 1).toString(), 2, "0") + "_chkSelected"));
+  }
 }
