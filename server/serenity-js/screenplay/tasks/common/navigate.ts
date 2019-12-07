@@ -3,6 +3,5 @@ import { Open, ResizeBrowserWindow, UseAngular } from "serenity-js/lib/serenity-
 
 export const Navigate = { to: (url: string) => Task.where(`#actor navigates to ${url}`,
     UseAngular.disableSynchronisation(),
-    ResizeBrowserWindow.toMaximum(),
     Open.browserOn(url),
 )};

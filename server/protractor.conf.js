@@ -4,7 +4,7 @@ exports.config = {
 
   directConnect: true,
   baseUrl: "https://ekwg-dev.herokuapp.com",
-  chromeDriver: process.env["CHROMEDRIVER_PATH"],
+  chromeDriver: require('chromedriver/lib/chromedriver').path,
   allScriptsTimeout: 30000,
   getPageTimeout: 30000,
 
@@ -36,12 +36,14 @@ exports.config = {
     chromeOptions: {
       binary: process.env["GOOGLE_CHROME_BIN"],
       args: [
-        "--disable-infobars",
-        "--headless",
-        "--disable-gpu",
         "--no-sandbox",
-        "--window-size=800,1600",
+        "--disable-infobars",
+        "--disable-dev-shm-usage",
         "--disable-extensions",
+        "--log-level=3",
+        "--disable-gpu",
+        "--window-size=1920,1080",
+        "--headless",
       ],
     },
 
