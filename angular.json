@@ -34,7 +34,7 @@
       },
       "architect": {
         "build": {
-          "builder": "ngx-build-plus:build",
+          "builder": "ngx-build-plus:browser",
           "options": {
             "outputPath": "dist/ng-ekwg",
             "index": "src/index.html",

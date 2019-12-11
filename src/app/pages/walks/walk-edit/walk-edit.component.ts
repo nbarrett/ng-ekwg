@@ -58,8 +58,7 @@ export class WalkEditComponent implements OnInit {
     this.displayedWalk = cloneDeep(displayedWalk);
   }
 
-  @ViewChild(NotificationDirective) notificationDirective: NotificationDirective;
-
+  @ViewChild(NotificationDirective, {static: false}) notificationDirective: NotificationDirective;
   public displayedWalk: DisplayedWalk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;

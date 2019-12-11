@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import * as moment from "moment-timezone";
-import { LoggerTestingModule } from "ngx-logger";
+import { LoggerTestingModule } from "ngx-logger/testing";
 import { DateUtilsService } from "./date-utils.service";
 
 describe("DateUtilsService", () => {

@@ -26,7 +26,7 @@ import { WalkDisplayService } from "../walk-display.service";
 })
 
 export class WalkExportComponent implements OnInit, OnDestroy {
-  @ViewChild("code") code: ElementRef;
+  @ViewChild("code", {static: false}) code: ElementRef;
   private logger: Logger;
   private ramblersUploadAuditData: RamblersUploadAudit[];
   private walksForExport: WalkExport[] = [];
@@ -124,10 +124,9 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               }
               return auditItem;
             });
-          this.auditNotifier.warning("Showing " + this.ramblersUploadAuditData.length + " audit items");
+          this.auditNotifier.warning(`Showing ${this.ramblersUploadAuditData.length} audit items`);
         }
         this.finalStatusError = find(this.ramblersUploadAuditData, {status: "error"});
-
       });
   }
 
@@ -143,8 +142,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.logger.debug("populateWalkExport: found", walksForExport.length, "walks:", walksForExport);
     this.walksForExport = walksForExport;
     this.walkExportNotifier.success({
-      title: "Export status", message: "Found total of " + this.walksForExport.length + " walk(s), "
-        + this.walksDownloadFile().length + " preselected for export"
+      title: "Export status", message: `Found total of ${this.walksForExport.length} walk(s), ${this.walksDownloadFile().length} preselected for export`
     });
     this.walkExportNotifier.clearBusy();
   }
@@ -178,20 +176,20 @@ export class WalkExportComponent implements OnInit, OnDestroy {
             this.walkExportNotifier.error({
               title: "Problem with Ramblers export preparation",
               continue: true,
-              message: get(error, "data.response.error") + " - " + get(error, "data.message")
+              message: `${get(error, "data.response.error")} - ${get(error, "data.message")}`
             });
           });
       });
   }
 
-  changeWalkExportSelection(walk: any) {
-    if (walk.validationMessages.length === 0) {
-      walk.selected = !walk.selected;
+  changeWalkExportSelection(walkExport: WalkExport) {
+    if (walkExport.validationMessages.length === 0) {
+      walkExport.selected = !walkExport.selected;
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
-        title: "You can\"t export the walk for " + this.displayDate.transform(walk.displayedWalk.walkDate),
-        message: walk.validationMessages.join(", ")
+        title: `You can"t export the walk for ${this.displayDate.transform(walkExport.walk.walkDate)}`,
+        message: walkExport.validationMessages.join(", ")
       });
     }
   }

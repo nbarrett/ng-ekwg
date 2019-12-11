@@ -2341,7 +2341,7 @@ ul.ui-tabs-nav li a:hover {
 .event-badge {
   color: #fff;
   padding: 4px 10px 6px 8px;
-  margin-top: -4px;
+  margin-top: 0;
   margin-left: 4px;
 }
 

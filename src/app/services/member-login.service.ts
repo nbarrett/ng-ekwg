@@ -86,6 +86,7 @@ export class MemberLoginService {
       this.auditMemberLogin(member.userName, member, loginResponseValue);
     }
     this.removeCookie("loggedInMember");
+    this.removeCookie("editSite");
     this.broadcastService.broadcast("memberLogoutComplete");
   }
 

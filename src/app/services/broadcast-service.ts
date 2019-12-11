@@ -39,9 +39,9 @@ export class BroadcastService {
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
-    const temp = Observable.create((observer: Observer<NamedEvent>) => {
+    const temp = new Observable(((observer: Observer<NamedEvent>) => {
       this.observer = observer;
-    });
+    }));
     this.observable = temp.pipe(share());
   }
 

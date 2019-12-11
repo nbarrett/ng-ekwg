@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import times from "lodash-es/times";
-import { LoggerTestingModule } from "ngx-logger";
+import { LoggerTestingModule } from "ngx-logger/testing";
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";

@@ -1,8 +1,7 @@
-import { TestBed, async} from "@angular/core/testing";
-import { CommitteeReferenceDataService } from "./committee-reference-data.service";
-import { LoggerTestingModule } from "ngx-logger";
+import { async, TestBed } from "@angular/core/testing";
+import { LoggerTestingModule } from "ngx-logger/testing";
 import { CommitteeConfig } from "../../ajs-upgraded-providers";
-
+import { CommitteeReferenceDataService } from "./committee-reference-data.service";
 
 const committeConfig = {
   getConfig: () => {
@@ -39,14 +38,10 @@ const mockData = [
     description: "Membership"
   }];
 
-xdescribe("CommitteeReferenceDataService", () => {
+describe("CommitteeReferenceDataService", () => {
 
-  // beforeAll(done => {
-  //   setTimeout(done, 5000);
-  // });
   let spy;
   beforeEach(() => {
-
 
     TestBed.configureTestingModule({
       imports: [LoggerTestingModule],
@@ -55,14 +50,13 @@ xdescribe("CommitteeReferenceDataService", () => {
         provide: "CommitteeConfig", useValue: committeConfig
       }]
     });
-    spy = spyOn(committeConfig, "getConfig").and.returnValue(Promise.resolve(mockData));
+    spy = spyOn(committeConfig, "getConfig").and.returnValue(Promise.resolve(mockData) as any);
 
   });
 
   it("should be created", (async(() => {
     const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
     expect(committeConfig.getConfig).toHaveBeenCalled();
-    // service.whenStable
     spy.calls.mostRecent().returnValue.then(() => {
       expect(service.committeeMembersForRole("secretary")).toEqual([]);
 

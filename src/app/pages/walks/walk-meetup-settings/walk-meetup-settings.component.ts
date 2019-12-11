@@ -24,7 +24,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public contentTextItems: ContentText[] = [];
-  @ViewChild("tabs") tabs: TabsetComponent;
+  @ViewChild("tabs", {static: false}) tabs: TabsetComponent;
   public selectedContent: ContentText;
   addNew: boolean;
   public config: MeetupConfig;

@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-import { LoggerTestingModule } from "ngx-logger";
+import { LoggerTestingModule } from "ngx-logger/testing";
 
 import { HttpResponseService } from "./http-response.service";
 

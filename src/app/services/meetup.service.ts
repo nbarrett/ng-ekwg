@@ -1,30 +1,30 @@
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Injectable } from "@angular/core";
 import get from "lodash-es/get";
 import has from "lodash-es/has";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
-import { AlertInstance } from "./notifier.service";
+import { NgxLoggerLevel } from "ngx-logger";
+import { Observable, Subject } from "rxjs";
+import { mergeMap } from "rxjs/operators";
 import { ApiResponse } from "../models/api-response.model";
-import { ConfigService } from "./config.service";
-import { DateUtilsService } from "./date-utils.service";
-import { DisplayedWalk } from "../models/walk-displayed.model";
-import { EventType } from "./walks/walks-reference-data.service";
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { Logger, LoggerFactory } from "./logger-factory.service";
+import { NumericIdentier } from "../models/generic-response.model";
 import { MeetupConfig } from "../models/meetup-config.model";
 import { MeetupErrorResponse } from "../models/meetup-error-response.model";
 import { MeetupEventDetailedResponse } from "../models/meetup-event-detailed-response.model";
 import { MeetupEventRequest } from "../models/meetup-event-request.model";
 import { MeetupEventResponse } from "../models/meetup-event-response.model";
 import { MeetupLocationResponse } from "../models/meetup-location-response.model";
-import { MeetupVenueConflictResponse, MeetupVenueResponse } from "../models/meetup-venue-response.model";
 import { MeetupVenueRequest } from "../models/meetup-venue-request.model";
-import { mergeMap } from "rxjs/operators";
-import { NgxLoggerLevel } from "ngx-logger";
-import { NumericIdentier } from "../models/generic-response.model";
-import { Observable, Subject } from "rxjs";
-import { StringUtilsService } from "./string-utils.service";
+import { MeetupVenueConflictResponse, MeetupVenueResponse } from "../models/meetup-venue-response.model";
+import { DisplayedWalk } from "../models/walk-displayed.model";
 import { Walk } from "../models/walk.model";
+import { ConfigService } from "./config.service";
+import { DateUtilsService } from "./date-utils.service";
+import { Logger, LoggerFactory } from "./logger-factory.service";
+import { AlertInstance } from "./notifier.service";
+import { StringUtilsService } from "./string-utils.service";
+import { EventType } from "./walks/walks-reference-data.service";
 
 export const meetupDescriptionPrefix = "meetup-description-prefix";
 
@@ -100,7 +100,7 @@ export class MeetupService {
           this.logger.debug("events API response", apiResponse);
           return apiResponse.response;
         })
-      );
+      ) as Observable<MeetupLocationResponse>;
   }
 
   eventsForStatus(status?: string) {
@@ -123,8 +123,11 @@ export class MeetupService {
 
   async synchroniseWalkWithEvent(notify: AlertInstance, displayedWalk: DisplayedWalk, meetupDescription: string): Promise<any> {
     try {
-      if (displayedWalk.status === EventType.APPROVED && has(displayedWalk.walk, ["config", "meetup"]) && displayedWalk.walk.meetupPublish) {
-        const eventExists = await this.eventExists(notify, displayedWalk.walk);
+      if (displayedWalk.status === EventType.APPROVED
+        && displayedWalk.walk.walkDate > this.dateUtils.momentNowNoTime().valueOf()
+        && has(displayedWalk.walk, ["config", "meetup"])
+        && displayedWalk.walk.meetupPublish) {
+        const eventExists: boolean = await this.eventExists(notify, displayedWalk.walk);
         if (eventExists) {
           return this.updateEvent(notify, displayedWalk.walk, meetupDescription);
         } else {
@@ -140,7 +143,6 @@ export class MeetupService {
     } catch (error) {
       return Promise.reject(error);
     }
-
   }
 
   async deleteEvent(notify: AlertInstance, walk: Walk): Promise<boolean> {
@@ -196,9 +198,15 @@ export class MeetupService {
     }
   }
 
-  extractErrorsFrom(httpErrorResponse: HttpErrorResponse): string {
+  extractErrorsFrom(httpErrorResponse: HttpErrorResponse): any {
     this.logger.debug("api response was", httpErrorResponse);
-    return has(httpErrorResponse, ["error"]) ? httpErrorResponse.error.response.errors.map(error => this.stringUtils.stringifyObject(error)) : httpErrorResponse;
+    if (has(httpErrorResponse, ["error", "response", "errors"])) {
+      return httpErrorResponse.error.response.errors.map(error => this.stringUtils.stringifyObject(error));
+    }
+    if (has(httpErrorResponse, ["error"])) {
+      return this.stringUtils.stringifyObject(httpErrorResponse.error);
+    }
+    return httpErrorResponse;
   }
 
   async updateEvent(notify: AlertInstance, walk: Walk, description: string): Promise<MeetupEventResponse> {

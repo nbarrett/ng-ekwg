@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { UrlService } from "./url.service";
-import { LoggerTestingModule } from "ngx-logger";
+import { LoggerTestingModule } from "ngx-logger/testing";
 import { DOCUMENT } from "@angular/common";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 
