@@ -1,12 +1,12 @@
 angular.module('ekwgApp')
-  .controller('LoginController', function ($log, $scope, $routeParams, LoggedInMemberService, AuthenticationModalsService, Notifier, LegacyUrlService, URLService, ValidationUtils, close) {
+  .controller('LoginController', function ($log, $scope, $routeParams, MemberLoginService, AuthenticationModalsService, Notifier, LegacyUrlService, URLService, ValidationUtils, close) {
 
       $scope.notify = {};
       var logger = $log.getInstance('LoginController');
       $log.logLevels['LoginController'] = $log.LEVEL.OFF;
 
       var notify = Notifier.createAlertInstance($scope.notify);
-      LoggedInMemberService.logout();
+      MemberLoginService.logout();
       $scope.actions = {
         submittable: function () {
           var userNamePopulated = ValidationUtils.fieldPopulated($scope.enteredMemberCredentials, "userName");
@@ -28,16 +28,15 @@ angular.module('ekwgApp')
             title: "Logging in",
             message: "using credentials for " + $scope.enteredMemberCredentials.userName + " - please wait"
           });
-          LoggedInMemberService.login($scope.enteredMemberCredentials.userName, $scope.enteredMemberCredentials.password).then(function () {
-            var loginResponse = LoggedInMemberService.loginResponse();
-            if (LoggedInMemberService.memberLoggedIn()) {
+          MemberLoginService.login($scope.enteredMemberCredentials.userName, $scope.enteredMemberCredentials.password).then(function (loginResponse) {
+            if (loginResponse.memberLoggedIn) {
               close();
-              if (!LoggedInMemberService.loggedInMember().profileSettingsConfirmed) {
+              if (!loginResponse.member.profileSettingsConfirmed) {
                 return LegacyUrlService.navigateTo("mailing-preferences");
               }
               return true;
             }
-            else if (LoggedInMemberService.showResetPassword()) {
+            else if (loginResponse.showResetPassword) {
               return AuthenticationModalsService.showResetPasswordModal($scope.enteredMemberCredentials.userName, "Your password has expired, therefore you need to reset it to a new one before continuing.");
             } else {
               notify.showContactUs(true);

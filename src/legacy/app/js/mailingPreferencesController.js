@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('MailingPreferencesController', function ($log, $scope, ProfileConfirmationService, Notifier, URLService, LoggedInMemberService, memberId, close) {
+  .controller('MailingPreferencesController', function ($log, $scope, ProfileConfirmationService, Notifier, URLService, MemberLoginService, memberId, close) {
 
     var logger = $log.getInstance("MailingPreferencesController");
     $log.logLevels["MailingPreferencesController"] = $log.LEVEL.OFF;
@@ -7,7 +7,7 @@ angular.module('ekwgApp')
     $scope.notify = {};
     var notify = Notifier.createAlertInstance($scope.notify);
 
-    LoggedInMemberService.getMemberForMemberId(memberId)
+    MemberLoginService.getMemberForMemberId(memberId)
       .then(function (member) {
         logger.info('memberId ->', memberId, 'member ->', member);
         $scope.member = member;
@@ -25,7 +25,7 @@ angular.module('ekwgApp')
     $scope.actions = {
       save: function () {
         ProfileConfirmationService.confirmProfile($scope.member);
-        LoggedInMemberService.saveMember($scope.member, $scope.actions.close, saveOrUpdateUnsuccessful);
+        MemberLoginService.saveMember($scope.member, $scope.actions.close, saveOrUpdateUnsuccessful);
       },
       close: function () {
         close();

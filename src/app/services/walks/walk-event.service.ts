@@ -13,6 +13,7 @@ import { WalkEvent } from "../../models/walk-event.model";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { DateUtilsService } from "../date-utils.service";
+import { MemberLoginService } from "../member-login.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { StringUtilsService } from "../string-utils.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
@@ -29,7 +30,7 @@ export class WalkEventService {
   private logger: Logger;
 
   constructor(
-    @Inject("LoggedInMemberService") private loggedInMemberService,
+    private memberLoginService: MemberLoginService,
     private dateUtils: DateUtilsService,
     private walksReferenceService: WalksReferenceService,
     private stringUtils: StringUtilsService,
@@ -80,7 +81,7 @@ export class WalkEventService {
     if (walkDataAudit.notificationRequired) {
       const event = {
         date: this.dateUtils.nowAsValue(),
-        memberId: this.loggedInMemberService.loggedInMember().memberId,
+        memberId: this.memberLoginService.loggedInMember().memberId,
         data: walkDataAudit.currentData,
         eventType: walkDataAudit.eventType
       } as WalkEvent;

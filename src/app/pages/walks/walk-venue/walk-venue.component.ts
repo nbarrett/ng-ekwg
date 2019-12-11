@@ -2,6 +2,7 @@ import { Component, Inject, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { VenueType } from "../../../models/walk-venue.model";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
@@ -18,7 +19,7 @@ export class WalkVenueComponent implements OnInit {
   public venueTypes: VenueType[];
   private logger: Logger;
 
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+  constructor(private memberLoginService: MemberLoginService,
               public display: WalkDisplayService,
               private walksReferenceService: WalksReferenceService,
               loggerFactory: LoggerFactory) {
@@ -35,7 +36,7 @@ export class WalkVenueComponent implements OnInit {
   }
 
   allowEdits() {
-    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) || this.loggedInMemberService.allowWalkAdminEdits();
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) || this.memberLoginService.allowWalkAdminEdits();
   }
 
 }

@@ -2,7 +2,7 @@ angular.module('ekwgApp')
   .factory('WalksService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('walks')
   })
-  .factory('DbUtils', function ($log, DateUtils, LoggedInMemberService, AUDIT_CONFIG) {
+  .factory('DbUtils', function ($log, DateUtils, MemberLoginService, AUDIT_CONFIG) {
     var logger = $log.getInstance('DbUtilsLogger');
     $log.logLevels['DbUtilsLogger'] = $log.LEVEL.OFF;
 
@@ -20,11 +20,11 @@ angular.module('ekwgApp')
       if (AUDIT_CONFIG.auditSave) {
         if (resource.$id()) {
           resource.updatedDate = DateUtils.nowAsValue();
-          resource.updatedBy = LoggedInMemberService.loggedInMember().memberId;
+          resource.updatedBy = MemberLoginService.loggedInMember().memberId;
           logger.debug('Auditing save of existing document', resource);
         } else {
           resource.createdDate = DateUtils.nowAsValue();
-          resource.createdBy = LoggedInMemberService.loggedInMember().memberId;
+          resource.createdBy = MemberLoginService.loggedInMember().memberId;
           logger.debug('Auditing save of new document', resource);
         }
       } else {

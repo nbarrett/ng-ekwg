@@ -11,6 +11,7 @@
     "prebuild:grunt": "grunt client",
     "e2e": "ng e2e",
     "lint": "ng lint",
+    "lintfix": "ng lint --fix",
     "postbuild": "npm install --prefix server",
     "prebuild": "npm run prebuild:copy ; npm run prebuild:grunt",
     "preserve": "npm run prebuild",

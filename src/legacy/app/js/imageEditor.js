@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('ImageEditController', function($scope, $location, Upload, $http, $q, $routeParams, $window, LoggedInMemberService, ContentMetaDataService, Notifier, EKWGFileUpload) {
+  .controller('ImageEditController', function($scope, $location, Upload, $http, $q, $routeParams, $window, MemberLoginService, ContentMetaDataService, BroadcastService, Notifier, EKWGFileUpload) {
     var notify = Notifier.createAlertInstance($scope);
 
     $scope.imageSource = $routeParams.imageSource;
@@ -29,11 +29,11 @@ angular.module('ekwgApp')
 
     $scope.refreshImageMetaData($scope.imageSource);
 
-    $scope.$on('memberLoginComplete', function() {
+    BroadcastService.on('memberLoginComplete', function() {
       applyAllowEdits();
     });
 
-    $scope.$on('memberLogoutComplete', function() {
+    BroadcastService.on('memberLogoutComplete', function() {
       applyAllowEdits();
     });
 
@@ -102,7 +102,7 @@ angular.module('ekwgApp')
     };
 
     function applyAllowEdits() {
-      $scope.allowEdits = LoggedInMemberService.allowContentEdits();
+      $scope.allowEdits = MemberLoginService.allowContentEdits();
     }
 
     function saveOrUpdateSuccessful() {

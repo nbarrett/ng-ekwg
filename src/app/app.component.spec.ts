@@ -21,7 +21,7 @@ describe("AppComponent", () => {
         RouterTestingModule,
         UpgradeModule
       ],
-      providers: [{provide: "LoggedInMemberService", useValue: {}},
+      providers: [{provide: "MemberLoginService", useValue: {}},
         CookieService],
       declarations: [
         AppComponent, MainLogoComponent, PageTitleComponent, MainTitleComponent,

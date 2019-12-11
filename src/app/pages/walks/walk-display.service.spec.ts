@@ -32,7 +32,7 @@ const ramblersWalksAndEventsService = {
   }
 };
 
-const loggedInMemberService = {
+const MemberLoginService = {
   memberLoggedIn: () => false,
   loggedInMember: () => {
   },
@@ -63,7 +63,7 @@ describe("WalkDisplayService", () => {
         MemberIdToFullNamePipe,
         ValueOrDefaultPipe,
         {provide: "RamblersWalksAndEventsService", useValue: ramblersWalksAndEventsService},
-        {provide: "LoggedInMemberService", useValue: loggedInMemberService},
+        {provide: "MemberLoginService", useValue: MemberLoginService},
         {provide: "WalkNotificationService", useValue: {}},
         {provide: "MailchimpSegmentService", useValue: {}},
         {provide: "MailchimpConfig", useValue: {}},
@@ -80,40 +80,40 @@ describe("WalkDisplayService", () => {
   describe("toWalkAccessMode", () => {
 
     it("should return edit if user is logged in and admin", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
-      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(true);
-      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "some-other-id"});
+      spy = spyOn(MemberLoginService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(MemberLoginService, "allowWalkAdminEdits").and.returnValue(true);
+      spy = spyOn(MemberLoginService, "loggedInMember").and.returnValue({memberId: "some-other-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "any-walk-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
     });
 
     it("should return edit if user is logged in and not admin but is leader", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
-      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
-      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
+      spy = spyOn(MemberLoginService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(MemberLoginService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(MemberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
     });
 
     it("should return lead if user is logged in and not admin and walk doest have a leader", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
-      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
-      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
+      spy = spyOn(MemberLoginService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(MemberLoginService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(MemberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({events: dontCare, walkDate: 0})).toEqual(WalksReferenceService.walkAccessModes.lead);
     });
 
     it("should return view if user is not logged in", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(false);
-      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(MemberLoginService, "memberLoggedIn").and.returnValue(false);
+      spy = spyOn(MemberLoginService, "allowWalkAdminEdits").and.returnValue(false);
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId, events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });
 
     it("should return view if user is not member admin and not leading the walk", () => {
-      spy = spyOn(loggedInMemberService, "memberLoggedIn").and.returnValue(true);
-      spy = spyOn(loggedInMemberService, "allowWalkAdminEdits").and.returnValue(false);
-      spy = spyOn(loggedInMemberService, "loggedInMember").and.returnValue({memberId: "leader-id"});
+      spy = spyOn(MemberLoginService, "memberLoggedIn").and.returnValue(true);
+      spy = spyOn(MemberLoginService, "allowWalkAdminEdits").and.returnValue(false);
+      spy = spyOn(MemberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"});
       const service: WalkDisplayService = TestBed.get(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "another-walk-leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });

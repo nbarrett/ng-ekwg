@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('SocialEventNotificationsController', function (MAILCHIMP_APP_CONSTANTS, $window, $log, $sce, $timeout, $templateRequest, $compile, $q, $rootScope, $scope, $filter, $routeParams,
-                                                              $location, URLService, DateUtils, NumberUtils, LoggedInMemberService, MemberService,
+                                                              $location, URLService, DateUtils, NumberUtils, MemberLoginService, MemberService,
                                                               ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, MailchimpCampaignService,
                                                               MailchimpConfig, Notifier, CommitteeReferenceData, socialEvent, close) {
       var logger = $log.getInstance('SocialEventNotificationsController');
@@ -68,7 +68,7 @@ angular.module('ekwgApp')
       }
 
       function loggedOnRole() {
-        var memberId = LoggedInMemberService.loggedInMember().memberId;
+        var memberId = MemberLoginService.loggedInMember().memberId;
         var loggedOnRoleData = _(CommitteeReferenceData.committeeMembers()).find(function (role) {
           return role.memberId === memberId
         });
@@ -167,7 +167,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMembers() {
-        if (LoggedInMemberService.memberLoggedIn()) {
+        if (MemberLoginService.memberLoggedIn()) {
           MemberService.allLimitedFields(MemberService.filterFor.GROUP_MEMBERS).then(function (members) {
             $scope.members = members;
             logger.debug('refreshMembers -> populated ->', $scope.members.length, 'members');

@@ -9,26 +9,11 @@ const ALERT_WARNING: AlertType = {class: "alert-warning", icon: "glyphicon-info-
 const ALERT_INFO: AlertType = {class: "alert-success", icon: "glyphicon-info-sign"};
 const ALERT_SUCCESS: AlertType = {class: "alert-success", icon: "glyphicon-ok"};
 
-@Injectable({
-  providedIn: "root"
-})
-
-export class NotifierService {
-
-  constructor(private stringUtils: StringUtilsService, private loggerFactory: LoggerFactory) {
-  }
-
-  createAlertInstance(alertTarget: AlertTarget, level?: NgxLoggerLevel): AlertInstance {
-    return new AlertInstance(alertTarget, level, this.loggerFactory, this.stringUtils);
-  }
-
-}
-
 export class AlertInstance {
   private logger: Logger;
 
   constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
-    this.logger = loggerFactory.createLogger(NotifierService, level || NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(AlertInstance, level || NgxLoggerLevel.OFF);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;
     this.alertTarget.alert = ALERT_SUCCESS;
   }
@@ -109,3 +94,19 @@ export class AlertInstance {
   }
 
 }
+
+@Injectable({
+  providedIn: "root"
+})
+
+export class NotifierService {
+
+  constructor(private stringUtils: StringUtilsService, private loggerFactory: LoggerFactory) {
+  }
+
+  createAlertInstance(alertTarget: AlertTarget, level?: NgxLoggerLevel): AlertInstance {
+    return new AlertInstance(alertTarget, level, this.loggerFactory, this.stringUtils);
+  }
+
+}
+

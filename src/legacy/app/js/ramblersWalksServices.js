@@ -25,7 +25,7 @@ angular.module('ekwgApp')
       call: call
     }
   })
-  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, LoggedInMemberService, CommitteeReferenceData) {
+  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, MemberLoginService, CommitteeReferenceData) {
 
       var logger = $log.getInstance('RamblersWalksAndEventsService');
       $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.OFF;
@@ -155,7 +155,7 @@ angular.module('ekwgApp')
           rows: rows,
           fileName: fileName,
           deleteWalks: deleteWalks,
-          ramblersUser: LoggedInMemberService.loggedInMember().firstName
+          ramblersUser: MemberLoginService.loggedInMember().firstName
         };
         logger.info('exporting', data);
         notify.warning({
@@ -195,7 +195,7 @@ angular.module('ekwgApp')
           if (_.isEmpty(walk.longerDescription)) validationMessages.push('description is missing');
           if (_.isEmpty(walk.postcode) && _.isEmpty(walk.gridReference)) validationMessages.push('both postcode and grid reference are missing');
           if (_.isEmpty(walk.contactId)) {
-            var contactIdMessage = LoggedInMemberService.allowWalkAdminEdits() ? 'this can be supplied for this walk on Walk Leader tab' : 'this will need to be setup for you by ' + CommitteeReferenceData.contactUsField('walks', 'fullName');
+            var contactIdMessage = MemberLoginService.allowWalkAdminEdits() ? 'this can be supplied for this walk on Walk Leader tab' : 'this will need to be setup for you by ' + CommitteeReferenceData.contactUsField('walks', 'fullName');
             validationMessages.push('walk leader has no Ramblers contact Id setup on their member record (' + contactIdMessage + ')');
           }
           if (_.isEmpty(walk.displayName) && _.isEmpty(walk.displayName)) validationMessages.push('displayName for walk leader is missing');

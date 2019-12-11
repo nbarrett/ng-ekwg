@@ -1,6 +1,6 @@
 angular.module("ekwgApp")
   .controller("ForgotPasswordController", function ($q, $log, $scope, $rootScope, $location, $routeParams, EmailSubscriptionService,
-                                                    MemberService, LoggedInMemberService, URLService, MailchimpConfig, MailchimpSegmentService,
+                                                    MemberService, MemberLoginService, URLService, MailchimpConfig, MailchimpSegmentService,
                                                     MailchimpCampaignService, Notifier, ValidationUtils, close) {
       var logger = $log.getInstance("ForgotPasswordController");
       $log.logLevels["ForgotPasswordController"] = $log.LEVEL.OFF;
@@ -35,7 +35,7 @@ angular.module("ekwgApp")
           } else {
             var forgotPasswordData = {loginResponse: {memberLoggedIn: false}};
             var message;
-            LoggedInMemberService.getMemberForResetPassword($scope.forgottenPasswordCredentials.credentialOne, $scope.forgottenPasswordCredentials.credentialTwo)
+            MemberLoginService.getMemberForResetPassword($scope.forgottenPasswordCredentials.credentialOne, $scope.forgottenPasswordCredentials.credentialTwo)
               .then(function (member) {
                 if (_.isEmpty(member)) {
                   message = "No member was found with " + userDetails;
@@ -57,7 +57,7 @@ angular.module("ekwgApp")
                     }
                   };
                 } else {
-                  LoggedInMemberService.setPasswordResetId(member);
+                  MemberLoginService.setPasswordResetId(member);
                   EmailSubscriptionService.resetUpdateStatusForMember(member);
                   logger.debug("saving member", member);
                   $scope.forgottenPasswordMember = member;
@@ -67,7 +67,7 @@ angular.module("ekwgApp")
                   return {forgotPasswordData: forgotPasswordData};
                 }
               }).then(function (response) {
-              return LoggedInMemberService.auditMemberLogin($scope.forgottenPasswordCredentials.credentialOne, "", response.forgotPasswordData.member, response.forgotPasswordData.loginResponse)
+              return MemberLoginService.auditMemberLogin($scope.forgottenPasswordCredentials.credentialOne, response.forgotPasswordData.member, response.forgotPasswordData.loginResponse)
                 .then(function () {
                   if (response.notifyObject) {
                     notify.error(response.notifyObject)

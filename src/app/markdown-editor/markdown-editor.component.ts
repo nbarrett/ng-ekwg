@@ -9,9 +9,22 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { ContentText } from "../models/content-text.model";
 import { BroadcastService, NamedEvent, NamedEventType } from "../services/broadcast-service";
 import { ContentTextService } from "../services/content-text.service";
+import { MemberLoginService } from "../services/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 
+export interface EditorState {
+  editActive: boolean;
+  preview: boolean;
+  dataAction: DataAction;
+}
+
+export enum DataAction {
+  QUERY = "query",
+  SAVE = "save",
+  REVERT = "revert",
+  NONE = "none"
+}
 @Component({
   selector: "app-markdown-editor",
   templateUrl: "./markdown-editor.component.html",
@@ -39,7 +52,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() description: string;
   private initialised: boolean;
 
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+  constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,
               private contentText: ContentTextService,
               private changeDetectorRef: ChangeDetectorRef,
@@ -215,17 +228,4 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     this.logger.debug(this.name, "changeText:", $event);
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_CHANGED, this.content));
   }
-}
-
-export interface EditorState {
-  editActive: boolean;
-  preview: boolean;
-  dataAction: DataAction;
-}
-
-export enum DataAction {
-  QUERY = "query",
-  SAVE = "save",
-  REVERT = "revert",
-  NONE = "none"
 }

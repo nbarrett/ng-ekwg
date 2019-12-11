@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('MemberAdminSendEmailsController', function ($log, $q, $scope, $filter, DateUtils, DbUtils, LoggedInMemberService, StringUtils,
+  .controller('MemberAdminSendEmailsController', function ($log, $q, $scope, $filter, DateUtils, DbUtils, MemberLoginService, StringUtils,
                                                            EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService,
                                                            MailchimpConfig, Notifier, members, close) {
       var logger = $log.getInstance('MemberAdminSendEmailsController');
@@ -171,7 +171,7 @@ angular.module('ekwgApp')
         var saveMemberPromises = [];
 
         _.map(displayEmailMembersToMembers(), function (member) {
-          LoggedInMemberService.setPasswordResetId(member);
+          MemberLoginService.setPasswordResetId(member);
           EmailSubscriptionService.resetUpdateStatusForMember(member);
           saveMemberPromises.push(DbUtils.auditedSaveOrUpdate(member))
         });

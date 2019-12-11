@@ -1,5 +1,5 @@
 import { Component, Inject } from "@angular/core";
-import { LoginService } from "../login/login.service";
+import { MemberLoginService } from "../services/member-login.service";
 
 @Component({
   selector: "app-login-panel",
@@ -7,13 +7,12 @@ import { LoginService } from "../login/login.service";
   styleUrls: ["./login-panel.component.sass"]
 })
 export class LoginPanelComponent {
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
-              private loginService: LoginService) {
+  constructor(private memberLoginService: MemberLoginService) {
   }
 
   memberLoginStatus() {
-    if (this.loginService.memberLoggedIn()) {
-      const loggedInMember = this.loginService.loggedInMember();
+    if (this.memberLoginService.memberLoggedIn()) {
+      const loggedInMember = this.memberLoginService.loggedInMember();
       return "Logout " + loggedInMember.firstName + " " + loggedInMember.lastName;
     } else {
       return "Login to EWKG Site";
@@ -21,11 +20,11 @@ export class LoginPanelComponent {
   }
 
   loginOrLogoutUrl() {
-    return this.loginService.memberLoggedIn() ? "/logout" : "/login";
+    return this.memberLoginService.memberLoggedIn() ? "/logout" : "/login";
   }
 
   allowEdits() {
-    return this.loggedInMemberService.allowContentEdits();
+    return this.memberLoginService.allowContentEdits();
   }
 
   forgotPasswordUrl() {
@@ -33,6 +32,6 @@ export class LoginPanelComponent {
   }
 
   memberLoggedIn() {
-    return this.loginService.memberLoggedIn();
+    return this.memberLoginService.memberLoggedIn();
   }
 }

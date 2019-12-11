@@ -13,14 +13,32 @@ import { Walk } from "../../models/walk.model";
 import { BroadcastService } from "../../services/broadcast-service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
+import { MemberLoginService } from "../../services/member-login.service";
 import { UrlService } from "../../services/url.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 
+export enum ConfirmType {
+  DELETE = "delete",
+  REQUEST_APPROVAL = "requestApproval",
+  CANCEL = "cancel",
+  CONTACT_OTHER = "contactOther",
+  PUBLISH_MEETUP = "publishMeetup",
+  NONE = "none"
+}
+
+export enum WalkViewMode {
+  VIEW = "view",
+  EDIT = "edit",
+  EDIT_FULL_SCREEN = "edit-full-screen",
+  LIST = "list"
+}
+
 @Injectable({
   providedIn: "root"
 })
+
 export class WalkDisplayService {
 
   expandedWalks: ExpandedWalk [] = [];
@@ -41,9 +59,9 @@ export class WalkDisplayService {
   constructor(
     @Inject("ClipboardService") private clipboardService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-    @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("MemberService") private memberService,
     @Inject("GoogleMapsConfig") private googleMapsConfigService,
+    private memberLoginService: MemberLoginService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -58,8 +76,8 @@ export class WalkDisplayService {
     this.refreshGoogleMapsConfig();
     this.refreshRamblersConfig();
     this.refreshMembers();
-    this.logger.debug("this.loggedInMemberService", this.loggedInMemberService.loggedInMember());
-    this.loggedIn = loggedInMemberService.memberLoggedIn();
+    this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
+    this.loggedIn = memberLoginService.memberLoggedIn();
   }
 
   findWalk(walk: Walk): ExpandedWalk {
@@ -98,7 +116,7 @@ export class WalkDisplayService {
   }
 
   loggedInMemberIsLeadingWalk(walk: Walk) {
-    return this.loggedInMemberService.memberLoggedIn() && walk && walk.walkLeaderMemberId === this.loggedInMemberService.loggedInMember().memberId;
+    return this.memberLoginService.memberLoggedIn() && walk && walk.walkLeaderMemberId === this.memberLoginService.loggedInMember().memberId;
   }
 
   refreshRamblersConfig() {
@@ -108,7 +126,7 @@ export class WalkDisplayService {
   }
 
   refreshMembers() {
-    if (this.loggedInMemberService.memberLoggedIn()) {
+    if (this.memberLoginService.memberLoggedIn()) {
       this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS)
         .then((members) => {
           this.members = members;
@@ -194,9 +212,9 @@ export class WalkDisplayService {
 
   toWalkAccessMode(walk: Walk): WalkAccessMode {
     let returnValue = WalksReferenceService.walkAccessModes.view;
-    if (this.loggedInMemberService.memberLoggedIn()) {
+    if (this.memberLoginService.memberLoggedIn()) {
       if (this.loggedInMemberIsLeadingWalk(walk) ||
-        this.loggedInMemberService.allowWalkAdminEdits()) {
+        this.memberLoginService.allowWalkAdminEdits()) {
         returnValue = WalksReferenceService.walkAccessModes.edit;
       } else if (!walk.walkLeaderMemberId) {
         returnValue = WalksReferenceService.walkAccessModes.lead;
@@ -244,20 +262,3 @@ export class WalkDisplayService {
   }
 
 }
-
-export enum ConfirmType {
-  DELETE = "delete",
-  REQUEST_APPROVAL = "requestApproval",
-  CANCEL = "cancel",
-  CONTACT_OTHER = "contactOther",
-  PUBLISH_MEETUP = "publishMeetup",
-  NONE = "none"
-}
-
-export enum WalkViewMode {
-  VIEW = "view",
-  EDIT = "edit",
-  EDIT_FULL_SCREEN = "edit-full-screen",
-  LIST = "list"
-}
-

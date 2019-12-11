@@ -1,20 +1,20 @@
 angular.module('ekwgApp')
   .controller('AdminController',
-    function($rootScope, $scope, LoggedInMemberService) {
+    function($rootScope, $scope, MemberLoginService, BroadcastService) {
 
       function setViewPriveleges() {
-        $scope.loggedIn = LoggedInMemberService.memberLoggedIn();
-        $scope.memberAdmin = LoggedInMemberService.allowMemberAdminEdits();
-        LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
+        $scope.loggedIn = MemberLoginService.memberLoggedIn();
+        $scope.memberAdmin = MemberLoginService.allowMemberAdminEdits();
+        MemberLoginService.showLoginPromptWithRouteParameter('expenseId');
       }
 
       setViewPriveleges();
 
-      $scope.$on('memberLoginComplete', function() {
+      BroadcastService.on('memberLoginComplete', function() {
         setViewPriveleges();
       });
 
-      $scope.$on('memberLogoutComplete', function() {
+      BroadcastService.on('memberLogoutComplete', function() {
         setViewPriveleges();
       });
 

@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller("IndexController", function ($q, $cookieStore, $log, $scope, $rootScope, LegacyUrlService, URLService, LoggedInMemberService, ProfileConfirmationService, AuthenticationModalsService, Notifier, DateUtils) {
+  .controller("IndexController", function ($q, $cookieStore, $log, $scope, $rootScope, LegacyUrlService, URLService, MemberLoginService, ProfileConfirmationService, AuthenticationModalsService, Notifier, DateUtils) {
 
     var logger = $log.getInstance("IndexController");
     $log.logLevels["IndexController"] = $log.LEVEL.OFF;
@@ -15,8 +15,8 @@ angular.module('ekwgApp')
         LegacyUrlService.navigateTo("forgot-password");
       },
       loginOrLogout: function () {
-        if (LoggedInMemberService.memberLoggedIn()) {
-          LoggedInMemberService.logout();
+        if (MemberLoginService.memberLoggedIn()) {
+          MemberLoginService.logout();
         } else {
           LegacyUrlService.navigateTo("login");
         }
@@ -24,13 +24,13 @@ angular.module('ekwgApp')
     };
 
     $scope.memberLoggedIn = function () {
-      return LoggedInMemberService.memberLoggedIn()
+      return MemberLoginService.memberLoggedIn()
     };
 
 
     $scope.memberLoginStatus = function () {
-      if (LoggedInMemberService.memberLoggedIn()) {
-        var loggedInMember = LoggedInMemberService.loggedInMember();
+      if (MemberLoginService.memberLoggedIn()) {
+        var loggedInMember = MemberLoginService.loggedInMember();
         return "Logout " + loggedInMember.firstName + " " + loggedInMember.lastName;
       } else {
         return "Login to EWKG Site";
@@ -38,7 +38,7 @@ angular.module('ekwgApp')
     };
 
     $scope.allowEdits = function () {
-      return LoggedInMemberService.allowContentEdits();
+      return MemberLoginService.allowContentEdits();
     };
 
 

@@ -4,8 +4,7 @@ import difference from "lodash-es/difference";
 import map from "lodash-es/map";
 import times from "lodash-es/times";
 import { NgxLoggerLevel } from "ngx-logger";
-import { LoggedInMemberService, WalksService } from "../../../ajs-upgraded-providers";
-import { LoginService } from "../../../login/login.service";
+import { WalksService } from "../../../ajs-upgraded-providers";
 import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -22,6 +21,7 @@ import { WalkNotificationService } from "../../../services/walks/walk-notificati
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
+import { MemberLoginService } from "src/app/services/member-login.service";
 
 @Component({
   selector: "app-walk-add-slots",
@@ -45,10 +45,9 @@ export class WalkAddSlotsComponent implements OnInit {
   constructor(
     @Inject("WalksService") private walksService,
     @Inject("MemberService") private memberService,
-    @Inject("LoggedInMemberService") private loggedInMemberService,
+    private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
-    private loginService: LoginService,
     private displayDay: DisplayDayPipe,
     private displayDate: DisplayDatePipe,
     private displayDates: DisplayDatesPipe,
@@ -167,11 +166,11 @@ export class WalkAddSlotsComponent implements OnInit {
   }
 
   allowAddSlot() {
-    return !this.confirmAction && !this.bulk && this.loggedInMemberService.allowWalkAdminEdits();
+    return !this.confirmAction && !this.bulk && this.memberLoginService.allowWalkAdminEdits();
   }
 
   allowAddSlots() {
-    return !this.confirmAction && this.bulk && this.loggedInMemberService.allowWalkAdminEdits();
+    return !this.confirmAction && this.bulk && this.memberLoginService.allowWalkAdminEdits();
   }
 
   allowClose() {

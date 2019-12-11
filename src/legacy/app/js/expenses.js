@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('ExpensesController', function ($compile, $log, $timeout, $sce, $templateRequest, $q, $rootScope, $location, $routeParams,
-                                              $scope, $filter, DateUtils, NumberUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, ContentMetaDataService,
+                                              $scope, $filter, DateUtils, NumberUtils, LegacyUrlService, URLService, MemberLoginService, MemberService, ContentMetaDataService,
                                               ExpenseClaimsService, MailchimpSegmentService, MailchimpCampaignService, MailchimpConfig, Notifier, EKWGFileUpload) {
       var logger = $log.getInstance('ExpensesController');
       var noLogger = $log.getInstance('ExpensesControllerNoLogger');
@@ -38,7 +38,7 @@ angular.module('ekwgApp')
       }, {
         description: 'Expenses awaiting action from me',
         filter: function (expenseClaim) {
-          return LoggedInMemberService.allowFinanceAdmin() ? editable(expenseClaim) : editableAndOwned(expenseClaim);
+          return MemberLoginService.allowFinanceAdmin() ? editable(expenseClaim) : editableAndOwned(expenseClaim);
         }
       }, {
         description: 'All expenses',
@@ -60,7 +60,7 @@ angular.module('ekwgApp')
       notify.setBusy();
       var notificationsBaseUrl = 'partials/expenses/notifications';
 
-      LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
+      MemberLoginService.showLoginPromptWithRouteParameter('expenseId');
 
       $scope.showArea = function (area) {
         LegacyUrlService.navigateTo('admin', area)
@@ -149,7 +149,7 @@ angular.module('ekwgApp')
       };
 
       $scope.allowFinanceAdmin = function () {
-        return LoggedInMemberService.allowFinanceAdmin();
+        return MemberLoginService.allowFinanceAdmin();
       };
 
       $scope.allowEditExpenseItem = function () {
@@ -173,7 +173,7 @@ angular.module('ekwgApp')
       };
 
       function allowAdminFunctions() {
-        return LoggedInMemberService.allowTreasuryAdmin() || LoggedInMemberService.allowFinanceAdmin();
+        return MemberLoginService.allowTreasuryAdmin() || MemberLoginService.allowFinanceAdmin();
       }
 
       $scope.allowAdminFunctions = function () {
@@ -193,7 +193,7 @@ angular.module('ekwgApp')
       };
 
       $scope.allowPaidExpenseClaim = function () {
-        return LoggedInMemberService.allowTreasuryAdmin() && _.contains(
+        return MemberLoginService.allowTreasuryAdmin() && _.contains(
           [eventTypes.submitted.description, eventTypes['second-approval'].description, eventTypes['first-approval'].description],
           $scope.expenseClaimLatestEvent().eventType.description);
       };
@@ -223,7 +223,7 @@ angular.module('ekwgApp')
 
       $scope.lastApprovedByMe = function () {
         var approvalEvents = $scope.approvalEvents();
-        return approvalEvents.length > 0 && _.last(approvalEvents).memberId === LoggedInMemberService.loggedInMember().memberId;
+        return approvalEvents.length > 0 && _.last(approvalEvents).memberId === MemberLoginService.loggedInMember().memberId;
 
       };
 
@@ -344,7 +344,7 @@ angular.module('ekwgApp')
         if (!expenseClaim.expenseEvents) expenseClaim.expenseEvents = [];
         var event = {
           "date": DateUtils.nowAsValue(),
-          "memberId": LoggedInMemberService.loggedInMember().memberId,
+          "memberId": MemberLoginService.loggedInMember().memberId,
           "eventType": eventType
         };
         if (reason) event.reason = reason;
@@ -561,7 +561,7 @@ angular.module('ekwgApp')
         }
 
         function sendNotificationsToAllRoles() {
-          return LoggedInMemberService.getMemberForMemberId(expenseClaimCreatedEvent.memberId)
+          return MemberLoginService.getMemberForMemberId(expenseClaimCreatedEvent.memberId)
             .then(function (member) {
               logger.debug('sendNotification:', 'memberId', expenseClaimCreatedEvent.memberId, 'member', member);
               var memberFullName = $filter('fullNameWithAlias')(member);
@@ -643,7 +643,7 @@ angular.module('ekwgApp')
 
                     function saveSegmentDataToMember(segmentResponse) {
                       MailchimpSegmentService.setMemberSegmentId(member, templateAndNotificationMembers.segmentType, segmentResponse.segment.id);
-                      return LoggedInMemberService.saveMember(member);
+                      return MemberLoginService.saveMember(member);
                     }
 
                     function sendEmailCampaign() {
@@ -728,7 +728,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMembers() {
-        if (LoggedInMemberService.memberLoggedIn()) {
+        if (MemberLoginService.memberLoggedIn()) {
           notify.progress('Refreshing member data...');
           return MemberService.allLimitedFields(MemberService.filterFor.GROUP_MEMBERS).then(function (members) {
             logger.debug('refreshMembers: found', members.length, 'members');
@@ -739,12 +739,12 @@ angular.module('ekwgApp')
 
       function memberCanEditClaim(expenseClaim) {
         if (!expenseClaim) return false;
-        return memberOwnsClaim(expenseClaim) || LoggedInMemberService.allowFinanceAdmin();
+        return memberOwnsClaim(expenseClaim) || MemberLoginService.allowFinanceAdmin();
       }
 
       function memberOwnsClaim(expenseClaim) {
         if (!expenseClaim) return false;
-        return (LoggedInMemberService.loggedInMember().memberId === $scope.expenseClaimCreatedEvent(expenseClaim).memberId);
+        return (MemberLoginService.loggedInMember().memberId === $scope.expenseClaimCreatedEvent(expenseClaim).memberId);
       }
 
       $scope.refreshExpenses = function () {

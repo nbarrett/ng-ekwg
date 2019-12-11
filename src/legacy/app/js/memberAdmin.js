@@ -1,8 +1,8 @@
 angular.module('ekwgApp')
   .controller('MemberAdminController',
-    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, DbUtils, LegacyUrlService, URLService, LoggedInMemberService, MemberService, MemberAuditService,
+    function ($timeout, $location, $window, $log, $q, $rootScope, $routeParams, $scope, ModalService, Upload, DbUtils, LegacyUrlService, URLService, MemberLoginService, MemberService, MemberAuditService,
               MemberBulkLoadAuditService, MemberUpdateAuditService, ProfileConfirmationService, EmailSubscriptionService, DateUtils, MailchimpConfig, MailchimpSegmentService, MemberNamingService,
-              MailchimpCampaignService, MailchimpListService, Notifier, StringUtils, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
+              MailchimpCampaignService, MailchimpListService, Notifier, StringUtils, BroadcastService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
       var logger = $log.getInstance('MemberAdminController');
       $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
@@ -36,9 +36,9 @@ angular.module('ekwgApp')
       $scope.memberBulkLoadOpen = URLService.isSubArea('member-bulk-load');
       $scope.memberAuditOpen = URLService.isSubArea('member-audit');
 
-      LoggedInMemberService.showLoginPromptWithRouteParameter('expenseId');
+      MemberLoginService.showLoginPromptWithRouteParameter('expenseId');
 
-      if (LoggedInMemberService.memberLoggedIn()) {
+      if (MemberLoginService.memberLoggedIn()) {
         refreshMembers()
           .then(refreshMemberAudit)
           .then(refreshMemberBulkLoadAudit)
@@ -356,19 +356,18 @@ angular.module('ekwgApp')
         });
       }
 
-      $scope.$on('memberLoginComplete', function () {
+      BroadcastService.on('memberLoginComplete', function () {
         applyAllowEdits('memberLoginComplete');
         refreshMembers();
         refreshMemberAudit();
-        refreshMemberBulkLoadAudit()
-          .then(refreshMemberUpdateAudit);
+        refreshMemberBulkLoadAudit().then(refreshMemberUpdateAudit);
       });
 
-      $scope.$on('memberSaveComplete', function () {
+      BroadcastService.on('memberSaveComplete', function () {
         refreshMembers();
       });
 
-      $scope.$on('memberLogoutComplete', function () {
+      BroadcastService.on('memberLogoutComplete', function () {
         applyAllowEdits('memberLogoutComplete');
       });
 
@@ -510,8 +509,8 @@ angular.module('ekwgApp')
       };
 
       function applyAllowEdits() {
-        $scope.allowEdits = LoggedInMemberService.allowMemberAdminEdits();
-        $scope.allowCopy = LoggedInMemberService.allowMemberAdminEdits();
+        $scope.allowEdits = MemberLoginService.allowMemberAdminEdits();
+        $scope.allowCopy = MemberLoginService.allowMemberAdminEdits();
         return true;
       }
 
@@ -599,7 +598,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMembers() {
-        if (LoggedInMemberService.allowMemberAdminEdits()) {
+        if (MemberLoginService.allowMemberAdminEdits()) {
           return MemberService.all()
             .then(function (refreshedMembers) {
               $scope.members = refreshedMembers;
@@ -610,7 +609,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMemberAudit() {
-        if (LoggedInMemberService.allowMemberAdminEdits()) {
+        if (MemberLoginService.allowMemberAdminEdits()) {
           MemberAuditService.all({limit: 100, sort: {loginTime: -1}}).then(function (memberAudit) {
             logger.debug('refreshed', memberAudit && memberAudit.length, 'member audit records');
             $scope.memberAudit = memberAudit;
@@ -620,7 +619,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMemberBulkLoadAudit() {
-        if (LoggedInMemberService.allowMemberAdminEdits()) {
+        if (MemberLoginService.allowMemberAdminEdits()) {
           return MemberBulkLoadAuditService.all({
             limit: 100,
             sort: {createdDate: -1}
@@ -631,7 +630,7 @@ angular.module('ekwgApp')
             return $scope.filters.uploadSession.selected;
           });
         } else {
-          return true;
+          return $q.then(true);
         }
       }
 
@@ -702,8 +701,7 @@ angular.module('ekwgApp')
       }
 
       function refreshMemberUpdateAudit() {
-        if (LoggedInMemberService.allowMemberAdminEdits()) {
-          // migrateAudits();
+        if (MemberLoginService.allowMemberAdminEdits()) {
           if ($scope.filters.uploadSession.selected && $scope.filters.uploadSession.selected.$id) {
             var uploadSessionId = $scope.filters.uploadSession.selected.$id();
             var query = {uploadSessionId: uploadSessionId};

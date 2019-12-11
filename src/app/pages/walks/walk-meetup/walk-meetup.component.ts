@@ -9,6 +9,7 @@ import { WalkNotification } from "../../../models/walk-notification.model";
 import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { meetupDescriptionPrefix, MeetupService } from "../../../services/meetup.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -38,7 +39,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   meetupEventDescription: string;
   public CONTENT_CATEGORY = meetupDescriptionPrefix;
 
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+  constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,
               private changeDetectorRef: ChangeDetectorRef,
               private contentText: ContentTextService,
@@ -80,11 +81,11 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   }
 
   canUnlinkMeetup() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.displayedWalk.walk && this.displayedWalk.walk.meetupEventUrl;
+    return this.memberLoginService.allowWalkAdminEdits() && this.displayedWalk.walk && this.displayedWalk.walk.meetupEventUrl;
   }
 
   allowEdits() {
-    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) || this.loggedInMemberService.allowWalkAdminEdits();
+    return this.display.loggedInMemberIsLeadingWalk(this.displayedWalk.walk) || this.memberLoginService.allowWalkAdminEdits();
   }
 
   changedPublishMeetup($event: any) {

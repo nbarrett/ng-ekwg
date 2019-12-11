@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('HomeController', function ($log, $scope, $routeParams, LoggedInMemberService, ContentMetaDataService, CommitteeReferenceData, InstagramService, SiteEditService) {
+  .controller('HomeController', function ($log, $scope, $routeParams, MemberLoginService, ContentMetaDataService, CommitteeReferenceData, InstagramService, SiteEditService) {
     var logger = $log.getInstance('HomeController');
     $log.logLevels['HomeController'] = $log.LEVEL.OFF;
 
@@ -28,7 +28,7 @@ angular.module('ekwgApp')
     };
 
     $scope.allowEdits = function () {
-      return SiteEditService.active() && LoggedInMemberService.allowContentEdits();
+      return SiteEditService.active() && MemberLoginService.allowContentEdits();
     };
 
   });

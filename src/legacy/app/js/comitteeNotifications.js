@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('CommitteeNotificationsController', function ($window, $log, $sce, $timeout, $templateRequest, $compile, $q, $rootScope, $scope, $filter, $routeParams,
-                                                            $location, URLService, DateUtils, NumberUtils, LoggedInMemberService, MemberService,
+                                                            $location, URLService, DateUtils, NumberUtils, MemberLoginService, MemberService,
                                                             ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, MailchimpCampaignService,
                                                             MAILCHIMP_APP_CONSTANTS, MailchimpConfig, Notifier, CommitteeReferenceData, CommitteeQueryService, committeeFile, close) {
 
@@ -15,7 +15,7 @@ angular.module('ekwgApp')
       $scope.committeeFileBaseUrl = ContentMetaDataService.baseUrl('committeeFiles');
 
       function loggedOnRole() {
-        var memberId = LoggedInMemberService.loggedInMember().memberId;
+        var memberId = MemberLoginService.loggedInMember().memberId;
         var loggedOnRoleData = _(CommitteeReferenceData.committeeMembers()).find(function (role) {
           return role.memberId === memberId
         });

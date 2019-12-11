@@ -27,6 +27,7 @@ import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -75,8 +76,8 @@ export class WalkEditComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") protected walksService,
-    @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+    private memberLoginService: MemberLoginService,
     public route: ActivatedRoute,
     private walksQueryService: WalksQueryService,
     private meetupService: MeetupService,
@@ -103,7 +104,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   copySource = "copy-selected-walk-leader";
-  copySourceFromWalkLeaderMemberId: undefined;
+  copySourceFromWalkLeaderMemberId: string;
   private copyFrom: any = {};
 
   ngOnInit() {
@@ -150,7 +151,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   allowDelete() {
-    return !this.saveInProgress && this.confirmAction === ConfirmType.NONE && this.loggedInMemberService.allowWalkAdminEdits()
+    return !this.saveInProgress && this.confirmAction === ConfirmType.NONE && this.memberLoginService.allowWalkAdminEdits()
       && this.displayedWalk.walkAccessMode && this.displayedWalk.walkAccessMode.walkWritable;
   }
 
@@ -163,11 +164,11 @@ export class WalkEditComponent implements OnInit {
   }
 
   allowDetailView() {
-    return this.loggedInMemberService.memberLoggedIn();
+    return this.memberLoginService.memberLoggedIn();
   }
 
   allowApprove() {
-    return this.confirmAction === ConfirmType.NONE && this.loggedInMemberService.allowWalkAdminEdits() &&
+    return this.confirmAction === ConfirmType.NONE && this.memberLoginService.allowWalkAdminEdits() &&
       this.walkEventService.latestEventWithStatusChangeIs(this.displayedWalk.walk, EventType.AWAITING_APPROVAL)
       && this.status() !== EventType.APPROVED;
   }
@@ -181,7 +182,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   allowAdminEdits() {
-    return this.loggedInMemberService.allowWalkAdminEdits();
+    return this.memberLoginService.allowWalkAdminEdits();
   }
 
   pendingCancel() {
@@ -209,7 +210,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   setWalkLeaderToMe() {
-    this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+    this.displayedWalk.walk.walkLeaderMemberId = this.memberLoginService.loggedInMember().memberId;
     this.walkLeaderMemberIdChanged();
   }
 
@@ -252,10 +253,10 @@ export class WalkEditComponent implements OnInit {
       this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
-        this.displayedWalk.walk.walkLeaderMemberId = this.loggedInMemberService.loggedInMember().memberId;
+        this.displayedWalk.walk.walkLeaderMemberId = this.memberLoginService.loggedInMember().memberId;
         this.walkLeaderMemberIdChanged();
         this.notify.success({
-          title: "Thanks for offering to lead this walk " + this.loggedInMemberService.loggedInMember().firstName + "!",
+          title: "Thanks for offering to lead this walk " + this.memberLoginService.loggedInMember().firstName + "!",
           message: "Please complete as many details you can, then click Save to allocate this slot on the walks programme. " +
             "It will be published to the public once it\"s approved. If you want to release this slot again, just click Cancel."
         });
@@ -284,7 +285,7 @@ export class WalkEditComponent implements OnInit {
 
   populateCopySourceFromWalkLeaderMemberId() {
     this.copySourceFromWalkLeaderMemberId = this.displayedWalk.walk.walkLeaderMemberId
-      || this.loggedInMemberService.loggedInMember().memberId;
+      || this.memberLoginService.loggedInMember().memberId;
   }
 
   walkEvents(walk: Walk): DisplayedEvent[] {
@@ -356,7 +357,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   canUnlinkRamblers() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.ramblersWalkExists();
+    return this.memberLoginService.allowWalkAdminEdits() && this.ramblersWalkExists();
   }
 
   canUnlinkOSMaps() {
@@ -368,7 +369,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   insufficientDataToUploadToRamblers() {
-    return this.loggedInMemberService.allowWalkAdminEdits() && this.displayedWalk.walk
+    return this.memberLoginService.allowWalkAdminEdits() && this.displayedWalk.walk
       && !(this.displayedWalk.walk.gridReference || this.displayedWalk.walk.postcode);
   }
 
@@ -387,7 +388,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   loggedIn() {
-    return this.loggedInMemberService.memberLoggedIn();
+    return this.memberLoginService.memberLoggedIn();
   }
 
   deleteWalkDetails() {

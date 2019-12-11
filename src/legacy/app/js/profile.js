@@ -1,11 +1,11 @@
 angular.module('ekwgApp')
-  .factory('ProfileConfirmationService', function ($filter, LoggedInMemberService, DateUtils) {
+  .factory('ProfileConfirmationService', function ($filter, MemberLoginService, DateUtils) {
 
     var confirmProfile = function (member) {
       if (member) {
         member.profileSettingsConfirmed = true;
         member.profileSettingsConfirmedAt = DateUtils.nowAsValue();
-        member.profileSettingsConfirmedBy = $filter('fullNameWithAlias')(LoggedInMemberService.loggedInMember());
+        member.profileSettingsConfirmedBy = $filter('fullNameWithAlias')(MemberLoginService.loggedInMember());
       }
     };
 
@@ -32,8 +32,10 @@ angular.module('ekwgApp')
       processMember: processMember
     };
   })
-  .controller('ProfileController', function ($q, $rootScope, $routeParams, $scope, LoggedInMemberService, MemberService,
-                                             LegacyUrlService, URLService, ProfileConfirmationService, EmailSubscriptionService, CommitteeReferenceData) {
+  .controller('ProfileController', function ($log, $q, $rootScope, $routeParams, $scope, MemberLoginService, MemberService,
+                                             LegacyUrlService, URLService, ProfileConfirmationService, EmailSubscriptionService, BroadcastService) {
+    var logger = $log.getInstance('ProfileController');
+    $log.logLevels['ProfileController'] = $log.LEVEL.OFF;
 
     $scope.showArea = function (area) {
       LegacyUrlService.navigateTo('admin', area)
@@ -60,13 +62,13 @@ angular.module('ekwgApp')
 
     refreshMember();
 
-    $scope.$on('memberLoginComplete', function () {
+    BroadcastService.on('memberLoginComplete', function () {
       $scope.alertMessages = [];
       refreshMember();
       applyAllowEdits('memberLoginComplete');
     });
 
-    $scope.$on('memberLogoutComplete', function () {
+    BroadcastService.on('memberLogoutComplete', function () {
       $scope.alertMessages = [];
       applyAllowEdits('memberLogoutComplete');
     });
@@ -89,19 +91,23 @@ angular.module('ekwgApp')
     }
 
     $scope.saveLoginDetails = function () {
+      logger.debug("saveLoginDetails");
       $scope.alertMessages = [];
-      validateUserNameExistence();
-    };
-
-    $scope.$on('userNameExistenceCheckComplete', function () {
-      validatePassword();
-      validateUserName();
-      if ($scope.alertMessages.length === 0) {
-        saveMemberDetails(LOGIN_DETAILS)
-      } else {
-        showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
-      }
-    });
+      validateUserNameExistence()
+        .then(function () {
+          validatePassword();
+          validateUserName();
+          if ($scope.alertMessages.length === 0) {
+            saveMemberDetails(LOGIN_DETAILS)
+          } else {
+            showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
+          }
+        })
+        .catch(function (response) {
+          $scope.alertMessages.push('Unexpected error occurred: ' + response);
+          showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
+        });
+    }
 
     $scope.savePersonalDetails = function () {
       $scope.alertMessages = [];
@@ -114,14 +120,30 @@ angular.module('ekwgApp')
       saveMemberDetails(CONTACT_PREFERENCES);
     };
 
-
     $scope.loggedIn = function () {
-      return LoggedInMemberService.memberLoggedIn();
+      return MemberLoginService.memberLoggedIn();
     };
+
+    function validateUserNameExistence() {
+      if ($scope.enteredMemberCredentials.userName !== $scope.currentMember.userName) {
+        return MemberLoginService.getMemberForUserName($scope.enteredMemberCredentials.userName)
+          .then(function (member) {
+            if (!_.isEmpty(member)) {
+              $scope.alertMessages.push('The user name ' + $scope.enteredMemberCredentials.userName + ' is already used by another member. Please choose another.');
+              $scope.enteredMemberCredentials.userName = $scope.currentMember.userName;
+              showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
+            } else {
+              logger.debug("validateUserNameExistence:", $scope.enteredMemberCredentials.userName, "available")
+            }
+          });
+      } else {
+        logger.debug("validateUserNameExistence:no changes")
+        return $q.when(true);
+      }
+    }
 
     function validatePassword() {
       if ($scope.enteredMemberCredentials.newPassword || $scope.enteredMemberCredentials.newPasswordConfirm) {
-//        console.log('validating password change old=', $scope.enteredMemberCredentials.newPassword, 'new=', $scope.enteredMemberCredentials.newPasswordConfirm);
         if ($scope.currentMember.password === $scope.enteredMemberCredentials.newPassword) {
           $scope.alertMessages.push('The new password was the same as the old one.');
         } else if ($scope.enteredMemberCredentials.newPassword !== $scope.enteredMemberCredentials.newPasswordConfirm) {
@@ -130,8 +152,9 @@ angular.module('ekwgApp')
           $scope.alertMessages.push('The new password needs to be at least 6 characters long.');
         } else {
           $scope.currentMember.password = $scope.enteredMemberCredentials.newPassword;
-//          console.log('validating password change - successful');
         }
+      } else {
+        logger.debug("validatePassword:no changes")
       }
     }
 
@@ -143,6 +166,8 @@ angular.module('ekwgApp')
         } else {
           $scope.currentMember.userName = $scope.enteredMemberCredentials.userName;
         }
+      } else {
+        logger.debug("validateUserName:no changes")
       }
     }
 
@@ -165,9 +190,10 @@ angular.module('ekwgApp')
     };
 
     function saveMemberDetails(alertType) {
+      logger.debug("saveMemberDetails:", alertType);
       $scope.alertType = alertType;
       EmailSubscriptionService.resetUpdateStatusForMember($scope.currentMember);
-      LoggedInMemberService.saveMember($scope.currentMember, saveOrUpdateSuccessful, saveOrUpdateUnsuccessful);
+      MemberLoginService.saveMember($scope.currentMember, saveOrUpdateSuccessful, saveOrUpdateUnsuccessful);
     }
 
     function showAlert(alertClass, alertType) {
@@ -185,13 +211,13 @@ angular.module('ekwgApp')
     }
 
     function applyAllowEdits(event) {
-      $scope.allowEdits = LoggedInMemberService.memberLoggedIn();
-      $scope.isAdmin = LoggedInMemberService.allowMemberAdminEdits();
+      $scope.allowEdits = MemberLoginService.memberLoggedIn();
+      $scope.isAdmin = MemberLoginService.allowMemberAdminEdits();
     }
 
     function refreshMember() {
-      if (LoggedInMemberService.memberLoggedIn()) {
-        LoggedInMemberService.getMemberForUserName(LoggedInMemberService.loggedInMember().userName)
+      if (MemberLoginService.memberLoggedIn()) {
+        MemberLoginService.getMemberForUserName(MemberLoginService.loggedInMember().userName)
           .then(function (member) {
             if (!_.isEmpty(member)) {
               $scope.currentMember = member;
@@ -204,24 +230,6 @@ angular.module('ekwgApp')
             $scope.alertMessages.push('Unexpected error occurred: ' + response);
             showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
           })
-      }
-    }
-
-    function validateUserNameExistence() {
-      if ($scope.enteredMemberCredentials.userName !== $scope.currentMember.userName) {
-        LoggedInMemberService.getMemberForUserName($scope.enteredMemberCredentials.userName)
-          .then(function (member) {
-            if (!_.isEmpty(member)) {
-              $scope.alertMessages.push('The user name ' + $scope.enteredMemberCredentials.userName + ' is already used by another member. Please choose another.');
-              $scope.enteredMemberCredentials.userName = $scope.currentMember.userName;
-            }
-            $rootScope.$broadcast('userNameExistenceCheckComplete');
-          }, function (response) {
-            $scope.alertMessages.push('Unexpected error occurred: ' + response);
-            showAlert(ALERT_CLASS_DANGER, LOGIN_DETAILS);
-          });
-      } else {
-        $rootScope.$broadcast('userNameExistenceCheckComplete');
       }
     }
 

@@ -2,7 +2,7 @@ angular.module('ekwgApp')
   .factory('MemberResourcesService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('memberResources');
   })
-  .factory('MemberResourcesReferenceData', function ($log, URLService, ContentMetaDataService, FileUtils, LoggedInMemberService, SiteEditService) {
+  .factory('MemberResourcesReferenceData', function ($log, URLService, ContentMetaDataService, FileUtils, MemberLoginService, SiteEditService) {
     var logger = $log.getInstance('MemberResourcesReferenceData');
     $log.logLevels['MemberResourcesReferenceData'] = $log.LEVEL.OFF;
     const subjects = [
@@ -70,14 +70,14 @@ angular.module('ekwgApp')
         id: "committee",
         description: "Committee",
         filter: function () {
-          return SiteEditService.active() || LoggedInMemberService.allowCommittee();
+          return SiteEditService.active() || MemberLoginService.allowCommittee();
         }
       },
       {
         id: "loggedInMember",
         description: "Logged-in member",
         filter: function () {
-          return SiteEditService.active() || LoggedInMemberService.memberLoggedIn();
+          return SiteEditService.active() || MemberLoginService.memberLoggedIn();
         }
       },
       {

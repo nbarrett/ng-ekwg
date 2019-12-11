@@ -5,6 +5,18 @@ import { WalkEventType } from "../../models/walk-event-type.model";
 import { VenueType } from "../../models/walk-venue.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 
+export enum EventType {
+  AWAITING_LEADER = "awaitingLeader",
+  AWAITING_WALK_DETAILS = "awaitingWalkDetails",
+  WALK_DETAILS_REQUESTED = "walkDetailsRequested",
+  WALK_DETAILS_UPDATED = "walkDetailsUpdated",
+  WALK_DETAILS_COPIED = "walkDetailsCopied",
+  AWAITING_APPROVAL = "awaitingApproval",
+  APPROVED = "approved",
+  DELETED = "deleted",
+  UNKNOWN = "unknown"
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -130,16 +142,4 @@ export class WalksReferenceService {
   walkEventTypes(): WalkEventType[] {
     return this.walkEventTypesArray;
   }
-}
-
-export enum EventType {
-  AWAITING_LEADER = "awaitingLeader",
-  AWAITING_WALK_DETAILS = "awaitingWalkDetails",
-  WALK_DETAILS_REQUESTED = "walkDetailsRequested",
-  WALK_DETAILS_UPDATED = "walkDetailsUpdated",
-  WALK_DETAILS_COPIED = "walkDetailsCopied",
-  AWAITING_APPROVAL = "awaitingApproval",
-  APPROVED = "approved",
-  DELETED = "deleted",
-  UNKNOWN = "unknown"
 }

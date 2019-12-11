@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
@@ -7,6 +7,7 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -26,12 +27,12 @@ export class WalkViewComponent implements OnInit {
   fromPostcode = "";
   mapDisplay = SHOW_START_POINT;
   private logger: Logger;
-  public allowWalkAdminEdits: false;
+  public allowWalkAdminEdits: boolean;
   public googleMapsUrl: SafeResourceUrl;
   public loggedIn: boolean;
 
   constructor(
-    @Inject("LoggedInMemberService") private loggedInMemberService,
+    private memberLoginService: MemberLoginService,
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
     public meetupService: MeetupService,
@@ -44,14 +45,14 @@ export class WalkViewComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("initialised with walk", this.displayedWalk);
-    this.loggedIn = this.loggedInMemberService.memberLoggedIn();
-    this.allowWalkAdminEdits = this.loggedInMemberService.allowWalkAdminEdits();
+    this.loggedIn = this.memberLoginService.memberLoggedIn();
+    this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
     this.broadcastService.on("memberLoginComplete", () => {
       this.logger.debug("memberLoginComplete");
       this.display.refreshMembers();
       this.loggedIn = true;
-      this.allowWalkAdminEdits = this.loggedInMemberService.allowWalkAdminEdits();
+      this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
       this.refreshHomePostcode();
     });
     this.updateGoogleMap();
@@ -60,12 +61,12 @@ export class WalkViewComponent implements OnInit {
   updateGoogleMap() {
     if (this.displayedWalk.latestEventType.showDetails) {
       this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk,
-        this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
+        !this.drivingDirectionsDisabled() && this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
     }
   }
 
   refreshHomePostcode() {
-    this.fromPostcode = this.loggedInMemberService.memberLoggedIn() ? this.loggedInMemberService.loggedInMember().postcode : "";
+    this.fromPostcode = this.memberLoginService.memberLoggedIn() ? this.memberLoginService.loggedInMember().postcode : "";
     this.logger.debug("set from postcode to", this.fromPostcode);
     this.autoSelectMapDisplay();
   }
@@ -96,7 +97,16 @@ export class WalkViewComponent implements OnInit {
   refreshView() {
     this.logger.debug("refreshing view");
     this.updateGoogleMap();
-    this.changeDetectorRef.detectChanges();
   }
 
+  changeShowDrivingDirections(newValue: string) {
+    this.mapDisplay = newValue;
+    this.updateGoogleMap();
+  }
+
+  changeFromPostcode(newValue: string) {
+    this.fromPostcode = newValue;
+    this.autoSelectMapDisplay();
+    this.updateGoogleMap();
+  }
 }

@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller("HowToDialogController", function ($rootScope, $log, $q, $scope, $filter, FileUtils, DateUtils, EKWGFileUpload, DbUtils, LoggedInMemberService, StringUtils,
+  .controller("HowToDialogController", function ($rootScope, $log, $q, $scope, $filter, FileUtils, DateUtils, EKWGFileUpload, DbUtils, MemberLoginService, StringUtils,
                                                  MailchimpLinkService, MailchimpCampaignService, Notifier, MemberResourcesReferenceData, memberResource, close) {
     var logger = $log.getInstance("HowToDialogController");
     $log.logLevels["HowToDialogController"] = $log.LEVEL.OFF;
@@ -125,9 +125,9 @@ angular.module('ekwgApp')
     }
   })
   .controller("HowToController", function ($rootScope, $window, $log, $sce, $timeout, $templateRequest, $compile, $q, $scope, $filter, $routeParams,
-                                           $location, URLService, DateUtils, MailchimpLinkService, FileUtils, NumberUtils, LoggedInMemberService, MemberService,
+                                           $location, URLService, DateUtils, MailchimpLinkService, FileUtils, NumberUtils, MemberLoginService, MemberService,
                                            ContentMetaDataService, MailchimpSegmentService, MailchimpCampaignService, MemberResourcesReferenceData,
-                                           MailchimpConfig, Notifier, MemberResourcesService, CommitteeReferenceData, ModalService, SiteEditService) {
+                                           MailchimpConfig, Notifier, MemberResourcesService, CommitteeReferenceData, ModalService, SiteEditService, BroadcastService) {
 
     var logger = $log.getInstance("HowToController");
     $log.logLevels["HowToController"] = $log.LEVEL.OFF;
@@ -148,13 +148,13 @@ angular.module('ekwgApp')
     };
 
     $scope.isActive = function (memberResource) {
-      var active = SiteEditService.active() && LoggedInMemberService.memberLoggedIn() && memberResource === $scope.selected.memberResource;
+      var active = SiteEditService.active() && MemberLoginService.memberLoggedIn() && memberResource === $scope.selected.memberResource;
       logger.debug("isActive =", active, "with memberResource", memberResource);
       return active;
     };
 
     $scope.allowAdd = function () {
-      return SiteEditService.active() && LoggedInMemberService.allowFileAdmin();
+      return SiteEditService.active() && MemberLoginService.allowFileAdmin();
     };
 
     $scope.allowEdit = function (memberResource) {
@@ -171,7 +171,7 @@ angular.module('ekwgApp')
         resourceType: "email",
         accessLevel: "hidden",
         createdDate: DateUtils.nowAsValue(),
-        createdBy: LoggedInMemberService.loggedInMember().memberId
+        createdBy: MemberLoginService.loggedInMember().memberId
       })
     };
 
@@ -242,23 +242,23 @@ angular.module('ekwgApp')
       removeDeleteOrAddOrInProgressFlags();
     };
 
-    $scope.$on("memberResourcesChanged", function () {
+    BroadcastService.on("memberResourcesChanged", function () {
       refreshAll();
     });
 
-    $scope.$on("memberResourcesChanged", function () {
+    BroadcastService.on("memberResourcesChanged", function () {
       refreshAll();
     });
 
-    $scope.$on("memberLoginComplete", function () {
+    BroadcastService.on("memberLoginComplete", function () {
       refreshAll();
     });
 
-    $scope.$on("memberLogoutComplete", function () {
+    BroadcastService.on("memberLogoutComplete", function () {
       refreshAll();
     });
 
-    $scope.$on("editSite", function (event, data) {
+    BroadcastService.on("editSite", function (event, data) {
       logger.debug("editSite:", data);
       refreshAll();
     });

@@ -23,6 +23,7 @@ import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../date-utils.service";
+import { MemberLoginService } from "../member-login.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { AlertInstance, NotifierService } from "../notifier.service";
 import { WalkEventService } from "./walk-event.service";
@@ -36,12 +37,12 @@ export class WalkNotificationService {
   private logger: Logger;
 
   constructor(
-    @Inject("LoggedInMemberService") private loggedInMemberService,
     @Inject("MailchimpSegmentService") private mailchimpSegmentService,
     @Inject("MailchimpConfig") private mailchimpConfig,
     @Inject("MailchimpCampaignService") private mailchimpCampaignService,
     @Inject("MemberService") protected memberService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+    private memberLoginService: MemberLoginService,
     private walkEventService: WalkEventService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private walksReferenceService: WalksReferenceService,
@@ -129,7 +130,7 @@ export class WalkNotificationService {
 
   private async sendNotificationsToAllRoles(members: Member[], notificationDirective: NotificationDirective, displayedWalk: DisplayedWalk, walkEventType: WalkEventType, notify: AlertInstance): Promise<void> {
     const walkNotification: WalkNotification = this.toWalkNotification(displayedWalk, members);
-    const member = await this.loggedInMemberService.getMemberForMemberId(displayedWalk.walk.walkLeaderMemberId);
+    const member = await this.memberLoginService.getMemberForMemberId(displayedWalk.walk.walkLeaderMemberId);
     this.logger.debug("sendNotification:", "memberId", displayedWalk.walk.walkLeaderMemberId, "member", member);
     const walkLeaderName = this.fullNameWithAliasPipe.transform(member);
     const walkDate = this.displayDatePipe.transform(displayedWalk.walk.walkDate);
@@ -205,7 +206,7 @@ export class WalkNotificationService {
 
   private saveSegmentDataToMember(segmentResponse, member: Member, walkCampaignConfiguration: WalkCampaignConfiguration) {
     this.mailchimpSegmentService.setMemberSegmentId(member, walkCampaignConfiguration.segmentType, segmentResponse.segment.id);
-    return this.loggedInMemberService.saveMember(member);
+    return this.memberLoginService.saveMember(member);
   }
 
   private sendEmailCampaign(notify: AlertInstance, member: Member, campaignName: string, contentSections, walkCampaignConfiguration: WalkCampaignConfiguration) {

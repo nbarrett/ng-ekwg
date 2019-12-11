@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit } from "@angular/core";
 import { UrlService } from "../../../services/url.service";
+import { MemberLoginService } from "src/app/services/member-login.service";
 
 @Component({
   selector: "app-walk-admin",
@@ -8,14 +9,14 @@ import { UrlService } from "../../../services/url.service";
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkAdminComponent implements OnInit {
-  allowAdminEdits: false;
+  allowAdminEdits: boolean;
 
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+  constructor(private memberLoginService: MemberLoginService,
               private urlService: UrlService) {
   }
 
   ngOnInit() {
-    this.allowAdminEdits = this.loggedInMemberService.allowWalkAdminEdits();
+    this.allowAdminEdits = this.memberLoginService.allowWalkAdminEdits();
   }
 
   selectWalksForExport() {

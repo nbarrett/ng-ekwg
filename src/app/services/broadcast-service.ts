@@ -4,6 +4,30 @@ import { Observable, Observer } from "rxjs";
 import { filter, share } from "rxjs/operators";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
+export enum NamedEventType {
+  EDIT_STATE = "editSite",
+  MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
+  MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
+  MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
+  MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
+  MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
+  WALK_SAVED = "walkSaved",
+  WALK_SLOTS_CREATED = "walkSlotsCreated"
+}
+
+export class NamedEvent {
+  static named(name: any): NamedEvent {
+    return new NamedEvent(name);
+  }
+
+  constructor(public name: any, public data?: any) {
+  }
+
+  static withData(key: NamedEventType, value: any) {
+    return new NamedEvent(key, value);
+  }
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -39,27 +63,4 @@ export class BroadcastService {
   }
 }
 
-export class NamedEvent {
-  static named(name: any): NamedEvent {
-    return new NamedEvent(name);
-  }
-
-  constructor(public name: any, public data?: any) {
-  }
-
-  static withData(key: NamedEventType, value: any) {
-    return new NamedEvent(key, value);
-  }
-}
-
-export enum NamedEventType {
-  EDIT_STATE = "editSite",
-  MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
-  MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
-  MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
-  MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
-  MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
-  WALK_SAVED = "walkSaved",
-  WALK_SLOTS_CREATED = "walkSlotsCreated"
-}
 

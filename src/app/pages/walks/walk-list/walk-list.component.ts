@@ -3,7 +3,6 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
-import { LoginService } from "../../../login/login.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
@@ -13,6 +12,7 @@ import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
@@ -42,10 +42,9 @@ export class WalkListComponent implements OnInit {
   constructor(
     @Inject("WalksService") private walksService,
     @Inject("MemberService") private memberService,
-    @Inject("LoggedInMemberService") private loggedInMemberService,
+    private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
-    private loginService: LoginService,
     private displayDay: DisplayDayPipe,
     private displayDate: DisplayDatePipe,
     private searchFilterPipe: SearchFilterPipe,
@@ -106,11 +105,11 @@ export class WalkListComponent implements OnInit {
   }
 
   allowAdminEdits() {
-    return this.loggedInMemberService.allowWalkAdminEdits();
+    return this.memberLoginService.allowWalkAdminEdits();
   }
 
   allowDetailView() {
-    return this.loggedInMemberService.memberLoggedIn();
+    return this.memberLoginService.memberLoggedIn();
   }
 
   viewWalkField(displayedWalk: DisplayedWalk, field) {

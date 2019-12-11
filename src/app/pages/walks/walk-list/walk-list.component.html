@@ -58,7 +58,7 @@
                      class="round table tbl-green-f table-responsive table-striped table-hover table-condensed">
                 <thead *ngIf="showTableHeader(displayedWalk)" class="tbl-green-f">
                 <tr>
-                  <th *ngIf="loggedInMemberService.memberLoggedIn()" width="7%">Action</th>
+                  <th *ngIf="memberLoginService.memberLoggedIn()" width="7%">Action</th>
                   <th width="13%">Walk Date</th>
                   <th width="7%">Start Time</th>
                   <th width="32%">Walk Title</th>
@@ -70,7 +70,7 @@
                 </thead>
                 <tbody>
                 <tr [ngClass]="tableRowEven(displayedWalk)? 'default': 'active'">
-                  <td *ngIf="loggedInMemberService.memberLoggedIn()" width="7%" id="walkAction-{{index}}"
+                  <td *ngIf="memberLoginService.memberLoggedIn()" width="7%" id="walkAction-{{index}}"
                       class="nowrap"><input
                     *ngIf="displayedWalk.walkAccessMode.walkWritable" type="submit"
                     value="{{displayedWalk.walkAccessMode.caption}}"

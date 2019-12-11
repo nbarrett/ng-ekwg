@@ -26,6 +26,17 @@ import { Observable, Subject } from "rxjs";
 import { StringUtilsService } from "./string-utils.service";
 import { Walk } from "../models/walk.model";
 
+export const meetupDescriptionPrefix = "meetup-description-prefix";
+
+export enum MeetupStatus {
+  PAST = "past",
+  UPCOMING = "upcoming",
+  DRAFT = "draft",
+  PUBLISHED = "published",
+  PROPOSED = "proposed",
+  SUGGESTED = "suggested"
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -282,15 +293,4 @@ export class MeetupService {
   private extractCreatedVenue(response: MeetupVenueResponse): NumericIdentier {
     return {id: response.id};
   }
-}
-
-export const meetupDescriptionPrefix = "meetup-description-prefix";
-
-export enum MeetupStatus {
-  PAST = "past",
-  UPCOMING = "upcoming",
-  DRAFT = "draft",
-  PUBLISHED = "published",
-  PROPOSED = "proposed",
-  SUGGESTED = "suggested"
 }

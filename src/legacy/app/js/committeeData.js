@@ -18,7 +18,7 @@ angular.module('ekwgApp')
   .factory('CommitteeFileService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('committeeFiles');
   })
-  .factory('CommitteeQueryService', function ($q, $log, $filter, $routeParams, URLService, CommitteeFileService, CommitteeReferenceData, DateUtils, LoggedInMemberService, WalksService, SocialEventsService) {
+  .factory('CommitteeQueryService', function ($q, $log, $filter, $routeParams, URLService, CommitteeFileService, CommitteeReferenceData, DateUtils, MemberLoginService, WalksService, SocialEventsService) {
       var logger = $log.getInstance('CommitteeQueryService');
       $log.logLevels['CommitteeQueryService'] = $log.LEVEL.OFF;
 
@@ -180,7 +180,7 @@ angular.module('ekwgApp')
       function filterCommitteeFiles(files) {
         logger.info('filterCommitteeFiles files ->', files);
         var filteredFiles = _.filter(files, function (file) {
-          return CommitteeReferenceData.isPublic(file.fileType) || LoggedInMemberService.allowCommittee() || LoggedInMemberService.allowFileAdmin();
+          return CommitteeReferenceData.isPublic(file.fileType) || MemberLoginService.allowCommittee() || MemberLoginService.allowFileAdmin();
         });
         logger.debug('filterCommitteeFiles in ->', files && files.length, 'out ->', filteredFiles.length, 'fileTypes', CommitteeReferenceData.fileTypes());
         return filteredFiles

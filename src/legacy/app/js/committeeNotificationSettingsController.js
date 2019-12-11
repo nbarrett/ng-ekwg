@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('CommitteeNotificationSettingsController', function ($window, $log, $sce, $timeout, $templateRequest, $compile, $q, $rootScope, $scope, $filter, $routeParams,
-                                                                   $location, URLService, DateUtils, NumberUtils, LoggedInMemberService, MemberService,
+                                                                   $location, URLService, DateUtils, NumberUtils, MemberLoginService, MemberService,
                                                                    ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, MailchimpCampaignService,
                                                                    MAILCHIMP_APP_CONSTANTS, MailchimpConfig, Notifier, close) {
 

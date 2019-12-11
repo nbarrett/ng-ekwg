@@ -25,7 +25,7 @@ import {
   ContentTextServiceProvider,
   GoogleMapsConfigProvider,
   LegacyUrlService,
-  LoggedInMemberServiceProvider,
+  MemberLoginServiceProvider,
   MailchimpCampaignServiceProvider,
   MailchimpConfigProvider,
   MailchimpSegmentServiceProvider,
@@ -34,7 +34,8 @@ import {
   NotifierProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
-  WalksServiceProvider
+  WalksServiceProvider,
+  MemberAuditServiceProvider
 } from "./ajs-upgraded-providers";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -108,6 +109,7 @@ import { ConfigService } from "./services/config.service";
 import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { HttpResponseService } from "./services/http-response.service";
+import { MemberLoginService } from "./services/member-login.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NotifierService } from "./services/notifier.service";
 import { NumberUtilsService } from "./services/number-utils.service";
@@ -240,7 +242,7 @@ import { WalkMeetupConfigParametersComponent } from "./pages/walks/walk-meetup-c
     SnakeCasePipe,
     WalkValidationsListPipe,
     GoogleMapsConfigProvider,
-    LoggedInMemberServiceProvider,
+    MemberLoginServiceProvider,
     MailchimpCampaignServiceProvider,
     MailchimpConfigProvider,
     MailchimpSegmentServiceProvider,
@@ -262,6 +264,7 @@ import { WalkMeetupConfigParametersComponent } from "./pages/walks/walk-meetup-c
     WalkNotificationService,
     WalksAuthGuard,
     WalksServiceProvider,
+    MemberAuditServiceProvider,
     WalkSummaryPipe,
   ],
   entryComponents: [
@@ -301,6 +304,7 @@ export class AppModule implements DoBootstrap {
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
       .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
+      .factory("MemberLoginService", downgradeInjectable(MemberLoginService))
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
       .factory("ContentText", downgradeInjectable(ContentTextService))
       .factory("Config", downgradeInjectable(ConfigService))

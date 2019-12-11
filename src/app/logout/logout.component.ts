@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { BroadcastService } from "../services/broadcast-service";
+import { MemberLoginService } from "../services/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { RouterHistoryService } from "../services/router-history.service";
 
@@ -12,7 +13,7 @@ import { RouterHistoryService } from "../services/router-history.service";
 export class LogoutComponent implements OnInit {
   private logger: Logger;
 
-  constructor(@Inject("LoggedInMemberService") private loggedInMemberService,
+  constructor(private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               private routerHistoryService: RouterHistoryService,
               private broadcastService: BroadcastService,
@@ -22,7 +23,7 @@ export class LogoutComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-        this.loggedInMemberService.logout();
+        this.memberLoginService.logout();
       }
     );
     this.broadcastService.on("memberLogoutComplete", () => this.routerHistoryService.navigateBackToLastMainPage());

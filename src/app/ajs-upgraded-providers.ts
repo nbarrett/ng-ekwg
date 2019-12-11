@@ -1,10 +1,10 @@
-export function LoggedInMemberService($injector) {
-  return $injector.get("LoggedInMemberService");
+export function MemberLoginService($injector) {
+  return $injector.get("MemberLoginService");
 }
 
-export const LoggedInMemberServiceProvider = {
-  provide: "LoggedInMemberService",
-  useFactory: LoggedInMemberService,
+export const MemberLoginServiceProvider = {
+  provide: "MemberLoginService",
+  useFactory: MemberLoginService,
   deps: ["$injector"]
 };
 
@@ -67,6 +67,16 @@ export function RamblersUploadAudit($injector) {
 export const RamblersUploadAuditProvider = {
   provide: "RamblersUploadAudit",
   useFactory: RamblersUploadAudit,
+  deps: ["$injector"]
+};
+
+export function MemberAuditService($injector) {
+  return $injector.get("MemberAuditService");
+}
+
+export const MemberAuditServiceProvider = {
+  provide: "MemberAuditService",
+  useFactory: MemberAuditService,
   deps: ["$injector"]
 };
 

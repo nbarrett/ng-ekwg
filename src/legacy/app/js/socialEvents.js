@@ -6,8 +6,8 @@ angular.module('ekwgApp')
     return $mongolabResourceHttp('socialEventAttendees');
   })
   .controller('SocialEventsController', function ($routeParams, $log, $q, $scope, $filter, LegacyUrlService, URLService, Upload,
-                                                  SocialEventsService, SiteEditService,
-                                                  SocialEventAttendeeService, LoggedInMemberService, MemberService,
+                                                  SocialEventsService, SiteEditService, BroadcastService,
+                                                  SocialEventAttendeeService, MemberLoginService, MemberService,
                                                   AWSConfig, ContentMetaDataService, DateUtils, MailchimpSegmentService,
                                                   ClipboardService, Notifier, EKWGFileUpload, CommitteeReferenceData, ModalService) {
     $scope.userEdits = {
@@ -54,18 +54,14 @@ angular.module('ekwgApp')
       }
     };
 
-    $scope.$on('memberLoginComplete', function () {
+    BroadcastService.on('memberLoginComplete', function () {
       applyAllowEdits('memberLoginComplete');
       refreshMembers();
       refreshSocialEvents();
     });
 
-    $scope.$on('memberLogoutComplete', function () {
+    BroadcastService.on('memberLogoutComplete', function () {
       applyAllowEdits('memberLogoutComplete');
-    });
-
-    $scope.$on('editSite', function () {
-      applyAllowEdits('editSite');
     });
 
     $scope.addSocialEvent = function () {
@@ -93,7 +89,7 @@ angular.module('ekwgApp')
       $q.when(notify.progress({title: 'Save in progress', message: 'Saving social event'}, true))
         .then(prepareToSave, notify.error.bind(notify), notify.progress.bind(notify))
         .then(saveSocialEvent, notify.error.bind(notify), notify.progress.bind(notify))
-        .then(notify.clearBusy, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(notify.clearBusy.bind(notify), notify.error.bind(notify), notify.progress.bind(notify))
         .catch(notify.error.bind(notify));
     };
 
@@ -109,7 +105,7 @@ angular.module('ekwgApp')
       $q.when(notify.progress('Deleting social event', true))
         .then(deleteMailchimpSegment, notify.error.bind(notify), notify.progress.bind(notify))
         .then(removeSocialEventHideSocialEventDialogAndRefreshSocialEvents, notify.error.bind(notify), notify.progress.bind(notify))
-        .then(notify.clearBusy, notify.error.bind(notify), notify.progress.bind(notify))
+        .then(notify.clearBusy.bind(notify), notify.error.bind(notify), notify.progress.bind(notify))
         .catch(notify.error.bind(notify));
     };
 
@@ -193,26 +189,26 @@ angular.module('ekwgApp')
     };
 
     function allowSummaryView() {
-      return (LoggedInMemberService.allowSocialAdminEdits() || !LoggedInMemberService.allowSocialDetailView());
+      return (MemberLoginService.allowSocialAdminEdits() || !MemberLoginService.allowSocialDetailView());
     }
 
     function applyAllowEdits(event) {
       $scope.allowDelete = false;
       $scope.allowConfirmDelete = false;
-      $scope.allowDetailView = LoggedInMemberService.allowSocialDetailView();
-      $scope.allowEdits = LoggedInMemberService.allowSocialAdminEdits();
-      $scope.allowCopy = LoggedInMemberService.allowSocialAdminEdits();
-      $scope.allowContentEdits = SiteEditService.active() && LoggedInMemberService.allowContentEdits();
+      $scope.allowDetailView = MemberLoginService.allowSocialDetailView();
+      $scope.allowEdits = MemberLoginService.allowSocialAdminEdits();
+      $scope.allowCopy = MemberLoginService.allowSocialAdminEdits();
+      $scope.allowContentEdits = SiteEditService.active() && MemberLoginService.allowContentEdits();
       logger.info("SiteEditService.active()", SiteEditService.active());
       $scope.allowSummaryView = allowSummaryView();
     }
 
     $scope.showLoginTooltip = function () {
-      return !LoggedInMemberService.memberLoggedIn();
+      return !MemberLoginService.memberLoggedIn();
     };
 
     $scope.login = function () {
-      if (!LoggedInMemberService.memberLoggedIn()) {
+      if (!MemberLoginService.memberLoggedIn()) {
         LegacyUrlService.navigateTo("login");
       }
     };
@@ -222,7 +218,7 @@ angular.module('ekwgApp')
       $scope.showAlert = false;
       $scope.allowConfirmDelete = false;
       if (!socialEvent.attendees) socialEvent.attendees = [];
-      $scope.allowEdits = LoggedInMemberService.allowSocialAdminEdits();
+      $scope.allowEdits = MemberLoginService.allowSocialAdminEdits();
       var existingRecordEditEnabled = $scope.allowEdits && s.startsWith(socialEventEditMode, 'Edit');
       $scope.allowCopy = existingRecordEditEnabled;
       $scope.allowDelete = existingRecordEditEnabled;
@@ -250,7 +246,7 @@ angular.module('ekwgApp')
     }
 
     function refreshMembers() {
-      if (LoggedInMemberService.memberLoggedIn()) {
+      if (MemberLoginService.memberLoggedIn()) {
         MemberService.allLimitedFields(MemberService.filterFor.SOCIAL_MEMBERS).then(function (members) {
           $scope.members = members;
           logger.debug('found', $scope.members.length, 'members');
@@ -290,7 +286,7 @@ angular.module('ekwgApp')
             $scope.socialEvents = [socialEvent];
           });
       } else {
-        var socialEvents = LoggedInMemberService.allowSocialDetailView() ? SocialEventsService.all() : SocialEventsService.all({
+        var socialEvents = MemberLoginService.allowSocialDetailView() ? SocialEventsService.all() : SocialEventsService.all({
           fields: {
             briefDescription: 1,
             eventDate: 1,

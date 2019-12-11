@@ -46,8 +46,8 @@
           <a target="_blank"
              [href]="displayedWalk.walk.meetupEventUrl">
             <span class="related-links-title"
-                   tooltip-placement="left"
-                   tooltip="Click to view the route for this walk on Meetup">
+                  tooltip-placement="left"
+                  tooltip="Click to view the route for this walk on Meetup">
               View {{meetupService.meetupPublishedStatus(displayedWalk)}} event on Meetup
             </span>
           </a>
@@ -90,13 +90,15 @@
           </a>
         </div>
       </div>
-      <div class="row related-links-row" *ngIf="displayedWalk.walk.venue && displayedWalk.walk.venue.venuePublish && displayedWalk.walk.venue.url">
+      <div class="row related-links-row"
+           *ngIf="displayedWalk.walk.venue && displayedWalk.walk.venue.venuePublish && displayedWalk.walk.venue.url">
         <div class="col-sm-12">
           <i class="glyphicon {{displayedWalk.walk.venue.type | toVenueIcon}} glyphicon-icon fa-lg">
           </i>
           <a [href]="displayedWalk.walk.venue.url" target="_blank">
             <span class="related-links-gylph-title" tooltip-placement="left"
-                  tooltip="Click to visit {{displayedWalk.walk.venue.name}}"></span>{{displayedWalk.walk.venue.type}}: {{displayedWalk.walk.venue.name}}
+                  tooltip="Click to visit {{displayedWalk.walk.venue.name}}"></span>
+            {{displayedWalk.walk.venue.type}}: {{displayedWalk.walk.venue.name}}
           </a>
         </div>
       </div>
@@ -126,15 +128,18 @@
       <div class="radio-inline map-radio-group map-radio-label" (click)="refreshView()">
         <input id="show-start-point" type="radio"
                [ngModel]="mapDisplay" name="mapDisplay"
+               (ngModelChange)="changeShowDrivingDirections($event)"
                value="show-start-point"/>
         <label for="show-start-point">At start {{displayedWalk.walk.postcode}}</label>
         <input id="show-driving-directions" type="radio"
+               (ngModelChange)="changeShowDrivingDirections($event)"
                [ngModel]="mapDisplay" name="mapDisplay"
                value="show-driving-directions"/>
         <label for="show-driving-directions">Driving from: <input
           class="input-sm text-uppercase input-postcode"
           [ngModel]="fromPostcode" name="fromPostcode"
-          (change)="autoSelectMapDisplay()"
+          (ngModelChange)="changeFromPostcode($event)"
+          (click)="autoSelectMapDisplay()"
           type="text"></label>
 
       </div>

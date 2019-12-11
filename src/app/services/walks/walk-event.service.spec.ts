@@ -1,6 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { LoggerTestingModule } from "ngx-logger";
-import { LoggedInMemberService } from "../../ajs-upgraded-providers";
+import { MemberLoginService } from "../../ajs-upgraded-providers";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
@@ -12,7 +12,7 @@ import { WalkEventService } from "./walk-event.service";
 import { EventType } from "./walks-reference-data.service";
 
 describe("WalksEventService", () => {
-  const loggedInMemberService = {
+  const MemberLoginService = {
     memberLoggedIn: () => true,
     loggedInMember: () => {
     },
@@ -25,8 +25,8 @@ describe("WalksEventService", () => {
     ],
     providers: [
       AuditDeltaChangedItemsPipePipe, StringUtilsService, MemberIdToFullNamePipe, FullNameWithAliasPipe, FullNamePipe,
-      {provide: "LoggedInMemberService", useValue: loggedInMemberService},
-      {provide: "MemberService", useValue: loggedInMemberService}
+      {provide: "MemberLoginService", useValue: MemberLoginService},
+      {provide: "MemberService", useValue: MemberLoginService}
       ]
   }));
 

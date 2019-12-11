@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('CommitteeController', function ($rootScope, $window, $log, $sce, $timeout, $templateRequest, $compile, $q, $scope, $filter, $routeParams,
-                                               $location, URLService, DateUtils, NumberUtils, LoggedInMemberService, MemberService,
+                                               $location, URLService, DateUtils, NumberUtils, MemberLoginService, MemberService, BroadcastService,
                                                ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, MailchimpCampaignService,
                                                MAILCHIMP_APP_CONSTANTS, MailchimpConfig, Notifier, EKWGFileUpload, CommitteeQueryService, CommitteeReferenceData, ModalService) {
 
@@ -63,11 +63,11 @@ angular.module('ekwgApp')
     };
 
     $scope.allowSend = function () {
-      return LoggedInMemberService.allowFileAdmin();
+      return MemberLoginService.allowFileAdmin();
     };
 
     $scope.allowAddCommitteeFile = function () {
-      return $scope.fileTypes && LoggedInMemberService.allowFileAdmin();
+      return $scope.fileTypes && MemberLoginService.allowFileAdmin();
     };
 
     $scope.allowEditCommitteeFile = function (committeeFile) {
@@ -266,11 +266,11 @@ angular.module('ekwgApp')
       }
     };
 
-    $scope.$on('memberLoginComplete', function () {
+    BroadcastService.on('memberLoginComplete', function () {
       refreshAll();
     });
 
-    $scope.$on('memberLogoutComplete', function () {
+    BroadcastService.on('memberLogoutComplete', function () {
       refreshAll();
     });
 
@@ -282,7 +282,7 @@ angular.module('ekwgApp')
         return $scope.members;
       }
 
-      if (LoggedInMemberService.allowFileAdmin()) {
+      if (MemberLoginService.allowFileAdmin()) {
         return MemberService.all()
           .then(assignMembersToScope);
 
