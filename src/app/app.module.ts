@@ -25,17 +25,17 @@ import {
   ContentTextServiceProvider,
   GoogleMapsConfigProvider,
   LegacyUrlService,
-  MemberLoginServiceProvider,
   MailchimpCampaignServiceProvider,
   MailchimpConfigProvider,
   MailchimpSegmentServiceProvider,
   MeetupServiceProvider,
+  MemberAuditServiceProvider,
+  MemberLoginServiceProvider,
   MemberServiceProvider,
   NotifierProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
-  WalksServiceProvider,
-  MemberAuditServiceProvider
+  WalksServiceProvider
 } from "./ajs-upgraded-providers";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
@@ -76,6 +76,7 @@ import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk
 import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
 import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.component";
 import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
+import { WalkMeetupConfigParametersComponent } from "./pages/walks/walk-meetup-config-parameters/walk-meetup-config-parameters.component";
 import { WalkMeetupSettingsComponent } from "./pages/walks/walk-meetup-settings/walk-meetup-settings.component";
 import { WalkMeetupComponent } from "./pages/walks/walk-meetup/walk-meetup.component";
 import { WalkVenueComponent } from "./pages/walks/walk-venue/walk-venue.component";
@@ -109,10 +110,11 @@ import { ConfigService } from "./services/config.service";
 import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { HttpResponseService } from "./services/http-response.service";
-import { MemberLoginService } from "./services/member-login.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
+import { MemberLoginService } from "./services/member-login.service";
 import { NotifierService } from "./services/notifier.service";
 import { NumberUtilsService } from "./services/number-utils.service";
+import { PageService } from "./services/page.service";
 import { RouterHistoryService } from "./services/router-history.service";
 import { StringUtilsService } from "./services/string-utils.service";
 import { UrlService } from "./services/url.service";
@@ -124,12 +126,11 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
-import { WalkMeetupConfigParametersComponent } from "./pages/walks/walk-meetup-config-parameters/walk-meetup-config-parameters.component";
 
 @NgModule({
   declarations: [
-    AccordionGroupComponent,
     AppComponent,
+    AccordionGroupComponent,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuditDeltaValuePipe,
@@ -302,6 +303,7 @@ export class AppModule implements DoBootstrap {
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
       .factory("LegacyUrlService", LegacyUrlService)
+      .factory("PageService", downgradeInjectable(PageService))
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
       .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
       .factory("MemberLoginService", downgradeInjectable(MemberLoginService))

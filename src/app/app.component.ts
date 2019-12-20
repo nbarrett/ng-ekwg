@@ -1,4 +1,5 @@
 import { Component } from "@angular/core";
+import { PageService } from "./services/page.service";
 
 @Component({
   selector: "app-root",
@@ -6,4 +7,11 @@ import { Component } from "@angular/core";
 })
 
 export class AppComponent {
+
+  constructor(private pageService: PageService) {
+  }
+
+  currentPageHasBeenMigrated() {
+    return this.pageService.currentPageHasBeenMigrated();
+  }
 }

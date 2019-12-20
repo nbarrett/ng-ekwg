@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Page } from "../models/page.model";
+import { UrlService } from "./url.service";
 
 const HOME: Page = {href: "", title: "Home"};
 
@@ -8,14 +9,14 @@ const HOME: Page = {href: "", title: "Home"};
 })
 
 export class PageService {
-  constructor() {
+  constructor(private urlService: UrlService, private pageService: PageService) {
   }
 
   public pages: Page[] = [
     HOME,
-    {href: "walks", title: "Walks"},
+    {href: "walks", title: "Walks", migrated: true},
     {href: "social", title: "Social"},
-    {href: "join-us", title: "Join Us"},
+    {href: "join-us", title: "Join Us", migrated: true},
     {href: "contact-us", title: "Contact Us"},
     {href: "committee", title: "Committee"},
     {href: "admin", title: "Admin"},
@@ -24,6 +25,10 @@ export class PageService {
   pageForArea(area: string): Page {
     area = area.replace("/", "");
     return this.pages.find(page => page.href === area) || HOME;
+  }
+
+  currentPageHasBeenMigrated() {
+    return this.pageForArea(this.urlService.area()).migrated;
   }
 
 }

@@ -1,8 +1,6 @@
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
-import { WalkMeetupSettingsComponent } from "./pages/walks/walk-meetup-settings/walk-meetup-settings.component";
-import { WalksAuthGuard } from "./walks-auth-guard.service";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
@@ -14,8 +12,10 @@ import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk
 import { WalkEditComponent } from "./pages/walks/walk-edit/walk-edit.component";
 import { WalkExportComponent } from "./pages/walks/walk-export/walk-export.component";
 import { WalkListComponent } from "./pages/walks/walk-list/walk-list.component";
+import { WalkMeetupSettingsComponent } from "./pages/walks/walk-meetup-settings/walk-meetup-settings.component";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { NonRenderingComponent } from "./shared/non-rendering.component";
+import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 const routes: Routes = [
   {path: "forgot-password", component: ForgotPasswordComponent},
