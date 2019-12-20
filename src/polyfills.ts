@@ -19,6 +19,7 @@
  */
 
 import "url-polyfill";
+import "core-js/modules/es.array.includes";
 import "zone.js/dist/zone";
 (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
 (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
