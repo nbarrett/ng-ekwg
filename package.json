@@ -5,8 +5,10 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "analyze": "webpack-bundle-analyzer dist/ng-ekwg/stats.json",
-    "build": "ng build --prod --stats-json --extra-webpack-config webpack.extra.js",
+    "analyze:es5": "webpack-bundle-analyzer dist/ng-ekwg/stats-es5.json",
+    "analyze:es2015": "webpack-bundle-analyzer dist/ng-ekwg/stats-es2015.json",
+    "build:stats": "ng build --prod --stats-json --extra-webpack-config webpack.extra.js",
+    "build": "ng build --prod --extra-webpack-config webpack.extra.js",
     "prebuild:copy": "copyfiles -f \"./src/data/moment-timezone-data/latest.json\" \"./node_modules/moment-timezone/data/packed\"",
     "prebuild:grunt": "grunt client",
     "e2e": "ng e2e",

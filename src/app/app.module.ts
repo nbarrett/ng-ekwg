@@ -1,4 +1,5 @@
 import { HttpClientModule } from "@angular/common/http";
+import { $locationShim, LocationUpgradeModule } from "@angular/common/upgrade";
 import { ApplicationRef, DoBootstrap, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -39,7 +40,7 @@ import {
 } from "./ajs-upgraded-providers";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { ContactUsComponent } from "./contact-us/contact-us.component";
+import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { LoginPanelComponent } from "./login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
@@ -69,6 +70,7 @@ import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/te
 import { MeetupDescriptionComponent } from "./notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
+import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
@@ -135,7 +137,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     AuditDeltaValuePipe,
     AuditDeltaValuePipe,
     ChangedItemsPipe,
-    ContactUsComponent,
+    ContactUsDirective,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
@@ -148,6 +150,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     HumanisePipe,
     SnakeCasePipe,
     JoinUsComponent,
+    ContactUsComponent,
     LoginComponent,
     LoginPanelComponent,
     LogoutComponent,
@@ -270,7 +273,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   ],
   entryComponents: [
     AppComponent,
-    ContactUsComponent,
+    ContactUsDirective,
     MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,
@@ -301,7 +304,8 @@ export class AppModule implements DoBootstrap {
   ngDoBootstrap(appRef: ApplicationRef) {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
-      .directive("contactUs", downgradeComponent({component: ContactUsComponent}))
+      .directive("contactUs", downgradeComponent({component: ContactUsDirective}))
+      // .factory("$location", downgradeInjectable($locationShim))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("PageService", downgradeInjectable(PageService))
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
@@ -320,7 +324,7 @@ export class AppModule implements DoBootstrap {
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
-    setUpLocationSync(this.upgrade);
+    // setUpLocationSync(this.upgrade);
     appRef.bootstrap(AppComponent);
   }
 

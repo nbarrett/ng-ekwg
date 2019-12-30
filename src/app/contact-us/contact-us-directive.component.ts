@@ -7,11 +7,12 @@ import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-contact-us",
-  templateUrl: "./contact-us.component.html",
+  templateUrl: "./contact-us-directive.component.html",
   styleUrls: ["./contact-us.component.sass"]
 })
 
-export class ContactUsComponent implements OnInit, OnDestroy {
+// tslint:disable-next-line:component-class-suffix
+export class ContactUsDirective implements OnInit, OnDestroy {
 
   @Input() format: string;
   @Input() text: string;
@@ -22,7 +23,7 @@ export class ContactUsComponent implements OnInit, OnDestroy {
 
   constructor(private committeeReferenceData: CommitteeReferenceDataService, private uRLService: UrlService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContactUsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContactUsDirective, NgxLoggerLevel.OFF);
   }
 
   committeeMembers() {

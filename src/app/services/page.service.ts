@@ -27,6 +27,11 @@ export class PageService {
     return this.pages.find(page => page.href === area) || HOME;
   }
 
+  isValidArea(): boolean {
+    const area = this.urlService.area();
+    return !!this.pages.find(page => page.href === area);
+  }
+
   currentPageHasBeenMigrated() {
     return this.pageForArea(this.urlService.area()).migrated;
   }

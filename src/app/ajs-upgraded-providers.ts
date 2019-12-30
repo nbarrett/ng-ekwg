@@ -8,7 +8,6 @@ export const MemberLoginServiceProvider = {
   deps: ["$injector"]
 };
 
-
 export function AuthenticationModalsService($injector) {
   return $injector.get("AuthenticationModalsService");
 }
@@ -48,7 +47,6 @@ export const CommitteeConfigProvider = {
   useFactory: CommitteeConfig,
   deps: ["$injector"]
 };
-
 
 export function ClipboardService($injector) {
   return $injector.get("ClipboardService");

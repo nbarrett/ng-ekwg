@@ -3,7 +3,6 @@ const mainPages = {
   WALKS: "/walks",
   SOCIAL: "/social",
   JOIN_US: "/join-us",
-  CONTACT_US: "/contact-us",
   COMMITTEE: "/committee",
   ADMIN: "/admin",
   HOW_TO: "/how-to"
@@ -79,10 +78,6 @@ angular.module("ekwgApp", [
       .when("/letterhead/:firstPart?/:secondPart", {
         templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
-      .when(mainPages.CONTACT_US, {
-        templateUrl: "partials/contactUs/contact-us.html", title: "contact us"
-      })
-      .when("/links", {redirectTo: mainPages.CONTACT_US})
       .when(mainPages.SOCIAL + "/socialEventId/:socialEventId", {
         controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
@@ -100,14 +95,4 @@ angular.module("ekwgApp", [
     uibDatepickerPopupConfig.formatDay = "dd";
     logEnhancerProvider.datetimePattern = "hh:mm:ss";
     logEnhancerProvider.prefixPattern = "%s - %s -";
-  })
-  .run(function ($log, $rootScope, $route, URLService, CommitteeConfig, CommitteeReferenceData) {
-    var logger = $log.getInstance("App.run");
-    $log.logLevels["App.run"] = $log.LEVEL.OFF;
-
-    $rootScope.$on("$locationChangeSuccess", function (event, newUrl, absOldUrl) {
-      if (!$rootScope.pageHistory) $rootScope.pageHistory = [];
-      $rootScope.pageHistory.push(URLService.relativeUrl(newUrl));
-      logger.info("newUrl", newUrl, "$rootScope.pageHistory", $rootScope.pageHistory);
-    });
   });

@@ -6,6 +6,7 @@ import { LoginComponent } from "./login/login.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
 import { SetPasswordComponent } from "./login/set-password.component";
 import { LogoutComponent } from "./logout/logout.component";
+import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
@@ -22,6 +23,7 @@ const routes: Routes = [
   {path: "mailing-preferences", component: MailingPreferencesComponent},
   {path: "set-password/:password-reset-id", component: SetPasswordComponent},
   {path: "join-us", component: JoinUsComponent},
+  {path: "contact-us", component: ContactUsComponent},
   {path: "login", component: LoginComponent},
   {path: "logout", component: LogoutComponent},
   {path: "walks/walkId/:walk-id", component: WalkListComponent},

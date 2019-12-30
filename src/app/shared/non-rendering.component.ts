@@ -15,11 +15,14 @@ export class NonRenderingComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(NonRenderingComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
-    this.logger.debug("created for route.snapshot.url:", this.route.snapshot.url.map(segment => segment.toString()),
-      "area:", this.urlService.area());
+    this.logger.debug("created for area:", this.urlService.area(),
+      "isArea:", this.pageService.isValidArea());
+    if (!this.pageService.isValidArea()) {
+      this.urlService.navigateTo("/");
+    }
   }
 }

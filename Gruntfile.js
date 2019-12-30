@@ -32,16 +32,6 @@ module.exports = function (grunt) {
           return '/* concatenated from ' + filepath + ' */\n\n' + src;
         }
       },
-      angular: {
-        src: [
-          CLIENT_ROOT + '/vendor/angular/angular.min.js',
-          CLIENT_ROOT + '/vendor/angular-resource/angular-resource.min.js',
-          CLIENT_ROOT + '/vendor/angular-route/angular-route.min.js',
-          CLIENT_ROOT + '/vendor/angular-sanitize/angular-sanitize.min.js',
-          CLIENT_ROOT + '/vendor/angular-cookies/angular-cookies.min.js',
-          CLIENT_ROOT + '/vendor/angular-animate/angular-animate.min.js'],
-        dest: DIST_ROOT + '/vendor/angular/angular-all.js'
-      },
       app: {
         src: [CLIENT_ROOT + '/app/js/globals.js', CLIENT_ROOT + '/app/js/app.js', CLIENT_ROOT + '/app/js/!(globals).js', CLIENT_ROOT + '/app/js/!(app).js'],
         dest: DIST_ROOT + '/app/js/tmp/<%= pkg.name %>.js',
@@ -50,6 +40,6 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('dist', ['concat:angular', 'concat:app', 'ngAnnotate:dist']);
+  grunt.registerTask('dist', ['concat:app', 'ngAnnotate:dist']);
   grunt.registerTask('client', ['clean:pre', 'dist', 'clean:post']);
 };
