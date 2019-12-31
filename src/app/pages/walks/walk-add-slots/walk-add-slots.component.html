@@ -48,7 +48,7 @@
 
                 <div class="input-group">
                   <input [ngModel]="untilDate"
-                         (bsValueChange)="onUntilDateChange($event)"
+                         (ngModelChange)="onUntilDateChange($event)"
                          placeholder="enter date"
                          #dp="bsDatepicker"
                          bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
@@ -75,7 +75,7 @@
                 <div class="input-group">
                   <div class="input-group">
                     <input [ngModel]="singleDate"
-                           (bsValueChange)="onSingleDateChange($event)"
+                           (ngModelChange)="onSingleDateChange($event)"
                            placeholder="enter date of walk"
                            #dpSingle="bsDatepicker"
                            bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
