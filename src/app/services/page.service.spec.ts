@@ -1,10 +1,18 @@
 import { TestBed } from "@angular/core/testing";
+import { RouterTestingModule } from "@angular/router/testing";
+import { UpgradeModule } from "@angular/upgrade/static";
+import { LoggerTestingModule } from "ngx-logger/testing";
 import { PageService } from "./page.service";
-
 
 describe("PageService", () => {
 
-  beforeEach(() => TestBed.configureTestingModule({}).compileComponents());
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [
+      LoggerTestingModule,
+      RouterTestingModule,
+      UpgradeModule
+    ]
+  }).compileComponents());
 
   describe("pageForArea", () => {
 
