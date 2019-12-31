@@ -50,7 +50,7 @@
     <tr>
         <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Display Name:</td>
         <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px"
-            [textContent]="walk.walkLeaderMemberId | memberIdToFullName : members : walk.displayName"></td>
+            [textContent]="walk.displayName | valueOrDefault"></td>
     </tr>
 
     <tr>
