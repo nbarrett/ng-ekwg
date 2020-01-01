@@ -11,7 +11,7 @@
       </div>
       <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
         <app-walk-admin></app-walk-admin>
-        <app-accordion-group (click)="toggle($event)" title="Walks Programme" initiallyOpen="true">
+        <app-accordion-group (click)="toggle($event)" groupTitle="Walks Programme" initiallyOpen="true">
           <div>
             <form *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
               <div class="form-group">
@@ -134,7 +134,7 @@
             </div>
           </div>
         </app-accordion-group>
-        <app-accordion-group (click)="toggle($event)" title="Walks Information" initiallyOpen="true">
+        <app-accordion-group (click)="toggle($event)" groupTitle="Walks Information" initiallyOpen="true">
           <div class="body-content">
             <div class="row">
               <div class="col-sm-12">
@@ -155,7 +155,7 @@
           </div>
         </app-accordion-group>
         <app-accordion-group (click)="toggle($event)" *ngIf="false"
-                             title="View our past and planned walks on Google Maps!">
+                             groupTitle="View our past and planned walks on Google Maps!">
           <p>If you are planning where to lead a walk and you want to make sure that you choose an area that
             hasn't been walked too much before,
             the map below provides you with a handy, visual way of verifying this.

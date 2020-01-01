@@ -1,5 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-import { Component, ElementRef, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import find from "lodash-es/find";
 import get from "lodash-es/get";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -26,7 +26,6 @@ import { WalkDisplayService } from "../walk-display.service";
 })
 
 export class WalkExportComponent implements OnInit, OnDestroy {
-  @ViewChild("code", {static: false}) code: ElementRef;
   private logger: Logger;
   private ramblersUploadAuditData: RamblersUploadAudit[];
   private walksForExport: WalkExport[] = [];

@@ -1,33 +1,33 @@
-  <app-accordion-group *ngIf="allowAdminEdits"
-                       title="Walk Admin Tasks" initiallyOpen="false">
-    <div class="row thumbnail walk-admin-thumbnail">
-      <div class="col-sm-2">
-        <input type="submit" value="Ramblers export"
-               (click)="selectWalksForExport()"
-               title="Select walks to export in Ramblers format" class="button-form yellow-confirm  mb-6">
+<app-accordion-group *ngIf="allowAdminEdits"
+                     groupTitle="Walk Admin Tasks" initiallyOpen="false">
+
+  <div class="row">
+    <div class="col-md-4 item-panel">
+      <div (click)="selectWalksForExport()" class="item-icon">
+        <i class="fas fa-file-export fa-3x ramblers"></i>
+        <h5>Ramblers export</h5>
       </div>
-      <div class="col-sm-10 green-bullets-no-rule">
+      <p class="green-bullets-no-rule">
         <app-markdown-editor name="ramblers-export-help" description="Ramblers export help"></app-markdown-editor>
-      </div>
+      </p>
     </div>
-    <div class="row thumbnail walk-admin-thumbnail">
-      <div class="col-sm-2">
-        <input type="submit" value="Add more walk slots"
-               (click)="addWalkSlots()"
-               title="Add more available slots on the walks programme" class="button-form green-confirm  mb-6">
+    <div class="col-md-4 item-panel">
+      <div (click)="addWalkSlots()" class="item-icon">
+        <i class="far fa-calendar-plus fa-3x calendar"></i>
+        <h5>Add walk slots</h5>
       </div>
-      <div class="col-sm-10 green-bullets-no-rule">
+      <p class="green-bullets-no-rule">
         <app-markdown-editor name="add-walks-slots-help" description="Add walk slots help"></app-markdown-editor>
-      </div>
+      </p>
     </div>
-    <div class="row thumbnail walk-admin-thumbnail">
-      <div class="col-sm-2">
-        <input type="submit" value="Meetup settings"
-               (click)="meetupSettings()"
-               title="Add more available slots on the walks programme" class="button-form green-confirm  mb-6">
+    <div class="col-md-4 item-panel">
+      <div (click)="meetupSettings()" class="item-icon">
+        <i class="fab fa-meetup fa-3x meetup"></i>
+        <h5>Meetup settings</h5>
       </div>
-      <div class="col-sm-10 green-bullets-no-rule">
+      <p class="green-bullets-no-rule">
         <app-markdown-editor name="add-walks-slots-help" description="Add walk slots help"></app-markdown-editor>
-      </div>
+      </p>
     </div>
-  </app-accordion-group>
+  </div>
+</app-accordion-group>

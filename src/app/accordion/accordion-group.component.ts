@@ -1,4 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
+import kebabCase from "lodash-es/kebabCase";
+import { toBoolean } from "underscore.string";
+import { CookieService } from "ngx-cookie-service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
@@ -9,26 +12,30 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 })
 export class AccordionGroupComponent implements OnInit {
 
-  @Input() title: string;
+  @Input() groupTitle: string;
   @Input() initiallyOpen: string;
 
   public open: boolean;
   private logger: Logger;
 
-  constructor(loggerFactory: LoggerFactory) {
+  constructor(private cookieService: CookieService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(AccordionGroupComponent, NgxLoggerLevel.OFF);
   }
 
-  toggle($event: any) {
-    this.logger.debug(this.title, "$event ->", $event);
+  toggle(expanded: boolean) {
+    this.logger.debug(this.groupTitle, "$event ->", expanded);
+    this.open = expanded;
+    this.cookieService.set(this.cookieName(), expanded.toString());
   }
 
   ngOnInit(): void {
-    this.open = false;
-    if (this.initiallyOpen === "true") {
-      this.logger.debug(this.title, "initiallyOpen -> ", this.initiallyOpen);
-      this.open = true;
-    }
+    const toggledState = toBoolean(this.cookieService.get(this.cookieName()));
+    this.open = toggledState || this.initiallyOpen === "true";
+    this.logger.debug(this.groupTitle, "open -> ", toggledState);
+  }
+
+  private cookieName() {
+    return "accordion-group-state-" + kebabCase(this.groupTitle);
   }
 }
 
