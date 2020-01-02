@@ -34,6 +34,7 @@
     "chai-smoothie": "0.2.1",
     "cheerio": "0.16.0",
     "chromedriver": "2.35",
+    "compression": "1.7.4",
     "config": "0.4.35",
     "connect-livereload": "0.3.0",
     "csv": "0.3.7",

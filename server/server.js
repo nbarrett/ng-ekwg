@@ -1,22 +1,23 @@
 "use strict";
-let config = require("./lib/config/config.js");
-let path = require("path");
-let express = require("express");
-let favicon = require("serve-favicon");
-let logger = require("morgan");
-let methodOverride = require("method-override");
-let bodyParser = require("body-parser");
-let errorHandler = require("errorhandler");
-let ramblers = require("./lib/ramblers/ramblers");
-let aws = require("./lib/aws/aws");
-let database = require("./lib/mongo/database");
-let meetup = require("./lib/meetup/meetup");
-let instagram = require("./lib/instagram/instagram");
-let googleMaps = require("./lib/google-maps/googleMaps");
-let mailchimp = require("./lib/mailchimp/mailchimp");
-let app = express();
-let debug = require("debug")(config.logNamespace("server"));
-
+const config = require("./lib/config/config.js");
+const path = require("path");
+const express = require("express");
+const favicon = require("serve-favicon");
+const logger = require("morgan");
+const methodOverride = require("method-override");
+const bodyParser = require("body-parser");
+const compression = require("compression")
+const errorHandler = require("errorhandler");
+const ramblers = require("./lib/ramblers/ramblers");
+const aws = require("./lib/aws/aws");
+const database = require("./lib/mongo/database");
+const meetup = require("./lib/meetup/meetup");
+const instagram = require("./lib/instagram/instagram");
+const googleMaps = require("./lib/google-maps/googleMaps");
+const mailchimp = require("./lib/mailchimp/mailchimp");
+const debug = require("debug")(config.logNamespace("server"));
+const app = express();
+app.use(compression())
 app.set("port", config.server.listenPort);
 app.disable("view cache");
 app.use(favicon(path.join(config.server.distFolder, "assets/images/ramblers/favicon.ico")));
