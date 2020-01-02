@@ -10,6 +10,7 @@ import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
+import { FullNamePipe } from "./pipes/full-name.pipe";
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 
@@ -22,6 +23,7 @@ describe("AppComponent", () => {
         UpgradeModule
       ],
       providers: [
+        FullNamePipe,
         {provide: "MemberService", useValue: {}},
         {provide: "MemberAuditService", useValue: {}},
         CookieService],

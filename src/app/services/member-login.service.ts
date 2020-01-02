@@ -21,6 +21,7 @@ export class MemberLoginService {
   constructor(
     @Inject("MemberService") private memberService,
     @Inject("MemberAuditService") private memberAuditService,
+    private fullNamePipe: FullNamePipe,
     private broadcastService: BroadcastService,
     private numberUtils: NumberUtilsService,
     private urlService: UrlService,
@@ -152,8 +153,14 @@ export class MemberLoginService {
       });
   }
 
-  setLoggedInMemberCookie(member: MemberCookie) {
-    this.setCookie("loggedInMember", member);
+  setLoggedInMemberCookie(member: MemberCookie): Promise<void> {
+    const existingCookie = this.cookieParserService.cookieValueFor("loggedInMember");
+    const notCurrentMember = existingCookie.memberId !== member.memberId;
+    if (!isEmpty(existingCookie) && notCurrentMember) {
+      return Promise.reject(`Invalid attempt to set logged-on member from ${this.fullNamePipe.transform(existingCookie)} to ${this.fullNamePipe.transform(member)}`);
+    } else {
+      return Promise.resolve(this.setCookie("loggedInMember", member));
+    }
   }
 
   private toMemberCookie(member: Member): MemberCookie {
@@ -176,10 +183,10 @@ export class MemberLoginService {
     };
   }
 
-  saveMember(memberToSave, saveCallback?, errorSaveCallback?) {
-    memberToSave.$saveOrUpdate(saveCallback, saveCallback, errorSaveCallback, errorSaveCallback)
-      .then(() => {
-        this.setLoggedInMemberCookie(memberToSave);
+  saveMember(memberToSave: Member, saveCallback?, errorSaveCallback?) {
+    return memberToSave.$saveOrUpdate(saveCallback, saveCallback, errorSaveCallback, errorSaveCallback)
+      .then((savedMember) => {
+        return this.setLoggedInMemberCookie(this.toMemberCookie(savedMember));
       })
       .then(() => {
         this.broadcastService.broadcast("memberSaveComplete");

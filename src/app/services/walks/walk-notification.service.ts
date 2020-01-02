@@ -206,7 +206,7 @@ export class WalkNotificationService {
 
   private saveSegmentDataToMember(segmentResponse, member: Member, walkCampaignConfiguration: WalkCampaignConfiguration) {
     this.mailchimpSegmentService.setMemberSegmentId(member, walkCampaignConfiguration.segmentType, segmentResponse.segment.id);
-    return this.memberLoginService.saveMember(member);
+    return member.$saveOrUpdate();
   }
 
   private sendEmailCampaign(notify: AlertInstance, member: Member, campaignName: string, contentSections, walkCampaignConfiguration: WalkCampaignConfiguration) {

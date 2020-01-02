@@ -643,7 +643,7 @@ angular.module('ekwgApp')
 
                     function saveSegmentDataToMember(segmentResponse) {
                       MailchimpSegmentService.setMemberSegmentId(member, templateAndNotificationMembers.segmentType, segmentResponse.segment.id);
-                      return MemberLoginService.saveMember(member);
+                      return member.$saveOrUpdate();
                     }
 
                     function sendEmailCampaign() {
