@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from "@angular/core";
-import { UrlService } from "../../../services/url.service";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { NgxLoggerLevel } from "ngx-logger";
 import { MemberLoginService } from "src/app/services/member-login.service";
+import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
+import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { UrlService } from "../../../services/url.service";
 
 @Component({
   selector: "app-walk-admin",
@@ -10,13 +13,24 @@ import { MemberLoginService } from "src/app/services/member-login.service";
 })
 export class WalkAdminComponent implements OnInit {
   allowAdminEdits: boolean;
+  private logger: Logger;
 
   constructor(private memberLoginService: MemberLoginService,
-              private urlService: UrlService) {
+              private broadcastService: BroadcastService,
+              private urlService: UrlService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
+    this.setPrivileges();
+    this.broadcastService.on(NamedEventType.MEMBER_LOGIN_COMPLETE, () => this.setPrivileges());
+    this.broadcastService.on(NamedEventType.MEMBER_LOGOUT_COMPLETE, () => this.setPrivileges());
+  }
+
+  private setPrivileges() {
     this.allowAdminEdits = this.memberLoginService.allowWalkAdminEdits();
+    this.logger.info("setPrivileges:allowAdminEdits", this.allowAdminEdits);
   }
 
   selectWalksForExport() {

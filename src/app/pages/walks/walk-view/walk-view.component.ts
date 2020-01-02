@@ -3,7 +3,7 @@ import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
-import { BroadcastService } from "../../../services/broadcast-service";
+import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
@@ -48,7 +48,7 @@ export class WalkViewComponent implements OnInit {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
-    this.broadcastService.on("memberLoginComplete", () => {
+    this.broadcastService.on(NamedEventType.MEMBER_LOGIN_COMPLETE, (  ) => {
       this.logger.debug("memberLoginComplete");
       this.display.refreshMembers();
       this.loggedIn = true;

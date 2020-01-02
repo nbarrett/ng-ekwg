@@ -324,7 +324,7 @@ export class AppModule implements DoBootstrap {
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
-    // setUpLocationSync(this.upgrade);
+    setUpLocationSync(this.upgrade, "path");
     appRef.bootstrap(AppComponent);
   }
 
