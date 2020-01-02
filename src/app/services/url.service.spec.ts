@@ -1,9 +1,8 @@
-import { TestBed } from "@angular/core/testing";
-import { UrlService } from "./url.service";
-import { LoggerTestingModule } from "ngx-logger/testing";
 import { DOCUMENT } from "@angular/common";
+import { TestBed } from "@angular/core/testing";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-
+import { LoggerTestingModule } from "ngx-logger/testing";
+import { UrlService } from "./url.service";
 
 describe("UrlService", () => {
 
@@ -56,7 +55,6 @@ describe("UrlService", () => {
     });
 
   });
-
 
   describe("notificationHref", () => {
 
@@ -113,6 +111,20 @@ describe("UrlService", () => {
       const service: UrlService = TestBed.get(UrlService);
       expect(service.isArea("hello")).toBe(false);
       expect(service.isArea("wahh-baby", "blah-blah")).toBe(false);
+    });
+
+  });
+
+  describe("isSubArea", () => {
+
+    it("should return true when sub area is matched", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.isSubArea("member-bulk-load")).toBe(true);
+    });
+
+    it("should return false when sub area is not matched", () => {
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.isSubArea("not-bulk-load")).toBe(false);
     });
 
   });

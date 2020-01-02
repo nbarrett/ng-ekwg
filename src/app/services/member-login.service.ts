@@ -3,6 +3,7 @@ import isEmpty from "lodash-es/isEmpty";
 import { CookieService } from "ngx-cookie-service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { LoginResponse, Member, MemberCookie } from "../models/member.model";
+import { FullNamePipe } from "../pipes/full-name.pipe";
 import { BroadcastService, NamedEventType } from "./broadcast-service";
 import { CookieParserService } from "./cookie-parser.service";
 import { DateUtilsService } from "./date-utils.service";

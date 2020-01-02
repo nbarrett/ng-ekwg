@@ -26,6 +26,11 @@ angular.module('ekwgApp')
         $scope.display.memberFilterDate = DateUtils.momentNowNoTime().subtract($scope.display && $scope.display.emailType.monthsInPast, 'months').valueOf();
       };
 
+      $scope.toggleMemberAdmin = function () {
+        $scope.memberAdminOpen = !$scope.memberAdminOpen;
+        LegacyUrlService.navigateTo('admin', 'member-admin')
+      };
+
       $scope.showArea = function (area) {
         LegacyUrlService.navigateTo('admin', area)
       };
