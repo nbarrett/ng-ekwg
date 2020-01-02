@@ -23,8 +23,7 @@ angular.module("ekwgApp", [
   "ui.bootstrap",
   "ui.select",
   "angular-logger",
-  "ezfb",
-  "ngCsv"])
+  "ezfb"])
   .constant("MONGOLAB_CONFIG", {
     trimErrorMessage: false,
     baseUrl: "/api/database/",

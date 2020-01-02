@@ -23,6 +23,7 @@
     "start:test": "server/scripts/run-test.sh",
     "test": "ng test"
   },
+  "cacheDirectories": ["node_modules", "server/node_modules"],
   "dependencies": {
     "@angular/animations": "8.2.14",
     "@angular/common": "8.2.14",
