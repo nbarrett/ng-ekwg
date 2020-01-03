@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, Inject, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
 import get from "lodash-es/get";
+import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
-import isFunction from "lodash-es/isFunction";
 import pick from "lodash-es/pick";
 import property from "lodash-es/property";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentText } from "../models/content-text.model";
 import { BroadcastService, NamedEvent, NamedEventType } from "../services/broadcast-service";
 import { ContentTextService } from "../services/content-text.service";
-import { MemberLoginService } from "../services/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { MemberLoginService } from "../services/member-login.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 
 export interface EditorState {
@@ -25,6 +25,7 @@ export enum DataAction {
   REVERT = "revert",
   NONE = "none"
 }
+
 @Component({
   selector: "app-markdown-editor",
   templateUrl: "./markdown-editor.component.html",
@@ -54,7 +55,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,
-              private contentText: ContentTextService,
+              private contentTextService: ContentTextService,
               private changeDetectorRef: ChangeDetectorRef,
               private siteEditService: SiteEditService,
               loggerFactory: LoggerFactory) {
@@ -84,8 +85,8 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
       dataAction: DataAction.NONE
     };
     if (this.data) {
-      const existingData = isFunction(this.data.$id);
-      this.content = existingData ? this.data : this.contentText.create(this.data);
+      const existingData: boolean = !!this.data.id;
+      this.content = this.data;
       this.saveEnabled = true;
       this.logger.debug("editing:", this.content, "existingData:", existingData, "editorState:", this.editorState, "rows:", this.rows);
       this.editCaption = "edit";
@@ -124,11 +125,11 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   queryContent(): Promise<ContentText> {
     this.editorState.dataAction = DataAction.QUERY;
     this.logger.debug("querying content", this.name, "editorState:", this.editorState);
-    return this.contentText.forName(this.name).then((content) => {
-      if (content) {
-        this.content = content;
+    return this.contentTextService.findByName(this.name).then((content) => {
+      if (isEmpty(content)) {
+        this.content = {category: this.category, text: this.text, name: this.name};
       } else {
-        this.content = this.contentText.create({category: this.category, text: this.text, name: this.name});
+        this.content = content;
       }
       this.saveEnabled = true;
       this.originalContent = cloneDeep(this.content);
@@ -157,7 +158,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     if (this.saveEnabled && this.editorState.dataAction === DataAction.NONE) {
       this.editorState.dataAction = DataAction.SAVE;
       this.logger.debug("saving", this.name, "content", "this.editorState", this.editorState);
-      return this.content.$saveOrUpdate().then((data) => {
+      return this.contentTextService.createOrUpdate(this.content).then((data) => {
           this.content = data;
           this.originalContent = cloneDeep(this.content);
           this.logger.debug(this.name, "content retrieved:", this.content);
@@ -202,14 +203,14 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   delete() {
-    this.content.$remove().then((removed) => {
+    this.contentTextService.delete(this.content).then((removed) => {
       this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_DELETED, removed));
       this.changeDetectorRef.detectChanges();
     });
   }
 
   canDelete() {
-    return this.deleteEnabled && isFunction(this.content.$id);
+    return this.deleteEnabled && this.content.id;
   }
 
   canSave() {

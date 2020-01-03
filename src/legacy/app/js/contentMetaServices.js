@@ -56,8 +56,4 @@ angular.module("ekwgApp")
   })
   .factory("ContentMetaData", function ($mongolabResourceHttp) {
     return $mongolabResourceHttp("contentMetaData");
-  })
-  .factory("ContentTextService", function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp("contentText");
-  })
-
+  });

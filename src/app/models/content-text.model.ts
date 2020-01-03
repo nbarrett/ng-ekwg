@@ -1,12 +1,7 @@
 export interface ContentText {
-  name: string;
+  id?: string;
   category?: string;
+  name: string;
   text: string;
-
-  $id?(): any;
-
-  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<ContentText>;
-
-  $remove?(): Promise<ContentText>;
 }
 

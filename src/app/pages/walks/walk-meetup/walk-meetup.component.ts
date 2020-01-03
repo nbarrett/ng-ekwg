@@ -42,7 +42,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,
               private changeDetectorRef: ChangeDetectorRef,
-              private contentText: ContentTextService,
+              private contentTextService: ContentTextService,
               private dateUtils: DateUtilsService,
               private notifierService: NotifierService,
               private walkNotificationService: WalkNotificationService,
@@ -63,7 +63,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.walkNotificationData = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
     this.meetupEventDescription = this.displayedWalk.walk.meetupEventDescription;
-    this.contentText.forCategory(this.CONTENT_CATEGORY).then(contentTextItems => {
+    this.contentTextService.filterByCategory(this.CONTENT_CATEGORY).then(contentTextItems => {
       this.logger.debug("forCategory", this.CONTENT_CATEGORY + ":", contentTextItems);
       this.contentTextItems = contentTextItems;
     });

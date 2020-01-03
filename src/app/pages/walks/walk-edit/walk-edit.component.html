@@ -16,7 +16,7 @@
               <div class="input-group">
                 <input [ngModel]="walkDate"
                        (ngModelChange)="onDateChange($event)"
-                       [disabled]="!allowAdminEdits()"
+                       [disabled]="!allowAdminEdits() || !allowEdits()"
                        placeholder="enter date of walk"
                        #dp="bsDatepicker"
                        bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
@@ -24,7 +24,7 @@
                        type="text" class="form-control input-sm"
                        id="walk-date"/>
                 <div class="input-group-btn">
-                  <button [disabled]="!allowAdminEdits()"
+                  <button [disabled]="!allowAdminEdits() || !allowEdits()"
                           class="btn btn-default btn-sm"
                           (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
                     class="glyphicon glyphicon-calendar"></i></button>

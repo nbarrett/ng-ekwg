@@ -32,13 +32,13 @@ export class WalkMeetupSettingsComponent implements OnInit {
   private guestLimits: number[];
 
   constructor(private urlService: UrlService,
-              private contentText: ContentTextService,
+              private contentTextService: ContentTextService,
               private meetupService: MeetupService,
               private broadcastService: BroadcastService,
               protected notifierService: NotifierService,
               private changeDetectorRef: ChangeDetectorRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkMeetupSettingsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkMeetupSettingsComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -47,7 +47,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
     this.publishStatuses = this.meetupService.publishStatuses();
     this.guestLimits = range(1, 11);
     this.meetupService.getConfig().then(config => this.config = config);
-    this.contentText.forCategory(meetupDescriptionPrefix).then(contentTextItems => {
+    this.contentTextService.filterByCategory(meetupDescriptionPrefix).then(contentTextItems => {
       this.logger.debug("forCategory", meetupDescriptionPrefix + ":", contentTextItems);
       this.contentTextItems = contentTextItems;
       this.onChange(first(this.contentTextItems));
@@ -83,7 +83,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
   private removeContent(contentText: ContentText) {
     if (contentText.category === meetupDescriptionPrefix) {
       this.logger.debug("Received deleted content", contentText);
-      this.contentTextItems = this.contentTextItems.filter(item => item.$id() !== contentText.$id());
+      this.contentTextItems = this.contentTextItems.filter(item => item.id !== contentText.id);
       this.changeDetectorRef.detectChanges();
     }
   }
@@ -96,8 +96,8 @@ export class WalkMeetupSettingsComponent implements OnInit {
     this.contentTextItems.push(newContent);
   }
 
-  onChange(content: any) {
-    this.logger.debug("change to", content);
+  onChange(content: ContentText) {
+    this.logger.debug("selected content text:", content);
     this.selectedContent = content;
     this.changeDetectorRef.detectChanges();
   }

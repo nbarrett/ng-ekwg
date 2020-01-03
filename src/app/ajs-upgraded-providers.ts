@@ -18,16 +18,6 @@ export const AuthenticationModalsServiceProvider = {
   deps: ["$injector"]
 };
 
-export function ContentTextService($injector) {
-  return $injector.get("ContentTextService");
-}
-
-export const ContentTextServiceProvider = {
-  provide: "ContentTextService",
-  useFactory: ContentTextService,
-  deps: ["$injector"]
-};
-
 export function ConfigData($injector) {
   return $injector.get("ConfigData");
 }

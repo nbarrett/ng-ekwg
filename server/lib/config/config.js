@@ -60,6 +60,7 @@ module.exports = {
     apiKey: validatedEnvironmentVariable("MONGOLAB_APIKEY"),
     database: config.mongo.database,
     dbUrl: config.mongo.dbUrl,
+    uri: validatedEnvironmentVariable("MONGODB_URI"),
   },
   ramblers: {
     gwem: {

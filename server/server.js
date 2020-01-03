@@ -8,6 +8,7 @@ const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
 const compression = require("compression")
 const errorHandler = require("errorhandler");
+const mongoose = require("mongoose");
 const ramblers = require("./lib/ramblers/ramblers");
 const aws = require("./lib/aws/aws");
 const database = require("./lib/mongo/database");
@@ -15,6 +16,7 @@ const meetup = require("./lib/meetup/meetup");
 const instagram = require("./lib/instagram/instagram");
 const googleMaps = require("./lib/google-maps/googleMaps");
 const mailchimp = require("./lib/mailchimp/mailchimp");
+const contentText = require("./lib/mongo/routes/content-text");
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
 app.use(compression())
@@ -32,6 +34,7 @@ app.use("/api/instagram", instagram);
 app.use("/api/mailchimp", mailchimp);
 app.use("/api/meetup", meetup);
 app.use("/api/database", database);
+app.use("/api/database/content-text", contentText);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {
   res.sendFile(path.join(config.server.distFolder, "index.html"));
@@ -39,6 +42,14 @@ app.use((req, res, next) => {
 if (app.get("env") === "dev") {
   app.use(errorHandler());
 }
+
+mongoose.connect(config.mongo.uri, {useNewUrlParser: true, useUnifiedTopology: true})
+  .then((response) => {
+    debug("Connected to database:", config.mongo.uri);
+  })
+  .catch((error) => {
+    debug("Connection failed:", config.mongo.uri, error);
+  });
 
 app.listen(app.get("port"), function () {
   debug("listening on port " + config.server.listenPort);

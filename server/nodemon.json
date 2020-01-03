@@ -1,6 +1,5 @@
 {
-  "events": {
-    "restart": "npm run server",
-    "crash": "npm run server"
+  "env": {
+    "JWT_KEY": "secret_this_should_be_longer"
   }
 }

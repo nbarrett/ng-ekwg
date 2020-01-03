@@ -2,12 +2,9 @@ angular.module('ekwgApp')
   .factory('SocialEventsService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('socialEvents');
   })
-  .factory('SocialEventAttendeeService', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('socialEventAttendees');
-  })
   .controller('SocialEventsController', function ($routeParams, $log, $q, $scope, $filter, LegacyUrlService, URLService, Upload,
                                                   SocialEventsService, SiteEditService, BroadcastService,
-                                                  SocialEventAttendeeService, MemberLoginService, MemberService,
+                                                  MemberLoginService, MemberService,
                                                   AWSConfig, ContentMetaDataService, DateUtils, MailchimpSegmentService,
                                                   ClipboardService, Notifier, EKWGFileUpload, CommitteeReferenceData, ModalService) {
     $scope.userEdits = {
