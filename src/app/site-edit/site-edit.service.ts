@@ -30,9 +30,9 @@ export class SiteEditService {
   toggle(state: boolean) {
     const priorState = this.active();
     const newState = JSON.stringify(state);
-    this.subject.next(NamedEvent.withData(NamedEventType.EDIT_STATE, state));
-    this.logger.debug("toggle:priorState", priorState, "newState", newState);
     this.cookieService.set("editSite", newState);
+    this.subject.next(NamedEvent.withData(NamedEventType.EDIT_SITE, state));
+    this.logger.debug("toggle:priorState", priorState, "newState", newState);
   }
 
 }

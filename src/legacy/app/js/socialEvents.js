@@ -7,6 +7,10 @@ angular.module('ekwgApp')
                                                   MemberLoginService, MemberService,
                                                   AWSConfig, ContentMetaDataService, DateUtils, MailchimpSegmentService,
                                                   ClipboardService, Notifier, EKWGFileUpload, CommitteeReferenceData, ModalService) {
+    var logger = $log.getInstance('SocialEventsController');
+    $log.logLevels['SocialEventsController'] = $log.LEVEL.OFF;
+    var notify = Notifier.createAlertInstance($scope);
+
     $scope.userEdits = {
       copyToClipboard: ClipboardService.copyToClipboard,
       longerDescriptionPreview: true,
@@ -19,6 +23,8 @@ angular.module('ekwgApp')
       }
     };
 
+    SiteEditService.events.subscribe(item => applyAllowEdits(item));
+
     $scope.previewLongerDescription = function () {
       logger.debug('previewLongerDescription');
       $scope.userEdits.longerDescriptionPreview = true;
@@ -28,10 +34,6 @@ angular.module('ekwgApp')
       logger.debug('editLongerDescription');
       $scope.userEdits.longerDescriptionPreview = false;
     };
-
-    var logger = $log.getInstance('SocialEventsController');
-    $log.logLevels['SocialEventsController'] = $log.LEVEL.OFF;
-    var notify = Notifier.createAlertInstance($scope);
 
     $scope.attachmentBaseUrl = ContentMetaDataService.baseUrl('socialEvents');
     $scope.selectMembers = [];
@@ -196,7 +198,7 @@ angular.module('ekwgApp')
       $scope.allowEdits = MemberLoginService.allowSocialAdminEdits();
       $scope.allowCopy = MemberLoginService.allowSocialAdminEdits();
       $scope.allowContentEdits = SiteEditService.active() && MemberLoginService.allowContentEdits();
-      logger.info("SiteEditService.active()", SiteEditService.active());
+      logger.info(event, "SiteEditService.active()", SiteEditService.active(), "MemberLoginService.allowContentEdits()", MemberLoginService.allowContentEdits());
       $scope.allowSummaryView = allowSummaryView();
     }
 

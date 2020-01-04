@@ -5,7 +5,7 @@ import { filter, share } from "rxjs/operators";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 export enum NamedEventType {
-  EDIT_STATE = "editSite",
+  EDIT_SITE = "editSite",
   MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
   MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
   MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
