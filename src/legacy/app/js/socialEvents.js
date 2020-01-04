@@ -23,7 +23,9 @@ angular.module('ekwgApp')
       }
     };
 
-    SiteEditService.events.subscribe(item => applyAllowEdits(item));
+    SiteEditService.events.subscribe(function (item) {
+      return applyAllowEdits(item);
+    });
 
     $scope.previewLongerDescription = function () {
       logger.debug('previewLongerDescription');

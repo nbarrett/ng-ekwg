@@ -5,7 +5,9 @@ angular.module('ekwgApp')
     $scope.imageSource = $routeParams.imageSource;
 
     applyAllowEdits();
-    SiteEditService.events.subscribe(item => applyAllowEdits(item));
+    SiteEditService.events.subscribe(function (item) {
+      return applyAllowEdits(item);
+    });
     $scope.onFileSelect = function (file) {
       if (file) {
         $scope.uploadedFile = file;
