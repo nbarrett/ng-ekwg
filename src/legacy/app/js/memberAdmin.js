@@ -15,6 +15,14 @@ angular.module('ekwgApp')
       var DESCENDING = '▼';
       var ASCENDING = '▲';
 
+      $scope.membershipExpiry = {
+        open: function ($event) {
+          $event.preventDefault();
+          $event.stopPropagation();
+          $scope.membershipExpiry.opened = true;
+        }
+      };
+
       $scope.today = DateUtils.momentNowNoTime().valueOf();
       $scope.currentMember = {};
 

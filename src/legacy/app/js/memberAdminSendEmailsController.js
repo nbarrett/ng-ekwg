@@ -3,7 +3,7 @@ angular.module('ekwgApp')
                                                            EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService,
                                                            MailchimpConfig, Notifier, members, close) {
       var logger = $log.getInstance('MemberAdminSendEmailsController');
-      $log.logLevels['MemberAdminSendEmailsController'] = $log.LEVEL.DEBUG;
+      $log.logLevels['MemberAdminSendEmailsController'] = $log.LEVEL.OFF;
       var notify = Notifier.createAlertInstance($scope);
       notify.setBusy();
 
@@ -64,6 +64,7 @@ angular.module('ekwgApp')
 
       $scope.calculateMemberFilterDate = function () {
         $scope.display.memberFilterDate = DateUtils.momentNowNoTime().subtract($scope.display && $scope.display.emailType.monthsInPast, 'months').valueOf();
+        logger.info('calculateMemberFilterDate:', $scope.display.memberFilterDate);
       };
 
       $scope.clearDisplayEmailMembers = function () {
@@ -132,16 +133,20 @@ angular.module('ekwgApp')
           $scope.calculateMemberFilterDate();
         }
         populateMembersBasedOnFilter(function (member) {
+          logger.debug('populateMembersBasedOnFilter:member', member);
           return member.groupMember && (member.createdDate >= $scope.display.memberFilterDate);
         });
       };
 
       $scope.populateExpiredMembers = function (recalcMemberFilterDate) {
+        logger.debug('populateExpiredMembers:recalcMemberFilterDate', recalcMemberFilterDate);
         if (recalcMemberFilterDate) {
           $scope.calculateMemberFilterDate();
         }
         populateMembersBasedOnFilter(function (member) {
-          return member.groupMember && member.membershipExpiryDate && (member.membershipExpiryDate < $scope.display.memberFilterDate);
+          const expirationExceeded = member.membershipExpiryDate < $scope.display.memberFilterDate;
+          logger.debug('populateMembersBasedOnFilter:expirationExceeded', expirationExceeded, member);
+          return member.groupMember && member.membershipExpiryDate && expirationExceeded;
         });
       };
 
@@ -150,6 +155,7 @@ angular.module('ekwgApp')
           $scope.calculateMemberFilterDate();
         }
         populateMembersBasedOnFilter(function (member) {
+          logger.debug('populateMembersBasedOnFilter:member', member);
           return member.groupMember && member.membershipExpiryDate && !member.receivedInLastBulkLoad;
         })
       };

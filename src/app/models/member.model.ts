@@ -17,7 +17,6 @@ export interface MemberCookie {
 }
 
 export interface Member {
-  passwordResetId?: string;
   expiredPassword?: boolean;
   groupMember?: boolean;
   password?: string;
@@ -34,9 +33,6 @@ export interface Member {
   postcode?: string;
   socialAdmin?: boolean;
   socialMember?: boolean;
-  subscribeGeneralEmails?: boolean;
-  subscribeSocialEventsEmails?: false;
-  subscribeWalksEmails?: boolean;
   userAdmin?: boolean;
   userName?: string;
   walkAdmin?: boolean;
@@ -46,7 +42,7 @@ export interface Member {
     general?: MailchimpSubscription;
   };
   contentAdmin?: boolean;
-  resetPasswordId?: string;
+  passwordResetId?: string;
   financeAdmin?: boolean;
   mailchimpSegmentIds?: {
     directMail: number;
