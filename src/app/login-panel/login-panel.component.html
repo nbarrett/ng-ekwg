@@ -2,7 +2,7 @@
   <div class="vertical-center">
     <ul>
       <li class="pull-right">
-        <a class="active" [routerLink]="loginOrLogoutUrl()"
+        <a class="active pointer" (click)="loginOrLogout()"
            [textContent]="memberLoginStatus()"
            title="{{memberLoginStatus()}}"></a>
         <span *ngIf="!memberLoggedIn()"> • <a

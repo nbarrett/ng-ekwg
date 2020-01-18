@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member-login.service";
-import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
+import { LoginResponse } from "../../../models/member.model";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { UrlService } from "../../../services/url.service";
 
@@ -11,24 +13,29 @@ import { UrlService } from "../../../services/url.service";
   styleUrls: ["./walk-admin.component.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class WalkAdminComponent implements OnInit {
+export class WalkAdminComponent implements OnInit, OnDestroy {
   allowAdminEdits: boolean;
   private logger: Logger;
+  private subscription: Subscription;
 
   constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.INFO);
+  }
+
+  ngOnDestroy(): void {
+    this.logger.debug("unsubscribing");
+    this.subscription.unsubscribe();
   }
 
   ngOnInit() {
     this.setPrivileges();
-    this.broadcastService.on(NamedEventType.MEMBER_LOGIN_COMPLETE, () => this.setPrivileges());
-    this.broadcastService.on(NamedEventType.MEMBER_LOGOUT_COMPLETE, () => this.setPrivileges());
+    this.subscription = this.memberLoginService.loginResponseObservable().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
   }
 
-  private setPrivileges() {
+  private setPrivileges(loginResponse?: LoginResponse) {
     this.allowAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.logger.info("setPrivileges:allowAdminEdits", this.allowAdminEdits);
   }

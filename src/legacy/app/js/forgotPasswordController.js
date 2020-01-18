@@ -67,7 +67,7 @@ angular.module("ekwgApp")
                   return {forgotPasswordData: forgotPasswordData};
                 }
               }).then(function (response) {
-              return MemberLoginService.auditMemberLogin($scope.forgottenPasswordCredentials.credentialOne, response.forgotPasswordData.loginResponse, response.forgotPasswordData.member)
+              return MemberLoginService.auditMemberLogin(loginResponse.userName, loginResponse, loginResponse.member)
                 .then(function () {
                   if (response.notifyObject) {
                     notify.error(response.notifyObject)

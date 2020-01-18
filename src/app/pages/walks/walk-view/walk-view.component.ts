@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
+import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
-import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
@@ -21,7 +23,7 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class WalkViewComponent implements OnInit {
+export class WalkViewComponent implements OnInit, OnDestroy {
   @Input()
   displayedWalk: DisplayedWalk;
   fromPostcode = "";
@@ -30,6 +32,7 @@ export class WalkViewComponent implements OnInit {
   public allowWalkAdminEdits: boolean;
   public googleMapsUrl: SafeResourceUrl;
   public loggedIn: boolean;
+  private subscription: Subscription;
 
   constructor(
     private memberLoginService: MemberLoginService,
@@ -40,7 +43,12 @@ export class WalkViewComponent implements OnInit {
     private broadcastService: BroadcastService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.DEBUG);
+  }
+
+  ngOnDestroy(): void {
+    this.logger.debug("unsubscribing");
+    this.subscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -48,10 +56,10 @@ export class WalkViewComponent implements OnInit {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
-    this.broadcastService.on(NamedEventType.MEMBER_LOGIN_COMPLETE, (  ) => {
-      this.logger.debug("memberLoginComplete");
+    this.subscription = this.memberLoginService.loginResponseObservable().subscribe((loginResponse: LoginResponse) => {
+      this.logger.debug("loginResponseObservable:", loginResponse);
       this.display.refreshMembers();
-      this.loggedIn = true;
+      this.loggedIn = loginResponse.memberLoggedIn;
       this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
       this.refreshHomePostcode();
     });

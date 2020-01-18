@@ -1,9 +1,8 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
-import { BroadcastService, NamedEventType } from "../services/broadcast-service";
-import { MemberLoginService } from "../services/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { MemberLoginService } from "../services/member-login.service";
 import { RouterHistoryService } from "../services/router-history.service";
 
 @Component({
@@ -16,7 +15,6 @@ export class LogoutComponent implements OnInit {
   constructor(private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               private routerHistoryService: RouterHistoryService,
-              private broadcastService: BroadcastService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(LogoutComponent, NgxLoggerLevel.OFF);
   }
@@ -26,6 +24,6 @@ export class LogoutComponent implements OnInit {
         this.memberLoginService.logout();
       }
     );
-    this.broadcastService.on(NamedEventType.MEMBER_LOGOUT_COMPLETE, () => this.routerHistoryService.navigateBackToLastMainPage());
+    this.memberLoginService.loginResponseObservable().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
   }
 }

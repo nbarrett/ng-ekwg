@@ -10,8 +10,6 @@ export enum NamedEventType {
   MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
   MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
   MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
-  MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
-  MEMBER_LOGOUT_COMPLETE = "memberLogoutComplete",
   WALK_SAVED = "walkSaved",
   WALK_SLOTS_CREATED = "walkSlotsCreated"
 }
@@ -39,7 +37,7 @@ export class BroadcastService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.DEBUG);
     const temp = new Observable(((observer: Observer<NamedEvent>) => {
       this.observer = observer;
     }));
@@ -48,7 +46,7 @@ export class BroadcastService {
 
   broadcast(event: NamedEvent | string): void {
     if (this.observer) {
-      this.logger.debug("broadcast:", event, "observer", this.observer);
+      this.logger.debug("broadcast:", event);
       if (event instanceof NamedEvent) {
         this.observer.next(event);
       } else {
@@ -61,7 +59,9 @@ export class BroadcastService {
     this.observable.pipe(
       filter((event: NamedEvent) => {
         const found = event.name === eventName;
-        this.logger.debug("filtering for event", event, eventName, "found:", found);
+        if (found) {
+          this.logger.debug("filtering for event", event, eventName, "found:", found);
+        }
         return found;
       })
     ).subscribe(callback);

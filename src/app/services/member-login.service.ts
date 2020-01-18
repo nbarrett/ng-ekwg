@@ -1,7 +1,11 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { Inject, Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
 import { CookieService } from "ngx-cookie-service";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subject } from "rxjs";
+import { AuthService } from "../auth/auth.service";
+import { AuthResponse } from "../models/auth-data.model";
 import { LoginResponse, Member, MemberCookie } from "../models/member.model";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { BroadcastService, NamedEventType } from "./broadcast-service";
@@ -17,20 +21,22 @@ import { UrlService } from "./url.service";
 
 export class MemberLoginService {
   private logger: Logger;
+  private loginResponseListener = new Subject<LoginResponse>();
 
   constructor(
     @Inject("MemberService") private memberService,
     @Inject("MemberAuditService") private memberAuditService,
     private fullNamePipe: FullNamePipe,
     private broadcastService: BroadcastService,
+    private authService: AuthService,
     private numberUtils: NumberUtilsService,
     private urlService: UrlService,
     private dateUtils: DateUtilsService, private loggerFactory: LoggerFactory, private cookieParserService: CookieParserService, private cookieService: CookieService) {
-    this.logger = loggerFactory.createLogger(MemberLoginService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MemberLoginService, NgxLoggerLevel.INFO);
   }
 
   loggedInMember(): MemberCookie {
-    const loggedInMember = this.cookieParserService.cookieValueFor("loggedInMember");
+    const loggedInMember = this.authService.parseAuthPayload() as MemberCookie;
     this.logger.debug("loggedInMember", loggedInMember);
     return loggedInMember;
   }
@@ -84,82 +90,36 @@ export class MemberLoginService {
   logout() {
     const member = this.loggedInMember();
     if (!isEmpty(member)) {
-      const loginResponseValue: LoginResponse = {member};
-      loginResponseValue.alertMessage = `The member ${member.userName} logged out successfully`;
-      this.auditMemberLogin(member.userName, loginResponseValue, member);
+      this.authService.logout().subscribe((authResponse: AuthResponse) => {
+        this.cookieParserService.removeCookie("editSite");
+        this.loginResponseListener.next(authResponse.loginResponse);
+      });
     }
-    this.removeCookie("loggedInMember");
-    this.removeCookie("editSite");
-    this.broadcastService.broadcast(NamedEventType.MEMBER_LOGOUT_COMPLETE);
-  }
-
-  auditMemberLogin(userName, loginResponse, member?: MemberCookie) {
-    const audit = new this.memberAuditService({
-      userName,
-      loginTime: this.dateUtils.nowAsValue(),
-      loginResponse
-    });
-    if (isEmpty(member)) {
-      audit.member = member;
-    }
-    return audit.$save();
-  }
-
-  setCookie(key, value) {
-    this.logger.info("setting cookie", key, "with value", value);
-    if (value) {
-      this.cookieService.set(key, JSON.stringify(value));
-    } else {
-      this.removeCookie(key);
-    }
-  }
-
-  removeCookie(key) {
-    this.logger.info(`removing cookie ${key}`);
-    this.cookieService.delete(key);
   }
 
   login(userName, password) {
-    this.removeCookie("loggedInMember");
-    return this.getMemberForUserName(userName)
-      .then((member: Member): LoginResponse => {
-        this.logger.info("member", member);
-        const loginResponse: LoginResponse = {userName};
-        if (isEmpty(member)) {
-          loginResponse.alertMessage = `The member ${userName} was not recognised. Please try again or`;
-          loginResponse.memberLoggedIn = false;
-          this.auditMemberLogin(userName, loginResponse.loginResponse);
-        } else {
-          const memberCookie = this.toMemberCookie(member);
-          loginResponse.member = memberCookie;
-          if (!member.groupMember) {
-            loginResponse.alertMessage = `Logins for member ${userName} have been disabled. Please`;
-          } else if (member.password !== password) {
-            loginResponse.alertMessage = `The password was incorrectly entered for ${userName}. Please try again or`;
-          } else if (member.expiredPassword) {
-            loginResponse.showResetPassword = true;
-            loginResponse.alertMessage = `The password for ${userName} has expired. You must enter a new password before continuing. Alternatively`;
-          } else {
-            loginResponse.memberLoggedIn = true;
-            loginResponse.alertMessage = `The member ${userName} logged in successfully`;
-            this.setLoggedInMemberCookie(memberCookie);
-            this.broadcastService.broadcast(NamedEventType.MEMBER_LOGIN_COMPLETE);
-          }
-          this.auditMemberLogin(userName, loginResponse.loginResponse, memberCookie);
-        }
-        return loginResponse;
-      }).catch((response) => {
-        return Promise.reject(`Login failed: ${response}`);
-      });
+    this.authService.login({userName, password}).subscribe((authResponse: AuthResponse) => {
+      this.logger.info("authService.login:authResponse", authResponse);
+      this.loginResponseListener.next(authResponse.loginResponse);
+    }, (error: HttpErrorResponse) => {
+      this.logger.error("login error:", error);
+      const loginResponse: LoginResponse = error.error.loginResponse;
+      this.loginResponseListener.next(loginResponse);
+    });
   }
 
-  setLoggedInMemberCookie(member: MemberCookie): Promise<void> {
+  loginResponseObservable() {
+    return this.loginResponseListener.asObservable();
+  }
+
+  refreshLoggedInMemberToken(member: MemberCookie): Promise<void> {
     const existingCookie = this.cookieParserService.cookieValueFor("loggedInMember");
     const notCurrentMember = existingCookie.memberId !== member.memberId;
     if (!isEmpty(existingCookie) && notCurrentMember) {
       return Promise.reject(`Invalid attempt to set logged-on member from ${this.fullNamePipe.transform(existingCookie)} to ${this.fullNamePipe.transform(member)}`);
     } else {
-      return Promise.resolve(this.setCookie("loggedInMember", member));
+      // TODO: need to refresh token in server
+      return Promise.resolve();
     }
   }
 
@@ -186,7 +146,7 @@ export class MemberLoginService {
   saveMember(memberToSave: Member, saveCallback?, errorSaveCallback?) {
     return memberToSave.$saveOrUpdate(saveCallback, saveCallback, errorSaveCallback, errorSaveCallback)
       .then((savedMember) => {
-        return this.setLoggedInMemberCookie(this.toMemberCookie(savedMember));
+        return this.refreshLoggedInMemberToken(this.toMemberCookie(savedMember));
       })
       .then(() => {
         this.broadcastService.broadcast("memberSaveComplete");
@@ -217,10 +177,9 @@ export class MemberLoginService {
       this.logger.debug("saveNewPassword.loginResponse:", loginResponse);
       return member.$update().then((updatedMember) => {
         const memberCookie = this.toMemberCookie(updatedMember);
-        this.setLoggedInMemberCookie(memberCookie);
+        this.refreshLoggedInMemberToken(memberCookie);
         loginResponse.alertMessage = `The password for ${member.userName} was changed successfully`;
         loginResponse.memberLoggedIn = true;
-        loginResponse.member = memberCookie;
         return loginResponse;
       });
     }
@@ -229,20 +188,24 @@ export class MemberLoginService {
 
   auditPasswordChange(loginResponse: LoginResponse) {
     this.logger.info("auditPasswordChange:loginResponse", loginResponse);
-    this.auditMemberLogin(loginResponse.userName, loginResponse.loginResponse, loginResponse.member);
+    this.authService.auditMemberLogin(loginResponse.userName, loginResponse);
     return loginResponse;
   }
 
   broadcastMemberLoginComplete(resetPasswordData) {
-    this.broadcastService.broadcast(NamedEventType.MEMBER_LOGIN_COMPLETE);
+    this.loginResponseListener.next(resetPasswordData);
     return resetPasswordData;
   }
 
-  getMemberForUserName(userName): Promise<Member> {
+  getMemberForUserName(userName: string): Promise<Member> {
     return this.memberService.query({userName: userName.toLowerCase()}, {limit: 1})
       .then((queryResults) => {
         return (queryResults && queryResults.length > 0) ? queryResults[0] : {};
       });
+  }
+
+  getMemberForId(memberId: string): Promise<Member> {
+    return this.memberService.getById(memberId);
   }
 
   getMemberForResetPassword(credentialOne, credentialTwo) {

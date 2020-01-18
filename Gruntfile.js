@@ -33,7 +33,7 @@ module.exports = function (grunt) {
         }
       },
       app: {
-        src: [CLIENT_ROOT + '/app/js/globals.js', CLIENT_ROOT + '/app/js/app.js', CLIENT_ROOT + '/app/js/!(globals).js', CLIENT_ROOT + '/app/js/!(app).js'],
+        src: [CLIENT_ROOT + '/app/js/app.js', CLIENT_ROOT + '/app/js/!(app).js'],
         dest: DIST_ROOT + '/app/js/tmp/<%= pkg.name %>.js',
         nonull: true
       }

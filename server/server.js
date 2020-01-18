@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const compression = require("compression")
 const errorHandler = require("errorhandler");
 const mongoose = require("mongoose");
+const passport = require("passport");
 const ramblers = require("./lib/ramblers/ramblers");
 const aws = require("./lib/aws/aws");
 const database = require("./lib/mongo/database");
@@ -17,6 +18,8 @@ const instagram = require("./lib/instagram/instagram");
 const googleMaps = require("./lib/google-maps/googleMaps");
 const mailchimp = require("./lib/mailchimp/mailchimp");
 const contentText = require("./lib/mongo/routes/content-text");
+const auth = require("./lib/mongo/routes/auth");
+
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
 app.use(compression())
@@ -27,6 +30,8 @@ app.use(logger(config.env));
 app.use(methodOverride());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use("/api/ramblers", ramblers);
 app.use("/api/aws", aws);
 app.use("/api/google-maps", googleMaps);
@@ -35,6 +40,7 @@ app.use("/api/mailchimp", mailchimp);
 app.use("/api/meetup", meetup);
 app.use("/api/database", database);
 app.use("/api/database/content-text", contentText);
+app.use("/api/database/auth", auth);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {
   res.sendFile(path.join(config.server.distFolder, "index.html"));

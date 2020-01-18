@@ -1,7 +1,9 @@
-import { Component, Inject, OnInit } from "@angular/core";
-import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
+import { BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-login",
@@ -10,7 +12,7 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 export class LoginComponent implements OnInit {
   private logger: Logger;
 
-  constructor(@Inject("AuthenticationModalsService") private AuthenticationModalsService,
+  constructor(private modalService: BsModalService,
               public route: ActivatedRoute, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(LoginComponent, NgxLoggerLevel.OFF);
     this.logger.debug("constructed");
@@ -18,7 +20,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(() => {
-      this.AuthenticationModalsService.showLoginDialog();
+      this.modalService.show(LoginModalComponent);
     });
   }
 

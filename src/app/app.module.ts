@@ -1,5 +1,4 @@
-import { HttpClientModule } from "@angular/common/http";
-import { $locationShim, LocationUpgradeModule } from "@angular/common/upgrade";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { ApplicationRef, DoBootstrap, NgModule } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -7,6 +6,7 @@ import { ActivatedRoute } from "@angular/router";
 import { setUpLocationSync } from "@angular/router/upgrade";
 import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
 import { Angular2CsvModule } from "angular2-csv";
+import { ModalModule } from "ngx-bootstrap";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
@@ -39,6 +39,7 @@ import {
 } from "./ajs-upgraded-providers";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { LoginPanelComponent } from "./login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
@@ -71,6 +72,7 @@ import { PageNavigatorComponent } from "./page-navigator/page-navigator.componen
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
+import { LoginModalComponent } from "./pages/login/login-modal/login-modal.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
@@ -202,6 +204,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkAdminComponent,
     WalkMeetupSettingsComponent,
     WalkMeetupConfigParametersComponent,
+    LoginModalComponent,
   ],
   imports: [
     AccordionModule.forRoot(),
@@ -212,6 +215,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     BrowserModule,
     BsDatepickerModule.forRoot(),
     HttpClientModule,
+    ModalModule.forRoot(),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     PopoverModule.forRoot(),
@@ -221,6 +225,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     UpgradeModule,
   ],
   providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
@@ -272,6 +277,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   entryComponents: [
     AppComponent,
     ContactUsDirective,
+    LoginModalComponent,
     MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,

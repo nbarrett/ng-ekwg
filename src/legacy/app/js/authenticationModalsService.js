@@ -45,26 +45,6 @@ angular.module('ekwgApp')
       })
     }
 
-    function showLoginDialog() {
-      logger.info('called showLoginDialog');
-      ModalService.closeModals(true);
-      ModalService.showModal({
-        templateUrl: "partials/index/login-dialog.html",
-        controller: "LoginController",
-        preClose: function (modal) {
-          modal.element.modal('hide');
-        }
-      }).then(function (modal) {
-        logger.info('modal event with modal', modal);
-        modal.element.modal();
-        modal.close.then(function (result) {
-          logger.info('showLoginDialog close event with result', result);
-          if (!result) RouterHistoryService.navigateBackToLastMainPage();
-        });
-      })
-    }
-
-
     function showResetPasswordFailedDialog() {
       logger.info('called showResetPasswordFailedDialog');
 
@@ -110,7 +90,6 @@ angular.module('ekwgApp')
       showResetPasswordModal: showResetPasswordModal,
       showResetPasswordFailedDialog: showResetPasswordFailedDialog,
       showForgotPasswordModal: showForgotPasswordModal,
-      showLoginDialog: showLoginDialog,
       showMailingPreferencesDialog: showMailingPreferencesDialog
     }
 

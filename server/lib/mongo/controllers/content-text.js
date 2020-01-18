@@ -60,7 +60,6 @@ exports.update = (req, res) => {
 
 exports.all = (req, res) => {
   debug("all - req.params:", req.params.id)
-  const postQuery = ContentText.find();
   ContentText.find()
     .then(documents => {
       res.status(200).json({

@@ -74,9 +74,7 @@ export interface Member {
 
 export interface LoginResponse {
   userName?: string;
-  loginResponse?: string;
   alertMessage?: string;
-  member?: MemberCookie;
   showResetPassword?: boolean;
   memberLoggedIn?: boolean;
 }
