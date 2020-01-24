@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { BsModalService, ModalOptions } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuthService } from "../auth/auth.service";
+import { ForgotPasswordModalComponent } from "../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { MemberLoginService } from "../services/member-login.service";
@@ -20,10 +22,11 @@ export class LoginPanelComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.memberLoginService.loginResponseObservable().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
+    this.authService.loginResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
   }
 
   constructor(private memberLoginService: MemberLoginService,
+              private authService: AuthService,
               private modalService: BsModalService,
               private urlService: UrlService,
               private routerHistoryService: RouterHistoryService, loggerFactory: LoggerFactory) {
@@ -33,7 +36,7 @@ export class LoginPanelComponent implements OnInit {
   memberLoginStatus() {
     if (this.memberLoginService.memberLoggedIn()) {
       const loggedInMember = this.memberLoginService.loggedInMember();
-      return "Logout " + loggedInMember.firstName + " " + loggedInMember.lastName;
+      return `Logout ${loggedInMember.firstName} ${loggedInMember.lastName}`;
     } else {
       return "Login to EWKG Site";
     }
@@ -41,7 +44,7 @@ export class LoginPanelComponent implements OnInit {
 
   loginOrLogout() {
     if (this.memberLoginService.memberLoggedIn()) {
-      this.memberLoginService.logout();
+      this.authService.logout();
     } else {
       this.modalService.show(LoginModalComponent, this.config);
     }
@@ -51,8 +54,8 @@ export class LoginPanelComponent implements OnInit {
     return this.memberLoginService.allowContentEdits();
   }
 
-  forgotPasswordUrl() {
-    return "/forgot-password";
+  forgotPassword() {
+    this.modalService.show(ForgotPasswordModalComponent, this.config);
   }
 
   memberLoggedIn() {

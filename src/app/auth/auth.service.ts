@@ -1,12 +1,13 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { tap } from "rxjs/operators";
-import { AuthCredentials, AuthPayload, AuthResponse } from "../models/auth-data.model";
+import { AuthPayload, AuthResponse } from "../models/auth-data.model";
 import { AuthTokens } from "../models/auth-tokens";
-import { LoginResponse, MemberCookie } from "../models/member.model";
+import { LoginResponse } from "../models/member.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { SiteEditService } from "../site-edit/site-edit.service";
 
 @Injectable({
   providedIn: "root"
@@ -17,31 +18,66 @@ export class AuthService {
   private readonly REFRESH_TOKEN = "REFRESH_TOKEN";
   private authPayload;
   private logger: Logger;
+  private loginResponseListener = new Subject<LoginResponse>();
 
-  constructor(private http: HttpClient, private loggerFactory: LoggerFactory) {
+  constructor(private http: HttpClient,
+              private loggerFactory: LoggerFactory,
+              private siteEditService: SiteEditService) {
     this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.DEBUG);
   }
 
-  login(credentials: AuthCredentials): Observable<AuthResponse> {
+  login(userName, password): Observable<LoginResponse> {
     const url = `${this.BASE_URL}/login`;
-    this.logger.debug("logging in", credentials.userName, "via", url);
-    const observable = this.http.post<any>(url, credentials);
-    observable.subscribe(authResponse => this.storeTokens(authResponse.tokens));
-    return observable;
+    this.logger.debug("logging in", userName, "via", url);
+    const body = {userName, password};
+    return this.performAuthPost(url, body, "login");
   }
 
-  logout(): Observable<AuthResponse> {
+  forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string) {
+    const url = `${this.BASE_URL}/forgot-password`;
+    const type = "forgot password";
+    this.logger.debug(type + "credentialOne:", credentialOne, "credentialTwo:", credentialTwo, "via", url);
+    const body = {credentialOne, credentialTwo, userDetails};
+    return this.performAuthPost(url, body, type);
+  }
+
+  resetPassword(userName, newPassword, newPasswordConfirm): Observable<LoginResponse> {
+    const url = `${this.BASE_URL}/reset-password`;
+    const type = "resetting password";
+    this.logger.debug(type + " for", userName, "via", url);
+    const body = {userName, newPassword, newPasswordConfirm};
+    return this.performAuthPost(url, body, type);
+  }
+
+  logout(): Observable<LoginResponse> {
     const url = `${this.BASE_URL}/logout`;
     this.logger.debug("logging out user via", url);
-    const observable = this.http.post<any>(url, {
+    const loginResponseObservable = this.performAuthPost(url, {
       refreshToken: this.refreshToken(),
       member: this.parseAuthPayload(),
-    });
-    observable.subscribe(response => {
-      this.logger.debug("logout complete", response);
-      this.removeTokens();
-    });
-    return observable;
+    }, "logout");
+    this.removeTokens();
+    return loginResponseObservable;
+  }
+
+  private performAuthPost(url: string, body, type: string): Observable<LoginResponse> {
+    this.http.post<any>(url, body)
+      .subscribe((authResponse: AuthResponse) => {
+        this.logger.info(type, "- authResponse", authResponse);
+        if (authResponse.tokens) {
+          this.storeTokens(authResponse.tokens);
+        }
+        this.loginResponseListener.next(authResponse.loginResponse);
+      }, (httpErrorResponse: HttpErrorResponse) => {
+        this.logger.error(type, "- error", httpErrorResponse);
+        const loginResponse: LoginResponse = httpErrorResponse.error.loginResponse;
+        this.loginResponseListener.next(loginResponse);
+      });
+    return this.loginResponse();
+  }
+
+  loginResponse() {
+    return this.loginResponseListener.asObservable();
   }
 
   isLoggedIn(): boolean {
@@ -95,7 +131,7 @@ export class AuthService {
         } else {
           const base64Url = items[1];
           if (!base64Url) {
-            this.logger.warn("authPayload itemss zero length");
+            this.logger.warn("authPayload is null");
             this.authPayload = {};
           } else {
             const base64 = base64Url.replace("-", "+").replace("_", "/");
@@ -113,9 +149,9 @@ export class AuthService {
     return localStorage.getItem(this.REFRESH_TOKEN);
   }
 
-  private storeAuthToken(jwt: string) {
-    this.logger.debug("storing new auth token:", jwt);
-    localStorage.setItem(this.AUTH_TOKEN, jwt);
+  private storeAuthToken(authToken: string) {
+    this.logger.debug("storing auth token:", authToken);
+    localStorage.setItem(this.AUTH_TOKEN, authToken);
     delete this.authPayload;
   }
 
@@ -124,17 +160,18 @@ export class AuthService {
     this.storeRefreshToken(tokens.refresh);
   }
 
-  private storeRefreshToken(token: string) {
-    this.logger.debug("storing refresh token:", token);
-    localStorage.setItem(this.REFRESH_TOKEN, token);
+  private storeRefreshToken(refreshToken: string) {
+    this.logger.debug("storing refresh token:", refreshToken);
+    localStorage.setItem(this.REFRESH_TOKEN, refreshToken);
   }
 
   private removeTokens() {
-    this.logger.debug("removeTokens:before", this.authPayload);
+    if (this.siteEditService.active()) {
+      this.siteEditService.toggle(false);
+    }
     localStorage.removeItem(this.AUTH_TOKEN);
     localStorage.removeItem(this.REFRESH_TOKEN);
     delete this.authPayload;
-    this.logger.debug("removeTokens:after", this.authPayload);
   }
 
   scheduleLogout() {

@@ -3,8 +3,8 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { AuthResponse } from "../../../models/auth-data.model";
 import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
@@ -44,6 +44,7 @@ export class WalkListComponent implements OnInit {
   constructor(
     @Inject("WalksService") private walksService,
     @Inject("MemberService") private memberService,
+    private authService: AuthService,
     private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
@@ -75,7 +76,7 @@ export class WalkListComponent implements OnInit {
     });
     this.display.refreshMembers();
     this.refreshWalks("ngOnInit");
-    this.memberLoginService.loginResponseObservable().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
+    this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
     this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
     this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
     this.siteEditService.events.subscribe(item => this.logAndDetectChanges(item));

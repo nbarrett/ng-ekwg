@@ -72,6 +72,10 @@ angular.module('ekwgApp')
 
     var memberService = $mongolabResourceHttp('members');
 
+    memberService.extractMemberId = function (member) {
+      return member.id || member.$id();
+    };
+
     memberService.filterFor = {
       SOCIAL_MEMBERS_SUBSCRIBED: function (member) {
         return member.groupMember && member.socialMember && member.mailchimpLists.socialEvents.subscribed

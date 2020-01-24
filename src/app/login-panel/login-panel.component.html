@@ -6,7 +6,7 @@
            [textContent]="memberLoginStatus()"
            title="{{memberLoginStatus()}}"></a>
         <span *ngIf="!memberLoggedIn()"> • <a
-          class="active" [routerLink]="forgotPasswordUrl()"
+          class="active" (click)="forgotPassword()"
           href="">Forgot Password</a></span>
       </li>
     </ul>

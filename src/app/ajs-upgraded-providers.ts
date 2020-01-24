@@ -38,6 +38,16 @@ export const CommitteeConfigProvider = {
   deps: ["$injector"]
 };
 
+export function EmailSubscriptionService($injector) {
+  return $injector.get("EmailSubscriptionService");
+}
+
+export const EmailSubscriptionServiceProvider = {
+  provide: "EmailSubscriptionService",
+  useFactory: EmailSubscriptionService,
+  deps: ["$injector"]
+};
+
 export function ClipboardService($injector) {
   return $injector.get("ClipboardService");
 }

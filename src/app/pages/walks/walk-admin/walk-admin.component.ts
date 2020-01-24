@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member-login.service";
+import { AuthService } from "../../../auth/auth.service";
 import { LoginResponse } from "../../../models/member.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -19,6 +20,7 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(private memberLoginService: MemberLoginService,
+              private authService: AuthService,
               private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
@@ -32,7 +34,7 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setPrivileges();
-    this.subscription = this.memberLoginService.loginResponseObservable().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
+    this.subscription = this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {

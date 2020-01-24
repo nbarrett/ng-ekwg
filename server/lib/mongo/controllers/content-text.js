@@ -1,45 +1,36 @@
-const ContentText = require("../models/content-text");
+const contentText = require("../models/content-text");
 const config = require("../../config/config");
+const transforms = require("./transforms");
 const _ = require("underscore");
 const debug = require("debug")(config.logNamespace("context-text"));
 
-function normaliseObject(document) {
-  return {
-    id: document._id,
-    ..._.omit(document._doc, ["_id", "__v"])
-  }
-}
-
 exports.create = (req, res) => {
-  const contentText = new ContentText({
+  new contentText({
     name: req.body.name,
     text: req.body.text,
     category: req.body.category
-  });
-  contentText
-    .save()
+  }).save()
     .then(createdContentText => {
       res.status(201).json({
-        response: normaliseObject(createdContentText)
+        response: transforms.toObjectWithId(createdContentText)
       });
     })
     .catch(error => {
       res.status(500).json({
         message: "Create of contentText failed",
-        input: contentText,
         error: error
       });
     });
 };
 
 exports.update = (req, res) => {
-  const contentText = new ContentText({
-    _id: req.body.id,
+  const contentTextDocument = new contentText({
+    _id: req.params.id,
     name: req.body.name,
     text: req.body.text,
     category: req.body.category
   });
-  ContentText.updateOne({_id: req.params.id}, contentText)
+  contentTextDocument.updateOne({_id: req.params.id}, contentTextDocument)
     .then(result => {
       if (result.n > 0) {
         res.status(200).json({
@@ -52,7 +43,7 @@ exports.update = (req, res) => {
     .catch(error => {
       res.status(500).json({
         message: "Update of contentText failed",
-        input: contentText,
+        input: contentTextDocument,
         error: error
       });
     });
@@ -60,7 +51,7 @@ exports.update = (req, res) => {
 
 exports.all = (req, res) => {
   debug("all - req.params:", req.params.id)
-  ContentText.find()
+  contentText.find()
     .then(documents => {
       res.status(200).json({
         response: documents
@@ -77,14 +68,14 @@ exports.queryBy = function (type, value, res, req) {
   debug(`filtering - ${type}: ${value}`)
   const find = {};
   find[type] = value;
-  ContentText.find(find).sort("name")
+  contentText.find(find).sort("name")
     .then(documents => {
       res.status(200).json({
         request: {
           type: type,
           value: value
         },
-        response: documents.map(normaliseObject),
+        response: documents.map(transforms.toObjectWithId),
       });
     })
     .catch(error => {
@@ -100,14 +91,14 @@ exports.findByName = (req, res) => {
   debug(`find one - ${type}: ${value}`)
   const find = {};
   find[type] = value;
-  ContentText.findOne(find)
+  contentText.findOne(find)
     .then(document => {
       res.status(200).json({
         request: {
           type: type,
           value: value
         },
-        response: normaliseObject(document),
+        response: transforms.toObjectWithId(document),
       });
     })
     .catch(ignored => {
@@ -129,10 +120,10 @@ exports.findByCategory = (req, res) => {
 
 exports.findById = (req, res) => {
   debug("find - id:", req.params.id)
-  ContentText.findById(req.params.id)
+  contentText.findById(req.params.id)
     .then(contentText => {
       if (contentText) {
-        res.status(200).json(normaliseObject(contentText));
+        res.status(200).json(transforms.toObjectWithId(contentText));
       } else {
         res.status(404).json({
           message: "contentText not found",
@@ -150,7 +141,7 @@ exports.findById = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-  ContentText.deleteOne({_id: req.params.id})
+  contentText.deleteOne({_id: req.params.id})
     .then(result => {
       console.log(result);
       if (result.n > 0) {

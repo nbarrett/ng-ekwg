@@ -6,7 +6,7 @@ import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 
 @Component({
   selector: "app-mailing-preferences",
-  templateUrl: "../shared/non-rendering.component.html"
+  template: ""
 })
 export class MailingPreferencesComponent implements OnInit {
   private logger: Logger;

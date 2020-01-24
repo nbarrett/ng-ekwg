@@ -1,10 +1,9 @@
-const _ = require("lodash")
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const randtoken = require("rand-token");
 const passport = require("passport");
-const config = require("../../config/config");
-const debug = require("debug")(config.logNamespace("database:auth"));
+const config = require("../config/config");
+const debug = require("debug")(config.logNamespace("auth-config"));
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const tokenExpiry = {auth: 10, refresh: 5};
@@ -14,7 +13,7 @@ const passportOpts = {
   secretOrKey: SECRET
 };
 
-passport.use(new JwtStrategy(passportOpts, function (jwtPayload, done) {
+passport.use(new JwtStrategy(passportOpts, (jwtPayload, done) => {
   const expirationDate = new Date(jwtPayload.exp * 1000);
   if (expirationDate < new Date()) {
     return done(null, false);
@@ -22,14 +21,12 @@ passport.use(new JwtStrategy(passportOpts, function (jwtPayload, done) {
   done(null, jwtPayload);
 }));
 
-passport.serializeUser(function (user, done) {
-  debug("serializeUser called with user:", user);
+passport.serializeUser((user, done) => {
   done(null, user.userName)
 });
 
 // not used for some reason
-passport.deserializeUser(function (id, done) {
-  debug("serializeUser called with user id:", id);
+passport.deserializeUser((id, done) => {
   done(err, id);
 });
 
@@ -39,7 +36,7 @@ exports.hashValue = (value) => {
   return bcrypt.hash(value, 10);
 }
 
-exports.randomToken = (value) => {
+exports.randomToken = () => {
   return randtoken.uid(256);
 }
 
@@ -52,5 +49,5 @@ exports.compareValue = (inputValue, storedValue) => {
 }
 
 exports.authenticate = () => {
-  return passport.authenticate("jwt")
+  return passport.authenticate("jwt");
 }

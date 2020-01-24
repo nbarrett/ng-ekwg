@@ -21,6 +21,7 @@ import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
+  EmailSubscriptionServiceProvider,
   CommitteeConfigProvider,
   ConfigDataProvider,
   GoogleMapsConfigProvider,
@@ -72,6 +73,7 @@ import { PageNavigatorComponent } from "./page-navigator/page-navigator.componen
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
+import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "./pages/login/login-modal/login-modal.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
@@ -129,15 +131,17 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
+import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/reset-password-modal.component";
 
 @NgModule({
   declarations: [
-    AppComponent,
     AccordionGroupComponent,
+    AppComponent,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuditDeltaValuePipe,
     ChangedItemsPipe,
+    ContactUsComponent,
     ContactUsDirective,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
@@ -145,20 +149,21 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     DisplayDayPipe,
     EventNotePipe,
     ForgotPasswordComponent,
+    ForgotPasswordModalComponent,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
-    SnakeCasePipe,
     JoinUsComponent,
-    ContactUsComponent,
     LoginComponent,
+    LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
     MailingPreferencesComponent,
     MainLogoComponent,
     MainTitleComponent,
     MarkdownEditorComponent,
+    MeetupDescriptionComponent,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
@@ -168,20 +173,25 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
+    ResetPasswordModalComponent,
     SearchFilterPipe,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
+    SnakeCasePipe,
     ValueOrDefaultPipe,
     VenueIconPipe,
     WalkAddSlotsComponent,
+    WalkAdminComponent,
     WalkEditComponent,
     WalkEditFullPageComponent,
     WalkEventTypePipe,
     WalkExportComponent,
     WalkListComponent,
+    WalkMeetupComponent,
+    WalkMeetupConfigParametersComponent,
+    WalkMeetupSettingsComponent,
     WalkNotificationChangesComponent,
-    MeetupDescriptionComponent,
     WalkNotificationCoordinatorApprovedComponent,
     WalkNotificationCoordinatorAwaitingApprovalComponent,
     WalkNotificationCoordinatorAwaitingWalkDetailsComponent,
@@ -198,13 +208,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkNotificationLeaderUpdatedComponent,
     WalkSummaryPipe,
     WalkValidationsListPipe,
-    WalkViewComponent,
     WalkVenueComponent,
-    WalkMeetupComponent,
-    WalkAdminComponent,
-    WalkMeetupSettingsComponent,
-    WalkMeetupConfigParametersComponent,
-    LoginModalComponent,
+    WalkViewComponent,
   ],
   imports: [
     AccordionModule.forRoot(),
@@ -233,6 +238,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ChangedItemsPipe,
     ClipboardServiceProvider,
     CommitteeConfigProvider,
+    EmailSubscriptionServiceProvider,
     CommitteeReferenceDataService,
     ConfigDataProvider,
     CookieService,
@@ -278,6 +284,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     AppComponent,
     ContactUsDirective,
     LoginModalComponent,
+    ResetPasswordModalComponent,
+    ForgotPasswordModalComponent,
     MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,

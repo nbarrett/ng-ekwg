@@ -15,18 +15,17 @@ export class AuthInterceptor implements HttpInterceptor {
   private logger: Logger;
 
   constructor(public authService: AuthService, private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(AuthInterceptor, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(AuthInterceptor, NgxLoggerLevel.OFF);
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     if (this.authService.authToken()) {
-      request = this.addToken(request, this.authService.authToken());
+      request = this.addAuthToken(request, this.authService.authToken());
     }
 
     return next.handle(request).pipe(catchError(error => {
-      const loginRequest = request.url.includes("login");
-      this.logger.debug("loginRequest", loginRequest, "request.url", request.url);
+      const loginRequest = request.url.includes("login") || request.url.includes("reset-password") || request.url.includes("forgot-password");
       if (error instanceof HttpErrorResponse && error.status === 401 && !loginRequest) {
         return this.handle401Error(request, next);
       } else {
@@ -36,11 +35,11 @@ export class AuthInterceptor implements HttpInterceptor {
     }));
   }
 
-  private addToken(request: HttpRequest<any>, token: string) {
-    this.logger.debug("addToken to header", token);
+  private addAuthToken(request: HttpRequest<any>, authToken: string) {
+    this.logger.debug("addAuthToken to header", authToken);
     return request.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${authToken}`
       }
     });
   }
@@ -53,22 +52,21 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     if (!this.isRefreshing) {
       this.isRefreshing = true;
-      this.logger.debug("handle401Error this.isRefreshing true, refreshTokenSubject - null");
+      this.logger.debug("handle401Error:beginning refresh");
       this.refreshTokenSubject.next(null);
       return this.authService.performTokenRefresh().pipe(
-        switchMap((token: AuthTokens) => {
-          this.logger.debug("authService.refreshToken observable received:token.jwt", token.auth);
+        switchMap((tokens: AuthTokens) => {
+          this.logger.debug("handle401Error:refresh completed - received new auth token:", tokens.auth);
           this.isRefreshing = false;
-          this.refreshTokenSubject.next(token.auth);
-          this.logger.debug("handle401Error this.isRefreshing false, refreshTokenSubject -", token.auth);
-          return next.handle(this.addToken(request, token.auth));
+          this.refreshTokenSubject.next(tokens.auth);
+          return next.handle(this.addAuthToken(request, tokens.auth));
         }));
     } else {
       return this.refreshTokenSubject.pipe(
         filter(token => token != null),
         take(1),
         switchMap(jwt => {
-          return next.handle(this.addToken(request, jwt));
+          return next.handle(this.addAuthToken(request, jwt));
         }));
     }
   }

@@ -16,7 +16,7 @@ export class RouterHistoryService {
 
   constructor(private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.INFO);
     this.logger.debug("constructed");
     this.loadRouting();
   }
@@ -26,6 +26,7 @@ export class RouterHistoryService {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(({urlAfterRedirects}: NavigationEnd) => {
         this.pageHistory = [...this.pageHistory, urlAfterRedirects];
+        this.logger.info("pageHistory:urlAfterRedirects", urlAfterRedirects, "history now:", this.pageHistory);
       });
   }
 

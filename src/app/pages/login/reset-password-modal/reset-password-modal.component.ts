@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { BsModalRef, BsModalService } from "ngx-bootstrap";
+import { BsModalRef } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -8,29 +8,28 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MemberLoginService } from "../../../services/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
-import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";
-import { ResetPasswordModalComponent } from "../reset-password-modal/reset-password-modal.component";
 
 @Component({
-  selector: "app-login-modal-component",
-  templateUrl: "./login-modal.component.html",
-  styleUrls: ["./login-modal.component.sass"]
+  selector: "app-reset-password-modal-component",
+  templateUrl: "./reset-password-modal.component.html",
+  styleUrls: ["./reset-password-modal.component.sass"]
 })
-export class LoginModalComponent implements OnInit, OnDestroy {
+export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  userName: string;
-  password: string;
+  newPassword: string;
+  newPasswordConfirm: string;
   private subscription: Subscription;
+  private userName;
+  private message;
 
   constructor(public bsModalRef: BsModalRef,
-              private modalService: BsModalService,
               private authService: AuthService,
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -41,29 +40,26 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
+    if (this.message) {
+      this.notify.progress({
+        title: "Reset password",
+        message: this.message
+      });
+    }
     this.subscription = this.authService.loginResponse().subscribe((loginResponse) => {
-      this.logger.info("subscribe:loginResponse", loginResponse);
+      this.logger.info("subscribe:reset password", loginResponse);
       if (loginResponse.memberLoggedIn) {
         this.bsModalRef.hide();
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
           return this.urlService.navigateTo("mailing-preferences");
         }
         return true;
-      } else if (loginResponse.showResetPassword) {
-        this.modalService.show(ResetPasswordModalComponent, {
-          animated: false,
-          initialState: {
-            userName: this.userName,
-            message: "Your password has expired, therefore you need to reset it to a new one before continuing."
-          }
-        });
-        this.close();
       } else {
         this.logger.debug("loginResponse", loginResponse);
         this.notify.showContactUs(true);
         this.notify.error({
           continue: true,
-          title: "Login failed",
+          title: "Reset password failed",
           message: loginResponse.alertMessage
         });
       }
@@ -75,29 +71,26 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   }
 
   submittable() {
-    const userNamePopulated = this.fieldPopulated(this.userName);
-    const passwordPopulated = this.fieldPopulated(this.password);
+    const userNamePopulated = this.fieldPopulated(this.newPassword);
+    const passwordPopulated = this.fieldPopulated(this.newPasswordConfirm);
     return passwordPopulated && userNamePopulated;
   }
 
   forgotPassword() {
-    close();
-    this.modalService.show(ForgotPasswordModalComponent, {
-      animated: false
-    });
+    this.urlService.navigateTo("forgot-password");
   }
 
   close() {
     this.bsModalRef.hide();
   }
 
-  login() {
+  resetPassword() {
     this.notify.showContactUs(false);
     this.notify.setBusy();
     this.notify.progress({
-      title: "Logging in",
-      message: "using credentials for " + this.userName + " - please wait"
+      title: "Reset password",
+      message: "Attempting reset of password for " + this.userName
     });
-    this.authService.login(this.userName, this.password);
+    this.authService.resetPassword(this.userName, this.newPassword, this.newPasswordConfirm);
   }
 }

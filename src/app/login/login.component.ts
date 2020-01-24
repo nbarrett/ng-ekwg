@@ -7,7 +7,7 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-login",
-  templateUrl: "../shared/non-rendering.component.html"
+  template: ""
 })
 export class LoginComponent implements OnInit {
   private logger: Logger;

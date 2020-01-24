@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
+import { AuthService } from "../../../auth/auth.service";
 import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { Walk } from "../../../models/walk.model";
@@ -35,6 +36,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(
+    private authService: AuthService,
     private memberLoginService: MemberLoginService,
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
@@ -56,7 +58,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
-    this.subscription = this.memberLoginService.loginResponseObservable().subscribe((loginResponse: LoginResponse) => {
+    this.subscription = this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => {
       this.logger.debug("loginResponseObservable:", loginResponse);
       this.display.refreshMembers();
       this.loggedIn = loginResponse.memberLoggedIn;

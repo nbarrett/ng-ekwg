@@ -1,6 +1,6 @@
 angular.module('ekwgApp')
   .controller('MemberAdminSendEmailsController', function ($log, $q, $scope, $filter, DateUtils, DbUtils, MemberLoginService, StringUtils,
-                                                           EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService,
+                                                           EmailSubscriptionService, MailchimpSegmentService, MailchimpCampaignService, MemberService,
                                                            MailchimpConfig, Notifier, members, close) {
       var logger = $log.getInstance('MemberAdminSendEmailsController');
       $log.logLevels['MemberAdminSendEmailsController'] = $log.LEVEL.OFF;
@@ -213,7 +213,7 @@ angular.module('ekwgApp')
         _($scope.display.emailMembers)
           .map(function (memberId) {
             return _.find($scope.members, function (member) {
-              return member.$id() === memberId.id;
+              return MemberService.extractMemberId(member) === memberId.id;
             })
           }).map(function (member) {
           member.groupMember = false;

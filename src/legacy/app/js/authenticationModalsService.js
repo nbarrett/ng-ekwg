@@ -25,46 +25,6 @@ angular.module('ekwgApp')
       })
     }
 
-    function showResetPasswordModal(userName, message) {
-      logger.info('called showResetPasswordModal for userName', userName);
-      ModalService.closeModals(true);
-      ModalService.showModal({
-        templateUrl: "partials/index/reset-password-dialog.html",
-        controller: "ResetPasswordController",
-        inputs: {userName: userName, message: message},
-        preClose: function (modal) {
-          modal.element.modal('hide');
-        }
-      }).then(function (modal) {
-        logger.info('modal event with modal', modal);
-        modal.element.modal();
-        modal.close.then(function (result) {
-          logger.info('showResetPasswordModal close event with result', result);
-          if (!result) RouterHistoryService.navigateBackToLastMainPage();
-        });
-      })
-    }
-
-    function showResetPasswordFailedDialog() {
-      logger.info('called showResetPasswordFailedDialog');
-
-      ModalService.closeModals(true);
-      ModalService.showModal({
-        templateUrl: "partials/index/reset-password-failed-dialog.html",
-        controller: "ResetPasswordFailedController",
-        preClose: function (modal) {
-          modal.element.modal('hide');
-        }
-      }).then(function (modal) {
-        logger.info('showResetPasswordFailedDialog modal event with modal', modal);
-        modal.element.modal();
-        modal.close.then(function (result) {
-          logger.info('showResetPasswordFailedDialog close event with result', result);
-          if (!result) RouterHistoryService.navigateBackToLastMainPage();
-        });
-      })
-    }
-
     function showMailingPreferencesDialog(memberId) {
       logger.info('called showMailingPreferencesDialog');
       ModalService.closeModals(true);
@@ -87,8 +47,6 @@ angular.module('ekwgApp')
 
 
     return {
-      showResetPasswordModal: showResetPasswordModal,
-      showResetPasswordFailedDialog: showResetPasswordFailedDialog,
       showForgotPasswordModal: showForgotPasswordModal,
       showMailingPreferencesDialog: showMailingPreferencesDialog
     }

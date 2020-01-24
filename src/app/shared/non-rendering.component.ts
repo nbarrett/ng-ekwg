@@ -7,7 +7,7 @@ import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-navigate",
-  templateUrl: "./non-rendering.component.html"
+  template: ""
 })
 
 export class NonRenderingComponent implements OnInit {

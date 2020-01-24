@@ -65,6 +65,9 @@ export interface Member {
   updatedDate?: number;
   updatedBy?: string;
 
+  // we are keeping both of these while we migrate
+  id?: string;
+
   $id?(): any;
 
   $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Member>;
@@ -74,6 +77,7 @@ export interface Member {
 
 export interface LoginResponse {
   userName?: string;
+  member?: object;
   alertMessage?: string;
   showResetPassword?: boolean;
   memberLoggedIn?: boolean;
