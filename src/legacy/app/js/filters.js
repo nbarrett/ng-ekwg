@@ -39,7 +39,7 @@ angular.module('ekwgApp')
   })
   .filter('fullNameWithAliasOrMe', function ($filter, MemberLoginService) {
     return function (member, defaultValue, memberId) {
-      return member ? (MemberLoginService.loggedInMember().memberId === member.$id() && member.$id() === memberId ? "Me" : ($filter('fullName')(member, defaultValue)) + (member.nameAlias ? ' (' + member.nameAlias + ')' : '')) : defaultValue;
+      return member ? (MemberLoginService.loggedInMember().memberId === MemberService.extractMemberId(member) && MemberService.extractMemberId(member) === memberId ? "Me" : ($filter('fullName')(member, defaultValue)) + (member.nameAlias ? ' (' + member.nameAlias + ')' : '')) : defaultValue;
     }
   })
   .filter('firstName', function ($filter) {

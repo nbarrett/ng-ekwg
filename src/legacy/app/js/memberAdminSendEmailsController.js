@@ -84,13 +84,13 @@ angular.module('ekwgApp')
         var memberGrouping = member.receivedInLastBulkLoad ? expiredActive : 'missing from last bulk load';
         var datePrefix = memberGrouping === 'expired' ? ': ' : ', ' + (member.membershipExpiryDate < $scope.today ? 'expired' : 'expiry') + ': ';
         var text = $filter('fullNameWithAlias')(member) + ' (' + memberGrouping + datePrefix + (DateUtils.displayDate(member.membershipExpiryDate) || 'not known') + ')';
-        return angular.extend({}, member, {id: member.$id(), text: text, memberGrouping: memberGrouping});
+        return angular.extend({}, member, {id: MemberService.extractMemberId(member), text: text, memberGrouping: memberGrouping});
       }
 
       function extendWithCreatedInformation(member) {
         var memberGrouping = member.membershipExpiryDate < $scope.today ? 'expired' : 'active';
         var text = $filter('fullNameWithAlias')(member) + ' (created ' + (DateUtils.displayDate(member.createdDate) || 'not known') + ')';
-        return angular.extend({}, member, {id: member.$id(), text: text, memberGrouping: memberGrouping});
+        return angular.extend({}, member, {id: MemberService.extractMemberId(member), text: text, memberGrouping: memberGrouping});
       }
 
       $scope.memberGrouping = function (member) {
@@ -164,7 +164,7 @@ angular.module('ekwgApp')
         return _.chain($scope.display.emailMembers)
           .map(function (memberId) {
             return _.find($scope.members, function (member) {
-              return member.$id() === memberId.id;
+              return MemberService.extractMemberId(member) === memberId.id;
             })
           })
           .filter(function (member) {

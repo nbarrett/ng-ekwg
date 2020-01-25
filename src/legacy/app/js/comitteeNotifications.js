@@ -159,7 +159,7 @@ angular.module('ekwgApp')
           order = 3;
         }
         return {
-          id: member.$id(),
+          id: MemberService.extractMemberId(member),
           order: order,
           memberGrouping: memberGrouping,
           text: $filter('fullNameWithAlias')(member)
@@ -183,7 +183,7 @@ angular.module('ekwgApp')
           order = 3;
         }
         return {
-          id: member.$id(),
+          id: MemberService.extractMemberId(member),
           order: order,
           memberGrouping: memberGrouping,
           text: $filter('fullNameWithAlias')(member)
@@ -207,7 +207,7 @@ angular.module('ekwgApp')
           order = 3;
         }
         return {
-          id: member.$id(),
+          id: MemberService.extractMemberId(member),
           order: order,
           memberGrouping: memberGrouping,
           text: $filter('fullNameWithAlias')(member)

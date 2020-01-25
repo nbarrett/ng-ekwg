@@ -130,7 +130,7 @@ angular.module('ekwgApp')
       var memberId = (_.has(memberIdOrObject, 'id') ? memberIdOrObject.id : memberIdOrObject);
       noLogger.info('toMember:memberIdOrObject', memberIdOrObject, '->', memberId);
       var member = _.find(members, function (member) {
-        return member.$id() === memberId;
+        return memberService.extractMemberId(member) === memberId;
       });
       noLogger.info('toMember:', memberIdOrObject, '->', member);
       return member;
@@ -148,7 +148,7 @@ angular.module('ekwgApp')
       return memberService.allMemberMembersWithPrivilege(privilege, members).map(extractMemberId);
 
       function extractMemberId(member) {
-        return member.$id()
+        return memberService.extractMemberId(member)
       }
     };
 

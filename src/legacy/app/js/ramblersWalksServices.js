@@ -25,7 +25,7 @@ angular.module('ekwgApp')
       call: call
     }
   })
-  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, MemberLoginService, CommitteeReferenceData) {
+  .factory('RamblersWalksAndEventsService', function ($log, $rootScope, $http, $q, $filter, StringUtils, DateUtils, RamblersHttpService, MemberService, MemberLoginService, CommitteeReferenceData) {
 
       var logger = $log.getInstance('RamblersWalksAndEventsService');
       $log.logLevels['RamblersWalksAndEventsService'] = $log.LEVEL.OFF;
@@ -240,7 +240,7 @@ angular.module('ekwgApp')
           return walk.contactId;
         } else {
           var member = _(members).find(function (member) {
-            return member.$id() === walk.walkLeaderMemberId;
+            return MemberService.extractMemberId(member) === walk.walkLeaderMemberId;
           });
 
           var returnValue = member && member.contactId;

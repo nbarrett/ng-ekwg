@@ -143,7 +143,7 @@ angular.module('ekwgApp')
         // console.log('deleted contact details from', socialEvent);
       } else {
         var selectedMember = _.find($scope.members, function (member) {
-          return member.$id() === memberId;
+          return MemberService.extractMemberId(member) === memberId;
         });
         socialEvent.displayName = selectedMember.displayName;
         socialEvent.contactPhone = selectedMember.mobileNumber;
@@ -252,7 +252,7 @@ angular.module('ekwgApp')
           $scope.members = members;
           logger.debug('found', $scope.members.length, 'members');
           $scope.selectMembers = _($scope.members).map(function (member) {
-            return {id: member.$id(), text: $filter('fullNameWithAlias')(member)};
+            return {id: MemberService.extractMemberId(member), text: $filter('fullNameWithAlias')(member)};
           })
         });
       }
