@@ -19,9 +19,10 @@ const googleMaps = require("./lib/google-maps/googleMaps");
 const mailchimp = require("./lib/mailchimp/mailchimp");
 const contentText = require("./lib/mongo/routes/content-text");
 const auth = require("./lib/mongo/routes/auth");
-
+const member = require("./lib/mongo/routes/member");
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
+
 app.use(compression())
 app.set("port", config.server.listenPort);
 app.disable("view cache");
@@ -39,8 +40,9 @@ app.use("/api/instagram", instagram);
 app.use("/api/mailchimp", mailchimp);
 app.use("/api/meetup", meetup);
 app.use("/api/database", database);
-app.use("/api/database/content-text", contentText);
 app.use("/api/database/auth", auth);
+app.use("/api/database/content-text", contentText);
+app.use("/api/database/member", member);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {
   res.sendFile(path.join(config.server.distFolder, "index.html"));

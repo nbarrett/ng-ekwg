@@ -82,7 +82,7 @@ angular.module('ekwgApp')
         return DbUtils.auditedSaveOrUpdate(member, auditUpdateCallback(member), auditErrorCallback(member, audit))
           .then(function (savedMember) {
             if (savedMember) {
-              audit.memberId = savedMember.$id();
+              audit.memberId = MemberService.extractMemberId(savedMember);
               notify.success({title: 'Bulk member load ' + qualifier + ' was successful', message: auditMessage})
             } else {
               audit.member = member;

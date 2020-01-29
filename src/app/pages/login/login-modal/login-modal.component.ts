@@ -41,7 +41,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
-    this.subscription = this.authService.loginResponse().subscribe((loginResponse) => {
+    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.info("subscribe:loginResponse", loginResponse);
       if (loginResponse.memberLoggedIn) {
         this.bsModalRef.hide();
@@ -81,7 +81,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   }
 
   forgotPassword() {
-    close();
+    this.close();
     this.modalService.show(ForgotPasswordModalComponent, {
       animated: false
     });

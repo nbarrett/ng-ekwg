@@ -1,7 +1,7 @@
 angular.module('ekwgApp')
   .factory('EmailSubscriptionService', function ($rootScope, $log, $http, $q, MemberService, DateUtils, MailchimpErrorParserService) {
     var logger = $log.getInstance('EmailSubscriptionService');
-    $log.logLevels['EmailSubscriptionService'] = $log.LEVEL.OFF;
+    $log.logLevels['EmailSubscriptionService'] = $log.LEVEL.INFO;
 
     var resetAllBatchSubscriptions = function (members, subscribedState) {
       var deferredTask = $q.defer();
@@ -28,10 +28,6 @@ angular.module('ekwgApp')
       }
     }
 
-    function booleanToString(value) {
-      return String(value || false);
-    }
-
     function addMailchimpIdentifiersToRequest(member, listType, request) {
       var mailchimpIdentifiers = {email: {}};
       mailchimpIdentifiers.email.email = member.email;
@@ -46,6 +42,7 @@ angular.module('ekwgApp')
     }
 
     var createBatchSubscriptionForList = function (listType, members) {
+      logger.info("createBatchSubscriptionForList:", listType, members)
       var deferredTask = $q.defer();
       var progress = 'Sending ' + listType + ' member data to Mailchimp';
       deferredTask.notify(progress);
@@ -68,14 +65,14 @@ angular.module('ekwgApp')
           };
           return addMailchimpIdentifiersToRequest(member, listType, request);
         }).value();
-
+      logger.info("subscriptionEntries:", subscriptionEntries)
       if (subscriptionEntries.length > 0) {
         var url = '/api/mailchimp/lists/' + listType + '/batchSubscribe';
-        logger.debug('sending', subscriptionEntries.length, listType, 'subscriptions to mailchimp', subscriptionEntries);
+        logger.info('sending', subscriptionEntries.length, listType, 'subscriptions to mailchimp', subscriptionEntries);
         $http({method: 'POST', url: url, data: subscriptionEntries})
           .then(function (response) {
             var responseData = response.data;
-            logger.debug('received response', responseData);
+            logger.info('received response', responseData);
             var errorObject = MailchimpErrorParserService.extractError(responseData);
             if (errorObject.error) {
               var errorResponse = {
@@ -98,12 +95,15 @@ angular.module('ekwgApp')
             }
           }).catch(function (response) {
           var data = response.data;
-          var errorMessage = 'Sending of ' + listType + ' member data to Mailchimp was not successful due to response: ' + data.trim();
+          logger.error(response);
+          var errorMessage = 'Sending of ' + listType + ' member data to Mailchimp was not successful due to response: ' + data;
           logger.error(errorMessage);
           deferredTask.reject(errorMessage);
         })
       } else {
-        deferredTask.notify('No ' + listType + ' updates to send Mailchimp');
+        const message = 'No ' + listType + ' updates to send Mailchimp';
+        logger.info(message);
+        deferredTask.notify(message);
         MemberService.all().then(function (refreshedMembers) {
           deferredTask.resolve(refreshedMembers);
         });

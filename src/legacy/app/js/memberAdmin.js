@@ -466,7 +466,7 @@ angular.module('ekwgApp')
       $scope.refreshMemberAudit = refreshMemberAudit;
 
       $scope.memberUrl = function () {
-        return $scope.currentMember && $scope.currentMember.$id && (MONGOLAB_CONFIG.baseUrl + MONGOLAB_CONFIG.database + '/collections/members/' + $scope.currentMember.$id());
+        return $scope.currentMember && ($scope.currentMember.$id|| $scope.currentMember.id) && (MONGOLAB_CONFIG.baseUrl + MONGOLAB_CONFIG.database + '/collections/members/' + MemberService.extractMemberId($scope.currentMember));
       };
 
       $scope.saveMemberDetails = function () {
@@ -587,9 +587,10 @@ angular.module('ekwgApp')
         $scope.memberEditMode = memberEditMode;
         $scope.currentMember = member;
         $scope.currentMemberUpdateAudit = [];
-        if ($scope.currentMember.$id()) {
-          logger.debug('querying MemberUpdateAuditService for memberId', $scope.currentMember.$id());
-          MemberUpdateAuditService.query({memberId: $scope.currentMember.$id()}, {sort: {updateTime: -1}})
+        const memberId = MemberService.extractMemberId($scope.currentMember);
+        if (memberId) {
+          logger.debug('querying MemberUpdateAuditService for memberId', memberId);
+          MemberUpdateAuditService.query({memberId: memberId}, {sort: {updateTime: -1}})
             .then(function (data) {
               logger.debug('MemberUpdateAuditService:', data.length, 'events', data);
               $scope.currentMemberUpdateAudit = data;

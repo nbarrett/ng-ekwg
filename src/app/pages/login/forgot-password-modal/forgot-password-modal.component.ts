@@ -23,7 +23,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   private credentialTwo: string;
   private credentialOne: string;
   private subscription: Subscription;
-  private message;
+  private campaignSendInitiated = false;
   private FORGOTTEN_PASSWORD_SEGMENT = "Forgotten Password";
   public readonly credentialOneLabel = "User name or email address";
   public readonly credentialTwoLabel = "Ramblers membership number or home postcode";
@@ -50,7 +50,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
-    this.subscription = this.authService.loginResponse().subscribe((loginResponse) => {
+    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.info("subscribe:forgot password", loginResponse);
       if (loginResponse.member) {
         this.forgottenPasswordMember = loginResponse.member as Member;
@@ -123,6 +123,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   }
 
   sendForgottenPasswordEmailToMember() {
+    this.campaignSendInitiated = true;
     Promise.resolve(this.notify.success("Sending forgotten password email"))
       .then(() => this.updateGeneralList())
       .then(() => this.getMailchimpConfig())
@@ -155,7 +156,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   submittable() {
     const credentialOnePopulated = this.fieldPopulated(this.credentialOne);
     const passwordPopulated = this.fieldPopulated(this.credentialTwo);
-    return passwordPopulated && credentialOnePopulated;
+    return passwordPopulated && credentialOnePopulated && !this.campaignSendInitiated;
   }
 
   close() {

@@ -18,7 +18,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('close event with result', result);
-          if (!result) RouterHistoryService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage(response);
         });
       }).catch(function (error) {
         logger.warn("error happened:", error);
@@ -40,7 +40,7 @@ angular.module('ekwgApp')
         modal.element.modal();
         modal.close.then(function (result) {
           logger.info('close event with result', result);
-          if (!result) RouterHistoryService.navigateBackToLastMainPage();
+          if (!result) RouterHistoryService.navigateBackToLastMainPage(response);
         });
       })
     }

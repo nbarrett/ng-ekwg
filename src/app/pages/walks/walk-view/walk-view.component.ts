@@ -58,7 +58,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
-    this.subscription = this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => {
+    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.logger.debug("loginResponseObservable:", loginResponse);
       this.display.refreshMembers();
       this.loggedIn = loginResponse.memberLoggedIn;

@@ -1,5 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-import { Component, Inject, OnDestroy, OnInit} from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import find from "lodash-es/find";
 import get from "lodash-es/get";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -30,7 +30,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private ramblersUploadAuditData: RamblersUploadAudit[];
   private walksForExport: WalkExport[] = [];
   private fileName: string;
-  private fileNames: string[];
+  private fileNames: string[] = [];
   private showDetail: boolean;
   private walkExportTab0Active: boolean;
   private members: Member[];
@@ -60,7 +60,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -154,8 +154,9 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.walkExportNotifier.warning("Refreshing past download sessions", false, true);
     this.ramblersUploadAudit.all({limit: 1000, sort: {auditTime: -1}})
       .then((auditItems: RamblersUploadAudit[]) => {
-        this.logger.debug("found total of", auditItems.length, "audit trail records");
+        this.logger.debug("found total of", auditItems.length, "audit trail records:", auditItems);
         this.fileNames = chain(auditItems).map("fileName").unique().value();
+        this.logger.debug("found total of", this.fileNames.length, "fileNames:", this.fileNames);
         this.fileName = this.fileNames[0];
         this.fileNameChanged();
         this.logger.debug("Total of", this.fileNames.length, "download sessions");

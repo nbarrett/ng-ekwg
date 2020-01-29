@@ -22,7 +22,7 @@ export class LoginPanelComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.authService.loginResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
+    this.authService.authResponse().subscribe((response) => this.routerHistoryService.navigateBackToLastMainPage(response));
   }
 
   constructor(private memberLoginService: MemberLoginService,

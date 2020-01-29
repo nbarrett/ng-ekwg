@@ -24,13 +24,13 @@ exports.create = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const contentTextDocument = new contentText({
-    _id: req.params.id,
+  const contentTextDoc = new contentText({
+    _id: req.body.id,
     name: req.body.name,
     text: req.body.text,
     category: req.body.category
   });
-  contentTextDocument.updateOne({_id: req.params.id}, contentTextDocument)
+  contentText.updateOne({_id: req.params.id}, contentTextDoc)
     .then(result => {
       if (result.n > 0) {
         res.status(200).json({
@@ -42,8 +42,8 @@ exports.update = (req, res) => {
     })
     .catch(error => {
       res.status(500).json({
-        message: "Update of contentText failed",
-        input: contentTextDocument,
+        message: "Update of contentTextDoc failed",
+        input: contentTextDoc,
         error: error
       });
     });

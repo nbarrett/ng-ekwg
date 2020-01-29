@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from "@angular/router";
 import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { filter } from "rxjs/operators";
+import { LoginResponse } from "../models/member.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { PageService } from "./page.service";
 import { UrlService } from "./url.service";
@@ -16,8 +17,7 @@ export class RouterHistoryService {
 
   constructor(private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.INFO);
-    this.logger.debug("constructed");
+    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.DEBUG);
     this.loadRouting();
   }
 
@@ -26,20 +26,20 @@ export class RouterHistoryService {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(({urlAfterRedirects}: NavigationEnd) => {
         this.pageHistory = [...this.pageHistory, urlAfterRedirects];
-        this.logger.info("pageHistory:urlAfterRedirects", urlAfterRedirects, "history now:", this.pageHistory);
+        this.logger.info("constructed: pageHistory:urlAfterRedirects", urlAfterRedirects, "history now:", this.pageHistory);
       });
   }
 
-  navigateBackToLastMainPage() {
+  navigateBackToLastMainPage(response: LoginResponse) {
     const validPages: string[] = this.pageService.pages.map(page => page.href);
     const lastPage = this.pageHistory.reverse()
       .find(page => {
         const pagePortion = first(page.substring(1).split("/"));
         const match = validPages.includes(pagePortion);
-        this.logger.debug("pagePortion", pagePortion, "of", page, "match ->", match);
+        this.logger.debug("event:", response, "pagePortion", pagePortion, "of", page, "match ->", match);
         return match;
       });
-    this.logger.debug("navigateBackToLastMainPage:pageHistory", this.pageHistory, "lastPage ->", lastPage);
+    this.logger.debug("event:", response, "pageHistory", this.pageHistory, "lastPage ->", lastPage);
     this.urlService.navigateTo(lastPage || "/");
   }
 

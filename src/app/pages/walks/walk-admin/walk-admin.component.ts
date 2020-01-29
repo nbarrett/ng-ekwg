@@ -34,7 +34,7 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setPrivileges();
-    this.subscription = this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
+    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {

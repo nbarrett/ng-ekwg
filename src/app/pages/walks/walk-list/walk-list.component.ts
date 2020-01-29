@@ -76,7 +76,7 @@ export class WalkListComponent implements OnInit {
     });
     this.display.refreshMembers();
     this.refreshWalks("ngOnInit");
-    this.authService.loginResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
+    this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
     this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
     this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
     this.siteEditService.events.subscribe(item => this.logAndDetectChanges(item));

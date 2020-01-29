@@ -17,7 +17,7 @@ exports.forgotPassword = (req, res) => {
           {$or: [{userName: {$eq: credentialOne}}, {email: {$eq: credentialOne}}]},
           {$or: [{membershipNumber: {$eq: credentialTwo}}, {postcode: {$eq: credentialTwo}}]}]
       };
-      const fields = {firstName: 1, lastName: 1, email: 1, passwordResetId: 1, "mailchimpLists": 1};
+      const fields = {groupMember: 1, lastName: 1, email: 1, passwordResetId: 1, "mailchimpLists": 1};
       const loginResponse = {};
       const returnNotFound = () => {
         loginResponse.alertMessage = `No member was found with ${userDetails}. Please try again or`;

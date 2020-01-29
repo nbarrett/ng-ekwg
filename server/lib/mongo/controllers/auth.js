@@ -5,22 +5,6 @@ const auth = require("../models/auth");
 const refreshToken = require("../models/refresh-token");
 const common = require("./auth-common");
 
-exports.logMember = (req, res) => {
-  authConfig.hashValue(req.body.password).then(hash => {
-    res.status(201).json({
-      userName: req.body.userName,
-      password: req.body.password,
-      passwordHash: hash,
-      message: "password hashed successfully"
-    })
-      .catch(err => {
-        res.status(500).json({
-          message: "Invalid authentication credentials"
-        });
-      });
-  });
-}
-
 exports.auditMemberLogin = (req, res) => {
   common.auditMemberLogin(req.body.userName, req.body.loginResponse, req.body.member)
   res.status(201)
@@ -30,26 +14,6 @@ exports.auditMemberLogin = (req, res) => {
         error: error
       });
     });
-}
-
-exports.createMember = (req, res, next) => {
-  authConfig.hashValue(req.body.password).then(hash => {
-    new auth({
-      userName: req.body.userName,
-      password: hash
-    }).save()
-      .then(result => {
-        res.status(201).json({
-          userName: req.body.userName,
-          message: "auth created!"
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          message: "Invalid authentication credentials"
-        });
-      });
-  });
 }
 
 exports.logout = (req, res) => {

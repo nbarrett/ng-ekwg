@@ -3,8 +3,6 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../auth/auth.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { MemberLoginService } from "../services/member-login.service";
-import { RouterHistoryService } from "../services/router-history.service";
 
 @Component({
   selector: "app-logout",

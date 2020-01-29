@@ -18,7 +18,7 @@ export class AuthService {
   private readonly REFRESH_TOKEN = "REFRESH_TOKEN";
   private authPayload;
   private logger: Logger;
-  private loginResponseListener = new Subject<LoginResponse>();
+  private authResponseSubject = new Subject<LoginResponse>();
 
   constructor(private http: HttpClient,
               private loggerFactory: LoggerFactory,
@@ -60,24 +60,24 @@ export class AuthService {
     return loginResponseObservable;
   }
 
-  private performAuthPost(url: string, body, type: string): Observable<LoginResponse> {
+  private performAuthPost(url: string, body: object, postType: string): Observable<LoginResponse> {
     this.http.post<any>(url, body)
       .subscribe((authResponse: AuthResponse) => {
-        this.logger.info(type, "- authResponse", authResponse);
+        this.logger.info(postType, "- authResponse", authResponse);
         if (authResponse.tokens) {
           this.storeTokens(authResponse.tokens);
         }
-        this.loginResponseListener.next(authResponse.loginResponse);
+        this.authResponseSubject.next(authResponse.loginResponse);
       }, (httpErrorResponse: HttpErrorResponse) => {
-        this.logger.error(type, "- error", httpErrorResponse);
+        this.logger.error(postType, "- error", httpErrorResponse);
         const loginResponse: LoginResponse = httpErrorResponse.error.loginResponse;
-        this.loginResponseListener.next(loginResponse);
+        this.authResponseSubject.next(loginResponse);
       });
-    return this.loginResponse();
+    return this.authResponse();
   }
 
-  loginResponse() {
-    return this.loginResponseListener.asObservable();
+  authResponse() {
+    return this.authResponseSubject.asObservable();
   }
 
   isLoggedIn(): boolean {

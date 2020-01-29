@@ -57,7 +57,7 @@ const memberSchema = mongoose.Schema({
   createdBy: {type: String},
   updatedDate: {type: Number},
   updatedBy: {type: String}
-});
+}, {collection: "members"});
 
 memberSchema.plugin(uniqueValidator);
 

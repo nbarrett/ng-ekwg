@@ -2,12 +2,11 @@
   <div class="vertical-center">
     <ul>
       <li class="pull-right">
-        <a class="active pointer" (click)="loginOrLogout()"
-           [textContent]="memberLoginStatus()"
-           title="{{memberLoginStatus()}}"></a>
-        <span *ngIf="!memberLoggedIn()"> • <a
-          class="active" (click)="forgotPassword()"
-          href="">Forgot Password</a></span>
+        <span class="pointer" (click)="loginOrLogout()"
+              [textContent]="memberLoginStatus()"
+              title="{{memberLoginStatus()}}"></span>
+        <span *ngIf="!memberLoggedIn()"> • <span
+          class="pointer" (click)="forgotPassword()">Forgot Password</span></span>
       </li>
     </ul>
     <app-site-edit class="row" *ngIf="allowEdits()"></app-site-edit>
