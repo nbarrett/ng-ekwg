@@ -4,6 +4,7 @@ const authConfig = require("../../auth/auth-config");
 const debug = require("debug")(config.logNamespace("database:member"));
 const member = require("../models/member");
 const transforms = require("./transforms");
+const querystring = require("querystring");
 
 exports.log = (req, res) => {
   authConfig.hashValue(req.body.password).then(hash => {
@@ -59,6 +60,52 @@ exports.findById = (req, res) => {
       res.status(500).json({
         message: "member query failed",
         request: req.params.id,
+        error: error.toString()
+      });
+    });
+};
+
+function findByConditions(conditions, res, req) {
+  member.findOne(conditions)
+    .then(member => {
+      if (member) {
+        res.status(200).json(transforms.toObjectWithId(member));
+      } else {
+        res.status(404).json({
+          message: "member not found",
+          request: conditions
+        });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "member query failed",
+        request: req.params.id,
+        error: error.toString()
+      });
+    });
+}
+
+exports.findByPasswordResetId = (req, res) => {
+  debug("find - password-reset-id:", req.params.id)
+  const conditions = {passwordResetId: req.params.id};
+  findByConditions(conditions, res, req);
+};
+
+exports.findOne = (req, res) => {
+  const conditions = querystring.parse(req.query);
+  debug("find - by conditions", req.query, "conditions:", conditions)
+  findByConditions(req.query, res, req);
+};
+
+exports.all = (req, res) => {
+  debug("find - all:query", req.query)
+  member.find({}).select(req.query)
+    .then(members => res.status(200).json(members.map(member => transforms.toObjectWithId(member))))
+    .catch(error => {
+      res.status(500).json({
+        message: "member query failed",
+        request: req.query,
         error: error.toString()
       });
     });

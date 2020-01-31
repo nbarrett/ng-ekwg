@@ -17,6 +17,7 @@ export interface MemberCookie {
 }
 
 export interface Member {
+  id?: string;
   expiredPassword?: boolean;
   groupMember?: boolean;
   password?: string;
@@ -64,15 +65,6 @@ export interface Member {
   createdBy?: string;
   updatedDate?: number;
   updatedBy?: string;
-
-  // we are keeping both of these while we migrate
-  id?: string;
-
-  $id?(): any;
-
-  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Member>;
-
-  $update?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Member>;
 }
 
 export interface LoginResponse {
@@ -84,9 +76,9 @@ export interface LoginResponse {
 }
 
 export interface MailchimpSubscription {
-  subscribed: boolean;
-  updated: boolean;
-  leid: string;
-  lastUpdated: number;
-  email: string;
+  subscribed?: boolean;
+  updated?: boolean;
+  leid?: string;
+  lastUpdated?: number;
+  email: { email: string, leid?: string };
 }

@@ -11,7 +11,7 @@ export class FullNameWithAliasOrMePipe implements PipeTransform {
   }
 
   transform(member: Member, defaultValue?: string) {
-    return member ? (this.memberLoginService.loggedInMember().memberId === (member.id || member.$id()) ? "Me" :
+    return member ? (this.memberLoginService.loggedInMember().memberId === (member.id) ? "Me" :
       `${this.fullNamePipe.transform(member, defaultValue)}${member.nameAlias ? " (" + member.nameAlias + ")" : ""}`) : defaultValue;
   }
 }

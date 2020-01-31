@@ -177,7 +177,7 @@ angular.module('ekwgApp')
         var saveMemberPromises = [];
 
         _.map(displayEmailMembersToMembers(), function (member) {
-          MemberLoginService.setPasswordResetId(member);
+          MemberService.setPasswordResetId(member);
           EmailSubscriptionService.resetUpdateStatusForMember(member);
           saveMemberPromises.push(DbUtils.auditedSaveOrUpdate(member))
         });

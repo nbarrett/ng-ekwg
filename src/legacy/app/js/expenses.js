@@ -561,7 +561,7 @@ angular.module('ekwgApp')
         }
 
         function sendNotificationsToAllRoles() {
-          return MemberLoginService.getMemberForMemberId(expenseClaimCreatedEvent.memberId)
+          return MemberService.getById(expenseClaimCreatedEvent.memberId)
             .then(function (member) {
               logger.debug('sendNotification:', 'memberId', expenseClaimCreatedEvent.memberId, 'member', member);
               var memberFullName = $filter('fullNameWithAlias')(member);

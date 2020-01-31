@@ -1,11 +1,12 @@
 import { Inject, Pipe, PipeTransform } from "@angular/core";
 import { Member } from "../models/member.model";
+import { MemberService } from "../services/member.service";
 import { FullNameWithAliasPipe } from "./full-name-with-alias.pipe";
 import { FullNamePipe } from "./full-name.pipe";
 
 @Pipe({name: "memberIdToFullName"})
 export class MemberIdToFullNamePipe implements PipeTransform {
-  constructor(@Inject("MemberService") private memberService,
+  constructor(private memberService: MemberService,
               private fullNamePipe: FullNamePipe,
               private fullNameWithAliasPipe: FullNameWithAliasPipe) {
   }

@@ -38,16 +38,6 @@ export const CommitteeConfigProvider = {
   deps: ["$injector"]
 };
 
-export function EmailSubscriptionService($injector) {
-  return $injector.get("EmailSubscriptionService");
-}
-
-export const EmailSubscriptionServiceProvider = {
-  provide: "EmailSubscriptionService",
-  useFactory: EmailSubscriptionService,
-  deps: ["$injector"]
-};
-
 export function ClipboardService($injector) {
   return $injector.get("ClipboardService");
 }
@@ -115,16 +105,6 @@ export function MailchimpConfig($injector) {
 export const MailchimpConfigProvider = {
   provide: "MailchimpConfig",
   useFactory: MailchimpConfig,
-  deps: ["$injector"]
-};
-
-export function MemberService($injector) {
-  return $injector.get("MemberService");
-}
-
-export const MemberServiceProvider = {
-  provide: "MemberService",
-  useFactory: MemberService,
   deps: ["$injector"]
 };
 

@@ -21,7 +21,6 @@ import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
-  EmailSubscriptionServiceProvider,
   CommitteeConfigProvider,
   ConfigDataProvider,
   GoogleMapsConfigProvider,
@@ -32,7 +31,6 @@ import {
   MeetupServiceProvider,
   MemberAuditServiceProvider,
   MemberLoginServiceProvider,
-  MemberServiceProvider,
   NotifierProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
@@ -114,9 +112,13 @@ import { CommitteeReferenceDataService } from "./services/committee/committee-re
 import { ConfigService } from "./services/config.service";
 import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
+import { EmailSubscriptionService } from "./services/email-subscription.service";
 import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
+import { MailchimpErrorParserService } from "./services/mailchimp-error-parser.service";
 import { MemberLoginService } from "./services/member-login.service";
+import { MemberNamingService } from "./services/member-naming.service";
+import { MemberService } from "./services/member.service";
 import { NotifierService } from "./services/notifier.service";
 import { NumberUtilsService } from "./services/number-utils.service";
 import { PageService } from "./services/page.service";
@@ -238,9 +240,9 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     ChangedItemsPipe,
     ClipboardServiceProvider,
     CommitteeConfigProvider,
-    EmailSubscriptionServiceProvider,
     CommitteeReferenceDataService,
     ConfigDataProvider,
+    EmailSubscriptionService,
     CookieService,
     CustomNGXLoggerService,
     DisplayDateAndTimePipe,
@@ -263,7 +265,6 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     MeetupServiceProvider,
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
-    MemberServiceProvider,
     NotifierProvider,
     NotifierService,
     RamblersUploadAuditProvider,
@@ -326,6 +327,10 @@ export class AppModule implements DoBootstrap {
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
       .factory("ContentText", downgradeInjectable(ContentTextService))
       .factory("Config", downgradeInjectable(ConfigService))
+      .factory("EmailSubscriptionService", downgradeInjectable(EmailSubscriptionService))
+      .factory("MemberService", downgradeInjectable(MemberService))
+      .factory("MemberNamingService", downgradeInjectable(MemberNamingService))
+      .factory("MailchimpErrorParserService", downgradeInjectable(MailchimpErrorParserService))
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))

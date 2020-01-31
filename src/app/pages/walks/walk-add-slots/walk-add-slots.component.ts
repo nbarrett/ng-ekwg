@@ -44,7 +44,6 @@ export class WalkAddSlotsComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") private walksService,
-    @Inject("MemberService") private memberService,
     private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,

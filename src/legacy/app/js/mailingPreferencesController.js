@@ -7,7 +7,7 @@ angular.module('ekwgApp')
     $scope.notify = {};
     var notify = Notifier.createAlertInstance($scope.notify);
 
-    MemberLoginService.getMemberForMemberId(memberId)
+    MemberService.getById(memberId)
       .then(function (member) {
         logger.info('memberId ->', memberId, 'member ->', member);
         $scope.member = member;

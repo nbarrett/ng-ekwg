@@ -10,6 +10,8 @@ export enum NamedEventType {
   MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
   MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
   MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
+  MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
+  MEMBER_LOGOUT_COMPLETE = "memberLogoutComplete",
   WALK_SAVED = "walkSaved",
   WALK_SLOTS_CREATED = "walkSlotsCreated"
 }

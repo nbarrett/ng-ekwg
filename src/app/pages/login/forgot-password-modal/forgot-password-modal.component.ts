@@ -5,6 +5,7 @@ import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
+import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -20,8 +21,8 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  private credentialTwo: string;
-  private credentialOne: string;
+  public credentialTwo = "ss9 3af";
+  public credentialOne = "nicka";
   private subscription: Subscription;
   private campaignSendInitiated = false;
   private FORGOTTEN_PASSWORD_SEGMENT = "Forgotten Password";
@@ -32,13 +33,14 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
               @Inject("MailchimpConfig") private mailchimpConfigService,
               @Inject("MailchimpCampaignService") private mailchimpCampaignService,
-              @Inject("EmailSubscriptionService") private emailSubscriptionService,
+              private emailSubscriptionService: EmailSubscriptionService,
               public bsModalRef: BsModalRef,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
-              private notifierService: NotifierService, loggerFactory: LoggerFactory) {
+              private notifierService: NotifierService,
+              loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.DEBUG);
   }
 
@@ -73,16 +75,13 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     this.notify.progress({title: "Forgot password", message: `Checking our records for ${userDetails}`});
     if (!this.submittable()) {
       this.notify.error({
+        continue: true,
         title: "Incorrect information entered",
         message: `Please enter ${this.credentialOneLabel} and ${this.credentialTwoLabel}`
       });
     } else {
       this.authService.forgotPassword(this.credentialOne, this.credentialTwo, userDetails);
     }
-  }
-
-  saveFailed(error) {
-    this.notify.error({title: "The password reset failed", message: error});
   }
 
   getMailchimpConfig() {
@@ -100,7 +99,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     return this.mailchimpConfigService.getConfig()
       .then(config => {
         config.mailchimp.segments.general.forgottenPasswordSegmentId = segmentResponse.segment.id;
-        this.mailchimpConfigService.saveConfig(config);
+        return this.mailchimpConfigService.saveConfig(config);
       });
   }
 
@@ -124,7 +123,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
 
   sendForgottenPasswordEmailToMember() {
     this.campaignSendInitiated = true;
-    Promise.resolve(this.notify.success("Sending forgotten password email"))
+    return Promise.resolve(this.notify.success("Sending forgotten password email"))
       .then(() => this.updateGeneralList())
       .then(() => this.getMailchimpConfig())
       .then((config) => this.createOrSaveForgottenPasswordSegment(config))
@@ -136,7 +135,10 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   }
 
   handleSendError(errorResponse) {
+    this.logger.error("handleSendError:", errorResponse);
+    this.campaignSendInitiated = false;
     this.notify.error({
+      continue: true,
       title: "Your email could not be sent",
       message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + this.stringUtils.stringify(errorResponse.error)) : "")
     });

@@ -73,37 +73,6 @@ angular.module('ekwgApp')
     }
 
   })
-  .factory('MailchimpErrorParserService', function ($log) {
-
-    var logger = $log.getInstance('MailchimpErrorParserService');
-    $log.logLevels['MailchimpErrorParserService'] = $log.LEVEL.OFF;
-
-    function extractError(responseData) {
-      var error;
-      if (responseData && (responseData.error || responseData.errno)) {
-        error = {error: responseData}
-      } else if (responseData && responseData.errors && responseData.errors.length > 0) {
-        error = {
-          error: _.map(responseData.errors, function (error) {
-            var response = error.error;
-            if (error.email && error.email.email) {
-              response += (': ' + error.email.email);
-            }
-            return response;
-          }).join(', ')
-        }
-      } else {
-        error = {error: undefined}
-      }
-      logger.debug('responseData:', responseData, 'error:', error)
-      return error;
-    }
-
-    return {
-      extractError: extractError
-    }
-
-  })
   .factory('MailchimpLinkService', function ($log, MAILCHIMP_APP_CONSTANTS) {
 
     var logger = $log.getInstance('MailchimpLinkService');

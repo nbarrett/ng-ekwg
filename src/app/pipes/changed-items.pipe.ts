@@ -9,8 +9,7 @@ import { FullNamePipe } from "./full-name.pipe";
 
 @Pipe({name: "asChangedItemsTooltip"})
 export class ChangedItemsPipe implements PipeTransform {
-  constructor(@Inject("MemberService") private memberService,
-              private fullNamePipe: FullNamePipe,
+  constructor(private fullNamePipe: FullNamePipe,
               private fullNameWithAliasPipe: FullNameWithAliasPipe,
               private auditDeltaValuePipe: AuditDeltaValuePipe) {
   }

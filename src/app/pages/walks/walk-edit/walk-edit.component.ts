@@ -27,9 +27,9 @@ import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
+import { MemberLoginService } from "../../../services/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
@@ -226,7 +226,7 @@ export class WalkEditComponent implements OnInit {
       delete this.displayedWalk.walk.contactEmail;
     } else {
       const selectedMember: Member = this.display.members.find((member: Member) => {
-        return member.$id() === memberId;
+        return member.id === memberId;
       });
       if (selectedMember) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
@@ -302,13 +302,13 @@ export class WalkEditComponent implements OnInit {
 
   membersWithAliasOrMe(): DisplayMember[] {
     return this.display.members.map(member => {
-      return {memberId: member.$id(), name: this.fullNameWithAliasOrMePipe.transform(member)};
+      return {memberId: member.id, name: this.fullNameWithAliasOrMePipe.transform(member)};
     });
   }
 
   membersWithAlias(): DisplayMember[] {
     return this.display.members.map(member => {
-      return {memberId: member.$id(), name: this.fullNamePipe.transform(member)};
+      return {memberId: member.id, name: this.fullNamePipe.transform(member)};
     });
   }
 

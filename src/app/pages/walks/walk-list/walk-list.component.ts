@@ -16,6 +16,7 @@ import { BroadcastService, NamedEventType } from "../../../services/broadcast-se
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { MemberLoginService } from "../../../services/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MemberService } from "../../../services/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
@@ -43,7 +44,7 @@ export class WalkListComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") private walksService,
-    @Inject("MemberService") private memberService,
+    private memberService: MemberService,
     private authService: AuthService,
     private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,

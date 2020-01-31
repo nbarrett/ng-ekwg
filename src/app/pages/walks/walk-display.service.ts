@@ -14,6 +14,7 @@ import { BroadcastService } from "../../services/broadcast-service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member-login.service";
+import { MemberService } from "../../services/member.service";
 import { UrlService } from "../../services/url.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
@@ -59,8 +60,8 @@ export class WalkDisplayService {
   constructor(
     @Inject("ClipboardService") private clipboardService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-    @Inject("MemberService") private memberService,
     @Inject("GoogleMapsConfig") private googleMapsConfigService,
+    private memberService: MemberService,
     private memberLoginService: MemberLoginService,
     private router: Router,
     private urlService: UrlService,

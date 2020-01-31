@@ -15,14 +15,14 @@ import { UrlService } from "../../../services/url.service";
   styleUrls: ["./reset-password-modal.component.sass"]
 })
 export class ResetPasswordModalComponent implements OnInit, OnDestroy {
-  private notify: AlertInstance;
-  public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  newPassword: string;
-  newPasswordConfirm: string;
-  private subscription: Subscription;
-  private userName;
   private message;
+  private notify: AlertInstance;
+  private subscription: Subscription;
+  public newPassword: string;
+  public newPasswordConfirm: string;
+  public notifyTarget: AlertTarget = {};
+  public userName;
 
   constructor(public bsModalRef: BsModalRef,
               private authService: AuthService,

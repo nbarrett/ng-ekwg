@@ -126,7 +126,7 @@ angular.module('ekwgApp')
 
     function validateUserNameExistence() {
       if ($scope.enteredMemberCredentials.userName !== $scope.currentMember.userName) {
-        return MemberLoginService.getMemberForUserName($scope.enteredMemberCredentials.userName)
+        return MemberService.getMemberForUserName($scope.enteredMemberCredentials.userName)
           .then(function (member) {
             if (!_.isEmpty(member)) {
               $scope.alertMessages.push('The user name ' + $scope.enteredMemberCredentials.userName + ' is already used by another member. Please choose another.');
@@ -217,7 +217,7 @@ angular.module('ekwgApp')
 
     function refreshMember() {
       if (MemberLoginService.memberLoggedIn()) {
-        MemberLoginService.getMemberForUserName(MemberLoginService.loggedInMember().userName)
+        MemberService.getMemberForUserName(MemberLoginService.loggedInMember().userName)
           .then(function (member) {
             if (!_.isEmpty(member)) {
               $scope.currentMember = member;

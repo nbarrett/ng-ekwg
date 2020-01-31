@@ -8,6 +8,7 @@ import { BroadcastService } from "./broadcast-service";
 import { CookieParserService } from "./cookie-parser.service";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { MemberService } from "./member.service";
 import { NumberUtilsService } from "./number-utils.service";
 import { UrlService } from "./url.service";
 
@@ -19,8 +20,8 @@ export class MemberLoginService {
   private logger: Logger;
 
   constructor(
-    @Inject("MemberService") private memberService,
     @Inject("MemberAuditService") private memberAuditService,
+    private memberService: MemberService,
     private fullNamePipe: FullNamePipe,
     private broadcastService: BroadcastService,
     private authService: AuthService,
@@ -98,30 +99,6 @@ export class MemberLoginService {
   saveMember(memberToSave: Member, saveCallback?, errorSaveCallback?) {
     Promise.reject("saveMember needs to be implemented on server");
     this.broadcastService.broadcast("memberSaveComplete");
-  }
-
-  getMemberForUserName(userName: string): Promise<Member> {
-    return this.memberService.query({userName: userName.toLowerCase()}, {limit: 1})
-      .then((queryResults) => {
-        return (queryResults && queryResults.length > 0) ? queryResults[0] : {};
-      });
-  }
-
-  getMemberForMemberId(memberId) {
-    return this.memberService.getById(memberId);
-  }
-
-  getMemberByPasswordResetId(passwordResetId) {
-    return this.memberService.query({passwordResetId}, {limit: 1})
-      .then((queryResults) => {
-        return (queryResults && queryResults.length > 0) ? queryResults[0] : {};
-      });
-  }
-
-  setPasswordResetId(member) {
-    member.passwordResetId = this.numberUtils.generateUid();
-    this.logger.debug("member.userName", member.userName, "member.passwordResetId", member.passwordResetId);
-    return member;
   }
 
 }

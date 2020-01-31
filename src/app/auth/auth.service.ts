@@ -6,6 +6,7 @@ import { tap } from "rxjs/operators";
 import { AuthPayload, AuthResponse } from "../models/auth-data.model";
 import { AuthTokens } from "../models/auth-tokens";
 import { LoginResponse } from "../models/member.model";
+import { BroadcastService, NamedEventType } from "../services/broadcast-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 
@@ -22,6 +23,7 @@ export class AuthService {
 
   constructor(private http: HttpClient,
               private loggerFactory: LoggerFactory,
+              private broadcastService: BroadcastService,
               private siteEditService: SiteEditService) {
     this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.DEBUG);
   }
@@ -30,7 +32,7 @@ export class AuthService {
     const url = `${this.BASE_URL}/login`;
     this.logger.debug("logging in", userName, "via", url);
     const body = {userName, password};
-    return this.performAuthPost(url, body, "login");
+    return this.performAuthPost(url, body, "login", NamedEventType.MEMBER_LOGIN_COMPLETE);
   }
 
   forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string) {
@@ -55,12 +57,12 @@ export class AuthService {
     const loginResponseObservable = this.performAuthPost(url, {
       refreshToken: this.refreshToken(),
       member: this.parseAuthPayload(),
-    }, "logout");
+    }, "logout", NamedEventType.MEMBER_LOGOUT_COMPLETE);
     this.removeTokens();
     return loginResponseObservable;
   }
 
-  private performAuthPost(url: string, body: object, postType: string): Observable<LoginResponse> {
+  private performAuthPost(url: string, body: object, postType: string, broadcastEvent?: NamedEventType): Observable<LoginResponse> {
     this.http.post<any>(url, body)
       .subscribe((authResponse: AuthResponse) => {
         this.logger.info(postType, "- authResponse", authResponse);
@@ -68,6 +70,9 @@ export class AuthService {
           this.storeTokens(authResponse.tokens);
         }
         this.authResponseSubject.next(authResponse.loginResponse);
+        if (broadcastEvent) {
+          this.broadcastService.broadcast(broadcastEvent);
+        }
       }, (httpErrorResponse: HttpErrorResponse) => {
         this.logger.error(postType, "- error", httpErrorResponse);
         const loginResponse: LoginResponse = httpErrorResponse.error.loginResponse;
