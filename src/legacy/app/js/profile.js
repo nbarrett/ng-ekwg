@@ -193,7 +193,9 @@ angular.module('ekwgApp')
       logger.debug("saveMemberDetails:", alertType);
       $scope.alertType = alertType;
       EmailSubscriptionService.resetUpdateStatusForMember($scope.currentMember);
-      MemberLoginService.saveMember($scope.currentMember, saveOrUpdateSuccessful, saveOrUpdateUnsuccessful);
+      return MemberService.update($scope.currentMember)
+        .then(saveOrUpdateSuccessful)
+        .catch(saveOrUpdateUnsuccessful);
     }
 
     function showAlert(alertClass, alertType) {

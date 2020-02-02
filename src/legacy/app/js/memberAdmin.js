@@ -5,7 +5,7 @@ angular.module('ekwgApp')
               MailchimpCampaignService, MailchimpListService, Notifier, StringUtils, BroadcastService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
       var logger = $log.getInstance('MemberAdminController');
-      $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
+      $log.logLevels['MemberAdminController'] = $log.LEVEL.DEBUG;
       $scope.memberAdminBaseUrl = ContentMetaDataService.baseUrl('memberAdmin');
 
       $scope.notify = {};
@@ -94,19 +94,23 @@ angular.module('ekwgApp')
 
 
       function handleSaveError(errorResponse) {
+        logger.debug('handleSaveError:errorResponse', errorResponse);
         $scope.display.saveInProgress = false;
         applyAllowEdits();
         var message = StringUtils.stringify(errorResponse);
         var duplicate = s.include(message, 'duplicate');
         logger.debug('errorResponse', errorResponse, 'duplicate', duplicate);
+        var notifyMessage;
         if (duplicate) {
-          message = 'Duplicate data was detected. A member record must have a unique Email Address, Display Name, Ramblers Membership Number and combination of First Name, Last Name and Alias. Please amend the current member and try again.';
+          notifyMessage = 'Duplicate data was detected. A member record must have a unique Email Address, Display Name, Ramblers Membership Number and combination of First Name, Last Name and Alias. Please amend the current member and try again.';
           $scope.display.duplicate = true;
+        } else {
+          notifyMessage = errorResponse
         }
         notify.clearBusy();
         notify.error({
           title: 'Member could not be saved',
-          message: message
+          message: notifyMessage
         });
       }
 
@@ -385,7 +389,7 @@ angular.module('ekwgApp')
       });
 
       $scope.createMemberFromAudit = function (memberFromAudit) {
-        var member = new MemberService(memberFromAudit);
+        var member = _.clone(memberFromAudit);
         EmailSubscriptionService.defaultMailchimpSettings(member, true);
         member.groupMember = true;
         showMemberDialog(member, 'Add New');
@@ -396,7 +400,7 @@ angular.module('ekwgApp')
       };
 
       $scope.addMember = function () {
-        var member = new MemberService();
+        var member = {};
         EmailSubscriptionService.defaultMailchimpSettings(member, true);
         member.groupMember = true;
         showMemberDialog(member, 'Add New');
@@ -452,7 +456,7 @@ angular.module('ekwgApp')
       }
 
       $scope.confirmDeleteMemberDetails = function () {
-        $scope.currentMember.$remove(hideMemberDialogAndRefreshMembers);
+        MemberService.delete($scope.currentMember).then(hideMemberDialogAndRefreshMembers);
       };
 
       $scope.cancelMemberDetails = function () {
@@ -466,7 +470,7 @@ angular.module('ekwgApp')
       $scope.refreshMemberAudit = refreshMemberAudit;
 
       $scope.memberUrl = function () {
-        return $scope.currentMember && ($scope.currentMember.$id|| $scope.currentMember.id) && (MONGOLAB_CONFIG.baseUrl + MONGOLAB_CONFIG.database + '/collections/members/' + MemberService.extractMemberId($scope.currentMember));
+        return $scope.currentMember && ($scope.currentMember.id) && (MONGOLAB_CONFIG.baseUrl + MONGOLAB_CONFIG.database + '/collections/members/' + MemberService.extractMemberId($scope.currentMember));
       };
 
       $scope.saveMemberDetails = function () {
@@ -484,27 +488,17 @@ angular.module('ekwgApp')
         }
 
         function preProcessMemberBeforeSave() {
-          DbUtils.removeEmptyFieldsIn(member);
           return EmailSubscriptionService.resetUpdateStatusForMember(member);
         }
 
-        function removeEmptyFieldsIn(obj) {
-          _.each(obj, function (value, field) {
-            logger.debug('processing', typeof (field), 'field', field, 'value', value);
-            if (_.contains([null, undefined, ""], value)) {
-              logger.debug('removing non-populated', typeof (field), 'field', field);
-              delete obj[field];
-            }
-          });
-        }
-
         function saveAndHide() {
-          return DbUtils.auditedSaveOrUpdate(member, hideMemberDialogAndRefreshMembers, notify.error.bind(notify))
+          return DbUtils.auditedCreateOrUpdateMember(member)
+            .then(hideMemberDialogAndRefreshMembers)
         }
 
         $q.when(notify.success('Saving member', true))
-          .then(preProcessMemberBeforeSave, notify.error.bind(notify), notify.success.bind(notify))
-          .then(saveAndHide, notify.error.bind(notify), notify.success.bind(notify))
+          .then(preProcessMemberBeforeSave)
+          .then(saveAndHide)
           .then(resetSendFlags)
           .then(function () {
             return notify.success('Member saved successfully');
@@ -513,7 +507,7 @@ angular.module('ekwgApp')
       };
 
       $scope.copyDetailsToNewMember = function () {
-        var copiedMember = new MemberService($scope.currentMember);
+        var copiedMember = _.clone($scope.currentMember);
         delete copiedMember._id;
         EmailSubscriptionService.defaultMailchimpSettings(copiedMember, true);
         ProfileConfirmationService.unconfirmProfile(copiedMember);
@@ -660,9 +654,9 @@ angular.module('ekwgApp')
           var memberUpdateAuditServicePromises = [];
           var memberBulkLoadAuditServicePromises = [];
           var bulkAudits = _.chain(allMemberUpdateAudit)
-          // .filter(function (audit) {
-          //   return !audit.uploadSessionId;
-          // })
+            // .filter(function (audit) {
+            //   return !audit.uploadSessionId;
+            // })
             .map(function (audit) {
               var auditLog = {
                 fileName: audit.fileName,

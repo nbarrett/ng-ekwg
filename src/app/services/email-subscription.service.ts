@@ -4,7 +4,7 @@ import each from "lodash-es/each";
 import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../functions/chain";
-import { MailchimpBatchSubscriptionResponse } from "../models/mailchimp";
+import { MailchimpBatchSubscriptionResponse } from "../models/mailchimp.model";
 import { MailchimpSubscription } from "../models/member.model";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -31,7 +31,7 @@ export class EmailSubscriptionService {
     this.logger.debug("Resetting Mailchimp subscriptions for " + members.length + " members");
     each(members, member => {
       this.defaultMailchimpSettings(member, subscribedState);
-      savePromises.push(this.memberService.createOrUpdate(member));
+      savePromises.push(this.memberService.update(member));
     });
 
     Promise.all(savePromises).then(() => {

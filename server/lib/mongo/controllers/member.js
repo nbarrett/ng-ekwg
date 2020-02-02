@@ -24,10 +24,10 @@ exports.log = (req, res) => {
 
 exports.update = (req, res) => {
   const {criteria, document} = transforms.criteriaAndDocument(req);
-  debug("update:", req.body, "conditions:", criteria, "input document:", document);
+  debug("update:", req.body, "conditions:", criteria, "request document:", document);
   member.findOneAndUpdate(criteria, document, {new: true, useFindAndModify: false})
     .then(result => {
-      debug("update result:", result, "input document:", document);
+      debug("update result:", result, "request document:", document);
       res.status(200).json({
         body: req.body,
         document,
@@ -37,8 +37,26 @@ exports.update = (req, res) => {
     .catch(error => {
       res.status(500).json({
         message: "Update of member failed",
-        input: document,
-        error: error
+        request: document,
+        error: transforms.parseError(error)
+      });
+    });
+};
+
+exports.delete = (req, res) => {
+  const criteria = transforms.criteria(req);
+  debug("delete:", criteria)
+  member.deleteOne(criteria)
+    .then(result => {
+      debug("deletedCount", result.deletedCount, "result:", result);
+      res.status(200).json({
+        response: result
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "Delete of member failed",
+        error: transforms.parseError(error)
       });
     });
 };
@@ -60,7 +78,7 @@ exports.findById = (req, res) => {
       res.status(500).json({
         message: "member query failed",
         request: req.params.id,
-        error: error.toString()
+        error: transforms.parseError(error)
       });
     });
 };
@@ -81,7 +99,7 @@ function findByConditions(conditions, res, req) {
       res.status(500).json({
         message: "member query failed",
         request: req.params.id,
-        error: error.toString()
+        error: transforms.parseError(error)
       });
     });
 }
@@ -106,27 +124,35 @@ exports.all = (req, res) => {
       res.status(500).json({
         message: "member query failed",
         request: req.query,
-        error: error.toString()
+        error: transforms.parseError(error)
       });
     });
 };
 
 exports.create = (req, res, next) => {
-  authConfig.hashValue(req.body.password).then(hash => {
-    new member({
-      userName: req.body.userName,
-      password: hash
-    }).save()
-      .then(result => {
-        res.status(201).json({
-          userName: req.body.userName,
-          message: "auth created!"
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          message: "Invalid authentication credentials"
-        });
-      });
-  });
+  const document = transforms.createDocumentRequest(req);
+  debug("create:body:", req.body, "document:", document)
+
+  const returnError = (error, context) => {
+    res.status(500).json({
+      message: "Unexpected error " + context,
+      error: transforms.parseError(error),
+      request: req.body,
+    });
+  };
+  const createMember = (memberObject) => new member(memberObject).save()
+    .then(result => {
+      res.status(201).json(result);
+    }).catch(error => returnError(error, "saving member"));
+
+  if (req.body.password) {
+    authConfig.hashValue(req.body.password)
+      .then(password => {
+        const documentWithPasswordEncrypted = _.extend({}, document, {password});
+        debug("create:memberObject:", documentWithPasswordEncrypted)
+        createMember(documentWithPasswordEncrypted);
+      }).catch(error => returnError(error, "encrypting password for member"));
+  } else {
+    createMember(document)
+  }
 }

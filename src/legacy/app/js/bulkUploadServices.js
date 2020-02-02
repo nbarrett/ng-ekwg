@@ -26,7 +26,9 @@ angular.module('ekwgApp')
           _.each(members, function (member) {
             if (member.receivedInLastBulkLoad) {
               member.receivedInLastBulkLoad = false;
-              promises.push(DbUtils.auditedSaveOrUpdate(member, auditUpdateCallback(member), auditErrorCallback(member)));
+              promises.push(DbUtils.auditedCreateOrUpdateMember(member)
+                .then(auditUpdateCallback(member))
+                .catch(auditErrorCallback(member)));
             }
           });
           return $q.all(promises).then(function () {
@@ -79,7 +81,7 @@ angular.module('ekwgApp')
         var qualifier = 'for membership ' + member.membershipNumber;
         member.receivedInLastBulkLoad = true;
         member.lastBulkLoadDate = DateUtils.momentNow().valueOf();
-        return DbUtils.auditedSaveOrUpdate(member, auditUpdateCallback(member), auditErrorCallback(member, audit))
+        return DbUtils.auditedCreateOrUpdateMember(member).then(auditUpdateCallback(member))
           .then(function (savedMember) {
             if (savedMember) {
               audit.memberId = MemberService.extractMemberId(savedMember);
@@ -93,7 +95,7 @@ angular.module('ekwgApp')
             logger.debug('saveAndAuditMemberUpdate:', audit);
             promises.push(audit.$save());
             return promises;
-          });
+          }).catch(auditErrorCallback(member, audit));
       }
 
       function convertMembershipExpiryDate(ramblersMember) {
@@ -125,11 +127,11 @@ angular.module('ekwgApp')
           EmailSubscriptionService.resetUpdateStatusForMember(member);
         } else {
           memberAction = 'created';
-          member = new MemberService();
-          member.userName = MemberNamingService.createUniqueUserName(ramblersMember, members);
-          member.displayName = MemberNamingService.createUniqueDisplayName(ramblersMember, members);
-          member.password = RESET_PASSWORD;
-          member.expiredPassword = true;
+          member = {
+            userName: MemberNamingService.createUniqueUserName(ramblersMember, members),
+            displayName: MemberNamingService.createUniqueDisplayName(ramblersMember, members),
+            expiredPassword: true
+          }
           EmailSubscriptionService.defaultMailchimpSettings(member, true);
           logger.debug('new member created:', member);
         }
@@ -148,7 +150,6 @@ angular.module('ekwgApp')
           changeAndAuditMemberField(updateAudit, member, ramblersMember, field)
         });
 
-        DbUtils.removeEmptyFieldsIn(member);
         logger.debug('saveAndAuditMemberUpdate -> member:', member, 'updateAudit:', updateAudit);
         return saveAndAuditMemberUpdate(promises, uploadSessionId, recordIndex + 1, memberAction || (updateAudit.fieldsChanged > 0 ? 'updated' : 'skipped'), updateAudit.fieldsChanged, updateAudit.auditMessages.join(', '), member);
 

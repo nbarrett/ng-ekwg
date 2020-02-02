@@ -7,7 +7,35 @@ it("transforms basic json", done => {
     "userName": "nickek"
   }
   expect(transforms.setUnSetDocument(json)).to.eql({
-      $set: {"userName": "nickek"}
+      "$set": {"userName": "nickek"}
+    }
+  );
+  done();
+});
+
+it("removes fields containing only whitespace", done => {
+
+  const json = {
+    "userName": "nickek",
+    "displayName": "   "
+  }
+  expect(transforms.setUnSetDocument(json)).to.eql({
+      "$set": {"userName": "nickek"},
+      "$unset": {
+        "displayName": 1
+      }
+    }
+  );
+  done();
+});
+
+it("trims fields", done => {
+
+  const json = {
+    "userName": " nickek ",
+  }
+  expect(transforms.setUnSetDocument(json)).to.eql({
+      "$set": {"userName": "nickek"}
     }
   );
   done();

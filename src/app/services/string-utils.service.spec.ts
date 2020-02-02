@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
@@ -13,7 +14,7 @@ const memberService = {
 
 describe("StringUtilsService", () => {
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [LoggerTestingModule],
+    imports: [LoggerTestingModule, HttpClientTestingModule],
     providers: [
       MemberIdToFullNamePipe,
       FullNamePipe,
@@ -58,13 +59,13 @@ describe("StringUtilsService", () => {
   });
 
   describe("stringify", () => {
-    it("should return the left X characters of string regardless of length", () => {
+    it("should return stringified version of message field if object", () => {
       const service: StringUtilsService = TestBed.get(StringUtilsService);
       expect(service.stringify({title: "who cares", message: "This is regular text"})).toBe("This is regular text");
       expect(service.stringify({
         title: "who cares",
         message: {some: {complex: {object: "wohoo"}}}
-      })).toBe("{\"some\":{\"complex\":{\"object\":\"wohoo\"}}}");
+      })).toBe("Some -> Complex -> Object: wohoo");
     });
   });
 

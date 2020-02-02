@@ -55,7 +55,7 @@ export class MemberService {
     const params = this.convertToParams(criteria);
     this.logger.debug("all:params", params.toString());
     const apiResponse = await this.http.get<Member[]>(`${this.BASE_URL}/all`, {params}).toPromise();
-    this.logger.debug("all - received", apiResponse);
+    this.logger.debug("all:params", params.toString(), "received", apiResponse.length, "members");
     return apiResponse;
   }
 
@@ -84,6 +84,13 @@ export class MemberService {
     this.logger.debug("updating", member);
     const apiResponse = await this.http.put<{ response: Member }>(this.BASE_URL + "/" + member.id, member).toPromise();
     this.logger.debug("updated", member, "- received", apiResponse);
+    return apiResponse.response;
+  }
+
+  async delete(member: Member): Promise<Member> {
+    this.logger.debug("deleting", member);
+    const apiResponse = await this.http.delete<{ response: Member }>(this.BASE_URL + "/" + member.id).toPromise();
+    this.logger.debug("deleted", member, "- received", apiResponse);
     return apiResponse.response;
   }
 

@@ -198,7 +198,7 @@ export class MeetupService {
     }
   }
 
-  extractErrorsFrom(httpErrorResponse: HttpErrorResponse): any {
+  extractErrorsFrom(httpErrorResponse: any): string {
     this.logger.debug("api response was", httpErrorResponse);
     if (has(httpErrorResponse, ["error", "response", "errors"])) {
       return httpErrorResponse.error.response.errors.map(error => this.stringUtils.stringifyObject(error));

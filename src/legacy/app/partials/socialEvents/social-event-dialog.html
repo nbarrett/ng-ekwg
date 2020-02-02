@@ -173,7 +173,7 @@
                                             <select ng-disabled="!allowEdits" ng-change="selectMemberContactDetails()"
                                                     class="form-control input-sm"
                                                     ng-model="currentSocialEvent.eventContactMemberId"
-                                                    ng-options="member.$id() as member | fullNameWithAlias for member in members"
+                                                    ng-options="member.id as member | fullNameWithAlias for member in members"
                                                     class="form-control round spaced-controls" id="contact-member">
                                                 <option value="">(no event organiser yet)</option>
                                             </select>

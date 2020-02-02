@@ -1,6 +1,8 @@
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
 import { UpgradeModule } from "@angular/upgrade/static";
+import { BsModalService, ComponentLoaderFactory, PositioningService } from "ngx-bootstrap";
 import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { UiSwitchComponent } from "ngx-ui-switch";
@@ -10,7 +12,9 @@ import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
+import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
+import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 
@@ -20,10 +24,16 @@ describe("AppComponent", () => {
       imports: [
         LoggerTestingModule,
         RouterTestingModule,
+        HttpClientTestingModule,
         UpgradeModule
       ],
       providers: [
+        ComponentLoaderFactory,
+        PositioningService,
+        BsModalService,
         FullNamePipe,
+        MemberIdToFullNamePipe,
+        FullNameWithAliasPipe,
         {provide: "MemberService", useValue: {}},
         {provide: "MemberAuditService", useValue: {}},
         CookieService],

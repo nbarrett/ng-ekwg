@@ -1,9 +1,9 @@
+import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
-import { MemberLoginService } from "../../ajs-upgraded-providers";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
@@ -23,7 +23,7 @@ describe("WalksEventService", () => {
   };
 
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [
+    imports: [HttpClientTestingModule,
       LoggerTestingModule, RouterTestingModule
     ],
     providers: [{provide: "MemberAuditService", useValue: {}}, CookieService,

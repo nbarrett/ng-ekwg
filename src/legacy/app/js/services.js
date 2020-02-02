@@ -2,7 +2,7 @@ angular.module('ekwgApp')
   .factory('WalksService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('walks')
   })
-  .factory('DbUtils', function ($log, DateUtils, MemberLoginService, AUDIT_CONFIG) {
+  .factory('DbUtils', function ($log, DateUtils, MemberService, MemberLoginService, AUDIT_CONFIG) {
     var logger = $log.getInstance('DbUtilsLogger');
     $log.logLevels['DbUtilsLogger'] = $log.LEVEL.OFF;
 
@@ -16,9 +16,9 @@ angular.module('ekwgApp')
       });
     }
 
-    function auditedSaveOrUpdate(resource, updateCallback, errorCallback) {
+    function performAudit(resource) {
       if (AUDIT_CONFIG.auditSave) {
-        if (resource.$id()) {
+        if (resource.$id || resource.id) {
           resource.updatedDate = DateUtils.nowAsValue();
           resource.updatedBy = MemberLoginService.loggedInMember().memberId;
           logger.debug('Auditing save of existing document', resource);
@@ -32,12 +32,22 @@ angular.module('ekwgApp')
         logger.debug('Not auditing save of', resource);
 
       }
+      return resource;
+    }
+
+    function auditedSaveOrUpdate(resource, updateCallback, errorCallback) {
+      resource = performAudit(resource);
       return resource.$saveOrUpdate(updateCallback, updateCallback, errorCallback || updateCallback, errorCallback || updateCallback)
+    }
+
+    function auditedCreateOrUpdateMember(resource) {
+      return MemberService.createOrUpdate(performAudit(resource))
     }
 
     return {
       removeEmptyFieldsIn: removeEmptyFieldsIn,
       auditedSaveOrUpdate: auditedSaveOrUpdate,
+      auditedCreateOrUpdateMember: auditedCreateOrUpdateMember,
     }
   })
   .factory('FileUtils', function ($log, DateUtils, URLService, ContentMetaDataService) {

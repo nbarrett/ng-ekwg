@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('MailingPreferencesController', function ($log, $scope, ProfileConfirmationService, Notifier, URLService, MemberLoginService, memberId, close) {
+  .controller('MailingPreferencesController', function ($log, $scope, ProfileConfirmationService, Notifier, URLService, MemberService, memberId, close) {
 
     var logger = $log.getInstance("MailingPreferencesController");
     $log.logLevels["MailingPreferencesController"] = $log.LEVEL.OFF;
@@ -25,7 +25,9 @@ angular.module('ekwgApp')
     $scope.actions = {
       save: function () {
         ProfileConfirmationService.confirmProfile($scope.member);
-        MemberLoginService.saveMember($scope.member, $scope.actions.close, saveOrUpdateUnsuccessful);
+        MemberService.update($scope.member)
+          .then($scope.actions.close)
+          .catch(saveOrUpdateUnsuccessful);
       },
       close: function () {
         close();

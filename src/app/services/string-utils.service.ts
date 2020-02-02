@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import escapeRegExp from "lodash-es/escapeRegExp";
+import has from "lodash-es/has";
 import isNumber from "lodash-es/isNumber";
 import isObject from "lodash-es/isObject";
 import map from "lodash-es/map";
@@ -19,7 +20,7 @@ export class StringUtilsService {
   constructor(private memberIdToFullNamePipe: MemberIdToFullNamePipe,
               private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.DEBUG);
   }
 
   replaceAll(find: any, replace: any, str: any): string | number {
@@ -36,10 +37,22 @@ export class StringUtilsService {
     return isNumber(str) ? +replacedValue : replacedValue;
   }
 
-  stringify(message: AlertMessage | string): string {
+  stringify(message): string {
+    let returnValue;
     const extractedMessage = this.isAlertMessage(message) ? message.message : message;
-    const returnValue = extractedMessage instanceof TypeError ? extractedMessage.toString() : isObject(extractedMessage) ? JSON.stringify(extractedMessage) : extractedMessage;
-    this.logger.debug("stringify:message", message, "returnValue:", returnValue);
+    if (extractedMessage instanceof TypeError) {
+      returnValue = extractedMessage.toString();
+    } else if (has(extractedMessage, ["error", "message"])) {
+      returnValue = extractedMessage.error.message + (extractedMessage.error.error ? " - " + extractedMessage.error.error : "");
+    } else if (has(extractedMessage, ["error", "errmsg"])) {
+      returnValue = extractedMessage.error.errmsg + (extractedMessage.error.error ? " - " + extractedMessage.error.error : "");
+    } else if (isObject(extractedMessage)) {
+      returnValue = this.stringifyObject(extractedMessage);
+    } else {
+      returnValue = extractedMessage;
+    }
+
+    this.logger.debug("stringify:message", message, "extractedMessage:", extractedMessage, "returnValue:", returnValue);
     return returnValue;
   }
 
@@ -75,8 +88,8 @@ export class StringUtilsService {
     }
   }
 
-  isAlertMessage(message: AlertMessage | string): message is AlertMessage {
-    return message && (message as AlertMessage).message !== undefined;
+  isAlertMessage(message: any): message is AlertMessage {
+    return has(message, ["message"]) && has(message, ["title"]);
   }
 
   stripLineBreaks(str, andTrim) {

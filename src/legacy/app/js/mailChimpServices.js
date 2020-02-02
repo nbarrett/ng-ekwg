@@ -426,14 +426,10 @@ angular.module('ekwgApp')
             var member = EmailSubscriptionService.responseToMember(listType, allMembers, subscriber);
             if (member) {
               member.mailchimpLists[listType] = {subscribed: false, updated: true};
-              member.$saveOrUpdate();
+              return MemberService.update(member);
             } else {
               notificationCallback('Could not find member from ' + listType + ' response containing data ' + JSON.stringify(subscriber));
             }
-            return member;
-          })
-          .filter(function (member) {
-            return member;
           })
           .value();
         $q.all(updatedMembers).then(function () {

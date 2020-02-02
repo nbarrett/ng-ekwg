@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../auth/auth.service";
-import { Member, MemberCookie } from "../models/member.model";
+import { MemberCookie } from "../models/member.model";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { BroadcastService } from "./broadcast-service";
 import { CookieParserService } from "./cookie-parser.service";
@@ -94,11 +94,6 @@ export class MemberLoginService {
       // TODO: need to refresh token in server
       return Promise.resolve();
     }
-  }
-
-  saveMember(memberToSave: Member, saveCallback?, errorSaveCallback?) {
-    Promise.reject("saveMember needs to be implemented on server");
-    this.broadcastService.broadcast("memberSaveComplete");
   }
 
 }
