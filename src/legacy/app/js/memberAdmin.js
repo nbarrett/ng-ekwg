@@ -638,7 +638,7 @@ angular.module('ekwgApp')
             return $scope.filters.uploadSession.selected;
           });
         } else {
-          return $q.then(true);
+          return $q.when(true);
         }
       }
 
