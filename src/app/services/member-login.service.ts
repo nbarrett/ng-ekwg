@@ -30,7 +30,7 @@ export class MemberLoginService {
     private dateUtils: DateUtilsService,
     private loggerFactory: LoggerFactory,
     private cookieParserService: CookieParserService) {
-    this.logger = loggerFactory.createLogger(MemberLoginService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MemberLoginService, NgxLoggerLevel.OFF);
   }
 
   loggedInMember(): MemberCookie {

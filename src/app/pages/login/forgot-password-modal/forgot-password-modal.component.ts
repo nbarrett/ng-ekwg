@@ -71,7 +71,6 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
 
   submit() {
     const userDetails = `${this.credentialOneLabel} as ${this.credentialOne} and ${this.credentialTwoLabel} as ${this.credentialTwo}`;
-    this.notify.setBusy();
     this.notify.progress({title: "Forgot password", message: `Checking our records for ${userDetails}`});
     if (!this.submittable()) {
       this.notify.error({
@@ -80,6 +79,8 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
         message: `Please enter ${this.credentialOneLabel} and ${this.credentialTwoLabel}`
       });
     } else {
+      this.notify.setBusy();
+      this.notify.showContactUs(false);
       this.authService.forgotPassword(this.credentialOne, this.credentialTwo, userDetails);
     }
   }
@@ -158,7 +159,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   submittable() {
     const credentialOnePopulated = this.fieldPopulated(this.credentialOne);
     const passwordPopulated = this.fieldPopulated(this.credentialTwo);
-    return passwordPopulated && credentialOnePopulated && !this.campaignSendInitiated;
+    return passwordPopulated && credentialOnePopulated && !this.notifyTarget.busy && !this.campaignSendInitiated;
   }
 
   close() {

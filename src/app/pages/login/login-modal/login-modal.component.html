@@ -35,7 +35,7 @@
     <div class="row col-sm-12">
       <input type="submit" [disabled]="notifyTarget.busy || !submittable()" value="Login" (click)="login()"
              title="Login"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+             [ngClass]="submittable() ? 'button-form button-form-left': 'disabled-button-form button-form-left'">
       <input type="reset" value="Cancel" (click)="close()" title="Cancel and don't login"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
       <input type="reset" value="Forgot Password" (click)="forgotPassword()"

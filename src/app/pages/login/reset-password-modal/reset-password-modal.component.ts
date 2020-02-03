@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { BsModalRef } from "ngx-bootstrap";
+import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -8,6 +8,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MemberLoginService } from "../../../services/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
+import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";
 
 @Component({
   selector: "app-reset-password-modal-component",
@@ -25,6 +26,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   public userName;
 
   constructor(public bsModalRef: BsModalRef,
+              private modalService: BsModalService,
               private authService: AuthService,
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
@@ -73,11 +75,14 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   submittable() {
     const userNamePopulated = this.fieldPopulated(this.newPassword);
     const passwordPopulated = this.fieldPopulated(this.newPasswordConfirm);
-    return passwordPopulated && userNamePopulated;
+    return !this.notifyTarget.busy && passwordPopulated && userNamePopulated;
   }
 
   forgotPassword() {
-    this.urlService.navigateTo("forgot-password");
+    this.close();
+    this.modalService.show(ForgotPasswordModalComponent, {
+      animated: false
+    });
   }
 
   close() {

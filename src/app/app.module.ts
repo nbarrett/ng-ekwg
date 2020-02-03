@@ -223,7 +223,7 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     BsDatepickerModule.forRoot(),
     HttpClientModule,
     ModalModule.forRoot(),
-    LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.INFO, serverLogLevel: NgxLoggerLevel.ERROR}),
+    LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     PopoverModule.forRoot(),
     TabsModule.forRoot(),

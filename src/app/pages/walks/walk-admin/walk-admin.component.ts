@@ -24,7 +24,7 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {
