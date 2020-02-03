@@ -5,10 +5,11 @@ import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../functions/chain";
 import { MailchimpBatchSubscriptionResponse } from "../models/mailchimp.model";
-import { MailchimpSubscription } from "../models/member.model";
+import { MailchimpSubscription, Member } from "../models/member.model";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { MailchimpErrorParserService } from "./mailchimp-error-parser.service";
+import { MemberLoginService } from "./member-login.service";
 import { MemberService } from "./member.service";
 
 @Injectable({
@@ -16,14 +17,16 @@ import { MemberService } from "./member.service";
 })
 export class EmailSubscriptionService {
 
+  private BASE_URL = "/api/mailchimp";
   private logger: Logger;
 
   constructor(private memberService: MemberService,
               private dateUtils: DateUtilsService,
               private http: HttpClient,
+              private memberLoginService: MemberLoginService,
               private mailchimpErrorParserService: MailchimpErrorParserService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(EmailSubscriptionService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(EmailSubscriptionService, NgxLoggerLevel.OFF);
   }
 
   resetAllBatchSubscriptions(members, subscribedState) {
@@ -36,10 +39,16 @@ export class EmailSubscriptionService {
 
     Promise.all(savePromises).then(() => {
       this.logger.debug("Reset of Mailchimp subscriptions completed. Next member save will resend all lists to Mailchimp");
-      this.memberService.all().then(refreshedMembers => {
-        return refreshedMembers;
-      });
+      return this.refreshMembersIfAdmin();
     });
+  }
+
+  private refreshMembersIfAdmin(): Promise<Member[]> {
+    if (this.memberLoginService.allowMemberAdminEdits()) {
+      return this.memberService.all();
+    } else {
+      return Promise.resolve([]);
+    }
   }
 
   defaultMailchimpSettings(member, subscribedState) {
@@ -56,14 +65,13 @@ export class EmailSubscriptionService {
       mailchimpIdentifiers.email.leid = member.mailchimpLists[listType].leid;
     }
     if (request) {
-      return extend(request, mailchimpIdentifiers);
+      return extend({}, request, mailchimpIdentifiers);
     } else {
       return mailchimpIdentifiers.email;
     }
   }
 
-  createBatchSubscriptionForList(listType, members) {
-    this.logger.info("createBatchSubscriptionForList:", listType, members);
+  createBatchSubscriptionForList(listType, members): Promise<Member[]> {
     this.logger.debug("Sending " + listType + " member data to Mailchimp");
     const batchedMembers = [];
     const subscriptionEntries = chain(members)
@@ -71,7 +79,7 @@ export class EmailSubscriptionService {
       .map(member => {
         batchedMembers.push(member);
         const request = {
-          merge_consts: {
+          merge_vars: {
             FNAME: member.firstName,
             LNAME: member.lastName,
             MEMBER_NUM: member.membershipNumber,
@@ -82,48 +90,45 @@ export class EmailSubscriptionService {
         };
         return this.addMailchimpIdentifiersToRequest(member, listType, request);
       }).value();
-
-    this.logger.info("subscriptionEntries:", subscriptionEntries);
+    this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionEntries.length, "members");
     if (subscriptionEntries.length > 0) {
-      const url = `/api/mailchimp/lists/${listType}/batchSubscribe`;
+      const url = `${this.BASE_URL}/lists/${listType}/batchSubscribe`;
       this.logger.info("sending", subscriptionEntries.length, listType, "subscriptions to mailchimp", subscriptionEntries);
-      this.http.post<MailchimpBatchSubscriptionResponse>(url, subscriptionEntries)
-        .toPromise().then(response => {
-        this.logger.info("createBatchSubscriptionForList response", response);
-        const errorResponse = this.mailchimpErrorParserService.extractError(response);
-        this.logger.info("createBatchSubscriptionForList response:errorResponse", errorResponse, "error:", errorResponse.error);
-        if (errorResponse.error) {
-          return Promise.reject({
-            message: "Sending of " + listType + " list subscription to Mailchimp was not successful",
-            error: errorResponse.error
-          });
-        } else {
-          const totalResponseCount = response.updates.concat(response.adds).concat(response.errors).length;
-          this.logger.debug("Send of " + subscriptionEntries.length + " " + listType + " members completed - processing " + totalResponseCount + " Mailchimp response(s)");
-          const savePromises = [];
-          this.processValidResponses(listType, response.updates.concat(response.adds), batchedMembers, savePromises);
-          this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
-          return Promise.all(savePromises).then(() => {
-            this.memberService.all().then(refreshedMembers => {
-              this.logger.debug("Send of " + subscriptionEntries.length + " members to " + listType + " list completed with " + response.add_count + " member(s) added, " + response.update_count + " updated and " + response.error_count + " error(s)");
-              return Promise.resolve(refreshedMembers);
+      return this.http.post<MailchimpBatchSubscriptionResponse>(url, subscriptionEntries).toPromise()
+        .then(response => {
+          this.logger.info("createBatchSubscriptionForList response", response);
+          const errorResponse = this.mailchimpErrorParserService.extractError(response);
+          this.logger.info("createBatchSubscriptionForList response:errorResponse", errorResponse, "error:", errorResponse.error);
+          if (errorResponse.error) {
+            return Promise.reject({
+              message: "Sending of " + listType + " list subscription to Mailchimp was not successful",
+              error: errorResponse.error
             });
-          });
-        }
-      }).catch(response => {
-        const data = response.data;
-        this.logger.error(response);
-        const errorMessage = "Sending of " + listType + " member data to Mailchimp was not successful due to response: " + data;
-        this.logger.error(errorMessage);
-        return Promise.reject(errorMessage);
-      });
+          } else {
+            const totalResponseCount = response.updates.concat(response.adds).concat(response.errors).length;
+            this.logger.debug("Send of " + subscriptionEntries.length + " " + listType + " members completed - processing " + totalResponseCount + " Mailchimp response(s)");
+            const savePromises = [];
+            this.processValidResponses(listType, response.updates.concat(response.adds), batchedMembers, savePromises);
+            this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
+            return Promise.all(savePromises).then(() => {
+              return this.refreshMembersIfAdmin().then(refreshedMembers => {
+                this.logger.debug("Send of " + subscriptionEntries.length + " members to " + listType + " list completed with " + response.add_count + " member(s) added, " + response.update_count + " updated and " + response.error_count + " error(s)");
+                return refreshedMembers;
+              });
+            });
+          }
+        }).catch(response => {
+          const data = response.error;
+          this.logger.error(response);
+          const errorMessage = "Sending of " + listType + " member data to Mailchimp was not successful due to response: " + data;
+          this.logger.error(errorMessage);
+          return Promise.reject(errorMessage);
+        });
     } else {
       const message = "No " + listType + " updates to send Mailchimp";
       this.logger.info(message);
       this.logger.debug(message);
-      this.memberService.all().then(refreshedMembers => {
-        return Promise.resolve(refreshedMembers);
-      });
+      return this.refreshMembersIfAdmin();
     }
   }
 
@@ -191,20 +196,18 @@ export class EmailSubscriptionService {
   }
 
   processValidResponses(listType, validResponses, batchedMembers, savePromises) {
-    this.logger.debug("processing valid responses from", validResponses);
     each(validResponses, response => {
       const member = this.findMemberAndMarkAsUpdated(listType, batchedMembers, response);
       if (member) {
-        delete member.mailchimpLists[listType].code;
-        delete member.mailchimpLists[listType].error;
+        member.mailchimpLists[listType].code = undefined;
+        member.mailchimpLists[listType].error = undefined;
         this.logger.debug("processing valid response for member " + member.email);
-        savePromises.push(this.memberService.createOrUpdate(member));
+        savePromises.push(this.memberService.updateMailSubscription(member.id, listType, member.mailchimpLists[listType]));
       }
     });
   }
 
   processErrorResponses(listType, errorResponses, batchedMembers, savePromises) {
-    this.logger.debug("processing error responses from", errorResponses);
     each(errorResponses, response => {
       const member = this.findMemberAndMarkAsUpdated(listType, batchedMembers, response.email);
       if (member) {
@@ -214,7 +217,7 @@ export class EmailSubscriptionService {
         if ([210, 211, 212, 213, 214, 215, 220, 250].includes(response.code)) {
           member.mailchimpLists[listType].subscribed = false;
         }
-        savePromises.push(this.memberService.createOrUpdate(member));
+        savePromises.push(this.memberService.update(member));
       }
     });
   }

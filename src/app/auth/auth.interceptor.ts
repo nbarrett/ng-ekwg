@@ -29,7 +29,6 @@ export class AuthInterceptor implements HttpInterceptor {
       if (error instanceof HttpErrorResponse && error.status === 401 && !loginRequest) {
         return this.handle401Error(request, next);
       } else {
-        this.logger.debug("not handling 401 refresh so throwing", error);
         return throwError(error);
       }
     }));

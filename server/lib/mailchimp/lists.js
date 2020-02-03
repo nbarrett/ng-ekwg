@@ -72,7 +72,7 @@ exports.batchSubscribe = function (req, res) {
     replace_interests: true,
   };
   var messageType = "batch subscribe to list";
-  debug(messageType, requestData);
+  debug(messageType, JSON.stringify(requestData));
   mc.lists.batchSubscribe(requestData, function (responseData) {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
   }, function (error) {

@@ -43,6 +43,27 @@ exports.update = (req, res) => {
     });
 };
 
+exports.updateEmailSubscription = (req, res) => {
+  const {criteria, document} = transforms.criteriaAndDocument(req);
+  debug("updateEmailSubscription:", req.body, "conditions:", criteria, "request document:", document);
+  member.findOneAndUpdate(criteria, document, {new: true, useFindAndModify: false})
+    .then(result => {
+      debug("update result:", result, "request document:", document);
+      res.status(200).json({
+        body: req.body,
+        document,
+        response: result
+      });
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: "Update of member failed",
+        request: document,
+        error: transforms.parseError(error)
+      });
+    });
+};
+
 exports.delete = (req, res) => {
   const criteria = transforms.criteria(req);
   debug("delete:", criteria)

@@ -6,8 +6,8 @@ const config = require("../config/config");
 const debug = require("debug")(config.logNamespace("auth-config"));
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const tokenExpiry = {auth: 10, refresh: 5};
-const SECRET = process.env.JWT_SECRET;
+const tokenExpiry = {auth: 60 * 60 * 12, refresh: 60 * 60};
+const SECRET = config.auth.secret
 const passportOpts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: SECRET

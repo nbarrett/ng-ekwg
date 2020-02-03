@@ -38,7 +38,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
               protected notifierService: NotifierService,
               private changeDetectorRef: ChangeDetectorRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkMeetupSettingsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkMeetupSettingsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

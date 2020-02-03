@@ -14,11 +14,11 @@ export class MemberNamingService {
   }
 
   createUserName(member) {
-    return this.stringUtils.replaceAll(" ", "", (member.firstName + "." + member.lastName).toLowerCase());
+    return member.firstName && member.lastName ? this.stringUtils.replaceAll(" ", "", (member.firstName + "." + member.lastName).toLowerCase()) : "";
   }
 
   createDisplayName(member) {
-    return (member.firstName || "").trim() + " " + (member.lastName || "").trim().substring(0, 1).toUpperCase();
+    return ((member.firstName || "").trim() + " " + (member.lastName || "").trim().substring(0, 1).toUpperCase()).trim();
   }
 
   createUniqueUserName(member, members) {

@@ -10,7 +10,7 @@ module.exports = function () {
   const dbUrlBasePath = config.mongo.dbUrl;
   const database = config.mongo.database;
   const apiKey = config.mongo.apiKey;
-
+  const prohibitedCollections = ["members", "contentText"];
   debug("Proxying MongoLab at", dbUrlBasePath, "with database", database, "with APIKey", apiKey);
 
   const dbUrl = url.parse(dbUrlBasePath);
@@ -43,25 +43,31 @@ module.exports = function () {
     try {
       const options = mapRequest(req);
       const dbReq = https.request(options, function (dbRes) {
-        let data = "";
-        res.headers = dbRes.headers;
-        dbRes.setEncoding("utf8");
-        dbRes.on("data", function (chunk) {
-          data = data + chunk;
-        });
-        dbRes.on("end", function () {
-          res.header("Content-Type", "application/json");
-          res.statusCode = dbRes.statusCode;
-          res.httpVersion = dbRes.httpVersion;
-          res.trailers = dbRes.trailers;
-          res.send(data);
+        if (prohibitedCollections.includes(req.params.collection)) {
+          res.statusCode = 401;
+          res.json({error: "Unauthorised access to " + req.params.collection + " collection"})
           res.end();
-          if (dbRes.statusCode !== 200) {
-            debug("returned http status", dbRes.statusCode, "data:", data);
-          } else {
-            debug("returned", JSON.parse(data).length, "record(s) from", req.params.collection);
-          }
-        });
+        } else {
+          let data = "";
+          res.headers = dbRes.headers;
+          dbRes.setEncoding("utf8");
+          dbRes.on("data", function (chunk) {
+            data = data + chunk;
+          });
+          dbRes.on("end", function () {
+            res.header("Content-Type", "application/json");
+            res.statusCode = dbRes.statusCode;
+            res.httpVersion = dbRes.httpVersion;
+            res.trailers = dbRes.trailers;
+            res.send(data);
+            res.end();
+            if (dbRes.statusCode !== 200) {
+              debug("returned http status", dbRes.statusCode, "data:", data);
+            } else {
+              debug("returned", JSON.parse(data).length, "record(s) from", req.params.collection);
+            }
+          });
+        }
       });
       dbReq.on("error", error => {
         debug("on.ERROR: ", error.stack);

@@ -21,8 +21,8 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  public credentialTwo = "ss9 3af";
-  public credentialOne = "nicka";
+  public credentialTwo;
+  public credentialOne;
   private subscription: Subscription;
   private campaignSendInitiated = false;
   private FORGOTTEN_PASSWORD_SEGMENT = "Forgotten Password";
@@ -41,7 +41,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
               private urlService: UrlService,
               private notifierService: NotifierService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {

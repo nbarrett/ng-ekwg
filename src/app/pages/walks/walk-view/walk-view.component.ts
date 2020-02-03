@@ -45,7 +45,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     private broadcastService: BroadcastService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {

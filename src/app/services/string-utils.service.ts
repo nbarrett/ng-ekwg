@@ -20,7 +20,7 @@ export class StringUtilsService {
   constructor(private memberIdToFullNamePipe: MemberIdToFullNamePipe,
               private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.OFF);
   }
 
   replaceAll(find: any, replace: any, str: any): string | number {

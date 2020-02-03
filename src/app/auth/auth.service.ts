@@ -25,7 +25,7 @@ export class AuthService {
               private loggerFactory: LoggerFactory,
               private broadcastService: BroadcastService,
               private siteEditService: SiteEditService) {
-    this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.OFF);
   }
 
   login(userName, password): Observable<LoginResponse> {

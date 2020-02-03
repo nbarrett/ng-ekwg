@@ -17,7 +17,7 @@ export class RouterHistoryService {
 
   constructor(private router: Router, private urlService: UrlService,
               private pageService: PageService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(RouterHistoryService, NgxLoggerLevel.OFF);
     this.loadRouting();
   }
 

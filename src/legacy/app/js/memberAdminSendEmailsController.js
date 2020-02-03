@@ -41,9 +41,7 @@ angular.module('ekwgApp')
           return 'About to send a ' + $scope.display.emailType.name + ' to ' + $scope.display.emailMembers.length + ' member' + ($scope.display.emailMembers.length === 1 ? '' : 's');
         },
         expiryEmailsSelected: function () {
-          var returnValue = $scope.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS_WARNING || $scope.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS;
-          logger.debug('expiryEmailsSelected -> ', returnValue);
-          return returnValue;
+          return $scope.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS_WARNING || $scope.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS;
         },
         recentMemberEmailsSelected: function () {
           return $scope.display.emailType.type === CAMPAIGN_TYPE_WELCOME || $scope.display.emailType.type === CAMPAIGN_TYPE_PASSWORD_RESET;
@@ -305,6 +303,7 @@ angular.module('ekwgApp')
 
       function handleSendError(errorResponse) {
         $scope.display.saveInProgress = false;
+        logger.error(errorResponse);
         notify.error({
           title: 'Your notification could not be sent',
           message: (errorResponse.message || errorResponse) + (errorResponse.error ? ('. Error was: ' + StringUtils.stringify(errorResponse.error)) : '')

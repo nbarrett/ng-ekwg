@@ -385,9 +385,6 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <dl class="dl-horizontal input-sm">
-                                        <dt>Member Id</dt>
-                                        <dd><a target="_blank" ng-href="{{memberUrl()}}">{{currentMember.id}}</a>
-                                        </dd>
                                         <dt>Member Created</dt>
                                         <dd ng-bind="currentMember | createdAudit : members"></dd>
                                         <dt>Member Updated</dt>
@@ -440,6 +437,10 @@
                                 </div>
                             </div>
                         </div>
+                    </uib-tab>
+                    <uib-tab ng-if="allowEdits">
+                        <uib-tab-heading>Member Raw Data</uib-tab-heading>
+                        <pre>{{currentMember | json}}</pre>
                     </uib-tab>
                 </uib-tabset>
                 <div ng-if="notify.showAlert" class="alert {{notify.alertClass}}"><i

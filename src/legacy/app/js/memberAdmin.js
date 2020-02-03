@@ -5,7 +5,7 @@ angular.module('ekwgApp')
               MailchimpCampaignService, MailchimpListService, Notifier, StringUtils, BroadcastService, MemberBulkUploadService, ContentMetaDataService, MONGOLAB_CONFIG, MAILCHIMP_APP_CONSTANTS) {
 
       var logger = $log.getInstance('MemberAdminController');
-      $log.logLevels['MemberAdminController'] = $log.LEVEL.DEBUG;
+      $log.logLevels['MemberAdminController'] = $log.LEVEL.OFF;
       $scope.memberAdminBaseUrl = ContentMetaDataService.baseUrl('memberAdmin');
 
       $scope.notify = {};
@@ -470,7 +470,7 @@ angular.module('ekwgApp')
       $scope.refreshMemberAudit = refreshMemberAudit;
 
       $scope.memberUrl = function () {
-        return $scope.currentMember && ($scope.currentMember.id) && (MONGOLAB_CONFIG.baseUrl + MONGOLAB_CONFIG.database + '/collections/members/' + MemberService.extractMemberId($scope.currentMember));
+        return MemberService.memberUrl($scope.currentMember);
       };
 
       $scope.saveMemberDetails = function () {

@@ -60,7 +60,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

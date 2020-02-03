@@ -18,6 +18,8 @@ function logNamespace(moduleName) {
 }
 
 module.exports = {
+  auth: {
+    secret: validatedEnvironmentVariable("AUTH_SECRET")},
   aws: {
     accessKeyId: validatedEnvironmentVariable("AWS_ACCESS_KEY_ID"),
     baseHostingUrl: "http://s3-" + config.aws.region + "." + config.aws.domain + "/" + config.aws.bucket,

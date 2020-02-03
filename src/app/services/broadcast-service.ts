@@ -39,7 +39,7 @@ export class BroadcastService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
     const temp = new Observable(((observer: Observer<NamedEvent>) => {
       this.observer = observer;
     }));

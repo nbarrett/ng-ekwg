@@ -30,7 +30,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(LoginModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {

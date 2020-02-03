@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../functions/chain";
-import { Member } from "../models/member.model";
+import { MailchimpSubscription, Member } from "../models/member.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NumberUtilsService } from "./number-utils.service";
 
@@ -18,7 +18,7 @@ export class MemberService {
   constructor(private http: HttpClient,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberService, NgxLoggerLevel.OFF);
   }
 
   filterFor = {
@@ -87,6 +87,15 @@ export class MemberService {
     return apiResponse.response;
   }
 
+  async updateMailSubscription(memberId: string, listType: string, subscription: MailchimpSubscription): Promise<Member> {
+    const body: any = {mailchimpLists: {}};
+    body.mailchimpLists[listType] = subscription;
+    this.logger.debug("updating member id", memberId, listType, "subscription:", body);
+    const apiResponse = await this.http.put<{ response: Member }>(`${this.BASE_URL}/${memberId}/email-subscription`, body).toPromise();
+    this.logger.debug("updated member id", memberId, listType, "subscription:", body, "response:", apiResponse);
+    return apiResponse.response;
+  }
+
   async delete(member: Member): Promise<Member> {
     this.logger.debug("deleting", member);
     const apiResponse = await this.http.delete<{ response: Member }>(this.BASE_URL + "/" + member.id).toPromise();
@@ -94,10 +103,14 @@ export class MemberService {
     return apiResponse.response;
   }
 
-  setPasswordResetId(member) {
+  setPasswordResetId(member: Member) {
     member.passwordResetId = this.numberUtils.generateUid();
     this.logger.debug("member.userName", member.userName, "member.passwordResetId", member.passwordResetId);
     return member;
+  }
+
+  memberUrl(member: Member) {
+    return member && (member.id) && this.BASE_URL + "/" + member.id;
   }
 
   async createOrUpdate(member: Member): Promise<Member> {
