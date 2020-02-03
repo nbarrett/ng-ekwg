@@ -16,6 +16,7 @@
     "e2e-single": "protractor ./protractor.conf.js --mochaOpts.grep",
     "report": "serenity run",
     "test": "failsafe e2e report",
+    "unit-test": ". scripts/setenv-test.sh && mocha lib/**/*.spec.js --reporter spec",
     "webdriver-manager": "webdriver-manager",
     "webdriver:update": "npm run webdriver-manager update"
   },
