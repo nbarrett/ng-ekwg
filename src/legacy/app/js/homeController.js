@@ -5,7 +5,7 @@ angular.module('ekwgApp')
 
     $scope.feeds = {instagram: {recentMedia: []}, facebook: {}};
 
-    ContentMetaDataService.getMetaData('imagesHome')
+    ContentMetaDataService.items('imagesHome')
       .then(function (contentMetaData) {
         $scope.interval = 5000;
         $scope.slides = contentMetaData.files;

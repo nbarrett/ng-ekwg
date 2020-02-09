@@ -1,11 +1,15 @@
 import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AdminAuthGuard } from "./admin-auth-guard.service";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
 import { SetPasswordComponent } from "./login/set-password.component";
 import { LogoutComponent } from "./logout/logout.component";
+import { AdminComponent } from "./pages/admin/admin/admin.component";
+import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
+import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
@@ -19,6 +23,9 @@ import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 const routes: Routes = [
+  {path: "admin", component: AdminComponent},
+  {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "mailing-preferences", component: MailingPreferencesComponent},
   {path: "set-password/:password-reset-id", component: SetPasswordComponent},

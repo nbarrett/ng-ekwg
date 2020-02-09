@@ -1,16 +1,15 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
 import { NgxLoggerLevel } from "ngx-logger";
-import { AuthService } from "../auth/auth.service";
-import { MemberCookie } from "../models/member.model";
-import { FullNamePipe } from "../pipes/full-name.pipe";
-import { BroadcastService } from "./broadcast-service";
-import { CookieParserService } from "./cookie-parser.service";
-import { DateUtilsService } from "./date-utils.service";
-import { Logger, LoggerFactory } from "./logger-factory.service";
-import { MemberService } from "./member.service";
-import { NumberUtilsService } from "./number-utils.service";
-import { UrlService } from "./url.service";
+import { AuthService } from "../../auth/auth.service";
+import { MemberCookie } from "../../models/member.model";
+import { FullNamePipe } from "../../pipes/full-name.pipe";
+import { BroadcastService } from "../broadcast-service";
+import { CookieParserService } from "../cookie-parser.service";
+import { DateUtilsService } from "../date-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
+import { NumberUtilsService } from "../number-utils.service";
+import { UrlService } from "../url.service";
 
 @Injectable({
   providedIn: "root"
@@ -20,8 +19,6 @@ export class MemberLoginService {
   private logger: Logger;
 
   constructor(
-    @Inject("MemberAuditService") private memberAuditService,
-    private memberService: MemberService,
     private fullNamePipe: FullNamePipe,
     private broadcastService: BroadcastService,
     private authService: AuthService,

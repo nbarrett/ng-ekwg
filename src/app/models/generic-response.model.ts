@@ -1,3 +1,3 @@
-export interface NumericIdentier {
+export interface NumericIdentifier {
   id: number;
 }

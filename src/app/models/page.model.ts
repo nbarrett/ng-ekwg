@@ -3,3 +3,4 @@ export interface Page {
   title: string;
   migrated?: boolean;
 }
+

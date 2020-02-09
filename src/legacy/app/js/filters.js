@@ -37,21 +37,9 @@ angular.module('ekwgApp')
       return member ? ($filter('fullName')(member, defaultValue)) + (member.nameAlias ? ' (' + member.nameAlias + ')' : '') : defaultValue;
     }
   })
-  .filter('fullNameWithAliasOrMe', function ($filter, MemberLoginService) {
-    return function (member, defaultValue, memberId) {
-      return member ? (MemberLoginService.loggedInMember().memberId === MemberService.extractMemberId(member) && MemberService.extractMemberId(member) === memberId ? "Me" : ($filter('fullName')(member, defaultValue)) + (member.nameAlias ? ' (' + member.nameAlias + ')' : '')) : defaultValue;
-    }
-  })
   .filter('firstName', function ($filter) {
     return function (member, defaultValue) {
       return s.words($filter('fullName')(member, defaultValue))[0];
-    }
-  })
-  .filter('memberIdsToFullNames', function ($filter) {
-    return function (memberIds, members, defaultValue) {
-      return _(memberIds).map(function (memberId) {
-        return $filter('memberIdToFullName')(memberId, members, defaultValue);
-      }).join(', ');
     }
   })
   .filter('memberIdToFullName', function ($filter, MemberService, FilterUtils) {
@@ -123,18 +111,3 @@ angular.module('ekwgApp')
       return DateUtils.displayDateAndTime(dateValue);
     }
   })
-  .filter('lastConfirmedDateDisplayed', function (DateUtils) {
-    return function (member) {
-      return member && member.profileSettingsConfirmedAt ? 'by ' + (member.profileSettingsConfirmedBy || 'member') + ' at ' + DateUtils.displayDateAndTime(member.profileSettingsConfirmedAt) : 'not confirmed yet';
-    }
-  })
-  .filter('createdAudit', function (StringUtils) {
-    return function (resource, members) {
-      return StringUtils.formatAudit(resource.createdBy, resource.createdDate, members)
-    }
-  })
-  .filter('updatedAudit', function (StringUtils) {
-    return function (resource, members) {
-      return StringUtils.formatAudit(resource.updatedBy, resource.updatedDate, members)
-    }
-  });

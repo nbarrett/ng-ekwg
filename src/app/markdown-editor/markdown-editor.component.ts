@@ -10,7 +10,7 @@ import { ContentText } from "../models/content-text.model";
 import { BroadcastService, NamedEvent, NamedEventType } from "../services/broadcast-service";
 import { ContentTextService } from "../services/content-text.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { MemberLoginService } from "../services/member-login.service";
+import { MemberLoginService } from "../services/member/member-login.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 
 export interface EditorState {

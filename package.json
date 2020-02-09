@@ -75,6 +75,7 @@
     "moment-timezone": "0.5.27",
     "ng-csv": "0.3.6",
     "ng-file-upload": "12.2.13",
+    "ng2-file-upload": "1.4.0",
     "ngx-bootstrap": "5.5.0",
     "ngx-build-plus": "9.0.2",
     "ngx-cookie-service": "2.2.0",
@@ -132,7 +133,7 @@
     "webpack-bundle-analyzer": "3.6.0"
   },
   "engines": {
-    "node": "10.15.3",
-    "npm": "6.4.1"
+    "node": "13.8.0",
+    "npm": "6.13.6"
   }
 }

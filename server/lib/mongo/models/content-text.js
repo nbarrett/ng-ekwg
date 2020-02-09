@@ -6,4 +6,4 @@ const contextTextSchema = mongoose.Schema({
   category: {type: String}
 }, {collection: "contentText"});
 
-module.exports = mongoose.model("ContentText", contextTextSchema);
+module.exports = mongoose.model("content-text", contextTextSchema);

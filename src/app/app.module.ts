@@ -6,6 +6,7 @@ import { ActivatedRoute } from "@angular/router";
 import { setUpLocationSync } from "@angular/router/upgrade";
 import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
 import { Angular2CsvModule } from "angular2-csv";
+import { FileUploadModule } from "ng2-file-upload";
 import { ModalModule } from "ngx-bootstrap";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
@@ -18,20 +19,14 @@ import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger
 import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
+import { AdminAuthGuard } from "./admin-auth-guard.service";
 import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
-  CommitteeConfigProvider,
-  ConfigDataProvider,
-  GoogleMapsConfigProvider,
   LegacyUrlService,
   MailchimpCampaignServiceProvider,
-  MailchimpConfigProvider,
+  MailchimpListServiceProvider,
   MailchimpSegmentServiceProvider,
-  MeetupServiceProvider,
-  MemberAuditServiceProvider,
-  MemberLoginServiceProvider,
-  NotifierProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
   WalksServiceProvider
@@ -69,10 +64,15 @@ import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/te
 import { MeetupDescriptionComponent } from "./notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
+import { AdminComponent } from "./pages/admin/admin/admin.component";
+import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
+import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
+import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "./pages/login/login-modal/login-modal.component";
+import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/reset-password-modal.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
@@ -88,6 +88,7 @@ import { PanelExpanderComponent } from "./panel-expander/panel-expander.componen
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
 import { ChangedItemsPipe } from "./pipes/changed-items.pipe";
+import { CreatedAuditPipe } from "./pipes/created-audit-pipe";
 import { DisplayDateAndTimePipe } from "./pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "./pipes/display-date.pipe";
 import { DisplayDatesPipe } from "./pipes/display-dates.pipe";
@@ -97,31 +98,38 @@ import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pi
 import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
 import { HumanisePipe } from "./pipes/humanise.pipe";
+import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displayed.pipe";
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { SnakeCasePipe } from "./pipes/snakecase.pipe";
+import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { VenueIconPipe } from "./pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
 import { WalkValidationsListPipe } from "./pipes/walk-validations.pipe";
 import { BroadcastService } from "./services/broadcast-service";
+import { CommitteeConfigService } from "./services/commitee-config.service";
 import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
 import { ConfigService } from "./services/config.service";
+import { ContentMetadataService } from "./services/content-metadata.service";
 import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
+import { DbUtilsService } from "./services/db-utils.service";
 import { EmailSubscriptionService } from "./services/email-subscription.service";
 import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
+import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpErrorParserService } from "./services/mailchimp-error-parser.service";
-import { MemberLoginService } from "./services/member-login.service";
-import { MemberNamingService } from "./services/member-naming.service";
-import { MemberService } from "./services/member.service";
+import { MemberLoginService } from "./services/member/member-login.service";
+import { MemberNamingService } from "./services/member/member-naming.service";
+import { MemberService } from "./services/member/member.service";
 import { NotifierService } from "./services/notifier.service";
 import { NumberUtilsService } from "./services/number-utils.service";
 import { PageService } from "./services/page.service";
+import { ProfileConfirmationService } from "./services/profile-confirmation.service";
 import { RouterHistoryService } from "./services/router-history.service";
 import { StringUtilsService } from "./services/string-utils.service";
 import { UrlService } from "./services/url.service";
@@ -133,11 +141,11 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
-import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/reset-password-modal.component";
 
 @NgModule({
   declarations: [
     AccordionGroupComponent,
+    AdminComponent,
     AppComponent,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
@@ -145,6 +153,7 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     ChangedItemsPipe,
     ContactUsComponent,
     ContactUsDirective,
+    CreatedAuditPipe,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
@@ -157,6 +166,7 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     FullNameWithAliasPipe,
     HumanisePipe,
     JoinUsComponent,
+    LastConfirmedDateDisplayed,
     LoginComponent,
     LoginModalComponent,
     LoginPanelComponent,
@@ -167,6 +177,9 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     MarkdownEditorComponent,
     MeetupDescriptionComponent,
     MeetupEventSummaryPipe,
+    MemberAdminComponent,
+    MemberAdminModalComponent,
+    MemberBulkLoadComponent,
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
     NonRenderingComponent,
@@ -181,6 +194,7 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     SiteEditComponent,
     SiteNavigatorComponent,
     SnakeCasePipe,
+    UpdatedAuditPipe,
     ValueOrDefaultPipe,
     VenueIconPipe,
     WalkAddSlotsComponent,
@@ -214,6 +228,7 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     WalkViewComponent,
   ],
   imports: [
+    FileUploadModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     Angular2CsvModule,
@@ -222,9 +237,9 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
     BrowserModule,
     BsDatepickerModule.forRoot(),
     HttpClientModule,
-    ModalModule.forRoot(),
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
+    ModalModule.forRoot(),
     PopoverModule.forRoot(),
     TabsModule.forRoot(),
     TooltipModule.forRoot(),
@@ -233,59 +248,59 @@ import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    AdminAuthGuard,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
     BroadcastService,
     ChangedItemsPipe,
     ClipboardServiceProvider,
-    CommitteeConfigProvider,
     CommitteeReferenceDataService,
-    ConfigDataProvider,
-    EmailSubscriptionService,
     CookieService,
+    CreatedAuditPipe,
     CustomNGXLoggerService,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    EmailSubscriptionService,
     EventNotePipe,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
-    SnakeCasePipe,
-    WalkValidationsListPipe,
-    GoogleMapsConfigProvider,
-    MemberLoginServiceProvider,
+    LastConfirmedDateDisplayed,
     MailchimpCampaignServiceProvider,
-    MailchimpConfigProvider,
+    MailchimpConfigService,
+    CommitteeConfigService,
+    MailchimpListServiceProvider,
     MailchimpSegmentServiceProvider,
     MeetupEventSummaryPipe,
-    MeetupServiceProvider,
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
-    NotifierProvider,
     NotifierService,
     RamblersUploadAuditProvider,
     RamblersWalksAndEventsServiceProvider,
     RouterHistoryService,
     SearchFilterPipe,
     SiteEditService,
+    SnakeCasePipe,
+    UpdatedAuditPipe,
     ValueOrDefaultPipe,
     VenueIconPipe,
     WalkEventTypePipe,
     WalkNotificationService,
     WalksAuthGuard,
     WalksServiceProvider,
-    MemberAuditServiceProvider,
     WalkSummaryPipe,
+    WalkValidationsListPipe,
   ],
   entryComponents: [
     AppComponent,
     ContactUsDirective,
     LoginModalComponent,
     ResetPasswordModalComponent,
+    MemberAdminModalComponent,
     ForgotPasswordModalComponent,
     MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
@@ -321,8 +336,14 @@ export class AppModule implements DoBootstrap {
       // .factory("$location", downgradeInjectable($locationShim))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("PageService", downgradeInjectable(PageService))
+      .factory("DbUtils", downgradeInjectable(DbUtilsService))
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))
+      .factory("ContentMetaDataService", downgradeInjectable(ContentMetadataService))
       .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
+      .factory("ContentMetadataService", downgradeInjectable(ContentMetadataService))
+      .factory("MailchimpConfig", downgradeInjectable(MailchimpConfigService))
+      .factory("CommitteeConfig", downgradeInjectable(CommitteeConfigService))
+      .factory("ProfileConfirmationService", downgradeInjectable(ProfileConfirmationService))
       .factory("MemberLoginService", downgradeInjectable(MemberLoginService))
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
       .factory("ContentText", downgradeInjectable(ContentTextService))

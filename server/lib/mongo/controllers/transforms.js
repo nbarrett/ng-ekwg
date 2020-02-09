@@ -1,12 +1,12 @@
 const _ = require("lodash");
 const config = require("../../config/config");
 const debug = require("debug")(config.logNamespace("transforms"));
+debug.enabled = false;
 
 exports.toObjectWithId = (document) => {
   return document ? {
     id: document._id,
-    ...
-      _.omit(document.toObject(), ["_id", "__v"])
+    ..._.omit(document.toObject(), ["_id", "__v"])
   } : document;
 }
 
@@ -35,6 +35,24 @@ exports.setUnSetDocument = (document, parent, parentResponse) => {
 exports.criteria = req => {
   return {_id: req.params.id};
 };
+
+exports.parseQueryStringParameters = (req) => {
+  const parse = (queryParameter) => {
+    if (req.query) {
+      const value = req.query[queryParameter];
+      return value ? typeof value === "string" ? JSON.parse(value) : value : {};
+    } else {
+      return {};
+    }
+  };
+
+  return {
+    criteria: parse("criteria"),
+    select: parse("select"),
+    sort: parse("sort")
+  }
+};
+
 
 exports.updateDocumentRequest = function (req) {
   const documentMinusIds = _.omit(req.body, ["_id", "__v", "id"]);

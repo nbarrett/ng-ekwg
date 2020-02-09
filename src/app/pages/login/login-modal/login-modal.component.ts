@@ -5,7 +5,7 @@ import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MemberLoginService } from "../../../services/member-login.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";

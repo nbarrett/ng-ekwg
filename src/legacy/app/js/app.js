@@ -1,10 +1,7 @@
 const mainPages = {
   HOME: "/",
-  WALKS: "/walks",
   SOCIAL: "/social",
-  JOIN_US: "/join-us",
   COMMITTEE: "/committee",
-  ADMIN: "/admin",
   HOW_TO: "/how-to"
 };
 
@@ -50,16 +47,6 @@ angular.module("ekwgApp", [
     uiSelectConfig.closeOnSelect = false;
 
     $routeProvider
-      .when(mainPages.ADMIN + "/expenseId/:expenseId", {
-        controller: "AdminController",
-        templateUrl: "partials/admin/admin.html",
-        title: "expenses"
-      })
-      .when(mainPages.ADMIN + "/:area?", {
-        controller: "AdminController",
-        templateUrl: "partials/admin/admin.html",
-        title: "admin"
-      })
       .when(mainPages.COMMITTEE + "/committeeFileId/:committeeFileId", {
         controller: "CommitteeController", templateUrl: "partials/committee/committee.html", title: "AGM and committee"
       })

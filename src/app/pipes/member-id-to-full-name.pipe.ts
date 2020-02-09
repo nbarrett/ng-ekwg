@@ -1,6 +1,6 @@
-import { Inject, Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from "@angular/core";
 import { Member } from "../models/member.model";
-import { MemberService } from "../services/member.service";
+import { MemberService } from "../services/member/member.service";
 import { FullNameWithAliasPipe } from "./full-name-with-alias.pipe";
 import { FullNamePipe } from "./full-name.pipe";
 

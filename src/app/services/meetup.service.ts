@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import get from "lodash-es/get";
 import has from "lodash-es/has";
@@ -8,7 +8,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import { ApiResponse } from "../models/api-response.model";
-import { NumericIdentier } from "../models/generic-response.model";
+import { NumericIdentifier } from "../models/generic-response.model";
 import { MeetupConfig } from "../models/meetup-config.model";
 import { MeetupErrorResponse } from "../models/meetup-error-response.model";
 import { MeetupEventDetailedResponse } from "../models/meetup-event-detailed-response.model";
@@ -41,6 +41,7 @@ export enum MeetupStatus {
   providedIn: "root"
 })
 export class MeetupService {
+  private BASE_URL = "/api/meetup";
   private receivedEvents: MeetupEventResponse[] = [];
   private eventsUpdated = new Subject<MeetupEventResponse[]>();
   private logger: Logger;
@@ -94,7 +95,7 @@ export class MeetupService {
     const queryParams = `?query=${query}`;
     return this.http
       .get<ApiResponse>(
-        "/api/meetup/locations" + queryParams
+        `${this.BASE_URL}/locations${queryParams}`
       ).pipe(
         mergeMap(apiResponse => {
           this.logger.debug("events API response", apiResponse);
@@ -108,7 +109,7 @@ export class MeetupService {
     const queryParams = `?status=${queriedStatus}`;
     this.http
       .get<ApiResponse>(
-        "/api/meetup/events" + queryParams
+        `${this.BASE_URL}/events${queryParams}`
       )
       .subscribe(apiResponse => {
         this.logger.debug("events API response", apiResponse);
@@ -151,7 +152,7 @@ export class MeetupService {
       if (eventDeletable) {
         notify.progress({title: "Meetup", message: "Deleting existing event"});
         const eventId = this.eventIdFrom(walk);
-        const apiResponse: ApiResponse = await this.http.delete<ApiResponse>("/api/meetup/events/delete/" + eventId).toPromise();
+        const apiResponse: ApiResponse = await this.http.delete<ApiResponse>(`${this.BASE_URL}/events/delete/${eventId}`).toPromise();
         this.logger.debug("delete event API response", apiResponse);
       }
       walk.meetupPublish = false;
@@ -167,7 +168,7 @@ export class MeetupService {
     try {
       notify.progress({title: "Meetup", message: "Creating new event"});
       const eventRequest = await this.eventRequestFor(notify, walk, description);
-      const apiResponse = await this.http.post<ApiResponse>("/api/meetup/events/create", eventRequest).toPromise();
+      const apiResponse = await this.http.post<ApiResponse>(`${this.BASE_URL}/events/create`, eventRequest).toPromise();
       this.logger.debug("create event API response", apiResponse);
       const eventResponse: MeetupEventResponse = apiResponse.response;
       walk.meetupEventUrl = eventResponse.link;
@@ -178,11 +179,11 @@ export class MeetupService {
     }
   }
 
-  async createOrMatchVenue(notify: AlertInstance, walk: Walk): Promise<NumericIdentier> {
+  async createOrMatchVenue(notify: AlertInstance, walk: Walk): Promise<NumericIdentifier> {
     notify.progress({title: "Meetup", message: "Creating new venue"});
     const venueRequest = this.venueRequestFor(walk);
     try {
-      const createResponse = await this.http.post<ApiResponse>("/api/meetup/venues/create", venueRequest).toPromise();
+      const createResponse = await this.http.post<ApiResponse>(`${this.BASE_URL}/venues/create`, venueRequest).toPromise();
       this.logger.debug("create venue API response", createResponse);
       if (createResponse.apiStatusCode === 409) {
         return this.extractMatchedVenue(createResponse.response);
@@ -190,11 +191,7 @@ export class MeetupService {
         return this.extractCreatedVenue(createResponse.response);
       }
     } catch (error) {
-      return Promise.reject("Venue request '"
-        + this.stringUtils.stringifyObject(venueRequest)
-        + "' was rejected by Meetup due to: '"
-        + this.extractErrorsFrom(error)
-        + "'. Try completing more venue details, or disable Meetup publishing.");
+      return Promise.reject(`Venue request '${this.stringUtils.stringifyObject(venueRequest)}' was rejected by Meetup due to: '${this.extractErrorsFrom(error)}'. Try completing more venue details, or disable Meetup publishing.`);
     }
   }
 
@@ -215,7 +212,7 @@ export class MeetupService {
       this.logger.debug("updateEvent for", walk);
       const request = await this.eventRequestFor(notify, walk, description);
       const eventId = this.eventIdFrom(walk);
-      const apiResponse = await this.http.patch<ApiResponse>("/api/meetup/events/update/" + eventId, request).toPromise();
+      const apiResponse = await this.http.patch<ApiResponse>(`${this.BASE_URL}/events/update/${eventId}`, request).toPromise();
       this.logger.debug("event update response for event id", eventId, "is", apiResponse);
       return apiResponse.response;
     } catch (error) {
@@ -227,7 +224,7 @@ export class MeetupService {
     notify.progress({title: "Meetup", message: "Checking for existence of event"});
     const eventId = this.eventIdFrom(walk);
     if (eventId) {
-      const apiResponse = await this.http.get<ApiResponse>("/api/meetup/events/" + eventId).toPromise();
+      const apiResponse = await this.http.get<ApiResponse>(`${this.BASE_URL}/events/${eventId}`).toPromise();
       this.logger.debug("event query response for event id", eventId, "is", apiResponse);
       return apiResponse.apiStatusCode === 200;
     } else {
@@ -239,7 +236,7 @@ export class MeetupService {
     notify.progress({title: "Meetup", message: "Checking whether event can be deleted"});
     const eventId = this.eventIdFrom(walk);
     if (eventId) {
-      const apiResponse = await this.http.get<ApiResponse>("/api/meetup/events/" + eventId).toPromise();
+      const apiResponse = await this.http.get<ApiResponse>(`${this.BASE_URL}/events/${eventId}`).toPromise();
       this.logger.debug("event query response for event id", eventId, "is", apiResponse);
       if (apiResponse.apiStatusCode === 200) {
         const event: MeetupEventDetailedResponse = apiResponse.response;
@@ -253,7 +250,7 @@ export class MeetupService {
   }
 
   async eventRequestFor(notify: AlertInstance, walk: Walk, description: string): Promise<MeetupEventRequest> {
-    const venueResponse: NumericIdentier = await this.createOrMatchVenue(notify, walk);
+    const venueResponse: NumericIdentifier = await this.createOrMatchVenue(notify, walk);
     this.logger.debug("venue for", walk.postcode, "is", venueResponse);
 
     const eventRequest = {
@@ -294,11 +291,11 @@ export class MeetupService {
     return walk.meetupEventUrl && last(walk.meetupEventUrl.split("/").filter(pathParameter => !isEmpty(pathParameter)));
   }
 
-  private extractMatchedVenue(response: MeetupVenueConflictResponse): NumericIdentier {
+  private extractMatchedVenue(response: MeetupVenueConflictResponse): NumericIdentifier {
     return {id: response.errors[0].potential_matches[0].id};
   }
 
-  private extractCreatedVenue(response: MeetupVenueResponse): NumericIdentier {
+  private extractCreatedVenue(response: MeetupVenueResponse): NumericIdentifier {
     return {id: response.id};
   }
 }

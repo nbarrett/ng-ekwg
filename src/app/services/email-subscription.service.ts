@@ -9,8 +9,8 @@ import { MailchimpSubscription, Member } from "../models/member.model";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { MailchimpErrorParserService } from "./mailchimp-error-parser.service";
-import { MemberLoginService } from "./member-login.service";
-import { MemberService } from "./member.service";
+import { MemberLoginService } from "./member/member-login.service";
+import { MemberService } from "./member/member.service";
 
 @Injectable({
   providedIn: "root"
@@ -51,7 +51,7 @@ export class EmailSubscriptionService {
     }
   }
 
-  defaultMailchimpSettings(member, subscribedState) {
+  defaultMailchimpSettings(member: Member, subscribedState: boolean) {
     member.mailchimpLists = {
       walks: {subscribed: subscribedState},
       socialEvents: {subscribed: subscribedState},

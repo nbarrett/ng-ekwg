@@ -10,5 +10,5 @@ const memberAuditSchema = mongoose.Schema({
 
 memberAuditSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model("MemberAudit", memberAuditSchema);
+module.exports = mongoose.model("member-audit", memberAuditSchema);
 

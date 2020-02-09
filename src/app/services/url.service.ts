@@ -7,6 +7,7 @@ import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
+import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -17,6 +18,7 @@ export class UrlService {
   private logger: Logger;
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
+              private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
@@ -27,12 +29,16 @@ export class UrlService {
   }
 
   navigateTo(page?: string, area?: string): Promise<boolean> {
-    const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
-    this.logger.debug("navigating to page:", page, "area:", area, "->", url);
-    return this.router.navigate([url], {relativeTo: this.route}).then((activated: boolean) => {
-      this.logger.debug("activated:", activated, "area is now:", this.area());
-      return activated;
-    });
+    if (this.siteEdit.active()) {
+      this.logger.info(`site edit active - not navigating to ${page} > ${area}`);
+    } else {
+      const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
+      this.logger.debug("navigating to page:", page, "area:", area, "->", url);
+      return this.router.navigate([url], {relativeTo: this.route}).then((activated: boolean) => {
+        this.logger.debug("activated:", activated, "area is now:", this.area());
+        return activated;
+      });
+    }
   }
 
   absUrl(): string {

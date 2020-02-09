@@ -1,37 +1,4 @@
 angular.module('ekwgApp')
-  .factory('MailchimpConfig', function (Config) {
-
-    function getConfig() {
-      return Config.getConfig('mailchimp', {
-        mailchimp: {
-          interestGroups: {
-            walks: {interestGroupingId: undefined},
-            socialEvents: {interestGroupingId: undefined},
-            general: {interestGroupingId: undefined}
-          },
-          segments: {
-            walks: {segmentId: undefined},
-            socialEvents: {segmentId: undefined},
-            general: {
-              passwordResetSegmentId: undefined,
-              forgottenPasswordSegmentId: undefined,
-              committeeSegmentId: undefined
-            }
-          }
-        }
-      })
-    }
-
-    function saveConfig(config, key, saveCallback, errorSaveCallback) {
-      return Config.saveConfig('mailchimp', config, key, saveCallback, errorSaveCallback);
-    }
-
-    return {
-      getConfig: getConfig,
-      saveConfig: saveConfig
-    }
-
-  })
   .factory('MailchimpHttpService', function ($log, $q, $http, MailchimpErrorParserService) {
 
     var logger = $log.getInstance('MailchimpHttpService');
@@ -397,10 +364,10 @@ angular.module('ekwgApp')
       return MailchimpHttpService.call('Batch unsubscribing members from Mailchimp List for ' + listType, 'POST', 'api/mailchimp/lists/' + listType + '/batchUnsubscribe', subscribers);
     };
 
-    var batchUnsubscribeMembers = function (listType, allMembers, notificationCallback) {
+    var batchUnsubscribeMembers = function (listType, allMembers, notify) {
       return listSubscribers(listType)
         .then(filterSubscriberResponsesForUnsubscriptions(listType, allMembers))
-        .then(batchUnsubscribeForListType(listType, allMembers, notificationCallback))
+        .then(batchUnsubscribeForListType(listType, allMembers, notify))
         .then(returnUpdatedMembers);
     };
 
@@ -408,18 +375,18 @@ angular.module('ekwgApp')
       return MemberService.all();
     }
 
-    function batchUnsubscribeForListType(listType, allMembers, notificationCallback) {
+    function batchUnsubscribeForListType(listType, allMembers, notify) {
       return function (subscribers) {
         if (subscribers.length > 0) {
           return batchUnsubscribe(listType, subscribers)
-            .then(removeSubscriberDetailsFromMembers(listType, allMembers, subscribers, notificationCallback));
+            .then(removeSubscriberDetailsFromMembers(listType, allMembers, subscribers, notify));
         } else {
-          notificationCallback('No members needed to be unsubscribed from ' + listType + ' list');
+          notify.progress({title: "List Unsubscription", message: 'No members needed to be unsubscribed from ' + listType + ' list'});
         }
       }
     }
 
-    function removeSubscriberDetailsFromMembers(listType, allMembers, subscribers, notificationCallback) {
+    function removeSubscriberDetailsFromMembers(listType, allMembers, subscribers, notify) {
       return function () {
         var updatedMembers = _.chain(subscribers)
           .map(function (subscriber) {
@@ -428,12 +395,12 @@ angular.module('ekwgApp')
               member.mailchimpLists[listType] = {subscribed: false, updated: true};
               return MemberService.update(member);
             } else {
-              notificationCallback('Could not find member from ' + listType + ' response containing data ' + JSON.stringify(subscriber));
+              notify.warning({title: "List Unsubscription", message: 'Could not find member from ' + listType + ' response containing data ' + JSON.stringify(subscriber)});
             }
           })
           .value();
         $q.all(updatedMembers).then(function () {
-          notificationCallback('Successfully unsubscribed ' + updatedMembers.length + ' member(s) from ' + listType + ' list');
+          notify.success({title: "List Unsubscription", message: 'Successfully unsubscribed ' + updatedMembers.length + ' member(s) from ' + listType + ' list'});
           return updatedMembers;
         })
       }

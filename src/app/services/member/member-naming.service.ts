@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Logger, LoggerFactory } from "./logger-factory.service";
-import { StringUtilsService } from "./string-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
+import { StringUtilsService } from "../string-utils.service";
 
 @Injectable({
   providedIn: "root"

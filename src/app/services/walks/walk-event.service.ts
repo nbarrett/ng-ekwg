@@ -13,7 +13,7 @@ import { WalkEvent } from "../../models/walk-event.model";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { DateUtilsService } from "../date-utils.service";
-import { MemberLoginService } from "../member-login.service";
+import { MemberLoginService } from "../member/member-login.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { StringUtilsService } from "../string-utils.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";

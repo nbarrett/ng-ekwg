@@ -1,0 +1,164 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="wrapper">
+    <div id="page-body" role="main">
+      <div class="body-header">
+        <div class="breadcrumbs">
+          <ul>
+            <li><a [routerLink]="'/'" title="Home">Home</a></li>
+            <li><a [routerLink]="'/admin'" title="Admin">Admin</a></li>
+            <li class="last">Member Admin</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="admin-frame round" *ngIf="memberFilter">
+        <div class="admin-header-background round">
+          <div class="admin-header-container">
+            <div class="form-inline" role="form">
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-addon">
+                    <i class="glyphicon glyphicon-search"></i>
+                  </div>
+                  <input id="quick-search" [(ngModel)]="quickSearch"
+                         (ngModelChange)="onSearchChange($event)"
+                         name="quickSearch"
+                         class="form-control input-sm round"
+                         type="text" placeholder="Quick Search">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="spaced-label" for="filter-members">Filter:</label>
+                <select class="form-control input-sm"
+                        [(ngModel)]="memberFilter.selectedFilter"
+                        (ngModelChange)="refreshMembers($event)"
+                        id="filter-members">
+                  <option *ngFor="let tableFilterItem of memberFilter.availableFilters"
+                          [ngValue]="tableFilterItem  "
+                          [textContent]="tableFilterItem.title">
+                  </option>
+                </select>
+
+              </div>
+              <div class="form-group">
+                <p class="search-results round">Showing {{memberFilter.results.length}} member(s)</p>
+              </div>
+              <div class="form-group admin-header-buttons">
+                <input [disabled]="listsUpdating" type="submit" value="Add New Member"
+                       (click)="addMember()" title="Add New Member"
+                       [ngClass]="listsUpdating ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+                <input [disabled]="listsUpdating" type="submit" value="Send Emails"
+                       (click)="showSendEmailsDialog()" title="Send Emails"
+                       [ngClass]="listsUpdating ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+                <input [disabled]="listsUpdating" type="submit" value="Update Mailchimp Lists"
+                       (click)="updateMailchimpLists()" title="Update Mailchimp Lists"
+                       [ngClass]="listsUpdating ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+                <div *ngIf="notifyTarget.showAlert">
+                  <div class="alert {{notifyTarget.alertClass}}"><i
+                    class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+                    {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <table class="round tbl-green-g table-responsive table-striped table-hover table-condensed">
+            <thead>
+            <tr class="white-anchor">
+              <th>Action</th>
+              <th>
+                <div (click)="sortMembersBy('memberName')">Member Name
+                  <span class="sorting-header" *ngIf="showMembersColumn('memberName')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('mobileNumber')">Mobile Number
+                  <span class="sorting-header" *ngIf="showMembersColumn('mobileNumber')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('createdDate')">Created Date
+                  <span class="sorting-header" *ngIf="showMembersColumn('createdDate')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('membershipExpiryDate')">Expiry Date
+                  <span class="sorting-header" *ngIf="showMembersColumn('membershipExpiryDate')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('receivedInLastBulkLoad')">Last Bulk Load
+                  <span class="sorting-header" *ngIf="showMembersColumn('receivedInLastBulkLoad')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('groupMember')">Group Member
+                  <span class="sorting-header" *ngIf="showMembersColumn('groupMember')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('socialMember')">Social Member
+                  <span class="sorting-header" *ngIf="showMembersColumn('socialMember')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('mailchimpLists.walks.subscribed')">Walks emails
+                  <span class="sorting-header" *ngIf="showMembersColumn('mailchimpLists.walks.subscribed')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('mailchimpLists.socialEvents.subscribed')">Social emails
+                  <span class="sorting-header"
+                        *ngIf="showMembersColumn('mailchimpLists.socialEvents.subscribed')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+              <th>
+                <div (click)="sortMembersBy('mailchimpLists.general.subscribed')">General emails
+                  <span class="sorting-header"
+                        *ngIf="showMembersColumn('mailchimpLists.general.subscribed')"
+                        [textContent]="memberFilter.sortDirection"></span>
+                </div>
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let member of memberFilter.results">
+              <td>
+                <input (click)="editMember(member)" type="submit" value="edit"
+                       [disabled]="listsUpdating"
+                       [ngClass]="listsUpdating ? 'disabled-button-form': 'button-form'">
+              </td>
+              <td><a [href]="'mailto:' + member.email">
+                        <span tooltip-placement="right"
+                              tooltip="Click to email {{member | fullNameWithAlias}} at {{member.email}}">{{member | fullNameWithAlias}}</span></a>
+              </td>
+              <td>
+                <a [href]="'tel: ' + member.mobileNumber">
+                                            <span tooltip-placement="right"
+                                                  tooltip="Click to ring {{member | fullNameWithAlias}} on {{member.mobileNumber}} (mobile devices only)">{{member.mobileNumber}}</span></a>
+              </td>
+              <td class="nowrap">{{member.createdDate | displayDate}}</td>
+              <td class="nowrap">{{member.membershipExpiryDate | displayDate}}</td>
+              <td [ngClass]="member.receivedInLastBulkLoad ? 'checkbox-on' : 'checkbox-off'"></td>
+              <td [ngClass]="member.groupMember ? 'checkbox-on' : 'checkbox-off'"></td>
+              <td [ngClass]="member.socialMember ? 'checkbox-on' : 'checkbox-off'"></td>
+              <td [ngClass]="member.mailchimpLists.walks.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+              <td [ngClass]="member.mailchimpLists.socialEvents.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+              <td [ngClass]="member.mailchimpLists.general.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

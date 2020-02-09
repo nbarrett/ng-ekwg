@@ -106,6 +106,16 @@ describe("DateUtilsService", () => {
 
   });
 
+  describe("displayDateAndTime", () => {
+
+    it("should display date with time", () => {
+      const dateUtils: DateUtilsService = TestBed.get(DateUtilsService);
+      expect(dateUtils.displayDateAndTime(1576771476573)).toBe("Thu 19-Dec-2019, 4:04:36 pm");
+      expect(dateUtils.displayDateAndTime(1580811420982)).toBe("Tue 04-Feb-2020, 10:17:00 am");
+    });
+
+  });
+
   describe("parseTime", () => {
 
     it("should format morning time without minutes and optionally am suffix", () => {

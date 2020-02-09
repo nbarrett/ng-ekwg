@@ -1,11 +1,14 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
-import { chain } from "../functions/chain";
-import { MailchimpSubscription, Member } from "../models/member.model";
-import { Logger, LoggerFactory } from "./logger-factory.service";
-import { NumberUtilsService } from "./number-utils.service";
+import { Observable, Subject } from "rxjs";
+import { share } from "rxjs/operators";
+import { chain } from "../../functions/chain";
+import { MailchimpSubscription, Member, MemberApiResponse } from "../../models/member.model";
+import { CommonDataService } from "../common-data-service";
+import { DbUtilsService } from "../db-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
+import { NumberUtilsService } from "../number-utils.service";
 
 @Injectable({
   providedIn: "root"
@@ -14,11 +17,14 @@ export class MemberService {
 
   private BASE_URL = "/api/database/member";
   private logger: Logger;
+  private memberNotifications = new Subject<MemberApiResponse>();
 
   constructor(private http: HttpClient,
               private numberUtils: NumberUtilsService,
+              private dbUtils: DbUtilsService,
+              private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MemberService, NgxLoggerLevel.DEBUG);
   }
 
   filterFor = {
@@ -30,77 +36,85 @@ export class MemberService {
     SOCIAL_MEMBERS: member => member.groupMember && member.socialMember,
   };
 
+  private async responseFrom(observable: Observable<MemberApiResponse>): Promise<MemberApiResponse> {
+    const shared = observable.pipe(share());
+    shared.subscribe((memberAPIResponse: MemberApiResponse) => {
+      this.logger.info("memberAPIResponse", memberAPIResponse);
+      this.memberNotifications.next(memberAPIResponse);
+    }, (httpErrorResponse: HttpErrorResponse) => {
+      this.logger.error("httpErrorResponse", httpErrorResponse);
+      this.memberNotifications.next(httpErrorResponse.error);
+    });
+    return await shared.toPromise();
+  }
+
+  notifications(): Observable<MemberApiResponse> {
+    return this.memberNotifications.asObservable();
+  }
+
   getMemberForUserName(userName: string): Promise<Member> {
     return this.query({userName: userName.toLowerCase()});
   }
 
   async query(criteria?: object): Promise<Member> {
-    const params = this.convertToParams(criteria);
+    const params = this.commonDataService.toHttpParams(criteria);
     this.logger.debug("find-one:criteria", criteria, "params", params.toString());
     const apiResponse = await this.http.get<Member>(`${this.BASE_URL}/find-one`, {params}).toPromise();
-    this.logger.debug("find-one - received", apiResponse);
+    this.logger.debug("find-one:received", apiResponse);
     return apiResponse;
-  }
-
-  private convertToParams(criteria: object): HttpParams {
-    let params = new HttpParams();
-    each(criteria, (value, field) => {
-      params = params.set(field, value);
-      this.logger.debug("query setting params field:", field, "value:", value);
-    });
-    return params;
   }
 
   async all(criteria?: object): Promise<Member[]> {
-    const params = this.convertToParams(criteria);
+    const params = this.commonDataService.toHttpParams(criteria);
     this.logger.debug("all:params", params.toString());
-    const apiResponse = await this.http.get<Member[]>(`${this.BASE_URL}/all`, {params}).toPromise();
-    this.logger.debug("all:params", params.toString(), "received", apiResponse.length, "members");
-    return apiResponse;
+    const response = await this.responseFrom(this.http.get<MemberApiResponse>(`${this.BASE_URL}/all`, {params}));
+    const responses = response.response as Member[];
+    this.logger.debug("all:params", params.toString(), "received", responses.length, "members");
+    return responses;
   }
 
   async getById(memberId: string): Promise<Member> {
     this.logger.debug("getById:", memberId);
-    const apiResponse = await this.http.get<Member>(`${this.BASE_URL}/${memberId}`).toPromise();
+    const apiResponse = await this.responseFrom(this.http.get<MemberApiResponse>(`${this.BASE_URL}/${memberId}`));
     this.logger.debug("getById - received", apiResponse);
-    return apiResponse;
+    return apiResponse.response as Member;
   }
 
   async getMemberByPasswordResetId(passwordResetId): Promise<Member> {
     this.logger.debug("getMemberByPasswordResetId:", passwordResetId);
-    const apiResponse = await this.http.get<Member>(`${this.BASE_URL}/password-reset-id/${passwordResetId}`).toPromise();
+    const apiResponse = await this.responseFrom(this.http.get<MemberApiResponse>(`${this.BASE_URL}/password-reset-id/${passwordResetId}`));
     this.logger.debug("getMemberByPasswordResetId - received", apiResponse);
-    return apiResponse;
+    return apiResponse.response as Member;
   }
 
   async create(member: Member): Promise<Member> {
     this.logger.debug("creating", member);
-    const apiResponse = await this.http.post<{ response: Member }>(this.BASE_URL, member).toPromise();
+    const apiResponse = await this.responseFrom(this.http.post<MemberApiResponse>(this.BASE_URL, this.dbUtils.performAudit(member)));
     this.logger.debug("created", member, "- received", apiResponse);
-    return apiResponse.response;
+    return apiResponse.response as Member;
   }
 
   async update(member: Member): Promise<Member> {
     this.logger.debug("updating", member);
-    const apiResponse = await this.http.put<{ response: Member }>(this.BASE_URL + "/" + member.id, member).toPromise();
+    const apiResponse = await this.responseFrom(this.http.put<MemberApiResponse>(this.BASE_URL + "/" + member.id, this.dbUtils.performAudit(member)));
     this.logger.debug("updated", member, "- received", apiResponse);
-    return apiResponse.response;
+    return apiResponse.response as Member;
   }
 
   async updateMailSubscription(memberId: string, listType: string, subscription: MailchimpSubscription): Promise<Member> {
     const body: any = {mailchimpLists: {}};
     body.mailchimpLists[listType] = subscription;
     this.logger.debug("updating member id", memberId, listType, "subscription:", body);
-    const apiResponse = await this.http.put<{ response: Member }>(`${this.BASE_URL}/${memberId}/email-subscription`, body).toPromise();
+    const apiResponse = await this.responseFrom(this.http.put<MemberApiResponse>(`${this.BASE_URL}/${memberId}/email-subscription`, body));
     this.logger.debug("updated member id", memberId, listType, "subscription:", body, "response:", apiResponse);
-    return apiResponse.response;
+    return apiResponse.response as Member;
   }
 
   async delete(member: Member): Promise<Member> {
     this.logger.debug("deleting", member);
-    const apiResponse = await this.http.delete<{ response: Member }>(this.BASE_URL + "/" + member.id).toPromise();
+    const apiResponse = await this.responseFrom(this.http.delete<MemberApiResponse>(this.BASE_URL + "/" + member.id));
     this.logger.debug("deleted", member, "- received", apiResponse);
-    return apiResponse.response;
+    return apiResponse.response as Member;
   }
 
   setPasswordResetId(member: Member) {

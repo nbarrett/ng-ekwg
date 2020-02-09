@@ -5,4 +5,4 @@ const refreshTokenSchema = mongoose.Schema({
   memberPayload: {type: Object, required: true}
 }, {collection: "refreshTokens"});
 
-module.exports = mongoose.model("RefreshToken", refreshTokenSchema);
+module.exports = mongoose.model("refresh-token", refreshTokenSchema);

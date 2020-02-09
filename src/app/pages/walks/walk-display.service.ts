@@ -9,12 +9,13 @@ import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
-import { Walk } from "../../models/walk.model";
+import { GoogleMapsConfig, Walk } from "../../models/walk.model";
 import { BroadcastService } from "../../services/broadcast-service";
 import { DateUtilsService } from "../../services/date-utils.service";
+import { GoogleMapsService } from "../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
-import { MemberLoginService } from "../../services/member-login.service";
-import { MemberService } from "../../services/member.service";
+import { MemberLoginService } from "../../services/member/member-login.service";
+import { MemberService } from "../../services/member/member.service";
 import { UrlService } from "../../services/url.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
@@ -51,16 +52,13 @@ export class WalkDisplayService {
   private nextWalkId: string;
   public members: Member [] = [];
   public ramblersWalkBaseUrl: string;
-  public googleMapsConfig: {
-    apiKey: string;
-    zoomLevel: number;
-  };
+  public googleMapsConfig: GoogleMapsConfig;
   loggedIn: boolean;
 
   constructor(
     @Inject("ClipboardService") private clipboardService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
-    @Inject("GoogleMapsConfig") private googleMapsConfigService,
+    private googleMapsService: GoogleMapsService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
     private router: Router,
@@ -74,7 +72,7 @@ export class WalkDisplayService {
     private broadcastService: BroadcastService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
-    this.refreshGoogleMapsConfig();
+    this.refreshGoogleMapsService();
     this.refreshRamblersConfig();
     this.refreshMembers();
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
@@ -99,10 +97,9 @@ export class WalkDisplayService {
     return expandedWalk && expandedWalk.mode === WalkViewMode.EDIT;
   }
 
-  refreshGoogleMapsConfig() {
-    this.googleMapsConfigService.getConfig().then(googleMapsConfig => {
-      this.googleMapsConfig = googleMapsConfig;
-      this.googleMapsConfig.zoomLevel = 12;
+  refreshGoogleMapsService() {
+    this.googleMapsService.getConfig().then(config => {
+      this.googleMapsConfig = {zoomLevel: 12, apiKey: config.apiKey};
     });
   }
 

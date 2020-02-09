@@ -1,6 +1,7 @@
 import filter from "lodash-es/filter";
 import find from "lodash-es/find";
 import groupBy from "lodash-es/groupBy";
+import last from "lodash-es/last";
 import map from "lodash-es/map";
 import mapValues from "lodash-es/mapValues";
 import orderBy from "lodash-es/orderBy";
@@ -14,6 +15,7 @@ const supportedFunctions = {
   unique,
   find,
   filter,
+  last,
   toPairs,
   reduce,
   orderBy,

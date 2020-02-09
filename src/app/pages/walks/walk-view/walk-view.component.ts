@@ -10,7 +10,7 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
-import { MemberLoginService } from "../../../services/member-login.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkDisplayService } from "../walk-display.service";
 

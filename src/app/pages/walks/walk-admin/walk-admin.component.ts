@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { MemberLoginService } from "src/app/services/member-login.service";
+import { MemberLoginService } from "src/app/services/member/member-login.service";
 import { AuthService } from "../../../auth/auth.service";
 import { LoginResponse } from "../../../models/member.model";
 import { BroadcastService } from "../../../services/broadcast-service";

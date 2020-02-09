@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from "@angular/core";
-import { MemberLoginService } from "../services/member-login.service";
+import { MemberLoginService } from "../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";

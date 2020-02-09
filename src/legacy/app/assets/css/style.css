@@ -434,7 +434,7 @@ h3 small {
 }
 
 .admin-header-container {
-  padding: 6px 0px 2px 6px;
+  padding: 6px 0px 2px 0px;
 }
 
 .admin-header-buttons .alert {
@@ -446,7 +446,7 @@ h3 small {
 
 .admin-frame {
   background: #333;
-  padding: 15px;
+  padding: 12px;
   overflow: hidden;
   margin: 0 0 10px 0;
   float: left;
@@ -3988,23 +3988,23 @@ ul.sbOptions li.last a {
   color: #fff;
 }
 
-.form-row {
-  float: left;
-  width: 100%;
-  padding: 5px 0;
-}
+/*.form-row {*/
+/*  float: left;*/
+/*  width: 100%;*/
+/*  padding: 5px 0;*/
+/*}*/
 
-.form-row .form-controls {
-  float: right;
-  width: 280px;
-}
+/*.form-row .form-controls {*/
+/*  float: right;*/
+/*  width: 280px;*/
+/*}*/
 
-.form-row label {
-  float: left;
-  width: 180px;
-  text-align: right;
-  font-size: 16px;
-}
+/*.form-row label {*/
+/*  float: left;*/
+/*  width: 180px;*/
+/*  text-align: right;*/
+/*  font-size: 16px;*/
+/*}*/
 
 .tweet ul {
   padding: 0;
@@ -4732,8 +4732,20 @@ input[type="radio"]:checked + label {
 
 /* Bootstrap 4 equivalents */
 
+.ml-6 {
+  margin-left: 6px;
+}
+
 .mt-0 {
   margin-top: 0px;
+}
+
+.mt-2 {
+  margin-top: 2px;
+}
+
+.mt-4 {
+  margin-top: 4px;
 }
 
 .mt-6 {
@@ -4770,6 +4782,18 @@ input[type="radio"]:checked + label {
 
 .mb-0 {
   margin-bottom: 0px;
+}
+
+.mb-2 {
+  margin-bottom: 2px;
+}
+
+.mb-4 {
+  margin-bottom: 4px;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
 }
 
 .mb-8 {

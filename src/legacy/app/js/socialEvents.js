@@ -313,7 +313,7 @@ angular.module('ekwgApp')
       .then(refreshImages);
 
     function refreshImages() {
-      ContentMetaDataService.getMetaData('imagesSocialEvents').then(function (contentMetaData) {
+      ContentMetaDataService.items('imagesSocialEvents').then(function (contentMetaData) {
         $scope.interval = 5000;
         $scope.slides = contentMetaData.files;
         logger.debug('found', $scope.slides.length, 'slides');

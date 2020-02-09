@@ -2,6 +2,11 @@ import { MeetupConfigParameters } from "./meetup-config.model";
 import { WalkEvent } from "./walk-event.model";
 import { WalkVenue } from "./walk-venue.model";
 
+export interface GoogleMapsConfig {
+  apiKey: string;
+  zoomLevel: number;
+}
+
 export interface Walk {
   contactName?: string;
   walkType?: string;

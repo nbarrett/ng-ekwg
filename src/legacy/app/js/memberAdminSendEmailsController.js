@@ -177,7 +177,7 @@ angular.module('ekwgApp')
         _.map(displayEmailMembersToMembers(), function (member) {
           MemberService.setPasswordResetId(member);
           EmailSubscriptionService.resetUpdateStatusForMember(member);
-          saveMemberPromises.push(DbUtils.auditedCreateOrUpdateMember(member))
+          saveMemberPromises.push(MemberService.createOrUpdate(member))
         });
 
         return $q.all(saveMemberPromises).then(function () {
@@ -192,7 +192,7 @@ angular.module('ekwgApp')
 
         _.map(displayEmailMembersToMembers(), function (member) {
           EmailSubscriptionService.resetUpdateStatusForMember(member);
-          saveMemberPromises.push(DbUtils.auditedCreateOrUpdateMember(member))
+          saveMemberPromises.push(MemberService.createOrUpdate(member))
         });
 
         return $q.all(saveMemberPromises).then(function () {
@@ -216,7 +216,7 @@ angular.module('ekwgApp')
           }).map(function (member) {
           member.groupMember = false;
           EmailSubscriptionService.resetUpdateStatusForMember(member);
-          saveMemberPromises.push(DbUtils.auditedCreateOrUpdateMember(member))
+          saveMemberPromises.push(MemberService.createOrUpdate(member))
         });
 
         return $q.all(saveMemberPromises)

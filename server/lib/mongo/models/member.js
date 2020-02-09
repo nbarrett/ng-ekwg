@@ -61,5 +61,5 @@ const memberSchema = mongoose.Schema({
 
 memberSchema.plugin(uniqueValidator);
 
-module.exports = mongoose.model("Member", memberSchema);
+module.exports = mongoose.model("member", memberSchema);
 

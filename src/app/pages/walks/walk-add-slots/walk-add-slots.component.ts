@@ -21,7 +21,7 @@ import { WalkNotificationService } from "../../../services/walks/walk-notificati
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
-import { MemberLoginService } from "src/app/services/member-login.service";
+import { MemberLoginService } from "src/app/services/member/member-login.service";
 
 @Component({
   selector: "app-walk-add-slots",

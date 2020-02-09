@@ -2,7 +2,7 @@ import { Component, Inject, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { VenueType } from "../../../models/walk-venue.model";
-import { MemberLoginService } from "../../../services/member-login.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";

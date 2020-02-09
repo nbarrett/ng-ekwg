@@ -5,7 +5,7 @@ import { AuthService } from "../auth/auth.service";
 import { ForgotPasswordModalComponent } from "../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { MemberLoginService } from "../services/member-login.service";
+import { MemberLoginService } from "../services/member/member-login.service";
 import { RouterHistoryService } from "../services/router-history.service";
 import { UrlService } from "../services/url.service";
 

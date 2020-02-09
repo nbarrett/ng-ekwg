@@ -1,13 +1,3 @@
-export function MemberLoginService($injector) {
-  return $injector.get("MemberLoginService");
-}
-
-export const MemberLoginServiceProvider = {
-  provide: "MemberLoginService",
-  useFactory: MemberLoginService,
-  deps: ["$injector"]
-};
-
 export function AuthenticationModalsService($injector) {
   return $injector.get("AuthenticationModalsService");
 }
@@ -15,26 +5,6 @@ export function AuthenticationModalsService($injector) {
 export const AuthenticationModalsServiceProvider = {
   provide: "AuthenticationModalsService",
   useFactory: AuthenticationModalsService,
-  deps: ["$injector"]
-};
-
-export function ConfigData($injector) {
-  return $injector.get("ConfigData");
-}
-
-export const ConfigDataProvider = {
-  provide: "ConfigData",
-  useFactory: ConfigData,
-  deps: ["$injector"]
-};
-
-export function CommitteeConfig($injector) {
-  return $injector.get("CommitteeConfig");
-}
-
-export const CommitteeConfigProvider = {
-  provide: "CommitteeConfig",
-  useFactory: CommitteeConfig,
   deps: ["$injector"]
 };
 
@@ -58,16 +28,6 @@ export const RamblersUploadAuditProvider = {
   deps: ["$injector"]
 };
 
-export function MemberAuditService($injector) {
-  return $injector.get("MemberAuditService");
-}
-
-export const MemberAuditServiceProvider = {
-  provide: "MemberAuditService",
-  useFactory: MemberAuditService,
-  deps: ["$injector"]
-};
-
 export function WalksService($injector) {
   return $injector.get("WalksService");
 }
@@ -75,6 +35,16 @@ export function WalksService($injector) {
 export const WalksServiceProvider = {
   provide: "WalksService",
   useFactory: WalksService,
+  deps: ["$injector"]
+};
+
+export function MailchimpListService($injector) {
+  return $injector.get("MailchimpListService");
+}
+
+export const MailchimpListServiceProvider = {
+  provide: "MailchimpListService",
+  useFactory: MailchimpListService,
   deps: ["$injector"]
 };
 
@@ -98,16 +68,6 @@ export const MailchimpCampaignServiceProvider = {
   deps: ["$injector"]
 };
 
-export function MailchimpConfig($injector) {
-  return $injector.get("MailchimpConfig");
-}
-
-export const MailchimpConfigProvider = {
-  provide: "MailchimpConfig",
-  useFactory: MailchimpConfig,
-  deps: ["$injector"]
-};
-
 export function RamblersWalksAndEventsService($injector) {
   return $injector.get("RamblersWalksAndEventsService");
 }
@@ -115,36 +75,6 @@ export function RamblersWalksAndEventsService($injector) {
 export const RamblersWalksAndEventsServiceProvider = {
   provide: "RamblersWalksAndEventsService",
   useFactory: RamblersWalksAndEventsService,
-  deps: ["$injector"]
-};
-
-export function Notifier($injector) {
-  return $injector.get("Notifier");
-}
-
-export const NotifierProvider = {
-  provide: "Notifier",
-  useFactory: Notifier,
-  deps: ["$injector"]
-};
-
-export function GoogleMapsConfig($injector) {
-  return $injector.get("GoogleMapsConfig");
-}
-
-export const GoogleMapsConfigProvider = {
-  provide: "GoogleMapsConfig",
-  useFactory: GoogleMapsConfig,
-  deps: ["$injector"]
-};
-
-export function MeetupService($injector) {
-  return $injector.get("MeetupService");
-}
-
-export const MeetupServiceProvider = {
-  provide: "MeetupService",
-  useFactory: MeetupService,
   deps: ["$injector"]
 };
 

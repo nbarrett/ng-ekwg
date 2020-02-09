@@ -9,7 +9,7 @@ import { WalkNotification } from "../../../models/walk-notification.model";
 import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MemberLoginService } from "../../../services/member-login.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { meetupDescriptionPrefix, MeetupService } from "../../../services/meetup.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";

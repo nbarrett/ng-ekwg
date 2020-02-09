@@ -7,7 +7,8 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
 import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MemberLoginService } from "../../../services/member-login.service";
+import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -31,8 +32,8 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   private forgottenPasswordMember: Member;
 
   constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
-              @Inject("MailchimpConfig") private mailchimpConfigService,
               @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+              private mailchimpConfigService: MailchimpConfigService,
               private emailSubscriptionService: EmailSubscriptionService,
               public bsModalRef: BsModalRef,
               private stringUtils: StringUtilsService,

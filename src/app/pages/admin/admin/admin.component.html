@@ -1,0 +1,93 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="wrapper">
+    <div id="page-body" role="main">
+      <div class="body-header">
+        <div class="breadcrumbs">
+          <ul>
+            <li><a href="/" title="Home">Home</a></li>
+            <li class="last">Admin</li>
+          </ul>
+        </div>
+      </div>
+
+      <div *ngIf="!loggedIn">
+        <div class="well"><img src="assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in
+          to view this page. Click the link above to login.
+        </div>
+      </div>
+
+      <div *ngIf="loggedIn" class="row">
+        <div class="col-sm-4 item-panel">
+          <div (click)="memberAdmin()" class="item-icon">
+            <i class="fas fa-address-card fa-3x ramblers"></i>
+            <h5>Member admin</h5>
+            <p class="green-bullets-no-rule">
+              <app-markdown-editor category="admin" name="member-admin-help"
+                                   description="Member admin help"></app-markdown-editor>
+            </p>
+          </div>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="expensese()" class="item-icon">
+            <i class="fas fa-cash-register fa-3x"></i>
+            <h5>Expenses</h5>
+            <p class="green-bullets-no-rule">
+              <app-markdown-editor category="admin" name="expenses-help"
+                                   description="Expenses help"></app-markdown-editor>
+            </p>
+          </div>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="bulkLoadAudit()" class="item-icon">
+            <i class="fab fa-meetup fa-3x meetup"></i>
+            <h5>Member bulk load audit</h5>
+          <p class="green-bullets-no-rule">
+            <app-markdown-editor category="admin" name="bulk-load-help"
+                                 description="Member bulk load audit help"></app-markdown-editor>
+          </p>
+          </div>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="memberLoginAudit()" class="item-icon">
+            <i class="fab fa-meetup fa-3x meetup"></i>
+            <h5>Member Login Audit</h5>
+          </div>
+          <p class="green-bullets-no-rule">
+            <app-markdown-editor category="admin" name="member-login-audit-help"
+                                 description="Member login audit help"></app-markdown-editor>
+          </p>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="personalDetails()" class="item-icon">
+            <i class="fab fa-meetup fa-3x meetup"></i>
+            <h5>Personal details</h5>
+          </div>
+          <p class="green-bullets-no-rule">
+            <app-markdown-editor category="admin" name="personal-details-help"
+                                 description="Personal details help"></app-markdown-editor>
+          </p>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="loginDetails()" class="item-icon">
+            <i class="fab fa-login fa-3x meetup"></i>
+            <h5>Login details</h5>
+          </div>
+          <p class="green-bullets-no-rule">
+            <app-markdown-editor category="admin" name="login-details-help"
+                                 description="Login details help"></app-markdown-editor>
+          </p>
+        </div>
+        <div class="col-sm-4 item-panel">
+          <div (click)="contactPreferences()" class="item-icon">
+            <i class="fab fa-login fa-3x meetup"></i>
+            <h5>Contact preferences</h5>
+          </div>
+          <p class="green-bullets-no-rule">
+            <app-markdown-editor category="admin" name="contact-preferences-help"
+                                 description="Contact preferences help"></app-markdown-editor>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

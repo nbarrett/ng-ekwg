@@ -2,55 +2,7 @@ angular.module('ekwgApp')
   .factory('WalksService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('walks')
   })
-  .factory('DbUtils', function ($log, DateUtils, MemberService, MemberLoginService, AUDIT_CONFIG) {
-    var logger = $log.getInstance('DbUtilsLogger');
-    $log.logLevels['DbUtilsLogger'] = $log.LEVEL.OFF;
-
-    function removeEmptyFieldsIn(obj) {
-      _.each(obj, function (value, field) {
-        logger.debug('processing', typeof (field), 'field', field, 'value', value);
-        if (_.contains([null, undefined, ""], value)) {
-          logger.debug('removing non-populated', typeof (field), 'field', field);
-          delete obj[field];
-        }
-      });
-    }
-
-    function performAudit(resource) {
-      if (AUDIT_CONFIG.auditSave) {
-        if (resource.$id || resource.id) {
-          resource.updatedDate = DateUtils.nowAsValue();
-          resource.updatedBy = MemberLoginService.loggedInMember().memberId;
-          logger.debug('Auditing save of existing document', resource);
-        } else {
-          resource.createdDate = DateUtils.nowAsValue();
-          resource.createdBy = MemberLoginService.loggedInMember().memberId;
-          logger.debug('Auditing save of new document', resource);
-        }
-      } else {
-        resource = DateUtils.convertDateFieldInObject(resource, 'createdDate');
-        logger.debug('Not auditing save of', resource);
-
-      }
-      return resource;
-    }
-
-    function auditedSaveOrUpdate(resource, updateCallback, errorCallback) {
-      resource = performAudit(resource);
-      return resource.$saveOrUpdate(updateCallback, updateCallback, errorCallback || updateCallback, errorCallback || updateCallback)
-    }
-
-    function auditedCreateOrUpdateMember(resource) {
-      return MemberService.createOrUpdate(performAudit(resource))
-    }
-
-    return {
-      removeEmptyFieldsIn: removeEmptyFieldsIn,
-      auditedSaveOrUpdate: auditedSaveOrUpdate,
-      auditedCreateOrUpdateMember: auditedCreateOrUpdateMember,
-    }
-  })
-  .factory('FileUtils', function ($log, DateUtils, URLService, ContentMetaDataService) {
+  .factory('FileUtils', function ($log, DateUtils, URLService, ContentMetadataService) {
     var logger = $log.getInstance('FileUtils');
     $log.logLevels['FileUtils'] = $log.LEVEL.OFF;
 
@@ -72,7 +24,7 @@ angular.module('ekwgApp')
 
     function resourceUrl(resource, container, metaDataPathSegment) {
       var fileNameData = getFileNameData(resource, container);
-      return resource && fileNameData ? URLService.baseUrl() + ContentMetaDataService.baseUrl(metaDataPathSegment) + '/' + fileNameData.awsFileName : '';
+      return resource && fileNameData ? URLService.baseUrl() + ContentMetadataService.baseUrl(metaDataPathSegment) + '/' + fileNameData.awsFileName : '';
     }
 
     function previewUrl(memberResource) {
@@ -85,7 +37,7 @@ angular.module('ekwgApp')
         }
       }
       var fileNameData = getFileNameData(resource, container);
-      return resource && fileNameData ? URLService.baseUrl() + ContentMetaDataService.baseUrl(metaDataPathSegment) + '/' + fileNameData.awsFileName : '';
+      return resource && fileNameData ? URLService.baseUrl() + ContentMetadataService.baseUrl(metaDataPathSegment) + '/' + fileNameData.awsFileName : '';
     }
 
     function resourceTitle(resource) {
@@ -130,12 +82,6 @@ angular.module('ekwgApp')
     fieldPopulated: fieldPopulated,
   }
 })
-  .factory('ContentMetaData', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('contentMetaData');
-  })
-  .factory('ConfigData', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('config');
-  })
   .factory('ExpenseClaimsService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('expenseClaims');
   })

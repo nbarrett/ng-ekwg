@@ -35,7 +35,7 @@ export class AuthService {
     return this.performAuthPost(url, body, "login", NamedEventType.MEMBER_LOGIN_COMPLETE);
   }
 
-  forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string) {
+  forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string): Observable<LoginResponse> {
     const url = `${this.BASE_URL}/forgot-password`;
     const type = "forgot password";
     this.logger.debug(type + "credentialOne:", credentialOne, "credentialTwo:", credentialTwo, "via", url);

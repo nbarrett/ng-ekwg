@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from "@angular/core";
 import { Member } from "../models/member.model";
-import { MemberLoginService } from "../services/member-login.service";
+import { MemberLoginService } from "../services/member/member-login.service";
 import { FullNamePipe } from "./full-name.pipe";
 
 @Pipe({name: "fullNameWithAliasOrMe"})

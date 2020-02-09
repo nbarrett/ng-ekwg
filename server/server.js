@@ -20,6 +20,10 @@ const mailchimp = require("./lib/mailchimp/mailchimp");
 const contentText = require("./lib/mongo/routes/content-text");
 const auth = require("./lib/mongo/routes/auth");
 const member = require("./lib/mongo/routes/member");
+const memberBulkLoadAudit = require("./lib/mongo/routes/member-bulk-load-update");
+const memberUpdateAuditRoutes = require("./lib/mongo/routes/member-update-audit");
+const contentMetadata = require("./lib/mongo/routes/content-metadata");
+const configRoutes = require("./lib/mongo/routes/config");
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
 
@@ -42,7 +46,11 @@ app.use("/api/meetup", meetup);
 app.use("/api/database", database);
 app.use("/api/database/auth", auth);
 app.use("/api/database/content-text", contentText);
+app.use("/api/database/content-metadata", contentMetadata);
 app.use("/api/database/member", member);
+app.use("/api/database/member-bulk-load-audit", memberBulkLoadAudit);
+app.use("/api/database/member-update-audit", memberUpdateAuditRoutes);
+app.use("/api/database/config", configRoutes);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {
   res.sendFile(path.join(config.server.distFolder, "index.html"));

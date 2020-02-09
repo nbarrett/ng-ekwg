@@ -1,20 +1,4 @@
 angular.module('ekwgApp')
-  .factory('CommitteeConfig', function (Config) {
-
-    function getConfig() {
-      return Config.getConfig('committee')
-    }
-
-    function saveConfig(config, saveCallback, errorSaveCallback) {
-      return Config.saveConfig('committee', config, saveCallback, errorSaveCallback);
-    }
-
-    return {
-      getConfig: getConfig,
-      saveConfig: saveConfig
-    }
-
-  })
   .factory('CommitteeFileService', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('committeeFiles');
   })

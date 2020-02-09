@@ -12,7 +12,8 @@ import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
-import { MemberLoginService } from "../../services/member-login.service";
+import { GoogleMapsService } from "../../services/google-maps.service";
+import { MemberLoginService } from "../../services/member/member-login.service";
 import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "./walk-display.service";
 
@@ -67,6 +68,7 @@ describe("WalkDisplayService", () => {
         DisplayDatePipe,
         MemberIdToFullNamePipe,
         ValueOrDefaultPipe,
+        GoogleMapsService,
         {provide: MemberLoginService, useValue: memberLoginService},
         {provide: "MemberAuditService", useValue: {}},
         {provide: "RamblersWalksAndEventsService", useValue: ramblersWalksAndEventsService},
@@ -76,8 +78,8 @@ describe("WalkDisplayService", () => {
         {provide: "MailchimpCampaignService", useValue: {}},
         {provide: "MeetupService", useValue: meetupService},
         {provide: "ClipboardService", useValue: {}},
-        {provide: "MemberService", useValue: memberService},
-        {provide: "GoogleMapsConfig", useValue: googleConfig}]
+        {provide: "MemberService", useValue: memberService}
+      ]
     });
     const emptyPromise = Promise.resolve({}) as any;
     spy = spyOn(googleConfig, "getConfig").and.returnValue(emptyPromise);

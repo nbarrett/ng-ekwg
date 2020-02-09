@@ -1,5 +1,5 @@
 angular.module('ekwgApp')
-  .controller('ImageEditController', function ($scope, $location, Upload, $http, $q, $routeParams, $window, SiteEditService, MemberLoginService, ContentMetaDataService, BroadcastService, Notifier, EKWGFileUpload) {
+  .controller('ImageEditController', function ($scope, $location, Upload, $http, $q, $routeParams, $window, SiteEditService, MemberLoginService, ContentMetadataService, BroadcastService, Notifier, EKWGFileUpload) {
     var notify = Notifier.createAlertInstance($scope);
 
     $scope.imageSource = $routeParams.imageSource;
@@ -21,7 +21,7 @@ angular.module('ekwgApp')
     $scope.refreshImageMetaData = function (imageSource) {
       notify.setBusy();
       $scope.imageSource = imageSource;
-      ContentMetaDataService.getMetaData(imageSource).then(function (contentMetaData) {
+      ContentMetadataService.items(imageSource).then(function (contentMetaData) {
         $scope.imageMetaData = contentMetaData;
         notify.clearBusy();
       }, function (response) {
@@ -83,7 +83,7 @@ angular.module('ekwgApp')
     };
 
     $scope.insertHere = function (imageMetaDataItem) {
-      var insertedImageMetaDataItem = new ContentMetaDataService.createNewMetaData(true);
+      var insertedImageMetaDataItem = ContentMetadataService.createNewMetaData(true);
       var currentIndex = $scope.imageMetaData.files.indexOf(imageMetaDataItem);
       $scope.imageMetaData.files.splice(currentIndex, 0, insertedImageMetaDataItem);
       $scope.replace(insertedImageMetaDataItem);
@@ -95,7 +95,7 @@ angular.module('ekwgApp')
 
 
     $scope.saveAll = function () {
-      ContentMetaDataService.saveMetaData($scope.imageMetaData, saveOrUpdateSuccessful, notify.error.bind(notify))
+      ContentMetadataService.createOrUpdate($scope.imageMetaData, saveOrUpdateSuccessful, notify.error.bind(notify))
         .then(function (contentMetaData) {
           $scope.exitBackToPreviousWindow();
         }, function (response) {

@@ -1,11 +1,12 @@
+import { Injectable } from "@angular/core";
 import get from "lodash-es/get";
 import map from "lodash-es/map";
-import { Inject, Injectable } from "@angular/core";
-import { Logger, LoggerFactory } from "../logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
-import { CommitteeMember } from "./committee-member.model";
+import { CommitteeConfigService } from "../commitee-config.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
 import { FileType } from "./committee-file-type.model";
+import { CommitteeMember } from "./committee-member.model";
 
 @Injectable({
   providedIn: "root"
@@ -19,7 +20,7 @@ export class CommitteeReferenceDataService {
   private localCommitteeMembers: CommitteeMember[] = [];
   private referenceData: object = {};
 
-  constructor(@Inject("CommitteeConfig") private committeeConfig, loggerFactory: LoggerFactory) {
+  constructor(private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
     this.events = this.messageSource.asObservable();
     this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.OFF);
     this.queryData();
@@ -80,6 +81,5 @@ export class CommitteeReferenceDataService {
     const found = this.fileTypes().find(fileType => fileType.description === fileTypeDescription);
     return found && found.public;
   }
-
 
 }

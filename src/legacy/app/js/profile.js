@@ -1,37 +1,4 @@
 angular.module('ekwgApp')
-  .factory('ProfileConfirmationService', function ($filter, MemberLoginService, DateUtils) {
-
-    var confirmProfile = function (member) {
-      if (member) {
-        member.profileSettingsConfirmed = true;
-        member.profileSettingsConfirmedAt = DateUtils.nowAsValue();
-        member.profileSettingsConfirmedBy = $filter('fullNameWithAlias')(MemberLoginService.loggedInMember());
-      }
-    };
-
-    var unconfirmProfile = function (member) {
-      if (member) {
-        delete member.profileSettingsConfirmed;
-        delete member.profileSettingsConfirmedAt;
-        delete member.profileSettingsConfirmedBy;
-      }
-    };
-
-    var processMember = function (member) {
-      if (member) {
-        if (member.profileSettingsConfirmed) {
-          confirmProfile(member)
-        } else {
-          unconfirmProfile(member)
-        }
-      }
-    };
-    return {
-      confirmProfile: confirmProfile,
-      unconfirmProfile: unconfirmProfile,
-      processMember: processMember
-    };
-  })
   .controller('ProfileController', function ($log, $q, $rootScope, $routeParams, $scope, MemberLoginService, MemberService,
                                              LegacyUrlService, URLService, ProfileConfirmationService, EmailSubscriptionService, BroadcastService) {
     var logger = $log.getInstance('ProfileController');
