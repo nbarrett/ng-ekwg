@@ -19,7 +19,7 @@
                        [disabled]="!allowAdminEdits() || !allowEdits()"
                        placeholder="enter date of walk"
                        #dp="bsDatepicker"
-                       bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
+                       bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
                                containerClass: 'theme-ramblers'}"
                        type="text" class="form-control input-sm"
                        id="walk-date"/>

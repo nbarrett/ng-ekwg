@@ -75,7 +75,7 @@
     "moment-timezone": "0.5.27",
     "ng-csv": "0.3.6",
     "ng-file-upload": "12.2.13",
-    "ngx-bootstrap": "5.2.0",
+    "ngx-bootstrap": "5.5.0",
     "ngx-build-plus": "9.0.2",
     "ngx-cookie-service": "2.2.0",
     "ngx-logger": "4.0.8",
