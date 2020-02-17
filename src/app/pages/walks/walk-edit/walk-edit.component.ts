@@ -50,7 +50,6 @@ interface DisplayMember {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WalkEditComponent implements OnInit {
-  private publishStatuses: string[] = [];
 
   @Input("displayedWalk")
   set cloneWalk(displayedWalk: DisplayedWalk) {
@@ -108,7 +107,6 @@ export class WalkEditComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.publishStatuses = this.meetupService.publishStatuses();
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.walkEventTypes = this.walksReferenceService.walkEventTypes();
     this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
