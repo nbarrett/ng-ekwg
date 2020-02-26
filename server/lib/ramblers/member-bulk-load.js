@@ -1,61 +1,69 @@
 "use strict";
-let config = require("../config/config.js");
-let aws = require("../aws/aws-controllers");
-let debug = require("debug")(config.logNamespace("ramblers:memberBulkLoad"));
-let path = require("path");
-let fs = require("fs");
-let moment = require("moment-timezone");
-let _ = require("underscore");
-let _str = require("underscore.string");
-let csv = require("csv");
-let childProcess = require("child_process");
-let BULK_LOAD_SUFFIX = "MemberList.csv";
-let NEW_MEMBER_SUFFIX = "new.csv";
+const config = require("../config/config.js");
+const aws = require("../aws/aws-controllers");
+const debug = require("debug")(config.logNamespace("ramblers:memberBulkLoad"));
+const path = require("path");
+const fs = require("fs");
+const moment = require("moment-timezone");
+const _ = require("underscore");
+const _str = require("underscore.string");
+const csv = require("csv");
+const childProcess = require("child_process");
+const BULK_LOAD_SUFFIX = "MemberList.csv";
+const NEW_MEMBER_SUFFIX = "new.csv";
 
-exports.uploadRamblersData = function (req, res) {
+exports.uploadRamblersData = (req, res) => {
   var momentInstance = moment().tz("Europe/London");
-  let uploadSessionFolder = `memberAdmin/${momentInstance.format("YYYY-MM-DD-HH-mm-ss")}`;
-  let uploadedFile = uploadedFileInfo();
+  const uploadSessionFolder = `memberAdmin/${momentInstance.format("YYYY-MM-DD-HH-mm-ss")}`;
+  const uploadedFile = uploadedFileInfo();
 
-  let bulkUploadResponse = {files: {}, auditLog: []};
-  debugAndInfo("Received uploaded member data file", uploadedFile.originalname, "into location", uploadedFile.path, "containing", uploadedFile.size, "bytes");
+  const bulkUploadResponse = {files: {}, auditLog: []};
+  const bulkUploadError = {error: undefined};
+
+  debugAndInfo("Received uploaded member data file", uploadedFile.originalname, "containing", uploadedFile.size, "bytes");
   if (fileExtensionIs(".zip")) {
     extractZipFile(uploadedFile.path, uploadedFile.originalname, res);
   } else if (fileExtensionIs(".csv") && filenameValid()) {
     extractCsvToJson(uploadedFile.path, uploadedFile.originalname, res);
   } else {
-    fs.unlink(uploadedFile.originalname, function () {
-      res.json(debugAndError(`Only zip files or files that end with "${BULK_LOAD_SUFFIX}" or "${NEW_MEMBER_SUFFIX}" are allowed, but you supplied ${uploadedFile.originalname}`))
+    fs.unlink(uploadedFile.originalname, () => {
+      debugAndError(`Only zip files or files that end with "${BULK_LOAD_SUFFIX}" or "${NEW_MEMBER_SUFFIX}" are allowed, but you supplied ${uploadedFile.originalname}`)
+      returnResponse();
     });
   }
 
+  function returnResponse() {
+    const response = {response: bulkUploadResponse};
+    if (bulkUploadError.error) {
+      response.error = bulkUploadError.error
+    }
+    res.json(response)
+  }
+
   function logWithStatus(status, argumentsData) {
-    var debugData = _.map(argumentsData, function (item) {
-      return _.isObject(item) ? JSON.stringify(item) : item;
-    }).join(" ");
+    var debugData = _.map(argumentsData, item => _.isObject(item) ? JSON.stringify(item) : item).join(" ");
     debug(debugData);
     bulkUploadResponse.auditLog.push({status: status, message: debugData});
     if (status === "error") {
-      bulkUploadResponse.error = debugData
+      bulkUploadError.error = debugData
     }
-    return bulkUploadResponse;
   }
 
   function debugAndComplete() {
-    return logWithStatus("complete", arguments);
+    logWithStatus("complete", arguments);
   }
 
   function debugAndInfo() {
-    return logWithStatus("info", arguments);
+    logWithStatus("info", arguments);
   }
 
-  function debugAndError(errorMessage) {
-    return logWithStatus("error", arguments);
+  function debugAndError() {
+    logWithStatus("error", arguments);
   }
 
 
   function filenameValid() {
-    return _str.endsWith(uploadedFile.originalname, BULK_LOAD_SUFFIX) || _str.endsWith(uploadedFile.originalname, NEW_MEMBER_SUFFIX);
+    return uploadedFile.originalname.endsWith(BULK_LOAD_SUFFIX) || uploadedFile.originalname.endsWith(NEW_MEMBER_SUFFIX);
   }
 
   function uploadedFileInfo() {
@@ -67,26 +75,26 @@ exports.uploadRamblersData = function (req, res) {
   }
 
   function extractZipFile(receivedZipFileName, userZipFileName, res) {
-
-    aws.putObjectDirect(uploadSessionFolder, userZipFileName, receivedZipFileName).then(function (response) {
+    aws.putObjectDirect(uploadSessionFolder, userZipFileName, receivedZipFileName).then(response => {
         if (response.error) {
           return res.status(500).send(response);
         } else {
           debugAndInfo(response.information);
           bulkUploadResponse.files.archive = `${uploadSessionFolder}/${uploadedFile.originalname}`;
-          let inflateToken = "inflating:";
-          let unzipPath = "/tmp/memberData/";
-          let zip = childProcess.spawn("unzip", ["-P", "J33ves33", "-o", "-d", unzipPath, receivedZipFileName]);
+          const inflateToken = "inflating:";
+          const unzipPath = "/tmp/memberData/";
+          const zip = childProcess.spawn("unzip", ["-P", "J33ves33", "-o", "-d", unzipPath, receivedZipFileName]);
           let zipOutputLines = [];
           let zipErrorLines = [];
 
-          let handleError = function (data) {
+          const handleError = data => {
             zipErrorLines = zipErrorLines.concat(data.toString().trim().split("\n"));
-            res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`));
+            debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`)
+            returnResponse();
           };
 
-          zip.stdout.on("data", function (data) {
-            let logOutput = data.toString().trim().split("\n").filter(item => !_.isEmpty(item));
+          zip.stdout.on("data", data => {
+            const logOutput = data.toString().trim().split("\n").filter(item => !_.isEmpty(item));
             if (logOutput.length > 0) {
               debugAndInfo("Unzip output [" + logOutput + "]");
               zipOutputLines = zipOutputLines.concat(logOutput);
@@ -97,30 +105,29 @@ exports.uploadRamblersData = function (req, res) {
 
           zip.stderr.on("data", handleError);
 
-          zip.on("exit", function (code) {
+          zip.on("exit", code => {
             if (code !== 0) {
-              res.json(debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`));
+              debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`);
+              returnResponse();
             } else {
-              let extractedFiles = _.chain(zipOutputLines)
-                .filter(function (file) {
-                  return _str.include(file, inflateToken);
-                })
-                .map(function (file) {
-                  return file.replace(inflateToken, "").trim();
-                })
+              const extractedFiles = _.chain(zipOutputLines)
+                .filter(file => _str.include(file, inflateToken))
+                .map(file => file.replace(inflateToken, "").trim())
                 .value();
               debugAndInfo("Unzip process completed successfully after processing", receivedZipFileName, "and extracted", extractedFiles.length, "file(s):", extractedFiles.join(", "));
               if (extractedFiles.length === 0) {
-                res.json(debugAndError("No files could be unzipped from " + userZipFileName));
+                debugAndError("No files could be unzipped from " + userZipFileName)
+                returnResponse();
               } else {
-                extractFromFile(unzipPath, extractedFiles, BULK_LOAD_SUFFIX, res).then(function (response) {
+                extractFromFile(unzipPath, extractedFiles, BULK_LOAD_SUFFIX, res).then(response => {
                   if (response.error) {
                     debugAndError(response.error);
-                    res.json(bulkUploadResponse);
+                    returnResponse();
                   } else if (!response) {
-                    extractFromFile(unzipPath, extractedFiles, NEW_MEMBER_SUFFIX, res).then(function (response) {
+                    extractFromFile(unzipPath, extractedFiles, NEW_MEMBER_SUFFIX, res).then(response => {
                       if (!response) {
-                        res.json(debugAndError(`No bulk load or new member file could be found in zip ${userZipFileName}.${extractedFiles.length} ignored files were: ${extractedFiles.join(", ")}`));
+                        debugAndError(`No bulk load or new member file could be found in zip ${userZipFileName}.${extractedFiles.length} ignored files were: ${extractedFiles.join(", ")}`)
+                        returnResponse();
                       }
                     })
                   }
@@ -134,13 +141,11 @@ exports.uploadRamblersData = function (req, res) {
   }
 
   function extractFromFile(unzipPath, extractedFiles, fileNameSuffix, res) {
-    let memberDataFileName = _.find(extractedFiles, function (file) {
-      return _str.endsWith(file, fileNameSuffix);
-    });
+    const memberDataFileName = _.find(extractedFiles, file => _str.endsWith(file, fileNameSuffix));
     if (memberDataFileName) {
       debugAndInfo(memberDataFileName, "matched", fileNameSuffix);
       return aws.putObjectDirect(uploadSessionFolder, memberDataFileName, memberDataFileName)
-        .then(function (response) {
+        .then(response => {
           if (response.error) {
             return response;
           } else {
@@ -158,8 +163,8 @@ exports.uploadRamblersData = function (req, res) {
   function extractMemberDataFromArray(json, userFileName, res) {
     let currentDataRow;
     try {
-      let memberDataRows = _.chain(json)
-        .map(function (dataRow) {
+      const memberDataRows = _.chain(json)
+        .map(dataRow => {
           currentDataRow = dataRow;
           if (dataRow["[Expiry Date]"]) {
             return {
@@ -184,12 +189,9 @@ exports.uploadRamblersData = function (req, res) {
             return debugAndError("Loading of data from " + userFileName + " failed processing data row " + JSON.stringify(currentDataRow) + " due to membership record type not being recognised");
           }
         })
-        .filter(function (dataRow) {
-          return dataRow.membershipNumber;
-        }).value();
+        .filter(dataRow => dataRow.membershipNumber).value();
       bulkUploadResponse.members = memberDataRows;
       debugAndComplete(`${memberDataRows.length} member(s) were extracted from ${userFileName}`);
-      return bulkUploadResponse;
     } catch (error) {
       debugAndError("Error attempting to extract data from", userFileName);
       debugAndError("Error message:" + error.message);
@@ -204,15 +206,16 @@ exports.uploadRamblersData = function (req, res) {
 
     csv()
       .from.path(localFileName, {
-      columns: true, delimiter: ",", escape: "\""})
-      .to.array(function (data) {
-        res.json(extractMemberDataFromArray(data, userFileName, res));
-      })
-        .on("error", function (error) {
-          debugAndError("Data could not be extracted from", localFileName);
-          res.json(debugAndError(error));
-        });
+      columns: true, delimiter: ",", escape: "\""
+    })
+      .to.array(data => {
+      extractMemberDataFromArray(data, userFileName, res)
+      returnResponse();
+    })
+      .on("error", error => {
+        debugAndError("Data could not be extracted from", localFileName, error);
+        returnResponse();
+      });
   }
 
-  }
-  ;
+}

@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
-import { each } from "lodash-es";
+import each from "lodash-es/each";
+import omit from "lodash-es/omit";
 import { NgxLoggerLevel } from "ngx-logger";
-import { MemberUpdateAudit } from "../../models/member.model";
+import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { EmailSubscriptionService } from "../email-subscription.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { AlertInstance } from "../notifier.service";
 import { MemberBulkLoadAuditService } from "./member-bulk-load-audit.service";
 import { MemberNamingService } from "./member-naming.service";
 import { MemberUpdateAuditService } from "./member-update-audit.service";
@@ -18,59 +20,50 @@ export class MemberBulkLoadService {
   private logger: Logger;
 
   constructor(private memberUpdateAuditService: MemberUpdateAuditService,
+              private memberBulkLoadAuditService: MemberBulkLoadAuditService,
+              private memberService: MemberService,
+              private emailSubscriptionService: EmailSubscriptionService,
               private displayDate: DisplayDatePipe,
               private memberNamingService: MemberNamingService,
-              private emailSubscriptionService: EmailSubscriptionService,
-              private memberService: MemberService,
               private dateUtils: DateUtilsService,
-              private memberBulkLoadAuditService: MemberBulkLoadAuditService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberBulkLoadService, NgxLoggerLevel.DEBUG);
   }
 
-  processMembershipRecords(file, memberBulkLoadServerResponse, members, notify) {
+  processResponse(apiResponse: MemberBulkLoadAuditApiResponse, members: Member[], notify: AlertInstance): Promise<any> {
+    notify.setBusy();
+    const today = this.dateUtils.momentNowNoTime().valueOf();
+    const memberBulkLoadResponse = apiResponse.response as MemberBulkLoadAudit;
+    this.logger.debug("processResponse:received", memberBulkLoadResponse);
 
-    const updateGroupMembersPreBulkLoadProcessing = (promises) => {
+    const updateGroupMembersPreBulkLoadProcessing = (): Promise<any[]> => {
+
       if (memberBulkLoadResponse.members && memberBulkLoadResponse.members.length > 1) {
         notify.progress("Processing " + members.length + " members ready for bulk load");
 
-        each(members, member => {
+        const memberUpdates = members.map(member => {
           if (member.receivedInLastBulkLoad) {
             member.receivedInLastBulkLoad = false;
-            promises.push(this.memberService.createOrUpdate(member)
-              .then(auditUpdateCallback(member))
-              .catch(auditErrorCallback(member)));
+            return this.memberService.createOrUpdate(member);
           }
         });
-        return Promise.all(promises).then(() => {
-          notify.progress("Marked " + promises.length + " out of " + members.length + " in preparation for update");
-          return promises;
+        return Promise.all(memberUpdates).then(() => {
+          notify.progress("Marked " + memberUpdates.length + " out of " + members.length + " in preparation for update");
+          return memberUpdates;
         });
       } else {
-        return Promise.resolve(promises);
+        return Promise.resolve([]);
       }
     };
 
-    const processBulkLoadResponses = async (promises, uploadSessionId) => {
-      const updatedPromises = await updateGroupMembersPreBulkLoadProcessing(promises);
+    const processBulkLoadResponses = async (uploadSessionId: string) => {
+      const updatedPromises = await updateGroupMembersPreBulkLoadProcessing();
       each(memberBulkLoadResponse.members, (ramblersMember, recordIndex) => {
         createOrUpdateMember(uploadSessionId, recordIndex, ramblersMember, updatedPromises);
       });
       await Promise.all(updatedPromises);
       this.logger.debug("performed total of", updatedPromises.length, "audit or member updates");
       return updatedPromises;
-    };
-
-    const auditUpdateCallback = member => response => {
-      this.logger.debug("auditUpdateCallback for member:", member, "response", response);
-      return member;
-    };
-
-    const auditErrorCallback = (member, audit?) => response => {
-      this.logger.warn("member save error for member:", member, "response:", response);
-      if (audit) {
-        audit.auditErrorMessage = response;
-      }
     };
 
     const saveAndAuditMemberUpdate = (promises, uploadSessionId, rowNumber, memberAction, changes, auditMessage, member) => {
@@ -89,19 +82,21 @@ export class MemberBulkLoadService {
       member.lastBulkLoadDate = this.dateUtils.momentNow().valueOf();
       return this.memberService.createOrUpdate(member)
         .then(savedMember => {
-          if (savedMember) {
-            audit.memberId = savedMember.id;
-            notify.success({title: "Bulk member load " + qualifier + " was successful", message: auditMessage});
-          } else {
-            audit.member = member;
-            audit.memberAction = "error";
-            this.logger.warn("member was not saved, so saving it to audit:", audit);
-            notify.warning({title: "Bulk member load " + qualifier + " failed", message: auditMessage});
-          }
+          audit.memberId = savedMember.id;
+          notify.success({title: "Bulk member load " + qualifier + " was successful", message: auditMessage});
           this.logger.debug("saveAndAuditMemberUpdate:", audit);
           promises.push(this.memberUpdateAuditService.create(audit));
           return promises;
-        }).catch(auditErrorCallback(member, audit));
+        }).catch(response => {
+          this.logger.warn("member save error for member:", member, "response:", response);
+          audit.member = member;
+          audit.memberAction = "error";
+          this.logger.warn("member was not saved, so saving it to audit:", audit);
+          notify.warning({title: "Bulk member load " + qualifier + " failed", message: auditMessage});
+          audit.auditErrorMessage = omit(response.error, "request");
+          promises.push(this.memberUpdateAuditService.create(audit));
+          return promises;
+        });
     };
 
     const convertMembershipExpiryDate = (ramblersMember) => {
@@ -112,12 +107,12 @@ export class MemberBulkLoadService {
 
     const createOrUpdateMember = (uploadSessionId, recordIndex, ramblersMember, promises) => {
 
-      let memberAction;
+      let memberAction: string;
       ramblersMember.membershipExpiryDate = convertMembershipExpiryDate(ramblersMember);
       ramblersMember.groupMember = !ramblersMember.membershipExpiryDate || ramblersMember.membershipExpiryDate >= today;
-      let member = members.find(member => {
+      let member: Member = members.find(member => {
         const existingUserName = this.memberNamingService.createUserName(ramblersMember);
-        let match = member.membershipNumber && member.membershipNumber.toString() === ramblersMember.membershipNumber;
+        let match: boolean = member.membershipNumber && member.membershipNumber.toString() === ramblersMember.membershipNumber;
         if (!match && member.userName) {
           match = member.userName === existingUserName;
         }
@@ -205,15 +200,10 @@ export class MemberBulkLoadService {
       }
     };
 
-    notify.setBusy();
-    const today = this.dateUtils.momentNowNoTime().valueOf();
-    const promises = [];
-    const memberBulkLoadResponse = memberBulkLoadServerResponse.data;
-    this.logger.debug("received", memberBulkLoadResponse);
     return this.memberBulkLoadAuditService.create(memberBulkLoadResponse)
-      .then(auditResponse => {
+      .then((auditResponse: MemberBulkLoadAudit) => {
         const uploadSessionId = auditResponse.id;
-        return processBulkLoadResponses(promises, uploadSessionId);
+        return processBulkLoadResponses(uploadSessionId);
       });
 
   }

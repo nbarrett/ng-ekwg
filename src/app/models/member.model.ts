@@ -107,7 +107,7 @@ export interface  MemberUpdateAudit extends Auditable {
   auditMessage: string;
   memberId?: string;
   member?: Member;
-  auditErrorMessage?: string;
+  auditErrorMessage?: object;
 }
 
 export interface MemberAuthAudit {

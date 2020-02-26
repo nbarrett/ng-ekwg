@@ -9,7 +9,9 @@ const memberUpdateAuditSchema = mongoose.Schema({
   rowNumber: {type: Number},
   changes: {type: Number},
   auditMessage: {type: String},
+  memberId: {type: String},
   member: member.schema,
+  auditErrorMessage: {type: Object}
 }, {collection: "memberUpdateAudit"});
 
 module.exports = mongoose.model("member-update-audit", memberUpdateAuditSchema);

@@ -433,7 +433,16 @@ h3 small {
   padding: 0px 0px 15px 0px;
 }
 
+.admin-header-white-background {
+  background: white;
+  padding: 20px;
+}
+
 .admin-header-container {
+  padding: 6px 0px 2px 6px;
+}
+
+.admin-header-container-with-tabs {
   padding: 6px 0px 2px 0px;
 }
 

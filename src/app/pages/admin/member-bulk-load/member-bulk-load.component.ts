@@ -1,5 +1,7 @@
 import { DOCUMENT } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnInit } from "@angular/core";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import groupBy from "lodash-es/groupBy";
@@ -13,7 +15,7 @@ import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { Member, MemberBulkLoadAudit, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
+import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, TableFilter } from "../../../models/table-filtering.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -49,14 +51,19 @@ export class MemberBulkLoadComponent implements OnInit {
     membersUploaded: TableFilter;
     memberUpdateAudit: TableFilter;
   };
-  public uploader: FileUploader;
+  public fileUploader: FileUploader = new FileUploader({
+    url: "api/ramblers/monthly-reports/upload",
+    disableMultipart: false,
+    autoUpload: true,
+    authTokenHeader: "Authorization",
+    authToken: `Bearer ${this.authService.authToken()}`,
+    formatDataFunctionIsAsync: false,
+  });
   public memberBulkLoadAudits: MemberBulkLoadAudit[] = [];
   public memberUpdateAudits: MemberUpdateAudit[] = [];
   public members: Member[] = [];
-  public hasBaseDropZoneOver = false;
-  public hasAnotherDropZoneOver = false;
+  public hasFileOver = false;
   public quickSearch = "";
-  private file: any;
   public memberTabHeading: string;
   public auditTabHeading: string;
 
@@ -78,18 +85,41 @@ export class MemberBulkLoadComponent implements OnInit {
               private authService: AuthService,
               private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
+              private route: ActivatedRoute,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberBulkLoadComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      const tab = paramMap.get("tab");
+      this.logger.info("tab is", tab);
+    });
+
     this.searchChangeObservable = new Subject<string>();
     this.searchChangeObservable.pipe(debounceTime(250))
       .pipe(distinctUntilChanged())
       .subscribe(() => this.filterLists());
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.memberAdminBaseUrl = this.contentMetadata.baseUrl("memberAdmin");
-    this.uploader = new FileUploader({url: "api/ramblers/monthly-reports/upload"});
+    this.fileUploader.response.subscribe((response: string | HttpErrorResponse) => {
+      this.logger.debug("response", response, "type", typeof response);
+      if (response instanceof HttpErrorResponse) {
+        this.notify.error({title: "Upload failed", message: response.error});
+      } else if (response === "Unauthorized") {
+        this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
+      } else {
+        const memberBulkLoadAuditApiResponse: MemberBulkLoadAuditApiResponse = JSON.parse(response);
+        this.logger.info("received response", memberBulkLoadAuditApiResponse);
+        this.memberBulkUploadService.processResponse(memberBulkLoadAuditApiResponse, this.members, this.notify)
+          .then(() => this.refreshMemberBulkLoadAudit())
+          .then(() => this.refreshMemberUpdateAudit())
+          .then(() => this.validateBulkUploadProcessingBeforeMailchimpUpdates(memberBulkLoadAuditApiResponse))
+          .catch((error) => this.resetSendFlagsAndNotifyError(error));
+
+      }
+    });
+
     this.uploadSessionStatuses = [
       {title: "All"},
       {status: "created", title: "Created"},
@@ -126,7 +156,7 @@ export class MemberBulkLoadComponent implements OnInit {
     this.memberBulkLoadAuditService.all({
       sort: {createdDate: -1}
     }).then(memberBulkLoadAudits => {
-      this.logger.debug("found:memberBulkLoadAuditService", memberBulkLoadAudits);
+      this.logger.debug("found", memberBulkLoadAudits.length, "memberBulkLoadAudits");
       this.memberBulkLoadAudits = memberBulkLoadAudits;
       this.uploadSession = first(this.memberBulkLoadAudits);
       this.uploadSessionChanged();
@@ -140,15 +170,11 @@ export class MemberBulkLoadComponent implements OnInit {
   }
 
   public fileOverBase(e: any): void {
-    this.hasBaseDropZoneOver = e;
-  }
-
-  public fileOverAnother(e: any): void {
-    this.hasAnotherDropZoneOver = e;
+    this.hasFileOver = e;
   }
 
   currentMemberBulkLoadDisplayDate() {
-    this.dateUtils.currentMemberBulkLoadDisplayDate();
+    return this.dateUtils.currentMemberBulkLoadDisplayDate();
   }
 
   onSearchChange(searchEntry: string) {
@@ -184,22 +210,12 @@ export class MemberBulkLoadComponent implements OnInit {
   }
 
   sortMemberUpdateAuditBy(field) {
-    this.applySortTo(field, this.filters.memberUpdateAudit, this.uploadSession.members);
+    this.applySortTo(field, this.filters.memberUpdateAudit, this.memberUpdateAudits);
   }
 
   memberUpdateAuditSummary() {
     return this.auditSummaryFormatted(this.auditSummary());
   }
-
-  // uploadedFile() {
-  //   return this.uploader.addToQueue(file)
-  //
-  //     .then(bulkUploadRamblersResponse, this.resetSendFlagsAndNotifyError, bulkUploadRamblersProgress)
-  //     .then(refreshMemberBulkLoadAudit)
-  //     .then(refreshMemberUpdateAudit)
-  //     .then(validateBulkUploadProcessingBeforeMailchimpUpdates)
-  //     .catch(this.resetSendFlagsAndNotifyError);
-  // }
 
   toGlyphicon(status) {
     if (status === "created") {
@@ -235,12 +251,10 @@ export class MemberBulkLoadComponent implements OnInit {
     this.applyFilterToList(filterSource, unfilteredList);
   }
 
-  applyFilterToList(filterSource: TableFilter, unfilteredList: any[]) {
+  applyFilterToList(filter: TableFilter, unfilteredList: any[]) {
     this.notify.setBusy();
-    const filter = filterSource.selectedFilter;
-    const sort = filterSource.sortField;
-    const filteredResults = sortBy(this.searchFilterPipe.transform(unfilteredList, this.quickSearch), sort);
-    filterSource.results = filterSource.reverseSort ? filteredResults.reverse() : filteredResults;
+    const filteredResults = sortBy(this.searchFilterPipe.transform(unfilteredList, this.quickSearch), filter.sortField);
+    filter.results = filter.reverseSort ? filteredResults.reverse() : filteredResults;
     this.notify.clearBusy();
   }
 
@@ -268,7 +282,7 @@ export class MemberBulkLoadComponent implements OnInit {
       this.logger.debug("querying member audit records with", criteria);
       return this.memberUpdateAuditService.all({criteria, sort: {updateTime: -1}}).then(memberUpdateAudits => {
         this.memberUpdateAudits = memberUpdateAudits;
-        this.logger.debug("queried", memberUpdateAudits, "member update audit records:");
+        this.logger.debug("queried", memberUpdateAudits.length, "member update audit records:", memberUpdateAudits);
         this.filterLists();
         return this.memberUpdateAudits;
       });
@@ -295,20 +309,16 @@ export class MemberBulkLoadComponent implements OnInit {
     this.applySortTo(field, this.filters.membersUploaded, this.uploadSession.members);
   }
 
-  refreshMemberBulkLoadAudit() {
-    if (this.memberLoginService.allowMemberAdminEdits()) {
-      return this.memberBulkLoadAuditService.all({
-        sort: {createdDate: -1}
-      }).then(uploadSessions => {
-        this.logger.debug("refreshed", uploadSessions && uploadSessions.length, "upload sessions");
-        this.memberBulkLoadAudits = uploadSessions;
-        this.uploadSession = first(uploadSessions);
-        this.filterLists();
-        return this.uploadSession;
-      });
-    } else {
-      return Promise.resolve(true);
-    }
+  refreshMemberBulkLoadAudit(): Promise<any> {
+    return this.memberBulkLoadAuditService.all({
+      sort: {createdDate: -1}
+    }).then(uploadSessions => {
+      this.logger.debug("refreshed", uploadSessions && uploadSessions.length, "upload sessions");
+      this.memberBulkLoadAudits = uploadSessions;
+      this.uploadSession = first(uploadSessions);
+      this.filterLists();
+      return true;
+    });
   }
 
   auditSummary() {
@@ -324,15 +334,13 @@ export class MemberBulkLoadComponent implements OnInit {
     return `${total} Member audits ${total ? `(${summary})` : ""}`;
   }
 
-  validateBulkUploadProcessingBeforeMailchimpUpdates() {
-    this.logger.debug("validateBulkUploadProcessing:this.uploadSession", this.uploadSession);
-    if (this.uploadSession.error) {
-      this.notify.error({title: "Bulk upload failed", message: this.uploadSession.error});
+  validateBulkUploadProcessingBeforeMailchimpUpdates(apiResponse: MemberBulkLoadAuditApiResponse) {
+    this.logger.debug("validateBulkUploadProcessing:this.uploadSession", apiResponse);
+    if (apiResponse.error) {
+      this.notify.error({title: "Bulk upload failed", message: apiResponse.error});
     } else {
-
       const summary = this.auditSummary();
       const summaryFormatted = this.auditSummaryFormatted(summary);
-
       this.logger.debug("summary", summary, "summaryFormatted", summaryFormatted);
       if (summary.error) {
         this.notify.error({
@@ -346,40 +354,19 @@ export class MemberBulkLoadComponent implements OnInit {
     }
   }
 
-  bulkUploadRamblersDataOpenFile(file) {
-    if (file) {
-      const fileUpload = file;
-      this.notify.setBusy();
-
-      //   this.uploadedFile = this.upload({
-      //     url: "api/ramblers/monthly-reports/upload",
-      //     method: "POST",
-      //     file
-      //   }).then(this.bulkUploadRamblersResponse)
-      //     .then(refreshMemberBulkLoadAudit)
-      //     .then(refreshMemberUpdateAudit)
-      //     .then(validateBulkUploadProcessingBeforeMailchimpUpdates)
-      //     .catch(this.resetSendFlagsAndNotifyError);
-      // }
-    }
-  }
-
   resetSendFlagsAndNotifyError(error) {
     this.notify.clearBusy();
+    this.logger.error(error);
     this.notify.error(error);
   }
 
   bulkUploadRamblersResponse(memberBulkLoadServerResponse) {
-    return this.memberBulkUploadService.processMembershipRecords(this.file, memberBulkLoadServerResponse, this.members, this.notify);
+    return this.memberBulkUploadService.processResponse(memberBulkLoadServerResponse, this.members, this.notify);
   }
 
-  // bulkUploadRamblersProgress(evt) {
-  //   fileUpload.progress = parseInt(100.0 * evt.loaded / evt.total);
-  //   this.logger.debug("bulkUploadRamblersProgress:progress event", evt);
-  // }
-
   bulkUploadRamblersDataStart() {
-    this.document.getElementById("select-bulk-load-file")
-      .getElementsByTagName("button")[0].click();
+    const elementById: HTMLElement = this.document.getElementById("select-bulk-load-file");
+    this.logger.info("bulkUploadRamblersDataStart:elementById", elementById);
+    elementById.click();
   }
 }

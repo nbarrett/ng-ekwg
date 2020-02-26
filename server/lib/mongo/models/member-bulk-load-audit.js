@@ -16,6 +16,8 @@ const RamblersMemberSchema = mongoose.Schema({
 });
 
 const MemberBulkLoadAuditSchema = mongoose.Schema({
+  createdDate: {type: Number},
+  createdBy: {type: String},
   files: {
     archive: {type: String},
     data: {type: String},

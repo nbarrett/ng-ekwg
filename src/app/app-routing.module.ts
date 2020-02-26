@@ -25,6 +25,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 const routes: Routes = [
   {path: "admin", component: AdminComponent},
   {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "mailing-preferences", component: MailingPreferencesComponent},
