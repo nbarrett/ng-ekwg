@@ -43,7 +43,13 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     this.logger.debug("constructed");
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.info("subscribe:loginResponse", loginResponse);
-      if (loginResponse.memberLoggedIn) {
+      if (!loginResponse) {
+        this.notify.error({
+          continue: true,
+          title: "Login failed",
+          message: "Please try again"
+        });
+      } else if (loginResponse.memberLoggedIn) {
         this.bsModalRef.hide();
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
           return this.urlService.navigateTo("mailing-preferences");

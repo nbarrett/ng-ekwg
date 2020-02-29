@@ -66,7 +66,7 @@
                            type="file" value="Upload"
                            ng2FileSelect [uploader]="fileUploader"></span>
                         <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-                             (fileOver)="fileOverBase($event)"
+                             (fileOver)="fileOver($event)"
                              [uploader]="fileUploader"
                              class="well drop-zone">
                           Or drop file here

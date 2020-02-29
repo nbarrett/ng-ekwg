@@ -1,6 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
@@ -11,7 +11,7 @@ import sortBy from "lodash-es/sortBy";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
@@ -39,7 +39,7 @@ import { MemberAdminModalComponent } from "../member-admin-modal/member-admin-mo
   templateUrl: "./member-bulk-load.component.html",
   styleUrls: ["./member-bulk-load.component.sass"]
 })
-export class MemberBulkLoadComponent implements OnInit {
+export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
@@ -66,6 +66,7 @@ export class MemberBulkLoadComponent implements OnInit {
   public quickSearch = "";
   public memberTabHeading: string;
   public auditTabHeading: string;
+  private subscription: Subscription;
 
   constructor(@Inject(DOCUMENT) private document: Document,
               @Inject("MailchimpListService") private mailchimpListService,
@@ -91,6 +92,11 @@ export class MemberBulkLoadComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+      this.logger.debug("loginResponse", loginResponse);
+      this.urlService.navigateTo("admin");
+    });
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");
       this.logger.info("tab is", tab);
@@ -163,13 +169,17 @@ export class MemberBulkLoadComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
   private filterLists(searchTerm?: string) {
     this.applyFilterToList(this.filters.membersUploaded, this.uploadSession.members);
     this.applyFilterToList(this.filters.memberUpdateAudit, this.memberUpdateAudits);
     this.updateTabHeadings();
   }
 
-  public fileOverBase(e: any): void {
+  public fileOver(e: any): void {
     this.hasFileOver = e;
   }
 

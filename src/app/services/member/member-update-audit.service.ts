@@ -16,7 +16,6 @@ export class MemberUpdateAuditService {
   private logger: Logger;
 
   constructor(private http: HttpClient,
-              private numberUtils: NumberUtilsService,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberUpdateAuditService, NgxLoggerLevel.OFF);
@@ -27,13 +26,6 @@ export class MemberUpdateAuditService {
     this.logger.debug("find-one:dataQueryOptions", dataQueryOptions, "params", params.toString());
     const apiResponse = await this.http.get<MemberUpdateAuditApiResponse>(`${this.BASE_URL}/all`, {params}).toPromise();
     this.logger.debug("find-one - received", apiResponse);
-    return apiResponse.response as MemberUpdateAudit[];
-  }
-
-  async getByMemberId(memberId: string): Promise<MemberUpdateAudit[]> {
-    this.logger.debug("getById:", memberId);
-    const apiResponse = await this.http.get<MemberUpdateAuditApiResponse>(`${this.BASE_URL}/member/${memberId}`).toPromise();
-    this.logger.debug("getById - received", apiResponse);
     return apiResponse.response as MemberUpdateAudit[];
   }
 

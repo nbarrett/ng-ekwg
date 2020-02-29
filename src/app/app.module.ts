@@ -141,6 +141,8 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
+import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
+import { ExpenseDetailModalComponent } from "./pages/admin/expenses/expense-detail-modal/expense-detail-modal.component";
 
 @NgModule({
   declarations: [
@@ -226,6 +228,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkValidationsListPipe,
     WalkVenueComponent,
     WalkViewComponent,
+    ExpensesComponent,
+    ExpenseDetailModalComponent,
   ],
   imports: [
     FileUploadModule,

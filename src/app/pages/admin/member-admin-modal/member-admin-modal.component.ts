@@ -105,17 +105,8 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   confirmDeleteMemberDetails() {
-    this.memberService.delete(this.member).then(() => this.hideMemberDialogAndRefreshMembers());
+    this.memberService.delete(this.member).then(() => this.bsModalRef.hide());
   }
-
-  hideMemberDialogAndRefreshMembers() {
-    this.bsModalRef.hide();
-  }
-
-  cancelMemberDetails() {
-    this.hideMemberDialogAndRefreshMembers();
-  }
-
   viewMailchimpListEntry(item: string) {
     return window.open(`${this.mailchimpApiUrl}/lists/members/view?id=${item}`);
   }
@@ -187,7 +178,7 @@ export class MemberAdminModalComponent implements OnInit {
 
   saveAndHide() {
     return this.memberService.createOrUpdate(this.member)
-      .then(() => this.hideMemberDialogAndRefreshMembers());
+      .then(() => this.bsModalRef.hide());
   }
 
   copyDetailsToNewMember() {
@@ -196,7 +187,6 @@ export class MemberAdminModalComponent implements OnInit {
     this.profileConfirmationService.unconfirmProfile(copiedMember);
     this.member = copiedMember;
     this.memberEditMode = "Copy Existing";
-    this.logger.debug("copiedMember", copiedMember);
     this.notify.success("Existing Member copied! Make changes here and save to create new member.");
   }
 

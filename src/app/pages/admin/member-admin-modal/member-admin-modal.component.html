@@ -1,7 +1,7 @@
 <div bsModal class="modal-lg">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" (click)="hideMemberDialogAndRefreshMembers()"
+      <button type="button" class="close" data-dismiss="modal" (click)="this.bsModalRef.hide();"
               aria-hidden="true">&times;
       </button>
       <h4 class="modal-title">{{memberEditMode}} <em>Member</em> Details</h4>
@@ -455,13 +455,13 @@
              value="Confirm Deletion">
       <input *ngIf="allowEdits" type="submit" [disabled]="saveInProgress"
              [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
-             (click)="cancelMemberDetails()" title="Cancel and don't save" value="Cancel">
+             (click)="this.bsModalRef.hide();" title="Cancel and don't save" value="Cancel">
       <input *ngIf="allowEdits" type="submit" [disabled]="saveInProgress"
              [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
              (click)="copyDetailsToNewMember()" title="Copy details to new Member" value="Copy">
       <input *ngIf="!allowEdits" type="submit" [disabled]="saveInProgress"
              [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
-             (click)="cancelMemberDetails()" title="Close" value="Close">
+             (click)="this.bsModalRef.hide();" title="Close" value="Close">
     </div>
   </div>
 </div>

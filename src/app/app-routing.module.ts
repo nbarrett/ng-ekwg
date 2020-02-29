@@ -8,6 +8,7 @@ import { MailingPreferencesComponent } from "./login/mailing-preferences.compone
 import { SetPasswordComponent } from "./login/set-password.component";
 import { LogoutComponent } from "./logout/logout.component";
 import { AdminComponent } from "./pages/admin/admin/admin.component";
+import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
@@ -24,6 +25,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 const routes: Routes = [
   {path: "admin", component: AdminComponent},
+  {path: "admin/expenses", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
