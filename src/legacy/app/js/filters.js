@@ -52,11 +52,6 @@ angular.module('ekwgApp')
       return $filter('firstName')(MemberService.toMember(memberId, members), defaultValue);
     }
   })
-  .filter('asMoney', function (NumberUtils) {
-    return function (number) {
-      return isNaN(number) ? '' : '£' + NumberUtils.asNumber(number).toFixed(2);
-    }
-  })
   .filter('humanize', function () {
     return function (string) {
       return s.humanize(string);

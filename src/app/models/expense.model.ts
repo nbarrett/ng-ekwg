@@ -1,7 +1,6 @@
 import { ApiResponse } from "./api-response.model";
 
 export interface ExpenseClaim {
-  receipt?: { title: string, fileNameData: any };
   id?: string;
   expenseEvents: ExpenseEvent[];
   expenseItems: ExpenseItem[];
@@ -26,6 +25,10 @@ export interface ExpenseItem {
     to?: string,
     returnJourney: boolean
   };
+  receipt?: {
+    awsFileName?: string;
+    originalFileName?: string;
+    title: string, fileNameData: any };
 }
 
 export interface ExpenseEventType {

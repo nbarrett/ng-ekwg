@@ -1,0 +1,8 @@
+<div style="font-size:12px">
+    <p>This email is to notify you as an Expense Approver, that <strong [textContent]="expenseClaimCreatedEvent().memberId | memberIdToFullName : members" class="nowrap"></strong>
+        has just submitted a new EKWG expense claim. For reference, the claim was originally created on <span [textContent]="expenseClaimCreatedEvent().date | displayDate" class="nowrap"></span>
+        and contains the following <span [textContent]="expenseClaim.expenseItems.length"></span> item(s):</p>
+    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
+    <br>
+    <p>Once the above claim has been approved by both Kerry and Des, Jon will then be automatically notified who will the be able to arrange payment.</p>
+</div>

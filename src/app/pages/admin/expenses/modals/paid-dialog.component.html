@@ -1,4 +1,4 @@
-<div ng-class="{'busy': busy}">
+<div [ngClass]="{'busy': busy}">
     <div class="modal" id="paid-dialog" tabindex="-1" role="dialog" data-backdrop="true" aria-labelledby="modal-label" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="thumbnail">
                         <div class="green-bullets-no-rule">
-                            <ul>You are about to mark the Expense Claim for <strong ng-bind="expenseClaimCreatedEvent().memberId | memberIdToFullName : members"></strong> as <strong>Paid</strong>
+                            <ul>You are about to mark the Expense Claim for <strong [textContent]="expenseClaimCreatedEvent().memberId | memberIdToFullName : members"></strong> as <strong>Paid</strong>
                                 <li>This should be done once the payment to their bank account has been organised.</li>
                                 <li>An email will now be sent to them informing them of this.</li>
                             </ul>
@@ -17,8 +17,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" value="Confirm Paid" ng-disabled="selected.saveInProgress" ng-click="confirmPaidExpenseClaim()" title="Confirm this Expense Claim as Paid" ng-class="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form amber-confirm button-form-left'">
-                    <input type="submit" value="Cancel" ng-disabled="selected.saveInProgress" ng-click="cancelPaidExpenseClaim()" title="Don't mark this Expense Claim as paid, just close this form" ng-class="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
+                    <input type="submit" value="Confirm Paid" [disabled]="selected.saveInProgress" (click)="confirmPaidExpenseClaim()" title="Confirm this Expense Claim as Paid" [ngClass]="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form amber-confirm button-form-left'">
+                    <input type="submit" value="Cancel" [disabled]="selected.saveInProgress" (click)="cancelPaidExpenseClaim()" title="Don't mark this Expense Claim as paid, just close this form" [ngClass]="selected.saveInProgress ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
                 </div>
             </div>
         </div>

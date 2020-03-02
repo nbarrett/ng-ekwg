@@ -1,5 +1,6 @@
 "use strict";
 const {clone} = require("lodash");
+const mkdirpsync = require('mkdirpsync');
 const config = require("../config/config");
 const stringUtils = require("../shared/string-utils");
 const debug = require("debug")(config.logNamespace("template-migrator"));
@@ -30,60 +31,77 @@ exports.migrateTemplate = (req, res) => {
     ["ng-if", "*ngIf"],
     ["ng-disabled", "[disabled]"],
     ["ng-click", "(click)"],
-    ["ng-hide", "!*ngIf"],
+    ["ng-show", "*ngIf"],
+    ["ng-hide=\"", "*ngIf=!\""],
     ["ng-model", "[(ngModel)]"],
     ["ng-class", "[ngClass]"],
     ["ng-bind", "[textContent]"],
-    ["ng-repeat", "*ngFor"],
+    ["ng-repeat=\"", "*ngFor=\"let "],
     ["ng-change", "(ngModelChange)"],
+    ["ng-style", "[ngStyle]"],
+    ["ng-mouseover", "(mouseover)"],
+    ["ng-required", "[required]"],
+    ["ng-src", "[src]"],
     ["ng-href", "[href]"],
     ["ng-options", "<option *ngFor"],
-    ["uib-", ""]];
+    ["uib-", ""],
+    [" in ", " of "]
+  ];
 
-  const requestPath = req.path;
-  const fileName = `../${req.query.file}`;
-  const sourceDir = path.normalize(`../${req.query.in}`);
-  const migratedFileName = stringUtils.replaceAll("html", "ts", fileName);
-  debug("input file", fileName);
-  const response = {response: requestPath, in: sourceDir, out: req.query.out};
-  if (req.query.in) {
-    walkDir(sourceDir, (file) => file.endsWith(".html")).then(files => {
-      debug("files", files);
-      response.output = files.map(inputFile => {
-        const directory = path.dirname(inputFile);
-        const relativeDir = directory.split(req.query.in)[1];
-        const output = path.join("../", req.query.out, relativeDir, "/", path.basename(inputFile));
-        const outputFile = path.resolve(output);
-        convert(inputFile, outputFile);
-        return {
-          relativeDir,
-          inputFile,
-          inExists: fs.existsSync(inputFile),
-          outputFile,
-          outExists: fs.existsSync(output)
-        }
+  try {
+    const requestPath = req.path;
+    const fileName = `../${req.query.file}`;
+    const sourceDir = path.normalize(`../${req.query.in}`);
+    const migratedFileName = stringUtils.replaceAll("html", "ts", fileName);
+    debug("input file", fileName);
+    const response = {response: requestPath, in: sourceDir, out: req.query.out};
+    if (req.query.in) {
+      walkDir(sourceDir, (file) => file.endsWith(".html")).then(files => {
+        debug("files", files);
+        response.output = files.map(inputFile => {
+          const parsedPath = path.parse(inputFile);
+          const inputDirectory = parsedPath.dir;
+          const outputDirectory = path.resolve(path.join("../", req.query.out, inputDirectory.split(req.query.in)[1]))
+          const output = path.join(outputDirectory, parsedPath.name + ".component" + parsedPath.ext);
+          const outputFile = path.resolve(output);
+          if (!fs.existsSync(outputDirectory)) {
+            debug("creating:", outputDirectory)
+            mkdirpsync(outputDirectory);
+          } else {
+            debug("already exists:", outputDirectory)
+          }
+          convert(inputFile, outputFile);
+          return {
+            inputFile,
+            inExists: fs.existsSync(inputFile),
+            output,
+            outputFile,
+            outputDirectory,
+            outExists: fs.existsSync(output)
+          }
+        })
+        res.json(response)
       })
-      res.json(response)
-    })
-  } else {
-    res.json({error: "no input parameter specified"})
+    } else {
+      res.json({error: "no input parameter specified"})
+    }
+  } catch (error) {
+    debug("ERROR: ", error.stack);
+    res.json(error);
   }
 
   function convert(inputFile, outputFile) {
     if (fs.existsSync(inputFile)) {
-      const outputDir = path.basename(outputFile);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-      }
+      const outputDir = path.dirname(outputFile);
       const fileContents = fs.readFileSync(inputFile).toString();
       let outputContents = clone(fileContents);
       tokenPairs.forEach(pair => {
         debug("replacing tokens:", pair);
         outputContents = stringUtils.replaceAll(pair[0], pair[1], outputContents);
       })
-      debug("outputContents file", migratedFileName);
+      debug("output:dir", outputDir, "outputContents:", outputContents);
       fs.writeFileSync(outputFile, outputContents);
-      debug("outputContents", migratedFileName, "created")
+      debug("outputContents", outputFile, "created")
     } else {
       debug("input", inputFile, "does not exist")
     }

@@ -1,4 +1,3 @@
-import { DOCUMENT } from "@angular/common";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { clone, filter, find, isEqual, last } from "lodash-es";
@@ -8,8 +7,9 @@ import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../../models/expense.model";
+import { ExpenseClaim, ExpenseEvent, ExpenseItem } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -27,7 +27,8 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { NumberUtilsService } from "../../../services/number-utils.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { ExpenseDetailModalComponent } from "./expense-detail-modal/expense-detail-modal.component";
+import { ExpenseDisplayService } from "./expense-display.service";
+import { ExpenseDetailModalComponent } from "./modals/expense-detail-modal.component";
 
 const SELECTED_EXPENSE = "Expense from last email link";
 
@@ -43,7 +44,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private members: Member[];
   private expenseClaims: ExpenseClaim[];
   private unfilteredExpenseClaims: any[];
-  private alertMessages: any[];
   private filterTypes: (
     { filter: (expenseClaim) => (boolean); description: string; disabled: boolean } |
     { filter: (expenseClaim) => boolean; description: string } |
@@ -51,39 +51,23 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     { filter: () => boolean; description: string })[];
   private notificationsBaseUrl: string;
 
-  public expenseTypes: ExpenseType[] = [
-    {value: "travel-reccie", name: "Travel (walk reccie)", travel: true},
-    {value: "travel-committee", name: "Travel (attend committee meeting)", travel: true},
-    {value: "other", name: "Other"}];
-
-  public eventTypes = {
-    created: {description: "Created", editable: true} as ExpenseEventType,
-    submitted: {description: "Submitted", actionable: true, notifyCreator: true, notifyApprover: true} as ExpenseEventType,
-    "first-approval": {description: "First Approval", actionable: true, notifyApprover: true} as ExpenseEventType,
-    "second-approval": {
-      description: "Second Approval",
-      actionable: true,
-      notifyCreator: true,
-      notifyApprover: true,
-      notifyTreasurer: true
-    } as ExpenseEventType,
-    returned: {description: "Returned", atEndpoint: false, editable: true, notifyCreator: true, notifyApprover: true} as ExpenseEventType,
-    paid: {description: "Paid", atEndpoint: true, notifyCreator: true, notifyApprover: true, notifyTreasurer: true} as ExpenseEventType
+  private selected: {
+    expenseClaim: ExpenseClaim,
+    expenseItem: ExpenseItem,
+    expenseFilter: { filter: (expenseClaim) => (boolean); description: string; disabled: boolean } | { filter: (expenseClaim) => boolean; description: string } | { filter: (expenseClaim) => any; description: string } | { filter: () => boolean; description: string }; expenseItemIndex: number; saveInProgress: boolean; expenseClaimIndex: number; showOnlyMine: boolean
   };
-
-  private selected: { expenseFilter: { filter: (expenseClaim) => (boolean); description: string; disabled: boolean } | { filter: (expenseClaim) => boolean; description: string } | { filter: (expenseClaim) => any; description: string } | { filter: () => boolean; description: string }; expenseItemIndex: number; saveInProgress: boolean; expenseClaimIndex: number; showOnlyMine: boolean };
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private selectedExpenseClaimIndex: 0;
   private selectedExpenseItemIndex: 0;
   private resubmit: boolean;
   private uploadedFile: string;
-  private confirmAction: { approve?: boolean; delete?: boolean };
+  public confirm = new Confirm();
   private expenseId: string;
   private subscription: Subscription;
+  private saveInProgress: boolean;
 
-  constructor(@Inject(DOCUMENT) private document: Document,
-              @Inject("MailchimpListService") private mailchimpListService,
+  constructor(@Inject("MailchimpListService") private mailchimpListService,
               @Inject("MailchimpSegmentService") private mailchimpSegmentService,
               @Inject("MailchimpCampaignService") private mailchimpCampaignService,
               private contentMetadata: ContentMetadataService,
@@ -105,21 +89,19 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
+              public display: ExpenseDisplayService,
               loggerFactory: LoggerFactory) {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger = loggerFactory.createLogger(ExpensesComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
-    this.receiptBaseUrl = this.contentMetadata.baseUrl("expenseClaims");
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
     });
     this.dataError = false;
     this.members = [];
     this.expenseClaims = [];
     this.unfilteredExpenseClaims = [];
-    this.alertMessages = [];
-
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.expenseId = paramMap.get("expense-id");
       this.logger.info("expense-id:", this.expenseId);
@@ -135,19 +117,21 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         }
       }, {
         description: "Unpaid expenses",
-        filter: expenseClaim => !this.expenseClaimStatus(expenseClaim).atEndpoint
+        filter: expenseClaim => !this.display.expenseClaimStatus(expenseClaim).atEndpoint
       }, {
         description: "Paid expenses",
-        filter: expenseClaim => this.expenseClaimStatus(expenseClaim).atEndpoint
+        filter: expenseClaim => this.display.expenseClaimStatus(expenseClaim).atEndpoint
       }, {
         description: "Expenses awaiting action from me",
-        filter: expenseClaim => this.memberLoginService.allowFinanceAdmin() ? this.editable(expenseClaim) : this.editableAndOwned(expenseClaim)
+        filter: expenseClaim => this.memberLoginService.allowFinanceAdmin() ? this.display.editable(expenseClaim) : this.display.editableAndOwned(expenseClaim)
       }, {
         description: "All expenses",
         filter: () => true
       }];
       this.selected = {
-        showOnlyMine: !this.allowAdminFunctions(),
+        expenseClaim: undefined,
+        expenseItem: undefined,
+        showOnlyMine: !this.display.allowAdminFunctions(),
         saveInProgress: false,
         expenseClaimIndex: 0,
         expenseItemIndex: 0,
@@ -177,123 +161,14 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     });
   }
 
-  defaultExpenseItem(): ExpenseItem {
-    return clone({
-      expenseType: this.expenseTypes[0],
-      expenseDate: this.dateUtils.asValueNoTime(),
-      cost: 0,
-      travel: {
-        costPerMile: 0.28,
-        miles: 0,
-        from: "",
-        to: "",
-        returnJourney: true
-      }
-    });
-  }
-
   showArea(area) {
     this.urlService.navigateTo("admin", area);
   }
 
-  selectedExpenseClaim(): ExpenseClaim {
-    try {
-      return this.expenseClaims[this.selectedExpenseClaimIndex];
-    } catch (e) {
-      this.logger.error("selectedExpenseClaim", e);
-    }
-  }
-
-  selectedExpenseClaimItem(): ExpenseItem {
-    try {
-      return this.selectedExpenseClaim().expenseItems[this.selectedExpenseItemIndex];
-    } catch (e) {
-      this.logger.error("selectedExpenseClaimItem:", e);
-    }
-  }
-
-  editable(expenseClaim?: ExpenseClaim) {
-    return this.memberCanEditClaim(expenseClaim) && this.expenseClaimStatus(expenseClaim).editable;
-  }
-
-  editableAndOwned(expenseClaim) {
-    return this.memberOwnsClaim(expenseClaim) && this.expenseClaimStatus(expenseClaim).editable;
-  }
-
-  editable2() {
-    return this.editable(this.selectedExpenseClaim());
-  }
-
-  allowClearError() {
-    return this.urlService.hasRouteParameter("expenseId") && this.dataError;
-  }
-
-  allowAddExpenseClaim() {
-    return !this.dataError && !find(this.unfilteredExpenseClaims, this.editableAndOwned);
-  }
-
-  allowFinanceAdmin() {
-    return this.memberLoginService.allowFinanceAdmin();
-  }
-
-  allowEditExpenseItem() {
-    return this.allowAddExpenseItem() && this.selectedExpenseClaim() && this.selectedExpenseClaim().id;
-  }
-
-  allowAddExpenseItem() {
-    return this.editable();
-  }
-
-  allowDeleteExpenseItem() {
-    return this.allowEditExpenseItem();
-  }
-
-  allowDeleteExpenseClaim() {
-    return !this.allowDeleteExpenseItem() && this.allowAddExpenseItem();
-  }
-
-  allowSubmitExpenseClaim() {
-    return this.allowEditExpenseItem() && !this.allowResubmitExpenseClaim();
-  }
-
-  allowAdminFunctions() {
-    return this.memberLoginService.allowTreasuryAdmin() || this.memberLoginService.allowFinanceAdmin();
-  }
-
-  allowReturnExpenseClaim() {
-    return this.allowAdminFunctions()
-      && this.selectedExpenseClaim()
-      && this.expenseClaimHasEventType(this.selectedExpenseClaim(), this.eventTypes.submitted)
-      && !this.expenseClaimHasEventType(this.selectedExpenseClaim(), this.eventTypes.returned)
-      && this.expenseClaimStatus(this.selectedExpenseClaim()).actionable;
-  }
-
-  allowResubmitExpenseClaim() {
-    return this.editable() && this.expenseClaimHasEventType(this.selectedExpenseClaim(), this.eventTypes.returned);
-  }
-
-  allowPaidExpenseClaim() {
-    return this.memberLoginService.allowTreasuryAdmin() && [this.eventTypes.submitted.description, this.eventTypes["second-approval"].description, this.eventTypes["first-approval"].description]
-      .includes(this.expenseClaimLatestEvent().eventType.description);
-  }
-
   activeEvents(optionalEvents?: ExpenseEvent[]) {
-    const events = optionalEvents || this.selectedExpenseClaim().expenseEvents;
-    const latestReturnedEvent = find(events.reverse(), event => isEqual(event.eventType, this.expenseClaimStatus().returned));
+    const events = optionalEvents || this.selected.expenseClaim.expenseEvents;
+    const latestReturnedEvent = find(events.reverse(), event => isEqual(event.eventType, this.display.expenseClaimStatus(this.selected.expenseClaim).returned));
     return latestReturnedEvent ? events.slice(events.indexOf(latestReturnedEvent) + 1) : events;
-  }
-
-  expenseClaimHasEventType(expenseClaim, eventType) {
-    if (!expenseClaim) {
-      return false;
-    }
-    return this.eventForEventType(expenseClaim, eventType);
-  }
-
-  eventForEventType(expenseClaim: ExpenseClaim, eventType) {
-    if (expenseClaim) {
-      return find(expenseClaim.expenseEvents, event => isEqual(event.eventType, eventType));
-    }
   }
 
   allowApproveExpenseClaim() {
@@ -306,20 +181,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   approvalEvents() {
-    if (!this.selectedExpenseClaim()) {
+    if (!this.selected.expenseClaim) {
       return [];
     }
-    return filter(this.selectedExpenseClaim().expenseEvents, event => isEqual(event.eventType, this.eventTypes["first-approval"]) || isEqual(event.eventType, this.eventTypes["second-approval"]));
-  }
-
-  expenseClaimStatus(optionalExpenseClaim?: ExpenseClaim): ExpenseEventType {
-    const expenseClaim = optionalExpenseClaim || this.selectedExpenseClaim();
-    return this.expenseClaimLatestEvent(expenseClaim).eventType;
-  }
-
-  expenseClaimLatestEvent(optionalExpenseClaim?: ExpenseClaim): ExpenseEvent {
-    const expenseClaim = optionalExpenseClaim || this.selectedExpenseClaim();
-    return expenseClaim ? last(expenseClaim.expenseEvents) : {};
+    return filter(this.selected.expenseClaim.expenseEvents, event => isEqual(event.eventType, this.display.eventTypes["first-approval"]) || isEqual(event.eventType, this.display.eventTypes["second-approval"]));
   }
 
   nextApprovalStage() {
@@ -337,9 +202,9 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     const approvals = this.approvalEvents();
     this.notify.hide();
     if (approvals.length === 0) {
-      this.createEventAndSendNotifications(this.eventTypes["first-approval"]);
+      this.createEventAndSendNotifications(this.display.eventTypes["first-approval"]);
     } else if (approvals.length === 1) {
-      this.createEventAndSendNotifications(this.eventTypes["second-approval"]);
+      this.createEventAndSendNotifications(this.display.eventTypes["second-approval"]);
     } else {
       this.notify.error("This expense claim already has " + approvals.length + " approvals!");
     }
@@ -351,53 +216,48 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   addExpenseClaim() {
-    this.expenseClaims.unshift(this.defaultExpenseClaim());
-    this.selectExpenseClaim(0);
-    this.createEvent(this.eventTypes.created);
+    this.selectExpenseClaim(this.defaultExpenseClaim());
+    this.createEvent(this.display.eventTypes.created);
     this.addExpenseItem();
   }
 
-  selectExpenseItem(index) {
-    if (this.selected.saveInProgress) {
+  selectExpenseItem(expenseItem: ExpenseItem) {
+    if (this.saveInProgress) {
     } else {
-      this.selectedExpenseClaimIndex = index;
+      this.selected.expenseItem = expenseItem;
     }
   }
 
-  selectExpenseClaim(index) {
-    if (this.selected.saveInProgress) {
-    } else {
-      this.selectedExpenseClaimIndex = index;
-      const expenseClaim = this.selectedExpenseClaim();
+  selectExpenseClaim(expenseClaim: ExpenseClaim) {
+    if (this.saveInProgress) {
+      this.selected.expenseClaim = expenseClaim;
     }
+  }
+
+  confirmOutstanding() {
+    return this.confirm.type !== ConfirmType.NONE;
+  }
+
+  private removeConfirm() {
+    this.confirm.type = ConfirmType.NONE;
   }
 
   editExpenseItem() {
     this.removeConfirm();
     delete this.uploadedFile;
-    this.modalService.show(ExpenseDetailModalComponent);
+    const config = {
+      class: "modal-lg",
+      show: true,
+      initialState: {
+        expenseItem: this.selected.expenseItem, expenseClaim: this.selected.expenseClaim
+      }
+    };
+    this.modalService.show(ExpenseDetailModalComponent, {});
   }
 
   hideExpenseClaim() {
     this.removeConfirm();
     // $("#expense-detail-dialog").modal("hide");
-  }
-
-  addReceipt() {
-    // $("#hidden-input").click();
-  }
-
-  removeReceipt() {
-    delete this.selectedExpenseClaim().receipt;
-    delete this.uploadedFile;
-  }
-
-  receiptTitle(expenseItem) {
-    return expenseItem && expenseItem.receipt ? (expenseItem.receipt.title || expenseItem.receipt.originalFileName) : "";
-  }
-
-  receiptUrl(expenseItem) {
-    return expenseItem && expenseItem.receipt ? this.urlService.baseUrl() + this.receiptBaseUrl + "/" + expenseItem.receipt.awsFileName : "";
   }
 
   ekwgFileUpload() {
@@ -409,15 +269,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       this.uploadedFile = file;
       this.ekwgFileUpload().onFileSelect(file, this.notify, "expenseClaims")
         .then(fileNameData => {
-          const expenseItem = this.selectedExpenseClaim();
-          const oldTitle = (expenseItem.receipt && expenseItem.receipt.title) ? receipt.title : undefined;
-          expenseItem.receipt = {fileNameData, title: oldTitle};
+          const expenseItem = this.selected.expenseClaim;
+          // const oldTitle = (expenseItem.receipt && expenseItem.receipt.title) ? receipt.title : undefined;
+          // expenseItem.receipt = {fileNameData, title: oldTitle};
         });
     }
   }
 
   createEvent(eventType, reason?: string) {
-    const expenseClaim = this.selectedExpenseClaim();
+    const expenseClaim = this.selected.expenseClaim;
     if (!expenseClaim.expenseEvents) {
       expenseClaim.expenseEvents = [];
     }
@@ -434,74 +294,30 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   addExpenseItem() {
     this.removeConfirm();
-    const newExpenseItem = this.defaultExpenseItem();
-    this.selectedExpenseClaim().expenseItems.push(newExpenseItem);
-    const index = this.selectedExpenseClaim().expenseItems.indexOf(newExpenseItem);
-    if (index > -1) {
-      this.selectExpenseItem(index);
-      this.editExpenseItem();
-    } else {
-      this.showExpenseErrorAlert("Could not display new expense item");
-    }
+    const newExpenseItem = this.display.defaultExpenseItem();
+    this.selected.expenseClaim.expenseItems.push(newExpenseItem);
+    this.selectExpenseItem(newExpenseItem);
+    this.editExpenseItem();
   }
 
-  expenseTypeChange() {
-    const item = this.selectedExpenseClaimItem();
-    this.logger.debug("this.selectedExpenseClaim().expenseType", item.expenseType);
-    if (item.expenseType.travel) {
-      if (!item.travel) {
-        item.travel = this.defaultExpenseItem().travel;
-      }
-    } else {
-      delete item.travel;
-    }
-    this.setExpenseItemFields();
+  allowClearError() {
+    return this.urlService.hasRouteParameter("expenseId") && this.dataError;
   }
 
-  recalculateClaimCost() {
-    this.selectedExpenseClaim().cost = this.numberUtils.sumValues(this.selectedExpenseClaim().expenseItems, "cost");
-  }
-
-  cancelExpenseChange() {
-    this.refreshExpenses().then(() => this.hideExpenseClaim()).then(() => this.notify.clearBusy());
-  }
-
-  showExpenseErrorAlert(message) {
-    const messageDefaulted = message || "Please try this again.";
-    this.notify.error("Your expense claim could not be saved. " + messageDefaulted);
-    this.selected.saveInProgress = false;
-  }
-
-  showExpenseEmailErrorAlert(message) {
-    this.selected.saveInProgress = false;
-    this.notify.error("Your expense claim email processing failed. " + message);
-  }
-
-  showExpenseProgressAlert(message, busy?) {
-    this.notify.progress(message, busy);
+  allowReturnExpenseClaim() {
+    return this.display.allowAdminFunctions()
+      && this.selected.expenseClaim
+      && this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.submitted)
+      && !this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.returned)
+      && this.display.expenseClaimStatus(this.selected.expenseClaim).actionable;
   }
 
   showExpenseSuccessAlert(message?: string, busy?: boolean) {
     this.notify.success(message, busy);
   }
 
-  showExpenseSaved(data) {
-    this.expenseClaims[this.selectedExpenseClaimIndex] = data;
-    this.selected.saveInProgress = false;
-    return this.notify.success("Expense was saved successfully");
-  }
-
-  saveExpenseClaim(optionalExpenseClaim?: ExpenseClaim) {
-    this.selected.saveInProgress = true;
-    this.showExpenseProgressAlert("Saving expense claim", true);
-    this.setExpenseItemFields();
-    return (this.expenseClaimService.createOrUpdate(optionalExpenseClaim || this.selectedExpenseClaim()))
-      .then(() => this.hideExpenseClaim())
-      .then(() => this.notify.clearBusy());
-  }
-
   approveExpenseClaim() {
-    this.confirmAction = {approve: true};
+    this.confirm.type = ConfirmType.APPROVE;
     if (this.lastApprovedByMe()) {
       this.notify.warning({
         title: "Duplicate approval warning",
@@ -510,35 +326,25 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
   }
 
+  allowResubmitExpenseClaim() {
+    return this.display.editable(this.selected.expenseClaim) && this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.returned);
+  }
+
+  allowPaidExpenseClaim() {
+    return this.memberLoginService.allowTreasuryAdmin() && [this.display.eventTypes.submitted.description, this.display.eventTypes["second-approval"].description, this.display.eventTypes["first-approval"].description]
+      .includes(this.display.expenseClaimLatestEvent(this.selected.expenseClaim).eventType.description);
+  }
+
   deleteExpenseClaim() {
-    this.confirmAction = {delete: true};
+    this.confirm.type = ConfirmType.DELETE;
   }
 
-  deleteExpenseItem() {
-    this.confirmAction = {delete: true};
+  eventTracker(index: number, event: ExpenseEvent) {
+    return event.date && event.eventType;
   }
 
-  confirmDeleteExpenseItem() {
-    this.selected.saveInProgress = true;
-    this.showExpenseProgressAlert("Deleting expense item", true);
-    const expenseItem = this.selectedExpenseClaimItem();
-    this.logger.debug("removing", expenseItem);
-    const index = this.selectedExpenseClaim().expenseItems.indexOf(expenseItem);
-    if (index > -1) {
-      this.selectedExpenseClaim().expenseItems.splice(index, 1);
-    } else {
-      this.showExpenseErrorAlert("Could not delete expense item");
-    }
-    this.selectExpenseItem(0);
-    this.recalculateClaimCost();
-    this.saveExpenseClaim()
-      .then(() => this.removeConfirm())
-      .then(() => this.notify.clearBusy());
-  }
-
-  removeConfirm() {
-    delete this.confirmAction;
-    this.showExpenseSuccessAlert();
+  itemTracker(index: number, item: ExpenseItem) {
+    return item.expenseDate && item.expenseType;
   }
 
   showExpenseDeleted() {
@@ -548,7 +354,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   confirmDeleteExpenseClaim() {
     this.showExpenseProgressAlert("Deleting expense claim", true);
 
-    this.expenseClaimService.delete(this.selectedExpenseClaim())
+    this.expenseClaimService.delete(this.selected.expenseClaim)
       .then(() => this.hideExpenseClaim())
       .then(() => this.showExpenseDeleted())
       .then(() => this.refreshExpenses())
@@ -556,7 +362,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       .then(() => this.notify.clearBusy());
   }
 
-  submitExpenseClaim(state) {
+  submitExpenseClaim(state: boolean) {
     this.resubmit = state;
     // $("#submit-dialog").modal("show");
   }
@@ -574,9 +380,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     // $("#return-dialog").modal("show");
   }
 
+  allowSubmitExpenseClaim(expenseClaim: ExpenseClaim) {
+    return this.display.allowEditExpenseItem(expenseClaim) && !this.allowResubmitExpenseClaim();
+  }
+
   confirmReturnExpenseClaim(reason) {
     this.hideReturnDialog();
-    return this.createEventAndSendNotifications(this.eventTypes.returned, reason);
+    return this.createEventAndSendNotifications(this.display.eventTypes.returned, reason);
   }
 
   hideReturnDialog() {
@@ -592,7 +402,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   confirmPaidExpenseClaim() {
-    this.createEventAndSendNotifications(this.eventTypes.paid)
+    this.createEventAndSendNotifications(this.display.eventTypes.paid)
       .then(() => this.hidePaidDialog());
   }
 
@@ -606,24 +416,19 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   confirmSubmitExpenseClaim() {
     if (this.resubmit) {
-      this.selectedExpenseClaim().expenseEvents = [this.eventForEventType(this.selectedExpenseClaim(), this.eventTypes.created)];
+      this.selected.expenseClaim.expenseEvents = [this.display.eventForEventType(this.selected.expenseClaim, this.display.eventTypes.created)];
     }
-    this.createEventAndSendNotifications(this.eventTypes.submitted);
+    this.createEventAndSendNotifications(this.display.eventTypes.submitted);
   }
 
   resubmitExpenseClaim() {
     this.submitExpenseClaim(true);
   }
 
-  expenseClaimCreatedEvent(optionalExpenseClaim?: ExpenseClaim): ExpenseEvent {
-    return this.eventForEventType(optionalExpenseClaim || this.selectedExpenseClaim(), this.eventTypes.created);
-  }
-
   createEventAndSendNotifications(eventType, reason?: string) {
     this.notify.setBusy();
-    this.selected.saveInProgress = true;
-    const expenseClaim = this.selectedExpenseClaim();
-    const expenseClaimCreatedEvent = this.expenseClaimCreatedEvent(expenseClaim);
+    this.saveInProgress = true;
+    const expenseClaimCreatedEvent = this.display.expenseClaimCreatedEvent(this.selected.expenseClaim);
     const sendNotificationsToAllRoles = () => {
       return this.memberService.getById(expenseClaimCreatedEvent.memberId)
         .then(member => {
@@ -690,12 +495,12 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               .then((templateData) => renderTemplateContent(templateData))
               .then((expenseNotificationText) => populateContentSections(expenseNotificationText))
               .then((contentSections) => sendNotification(contentSections, templateAndNotificationMembers))
-              .catch((error) => this.showExpenseEmailErrorAlert(error));
+              .catch((error) => this.display.showExpenseEmailErrorAlert(this.notify, error));
 
             const populateContentSections = (expenseNotificationText) => {
               return {
                 sections: {
-                  expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenseId/${expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
+                  expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenseId/${this.selected.expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
                   expense_notification_text: expenseNotificationText
                 }
               };
@@ -745,7 +550,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
     return Promise.resolve(this.createEvent(eventType, reason))
       .then(() => sendNotificationsToAllRoles())
-      .then(() => this.saveExpenseClaim());
+      .then(() => (() => this.expenseClaimService.createOrUpdate(this.selected.expenseClaim)));
 
     const renderTemplateContent = (templateData) => {
       // const task = new Promise();
@@ -760,65 +565,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   }
 
-  setExpenseItemFields() {
-    const expenseItem = this.selectedExpenseClaimItem();
-    if (expenseItem) {
-      expenseItem.expenseDate = this.dateUtils.asValueNoTime(expenseItem.expenseDate);
-      if (expenseItem.travel) {
-        expenseItem.travel.miles = this.numberUtils.asNumber(expenseItem.travel.miles);
-      }
-      expenseItem.description = this.expenseItemDescription(expenseItem);
-      expenseItem.cost = this.expenseItemCost(expenseItem);
-    }
-    this.recalculateClaimCost();
-  }
-
-  prefixedExpenseItemDescription(expenseItem) {
-    if (!expenseItem) {
-      return "";
-    }
-    const prefix = expenseItem.expenseType && expenseItem.expenseType.travel ? expenseItem.expenseType.name + " - " : "";
-    return prefix + expenseItem.description;
-  }
-
-  expenseItemDescription(expenseItem) {
-    let description;
-    if (!expenseItem) {
-      return "";
-    }
-    if (expenseItem.travel && expenseItem.expenseType.travel) {
-      description = [
-        expenseItem.travel.from,
-        "to",
-        expenseItem.travel.to,
-        expenseItem.travel.returnJourney ? "return trip" : "single trip",
-        "(" + expenseItem.travel.miles,
-        "miles",
-        expenseItem.travel.returnJourney ? "x 2" : "",
-        "x",
-        expenseItem.travel.costPerMile * 100 + "p per mile)"
-      ].join(" ");
-    } else {
-      description = expenseItem.description;
-    }
-    return description;
-  }
-
-  expenseItemCost(expenseItem) {
-    let cost;
-    if (!expenseItem) {
-      return 0;
-    }
-    if (expenseItem.travel && expenseItem.expenseType.travel) {
-      cost = (this.numberUtils.asNumber(expenseItem.travel.miles) *
-        (expenseItem.travel.returnJourney ? 2 : 1) *
-        this.numberUtils.asNumber(expenseItem.travel.costPerMile));
-    } else {
-      cost = expenseItem.cost;
-    }
-    return this.numberUtils.asNumber(cost, 2);
-  }
-
   refreshMembers() {
     if (this.memberLoginService.memberLoggedIn()) {
       this.notify.progress("Refreshing member data...");
@@ -827,20 +573,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         return this.members = members;
       });
     }
-  }
-
-  memberCanEditClaim(expenseClaim?: ExpenseClaim) {
-    if (!expenseClaim) {
-      return false;
-    }
-    return this.memberOwnsClaim(expenseClaim) || this.memberLoginService.allowFinanceAdmin();
-  }
-
-  memberOwnsClaim(expenseClaim?: ExpenseClaim) {
-    if (!expenseClaim) {
-      return false;
-    }
-    return (this.memberLoginService.loggedInMember().memberId === this.expenseClaimCreatedEvent(expenseClaim).memberId);
   }
 
   refreshExpenses() {
@@ -878,11 +610,11 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     return query()
       .then(expenseClaims => {
         this.unfilteredExpenseClaims = [];
-        this.expenseClaims = chain(expenseClaims).filter(expenseClaim => this.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.memberOwnsClaim(expenseClaim) : true) : this.memberCanEditClaim(expenseClaim)).filter(expenseClaim => {
+        this.expenseClaims = chain(expenseClaims).filter(expenseClaim => this.display.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.display.memberOwnsClaim(expenseClaim) : true) : this.display.memberCanEditClaim(expenseClaim)).filter(expenseClaim => {
           this.unfilteredExpenseClaims.push(expenseClaim);
           return this.selected.expenseFilter.filter(expenseClaim);
         }).sortBy(expenseClaim => {
-          const expenseClaimLatestEvent = this.expenseClaimLatestEvent(expenseClaim);
+          const expenseClaimLatestEvent = this.display.expenseClaimLatestEvent(expenseClaim);
           return expenseClaimLatestEvent ? expenseClaimLatestEvent.date : true;
         }).value().reverse().value();
         const outcome = "Found " + this.expenseClaims.length + " expense claim(s)";
@@ -892,6 +624,22 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         return this.expenseClaims;
       }, (error) => this.notify.error(error))
       .catch((error) => this.notify.error(error));
+  }
+
+  private showExpenseProgressAlert(message: string, busy?: boolean) {
+    this.notify.progress({title: "Expenses", message}, busy);
+  }
+
+  allowAddExpenseClaim() {
+    return !this.dataError && !find(this.unfilteredExpenseClaims, this.display.editableAndOwned);
+  }
+
+  cancelDeleteExpenseClaim() {
+
+  }
+
+  isInactive(expenseClaim: ExpenseClaim) {
+    return expenseClaim !== this.selected.expenseClaim;
   }
 
 }

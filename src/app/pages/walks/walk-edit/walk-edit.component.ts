@@ -8,6 +8,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
+import { ConfirmType } from "../../../models/ui-actions";
 import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
@@ -36,7 +37,7 @@ import { WalkNotificationService } from "../../../services/walks/walk-notificati
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
-import { ConfirmType, WalkDisplayService, WalkViewMode } from "../walk-display.service";
+import { WalkDisplayService, WalkViewMode } from "../walk-display.service";
 
 interface DisplayMember {
   memberId: string;

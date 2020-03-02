@@ -1,7 +1,0 @@
-<div style="font-size:12px">
-    <p>This email is just to confirm that the EKWG expense claim you created on <span ng-bind="expenseClaimCreatedEvent().date | displayDate" class="nowrap"></span> with the
-        <span ng-bind="selected.expenseClaim().expenseItems.length"></span> item(s) listed below has been paid by <strong ng-bind="expenseClaimLatestEvent().memberId | memberIdToFullName : members"></strong>:
-    </p>
-    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
-    <p>You should see funds arriving in your bank account within the next 3 days.</p>
-</div>

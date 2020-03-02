@@ -21,15 +21,6 @@ import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 
-export enum ConfirmType {
-  DELETE = "delete",
-  REQUEST_APPROVAL = "requestApproval",
-  CANCEL = "cancel",
-  CONTACT_OTHER = "contactOther",
-  PUBLISH_MEETUP = "publishMeetup",
-  NONE = "none"
-}
-
 export enum WalkViewMode {
   VIEW = "view",
   EDIT = "edit",

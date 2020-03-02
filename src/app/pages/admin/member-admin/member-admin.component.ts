@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import cloneDeep from "lodash-es/cloneDeep";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
-import { BsModalService, ModalOptions } from "ngx-bootstrap";
+import { BsModalService} from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -40,10 +39,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private members: Member[] = [];
   public quickSearch = "";
   private searchChangeObservable: Subject<string>;
-  config: ModalOptions = {
-    animated: false,
-    initialState: {members: this.members}
-  };
   public memberFilter: TableFilter;
 
   private memberFilterUploaded: any;
@@ -220,12 +215,14 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   showMemberDialog(member, memberEditMode) {
     this.logger.debug("showMemberDialog:", memberEditMode, member);
-    this.config.initialState["memberEditMode"] = memberEditMode;
-    this.config.initialState["member"] = cloneDeep(member);
-    this.config.initialState["members"] = this.members;
-    this.config.class = "modal-lg";
-    this.config.show = true;
-    this.modalService.show(MemberAdminModalComponent, this.config);
+    const config = {
+      class: "modal-lg",
+      show: true,
+      initialState: {
+        memberEditMode, member, members: this.members
+      }
+    };
+    this.modalService.show(MemberAdminModalComponent, config);
   }
 
   showArea(area) {
@@ -234,7 +231,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   showSendEmailsDialog() {
     // change this to MemberAdminSendEmailsComponent
-    this.modalService.show(LoginModalComponent, this.config);
+    this.modalService.show(LoginModalComponent);
   }
 
   applySortTo(field, filterSource) {

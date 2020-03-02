@@ -65,6 +65,8 @@ import { MeetupDescriptionComponent } from "./notifications/walks/templates/meet
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { AdminComponent } from "./pages/admin/admin/admin.component";
+import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
+import { ExpenseDetailModalComponent } from "./pages/admin/expenses/modals/expense-detail-modal.component";
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
@@ -102,6 +104,7 @@ import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displaye
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
+import { MoneyPipe } from "./pipes/money.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { SnakeCasePipe } from "./pipes/snakecase.pipe";
 import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
@@ -141,8 +144,6 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
-import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
-import { ExpenseDetailModalComponent } from "./pages/admin/expenses/expense-detail-modal/expense-detail-modal.component";
 
 @NgModule({
   declarations: [
@@ -230,6 +231,7 @@ import { ExpenseDetailModalComponent } from "./pages/admin/expenses/expense-deta
     WalkViewComponent,
     ExpensesComponent,
     ExpenseDetailModalComponent,
+    MoneyPipe,
   ],
   imports: [
     FileUploadModule,

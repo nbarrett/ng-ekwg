@@ -1,0 +1,183 @@
+<div [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="modal" id="expense-detail-dialog" tabindex="-1" role="dialog" data-backdrop="true"
+       aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Edit <em>Expense Item</em>
+            of {{expenseClaim.expenseItems.length}}</h4>
+        </div>
+        <div class="modal-body">
+          <div class="thumbnail">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="expense-date">Expense Date</label>
+                  <div class="input-group">
+                    <input [ngModel]="expenseItem.expenseDate"
+                           (ngModelChange)="onExpenseDateChange($event)"
+                           placeholder="enter date"
+                           #dp="bsDatepicker"
+                           bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
+                               containerClass: 'theme-ramblers'}"
+                           type="text" class="form-control input-sm"
+                           id="expense-date"/>
+                    <div class="input-group-btn">
+                      <button class="btn btn-default btn-sm"
+                              (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
+                        class="glyphicon glyphicon-calendar"></i></button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <label for="expenseType">Expense Type</label>
+                  <select [(ngModel)]="expenseItem.expenseType" (ngModelChange)="expenseTypeChange()" id="expenseType"
+                          class="form-control input-sm"
+                          [disabled]="!editable">
+                    <option *ngFor="let expenseType of display.expenseTypes"
+                            [textContent]="expenseType.name">
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="expenseItem.expenseType.travel">
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="from">From</label>
+                    <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.from" type="text"
+                           (ngModelChange)="setExpenseItemFields()" class="form-control input-sm" id="from"
+                           placeholder="Enter from location here">
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="to">To</label>
+                    <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.to" type="text"
+                           (ngModelChange)="setExpenseItemFields()" class="form-control input-sm" id="to"
+                           placeholder="Enter to location here">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <br>
+
+                  <div class="form-group checkbox-group">
+                    <label [ngClass]="{'ui-state-active': expenseItem.travel.returnJourney}" for="is-return">Return
+                      Journey </label>
+                    <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.returnJourney"
+                           (ngModelChange)="setExpenseItemFields()" type="checkbox" id="is-return">
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+
+                  <label for="miles">Distance</label>
+
+                  <div class="input-group">
+                    <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.miles" type="text"
+                           [(ngModel)]-options="{debounce:1000}" (ngModelChange)="setExpenseItemFields()"
+                           class="form-control input-sm" id="miles"
+                           placeholder="Enter miles here">
+                    <span class="input-group-addon">miles</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-9">
+                <div class="form-group">
+                  <label for="description">Expense Description</label>
+                  <input *ngIf="!expenseItem.expenseType.travel"
+                         [disabled]="!editable || expenseItem.expenseType.travel"
+                         (ngModelChange)="setExpenseItemFields()" [(ngModel)]="expenseItem.description"
+                         type="text" class="form-control input-sm" id="description"
+                         placeholder="Enter expense description here">
+                </div>
+                <div class="form-group">
+                  <a *ngIf="expenseItem.expenseType.travel" target="_blank" id="map-url"
+                     [href]="'https://www.google.co.uk/maps/dir/' + expenseItem.travel.from + '/' + expenseItem.travel.to"
+                     [textContent]="'Show ' + expenseItem.description + ' on google maps'"></a>
+                </div>
+              </div>
+
+              <div class="col-sm-3">
+                <label for="cost">Cost</label>
+
+                <div class="input-group">
+                  <span class="input-group-addon">£</span>
+                  <input [disabled]="!editable || expenseItem.expenseType.travel"
+                         placeholder="Enter cost here" [(ngModel)]="expenseItem.cost" id="cost"
+                         [(ngModel)]-options="{debounce:1000}" type="text" class="form-control input-sm"
+                         aria-label="Amount">
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="!expenseItem.expenseType.travel">
+              <div *ngIf="uploadedFile || expenseItem.receipt" class="form-group">
+                <label for="receipt">Description for attached receipt: </label>
+                <a target="_blank" id="receipt" [href]="display.receiptUrl(expenseItem)"
+                   [textContent]="display.receiptTitle(expenseItem)"></a>
+                <input *ngIf="display.allowAddExpenseItem(expenseClaim)" [(ngModel)]="expenseItem.receipt.title"
+                       type="text" value=""
+                       class="form-control input-sm" id="receiptTitle"
+                       placeholder="Enter a title for this receipt">
+              </div>
+              <div *ngIf="display.allowAddExpenseItem(expenseClaim)" class="form-group">
+                <span class="hidden-input"><input id="hidden-input" type="file" value="Replace"
+                                                  ngf-select="onFileSelect($file)" title="Replace this image"></span>
+
+                <input *ngIf="expenseItem.receipt" [disabled]="saveInProgress" type="submit"
+                       value="Remove receipt" (click)="removeReceipt()" title="Remove Receipt"
+                       [ngClass]="saveInProgress ? 'disabled-button-form': 'button-form'">
+                <input *ngIf="expenseItem.receipt" [disabled]="saveInProgress" type="submit"
+                       value="Replace receipt" title="Replace receipt on this expense"
+                       [ngClass]="saveInProgress ? 'disabled-button-form': 'button-form'"
+                       (click)="addReceipt()">
+                <input *ngIf=!"expenseItem.receipt" [disabled]="saveInProgress" type="submit"
+                       value="Add receipt" title="Add receipt to this expense"
+                       [ngClass]="saveInProgress ? 'disabled-button-form': 'button-form'"
+                       (click)="addReceipt()">
+              </div>
+
+              <div *ngIf="uploadedFile" class="form-group">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar"
+                       style="width:{{uploadedFile.progress}}%;">{{uploadedFile.progress}}% uploaded
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input *ngIf="display.allowEditExpenseItem(expenseClaim) || display.allowAddExpenseItem(expenseClaim)"
+                 [disabled]="saveInProgress"
+                 type="submit" value="Save Expense Item" (click)="saveExpenseClaim(expenseClaim)"
+                 title="Save expense item"
+                 [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+          <input *ngIf="confirm.noneOutstanding() && display.allowDeleteExpenseItem(expenseClaim)"
+                 [disabled]="saveInProgress" type="submit"
+                 value="Delete Expense Item" (click)="confirm.toggleDelete()" title="Delete expense Item"
+                 [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+          <input *ngIf="confirm.deleteConfirmOutstanding() && display.allowDeleteExpenseItem(expenseClaim)"
+                 [disabled]="saveInProgress"
+                 type="submit" value="Confirm Delete of Expense Item"
+                 (click)="display.confirmDeleteExpenseItem(confirm, notify, expenseClaim, expenseItem)"
+                 title="Confirm delete of this expense item"
+                 [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-confirm'">
+          <input type="submit" value="Cancel Change" (click)="cancelExpenseChange()"
+                 [disabled]="saveInProgress" title="Cancel Expense Claim changes and close this dialog"
+                 [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

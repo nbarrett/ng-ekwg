@@ -52,6 +52,7 @@
     "mailchimp-api": "2.0.4",
     "matchdep": "0.3.0",
     "method-override": "2.3.8",
+    "mkdirpsync": "^0.1.0",
     "mocha": "7.0.1",
     "moment": "2.18.1",
     "moment-timezone": "0.5.13",
