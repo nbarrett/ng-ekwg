@@ -45,7 +45,8 @@ import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
-import { NotificationDirective } from "./notifications/walks/notification.directive";
+import { ExpenseNotificationDetailsComponent } from "./notifications/expenses/templates/common/expense-notification-details.component";
+import { WalkNotificationDirective } from "./notifications/walks/walk-notification.directive";
 import { WalkNotificationChangesComponent } from "./notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "./notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationFooterComponent } from "./notifications/walks/templates/common/walk-notification-footer.component";
@@ -64,6 +65,7 @@ import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/te
 import { MeetupDescriptionComponent } from "./notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
+import { PageComponent } from "./page/page.component";
 import { AdminComponent } from "./pages/admin/admin/admin.component";
 import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { ExpenseDetailModalComponent } from "./pages/admin/expenses/modals/expense-detail-modal.component";
@@ -148,6 +150,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 @NgModule({
   declarations: [
     AccordionGroupComponent,
+    PageComponent,
     AdminComponent,
     AppComponent,
     AuditDeltaChangedItemsPipePipe,
@@ -186,7 +189,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
     NonRenderingComponent,
-    NotificationDirective,
+    WalkNotificationDirective,
     NotificationUrlComponent,
     PageNavigatorComponent,
     PageTitleComponent,
@@ -218,6 +221,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkNotificationCoordinatorRequestedComponent,
     WalkNotificationCoordinatorUpdatedComponent,
     WalkNotificationDetailsComponent,
+    ExpenseNotificationDetailsComponent,
     WalkNotificationFooterComponent,
     WalkNotificationLeaderApprovedComponent,
     WalkNotificationLeaderAwaitingApprovalComponent,
@@ -306,6 +310,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ContactUsDirective,
     LoginModalComponent,
     ResetPasswordModalComponent,
+    ExpenseDetailModalComponent,
     MemberAdminModalComponent,
     ForgotPasswordModalComponent,
     MeetupDescriptionComponent,

@@ -1,13 +1,13 @@
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { clone, filter, find, isEqual, last } from "lodash-es";
+import { clone, filter, find, first, isEqual, last } from "lodash-es";
 import { BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ExpenseClaim, ExpenseEvent, ExpenseItem } from "../../../models/expense.model";
+import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
@@ -39,33 +39,29 @@ const SELECTED_EXPENSE = "Expense from last email link";
 })
 export class ExpensesComponent implements OnInit, OnDestroy {
   private logger: Logger;
+  private expenseId: string;
   private receiptBaseUrl: string;
   private dataError: boolean;
   private members: Member[];
   private expenseClaims: ExpenseClaim[];
-  private unfilteredExpenseClaims: any[];
-  private filterTypes: (
-    { filter: (expenseClaim) => (boolean); description: string; disabled: boolean } |
-    { filter: (expenseClaim) => boolean; description: string } |
-    { filter: (expenseClaim) => any; description: string } |
-    { filter: () => boolean; description: string })[];
+  private unfilteredExpenseClaims: ExpenseClaim[];
   private notificationsBaseUrl: string;
 
   private selected: {
     expenseClaim: ExpenseClaim,
     expenseItem: ExpenseItem,
-    expenseFilter: { filter: (expenseClaim) => (boolean); description: string; disabled: boolean } | { filter: (expenseClaim) => boolean; description: string } | { filter: (expenseClaim) => any; description: string } | { filter: () => boolean; description: string }; expenseItemIndex: number; saveInProgress: boolean; expenseClaimIndex: number; showOnlyMine: boolean
+    filter: ExpenseFilter,
+    showOnlyMine: boolean,
+    saveInProgress: boolean
   };
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  private selectedExpenseClaimIndex: 0;
-  private selectedExpenseItemIndex: 0;
   private resubmit: boolean;
   private uploadedFile: string;
   public confirm = new Confirm();
-  private expenseId: string;
   private subscription: Subscription;
   private saveInProgress: boolean;
+  public filters: ExpenseFilter[];
 
   constructor(@Inject("MailchimpListService") private mailchimpListService,
               @Inject("MailchimpSegmentService") private mailchimpSegmentService,
@@ -96,7 +92,9 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.notify.setBusy();
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+      this.urlService.navigateTo("admin");
     });
     this.dataError = false;
     this.members = [];
@@ -104,8 +102,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.unfilteredExpenseClaims = [];
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.expenseId = paramMap.get("expense-id");
-      this.logger.info("expense-id:", this.expenseId);
-      this.filterTypes = [{
+      this.filters = [{
         disabled: !this.expenseId,
         description: SELECTED_EXPENSE,
         filter: expenseClaim => {
@@ -128,24 +125,28 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         description: "All expenses",
         filter: () => true
       }];
+
       this.selected = {
         expenseClaim: undefined,
         expenseItem: undefined,
         showOnlyMine: !this.display.allowAdminFunctions(),
         saveInProgress: false,
-        expenseClaimIndex: 0,
-        expenseItemIndex: 0,
-        expenseFilter: this.filterTypes[this.expenseId ? 0 : 1]
+        // filter: this.filters[1]
+        filter: this.filters[!!this.expenseId ? 0 : 1]
       };
+      this.logger.info("ngOnInit - expense-id:", this.expenseId, "this.filters:", this.filters, "this.selected:", this.selected);
+      this.refreshMembers()
+        .then(() => this.refreshExpenses())
+        .then(() => this.notify.setReady())
+        .catch((error) => {
+          this.logger.error(error);
+          this.notify.error(error);
+        });
     });
 
     this.notificationsBaseUrl = "partials/expenses/notifications";
 
     this.memberLoginService.showLoginPromptWithRouteParameter("expenseId");
-    this.refreshMembers()
-      .then(() => this.refreshExpenses())
-      .then(() => this.notify.setReady())
-      .catch((error) => this.notify.error(error));
 
   }
 
@@ -229,8 +230,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   selectExpenseClaim(expenseClaim: ExpenseClaim) {
-    if (this.saveInProgress) {
+    this.logger.debug("selectExpenseClaim:", expenseClaim);
+    if (!this.saveInProgress) {
       this.selected.expenseClaim = expenseClaim;
+      this.selectExpenseItem(first(this.selected.expenseClaim.expenseItems));
     }
   }
 
@@ -252,7 +255,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         expenseItem: this.selected.expenseItem, expenseClaim: this.selected.expenseClaim
       }
     };
-    this.modalService.show(ExpenseDetailModalComponent, {});
+    this.modalService.show(ExpenseDetailModalComponent, config);
   }
 
   hideExpenseClaim() {
@@ -575,14 +578,19 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
   }
 
+  changeFilter($event?: ExpenseFilter) {
+    this.selected.filter = $event;
+    this.refreshExpenses();
+  }
+
   refreshExpenses() {
     this.dataError = false;
     this.notify.setBusy();
-    this.logger.debug("refreshExpenses started");
-    this.notify.progress("Filtering for " + this.selected.expenseFilter.description + "...");
-    this.logger.debug("refreshing expenseFilter", this.selected.expenseFilter);
+    this.logger.debug("refreshExpenses started:");
+    this.notify.progress("Filtering for " + this.selected.filter.description + "...");
+    this.logger.debug("refreshing expenseFilter", this.selected.filter);
 
-    const noExpenseFound = () => {
+    const noExpenseFound = (error?) => {
       this.dataError = true;
       return this.notify.warning({
         title: "Expense claim could not be found",
@@ -591,8 +599,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     };
 
     const query = () => {
-      this.logger.info("expenseFilter.description", this.selected.expenseFilter.description, "expenseId", this.expenseId);
-      if (this.selected.expenseFilter.description === SELECTED_EXPENSE && this.expenseId) {
+      this.logger.info("expenseFilter.description", this.selected.filter.description, "expenseId", this.expenseId);
+      if (this.selected.filter.description === SELECTED_EXPENSE && this.expenseId) {
         return this.expenseClaimService.getById(this.expenseId)
           .then(expense => {
             if (!expense) {
@@ -601,7 +609,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               return [expense];
             }
           })
-          .catch(noExpenseFound);
+          .catch(error => noExpenseFound(error));
       } else {
         return this.expenseClaimService.all();
       }
@@ -610,16 +618,18 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     return query()
       .then(expenseClaims => {
         this.unfilteredExpenseClaims = [];
-        this.expenseClaims = chain(expenseClaims).filter(expenseClaim => this.display.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.display.memberOwnsClaim(expenseClaim) : true) : this.display.memberCanEditClaim(expenseClaim)).filter(expenseClaim => {
-          this.unfilteredExpenseClaims.push(expenseClaim);
-          return this.selected.expenseFilter.filter(expenseClaim);
-        }).sortBy(expenseClaim => {
-          const expenseClaimLatestEvent = this.display.expenseClaimLatestEvent(expenseClaim);
-          return expenseClaimLatestEvent ? expenseClaimLatestEvent.date : true;
-        }).value().reverse().value();
-        const outcome = "Found " + this.expenseClaims.length + " expense claim(s)";
+        this.expenseClaims = chain(expenseClaims)
+          .filter(expenseClaim => this.display.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.display.memberOwnsClaim(expenseClaim) : true) : this.display.memberCanEditClaim(expenseClaim))
+          .filter(expenseClaim => {
+            this.unfilteredExpenseClaims.push(expenseClaim);
+            return this.selected.filter.filter(expenseClaim);
+          }).sortBy(expenseClaim => {
+            const expenseClaimLatestEvent = this.display.expenseClaimLatestEvent(expenseClaim);
+            return expenseClaimLatestEvent ? expenseClaimLatestEvent.date : true;
+          }).value().reverse();
+        const outcome = `${this.selected.filter.description} - found ${this.expenseClaims.length} expense claim(s)`;
         this.notify.progress(outcome);
-        this.logger.debug("refreshExpenses finished", outcome);
+        this.logger.debug("query finished", outcome);
         this.notify.clearBusy();
         return this.expenseClaims;
       }, (error) => this.notify.error(error))
@@ -631,7 +641,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   allowAddExpenseClaim() {
-    return !this.dataError && !find(this.unfilteredExpenseClaims, this.display.editableAndOwned);
+    return !this.dataError && !this.unfilteredExpenseClaims.find(claim => this.display.editableAndOwned(claim));
   }
 
   cancelDeleteExpenseClaim() {
@@ -640,6 +650,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   isInactive(expenseClaim: ExpenseClaim) {
     return expenseClaim !== this.selected.expenseClaim;
+  }
+
+  isActive(expenseClaim: ExpenseClaim) {
+    return expenseClaim === this.selected.expenseClaim;
   }
 
 }

@@ -5,7 +5,7 @@ import { WalkCampaignConfiguration } from "../../models/walk-campaign-configurat
 import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkEventNotificationMapping, WalkEventType } from "../../models/walk-event-type.model";
 import { WalkNotification } from "../../models/walk-notification.model";
-import { ComponentAndData, NotificationDirective } from "../../notifications/walks/notification.directive";
+import { WalkNotificationComponentAndData, WalkNotificationDirective } from "../../notifications/walks/walk-notification.directive";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationCoordinatorApprovedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
 import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
@@ -55,7 +55,7 @@ export class WalkNotificationService {
     this.logger = loggerFactory.createLogger(WalkNotificationService, NgxLoggerLevel.OFF);
   }
 
-  public async createEventAndSendNotifications(notify: AlertInstance, members: Member[], notificationDirective: NotificationDirective,
+  public async createEventAndSendNotifications(notify: AlertInstance, members: Member[], notificationDirective: WalkNotificationDirective,
                                                displayedWalk: DisplayedWalk, sendNotification: boolean, reason?: string): Promise<boolean> {
     notify.setBusy();
     const event = this.walkEventService.createEventIfRequired(displayedWalk.walk, displayedWalk.status, reason);
@@ -116,8 +116,8 @@ export class WalkNotificationService {
     return data;
   }
 
-  public generateNotificationHTML(walkNotification: WalkNotification, notificationDirective: NotificationDirective, component): string {
-    const componentAndData = new ComponentAndData(component, walkNotification);
+  public generateNotificationHTML(walkNotification: WalkNotification, notificationDirective: WalkNotificationDirective, component): string {
+    const componentAndData = new WalkNotificationComponentAndData(component, walkNotification);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentAndData.component);
     const viewContainerRef = notificationDirective.viewContainerRef;
     viewContainerRef.clear();
@@ -129,7 +129,7 @@ export class WalkNotificationService {
     return html;
   }
 
-  private async sendNotificationsToAllRoles(members: Member[], notificationDirective: NotificationDirective, displayedWalk: DisplayedWalk, walkEventType: WalkEventType, notify: AlertInstance): Promise<void> {
+  private async sendNotificationsToAllRoles(members: Member[], notificationDirective: WalkNotificationDirective, displayedWalk: DisplayedWalk, walkEventType: WalkEventType, notify: AlertInstance): Promise<void> {
     const walkNotification: WalkNotification = this.toWalkNotification(displayedWalk, members);
     const member = await this.memberService.getById(displayedWalk.walk.walkLeaderMemberId);
     this.logger.debug("sendNotification:", "memberId", displayedWalk.walk.walkLeaderMemberId, "member", member);
@@ -139,7 +139,7 @@ export class WalkNotificationService {
     return await this.sendCoordinatorNotifications(notify, member, members, notificationDirective, walkNotification, walkEventType, walkLeaderName, walkDate);
   }
 
-  private sendLeaderNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: NotificationDirective,
+  private sendLeaderNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: WalkNotificationDirective,
                                   walkNotification: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<void> {
     if (walkEventType.notifyLeader) {
       const leaderHTML = this.generateNotificationHTML(walkNotification, notificationDirective, this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyLeader as WalkNotificationDetailsComponent);
@@ -155,7 +155,7 @@ export class WalkNotificationService {
     this.logger.debug("not sending leader notification");
   }
 
-  private sendCoordinatorNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: NotificationDirective,
+  private sendCoordinatorNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: WalkNotificationDirective,
                                        displayedWalk: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<void> {
     if (walkEventType.notifyCoordinator) {
       const coordinatorHTML = this.generateNotificationHTML(displayedWalk, notificationDirective, this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyCoordinator as WalkNotificationDetailsComponent);

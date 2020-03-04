@@ -5,7 +5,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { ExpenseClaim, ExpenseItem } from "../../../../models/expense.model";
 import { Confirm } from "../../../../models/ui-actions";
-import { NotificationDirective } from "../../../../notifications/walks/notification.directive";
+import { WalkNotificationDirective } from "../../../../notifications/walks/walk-notification.directive";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -25,18 +25,18 @@ export class ExpenseDetailModalComponent implements OnInit {
   public expenseItem: ExpenseItem;
   public expenseClaim: ExpenseClaim;
   editable: boolean;
-  private saveInProgress: boolean;
+  public saveInProgress: boolean;
   private logger: Logger;
   private expense: ExpenseClaim;
   public confirm = new Confirm();
 
-  @Input("expense")
-  set cloneWalk(expense: ExpenseClaim) {
-    this.logger.debug("cloning expense for edit");
-    this.expense = cloneDeep(expense);
-  }
+  // @Input("expense")
+  // set cloneWalk(expense: ExpenseClaim) {
+  //   this.logger.debug("cloning expense for edit");
+  //   this.expense = cloneDeep(expense);
+  // }
 
-  @ViewChild(NotificationDirective, {static: false}) notificationDirective: NotificationDirective;
+  @ViewChild(WalkNotificationDirective, {static: false}) notificationDirective: WalkNotificationDirective;
   uploadedFile: any;
 
   constructor(public bsModalRef: BsModalRef,
@@ -44,7 +44,7 @@ export class ExpenseDetailModalComponent implements OnInit {
               private expenseClaimService: ExpenseClaimService,
               private stringUtils: StringUtilsService,
               private modalService: BsModalService,
-              protected display: ExpenseDisplayService,
+              public display: ExpenseDisplayService,
               protected dateUtils: DateUtilsService,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
@@ -52,7 +52,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("constructed");
+    this.logger.debug("constructed:", this.expenseItem, this.expenseClaim);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
   }
 

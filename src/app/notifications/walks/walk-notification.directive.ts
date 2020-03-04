@@ -5,12 +5,12 @@ import { WalkNotificationDetailsComponent } from "./templates/common/walk-notifi
 @Directive({
   selector: "[app-notification-template]",
 })
-export class NotificationDirective {
+export class WalkNotificationDirective {
   constructor(public viewContainerRef: ViewContainerRef) {
   }
 }
 
-export class ComponentAndData {
+export class WalkNotificationComponentAndData {
   constructor(public component: Type<WalkNotificationDetailsComponent>, public data: WalkNotification) {
   }
 }

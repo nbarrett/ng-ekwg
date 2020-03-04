@@ -1,54 +1,44 @@
-<div class="wrapper">
-  <div id="page-body" class="standard" role="main">
-    <div class="body-header">
-      <div class="breadcrumbs">
-        <ul>
-          <li><a href="#/" title="Home">Home</a></li>
-          <li class="last">Join Us</li>
-        </ul>
+<app-page lastBreadcrumb="home" pageTitle="Join us">
+  <div class="row">
+    <div class="col-sm-8 auto-fit-column">
+      <app-markdown-editor name="joinUsTop" description="join us top"></app-markdown-editor>
+      <div class="check-list round">
+        <app-markdown-editor name="memberBenefits" description="member benefits"></app-markdown-editor>
+      </div>
+      <div class="cta-button cta-red round">
+        <a href="https://www.ramblers.org.uk/become-a-member/join-us.aspx"
+           title="Become a member today and get even more from walking!">Become a member today and get even more from
+          walking!</a>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm-8 auto-fit-column">
-        <app-markdown-editor name="joinUsTop" description="join us top"></app-markdown-editor>
+    <div class="col-sm-4 auto-fit-column">
+
+      <div class="cta-button cta-blue round">
+        <a href="https://www.ramblers.org.uk/Login.aspx?returnUrl=%2Fmy-account%2Frenew-your-membership.aspx"
+           title="Renew online">Renew online</a>
+      </div>
+
+
+      <div class="right-col-section">
         <div class="check-list round">
-          <app-markdown-editor name="memberBenefits" description="member benefits"></app-markdown-editor>
-        </div>
-        <div class="cta-button cta-red round">
-          <a href="https://www.ramblers.org.uk/become-a-member/join-us.aspx"
-             title="Become a member today and get even more from walking!">Become a member today and get even more from
-            walking!</a>
+          <app-markdown-editor name="whyJoin" description="Why join?"></app-markdown-editor>
         </div>
       </div>
-      <div class="col-sm-4 auto-fit-column">
+      <app-markdown-editor name="whyJoinImage" description="Why join image"></app-markdown-editor>
 
-        <div class="cta-button cta-blue round">
-          <a href="https://www.ramblers.org.uk/Login.aspx?returnUrl=%2Fmy-account%2Frenew-your-membership.aspx"
-             title="Renew online">Renew online</a>
+
+      <div class="right-col-section">
+        <div class="check-list round">
+          <app-markdown-editor name="memberOffers" description="Member Offers"></app-markdown-editor>
         </div>
-
-
-        <div class="right-col-section">
-          <div class="check-list round">
-            <app-markdown-editor name="whyJoin" description="Why join?"></app-markdown-editor>
-          </div>
-        </div>
-        <app-markdown-editor name="whyJoinImage" description="Why join image"></app-markdown-editor>
-
-
-        <div class="right-col-section">
-          <div class="check-list round">
-            <app-markdown-editor name="memberOffers" description="Member Offers"></app-markdown-editor>
-          </div>
-        </div>
-        <app-markdown-editor name="memberOffersImage" description="Member Offers image"></app-markdown-editor>
-
       </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 body-content">
-        <app-markdown-editor name="howToJoin" description="How to join"></app-markdown-editor>
-      </div>
+      <app-markdown-editor name="memberOffersImage" description="Member Offers image"></app-markdown-editor>
+
     </div>
   </div>
-</div>
+  <div class="row">
+    <div class="col-sm-12 body-content">
+      <app-markdown-editor name="howToJoin" description="How to join"></app-markdown-editor>
+    </div>
+  </div>
+</app-page>

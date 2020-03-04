@@ -1,150 +1,154 @@
-<div class="thumbnail">
-  <div *ngIf="notifyTarget.showAlert" class="row">
-    <div class="col-sm-12">
-      <div class="alert {{notifyTarget.alertClass}}"><i
-        class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
-        {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+<app-page  [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="admin" pageTitle="Expenses">
+  <div class="thumbnail">
+    <div *ngIf="notifyTarget.showAlert" class="row">
+      <div class="col-sm-12">
+        <div class="alert {{notifyTarget.alertClass}}"><i
+          class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+          {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+        </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="notifyTarget.ready || allowClearError()">
-    <div class="row">
-      <div class="col-sm-12">
-        <div class="no-bullets">
-          <div class="action-button-group">
-            <div class="form-inline" role="form">
-              <div *ngIf="allowClearError()" class="form-group">
-                <input type="submit" value="Show All Expense Claims"
-                       (click)="showAllExpenseClaims()" title="Show All Expense Claims"
-                       [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-              </div>
-              <div *ngIf="allowAddExpenseClaim()" class="form-group">
-                <input type="submit" value="Add Expense Claim"
-                       (click)="addExpenseClaim()" title="Add new Expense Claim"
-                       [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-              </div>
-
-              <div class="form-group">
-                <div class="col-sm-12">
-                  <label for="filter-expenses">Filter for:</label>
-                  <select class="form-control input-sm round spaced-controls" id="filter-expenses"
-                          (ngModelChange)="refreshExpenses()"
-                          [(ngModel)]="selected.expenseFilter">
-                    <option *ngFor="let filterType of filterTypes"
-                            [textContent]="filterType.description"
-                            [disabled]="filterType.disabled">
-                    </option>
-                  </select>
+    <div *ngIf="notifyTarget.ready || allowClearError()">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="no-bullets">
+            <div class="action-button-group">
+              <div class="form-inline" role="form">
+                <div *ngIf="allowClearError()" class="form-group">
+                  <input type="submit" value="Show All Expense Claims"
+                         (click)="showAllExpenseClaims()" title="Show All Expense Claims"
+                         [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
                 </div>
-              </div>
-              <div *ngIf="display.allowAdminFunctions()" class="form-group">
-                <div class="col-sm-12">
-                  <div class="checkbox-group">
-                    <label [ngClass]="{'ui-state-active': selected.showOnlyMine}"
-                           (click)="refreshExpenses()"
-                           for="show-only-mine">Show only my expense claims
-                      <input [(ngModel)]="selected.showOnlyMine"
-                             type="checkbox" id="show-only-mine">
-                    </label>
+                <div *ngIf="allowAddExpenseClaim()" class="form-group">
+                  <input type="submit" value="Add Expense Claim"
+                         (click)="addExpenseClaim()" title="Add new Expense Claim"
+                         [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                </div>
+
+                <div class="form-group">
+                  <div class="col-sm-12">
+                    <label for="filter-expenses">Filter for:</label>
+                    <select class="form-control input-sm round spaced-controls" id="filter-expenses"
+                            (ngModelChange)="changeFilter($event)"
+                            [ngModel]="selected.filter">
+                      <option *ngFor="let filter of filters"
+                              [ngValue]="filter"
+                              [textContent]="filter.description"
+                              [disabled]="filter.disabled">
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div *ngIf="display.allowAdminFunctions()" class="form-group">
+                  <div class="col-sm-12">
+                    <div class="checkbox-group">
+                      <label [ngClass]="{'ui-state-active': selected.showOnlyMine}"
+                             (click)="refreshExpenses($event)"
+                             for="show-only-mine">Show only my expense claims
+                        <input [(ngModel)]="selected.showOnlyMine"
+                               type="checkbox" id="show-only-mine">
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div *ngFor="let expenseClaim of expenseClaims" (mouseover)="selectExpenseClaim(expenseClaim)">
+            <div *ngFor="let expenseClaim of expenseClaims" (mouseover)="selectExpenseClaim(expenseClaim)">
+              <div class="row">
+                <div class="col-sm-7">
+                  <table
+                    class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                    <thead>
+                    <tr [ngClass]="{'inactive': isInactive(expenseClaim)}">
+                      <th width="20%">Date</th>
+                      <th width="70%">Description</th>
+                      <th width="10%">Cost</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let expenseItem of expenseClaim.expenseItems trackBy: itemTracker"
+                        (click)="selectExpenseItem(expenseItem)"
+                        [ngClass]="{selected: expenseItem === this.selected.expenseItem}">
+                      <td [textContent]="expenseItem.expenseDate | displayDate" class="nowrap"></td>
+                      <td [ngClass]="{'inactive': isInactive(expenseClaim)}">
+                        <a *ngIf="!selected.saveInProgress"
+                           [textContent]="display.prefixedExpenseItemDescription(expenseItem)"
+                           (click)="editExpenseItem()" href=""></a>
+                        <span *ngIf="selected.saveInProgress"
+                              [textContent]="display.prefixedExpenseItemDescription(expenseItem)"></span>
+                        <div *ngIf="!selected.saveInProgress && expenseItem.receipt"> receipt:
+                          <a target="_blank" [href]="display.receiptUrl(expenseItem)"
+                             [textContent]="display.receiptTitle(expenseItem)"></a></div>
+                        <div *ngIf="selected.saveInProgress && expenseItem.receipt"> receipt:
+                          {{display.receiptTitle(expenseItem)}}
+                        </div>
+                      </td>
+                      <td class="text-right" [textContent]="expenseItem.cost | asMoney"></td>
+                    </tr>
+                    <tr>
+                      <td><strong>Total</strong></td>
+                      <td><strong [textContent]="expenseClaim.expenseItems.length +' item(s)'"></strong>
+                      </td>
+                      <td class="text-right"><strong
+                        [textContent]="expenseClaim.cost | asMoney"></strong></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <div *ngIf="isActive(expenseClaim)" class="row" class="mb-12">
+                    <div class="col-sm-12">
+                      <div class="form-group">
+                        <span *ngIf="!confirmOutstanding()">
+                          <input
+                            *ngIf="display.allowAddExpenseItem(this.selected.expenseClaim)"
+                            [disabled]="selected.saveInProgress" type="submit"
+                            value="Add Item" (click)="addExpenseItem()" title="Add Item"
+                            [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                          <input
+                            *ngIf="display.allowEditExpenseItem(this.selected.expenseClaim)"
+                            [disabled]="selected.saveInProgress" type="submit"
+                            value="Edit Item" (click)="editExpenseItem()"
+                            title="Edit Claim"
+                            [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                          <input
+                            *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
+                            [disabled]="selected.saveInProgress" type="submit"
+                            value="Delete Item" (click)="confirm.toggleDelete()"
+                            title="Delete item"
+                            [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                          <input *ngIf="allowSubmitExpenseClaim(selected.expenseClaim)"
+                                 [disabled]="selected.saveInProgress" type="submit"
+                                 value="Submit Claim" (click)="submitExpenseClaim(false)"
+                                 title="Submit Claim for approval"
+                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                          <input *ngIf="allowApproveExpenseClaim()"
+                                 [disabled]="selected.saveInProgress" type="submit"
+                                 value="{{nextApprovalStage()}}"
+                                 (click)="approveExpenseClaim()" title="Approve Claim"
+                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                          <input *ngIf="allowPaidExpenseClaim()"
+                                 [disabled]="selected.saveInProgress" type="submit"
+                                 value="Claim Paid" (click)="paidExpenseClaim()"
+                                 title="Mark Claim as paid"
+                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                          <input *ngIf="allowReturnExpenseClaim()"
+                                 [disabled]="selected.saveInProgress" type="submit"
+                                 value="Return Claim" (click)="returnExpenseClaim()"
+                                 title="Return Claim"
+                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
+                          <input *ngIf="allowResubmitExpenseClaim()"
+                                 [disabled]="selected.saveInProgress" type="submit"
+                                 value="Resubmit Claim" (click)="resubmitExpenseClaim()"
+                                 title="Resubmit Claim"
+                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                        </span>
+                        <input
+                          *ngIf="!confirmOutstanding && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
+                          type="submit"
+                          value="Delete Expense Claim" (click)="confirm.toggleDelete()"
+                          title="Delete Expense Claim"
+                          [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
 
-            <div class="row">
-              <div class="col-sm-7">
-                <table
-                  class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
-                  <thead>
-                  <tr [ngClass]="{'inactive': isInactive(expenseClaim)}">
-                    <th width="20%">Date</th>
-                    <th width="70%">Description</th>
-                    <th width="10%">Cost</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr *ngFor="let expenseItem of expenseClaim.expenseItems trackBy: itemTracker"
-                      (click)="selectExpenseItem(expenseItem)"
-                      [ngClass]="{selected: expenseItem === this.selected.expenseItem}">
-                    <td [textContent]="expenseItem.expenseDate | displayDate" class="nowrap"></td>
-                    <td [ngClass]="{'inactive': isInactive(expenseClaim)}">
-                      <a *ngIf="!selected.saveInProgress"
-                         [textContent]="display.prefixedExpenseItemDescription(expenseItem)"
-                         (click)="editExpenseItem()" href=""></a>
-                      <span *ngIf="selected.saveInProgress"
-                            [textContent]="display.prefixedExpenseItemDescription(expenseItem)"></span>
-                      <div *ngIf="!selected.saveInProgress && expenseItem.receipt"> receipt:
-                        <a target="_blank" [href]="display.receiptUrl(expenseItem)"
-                           [textContent]="display.receiptTitle(expenseItem)"></a></div>
-                      <div *ngIf="selected.saveInProgress && expenseItem.receipt"> receipt:
-                        {{display.receiptTitle(expenseItem)}}
-                      </div>
-                    </td>
-                    <td class="text-right" [textContent]="expenseItem.cost | asMoney"></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Total</strong></td>
-                    <td><strong [textContent]="expenseClaim.expenseItems.length +' item(s)'"></strong>
-                    </td>
-                    <td class="text-right"><strong
-                      [textContent]="expenseClaim.cost | asMoney"></strong></td>
-                  </tr>
-                  </tbody>
-                </table>
-
-                <div *ngIf="!isInactive(expenseClaim)" class="row" class="mb-12">
-                  <div class="col-sm-12">
-                    <div class="form-group">
-                                                <span *ngIf="!confirmOutstanding()">
-                                                    <input *ngIf="display.allowAddExpenseItem(this.selected.expenseClaim)"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Add Item" (click)="addExpenseItem()" title="Add Item"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-                                                    <input *ngIf="display.allowEditExpenseItem(this.selected.expenseClaim)"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Edit Item" (click)="editExpenseItem()"
-                                                           title="Edit Claim"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-                                                    <input *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Delete Item" (click)="confirm.toggleDelete()"
-                                                           title="Delete item"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-                                                    <input *ngIf="allowSubmitExpenseClaim(selected.expenseClaim)"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Submit Claim" (click)="submitExpenseClaim(false)"
-                                                           title="Submit Claim for approval"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
-                                                    <input *ngIf="allowApproveExpenseClaim()"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="{{nextApprovalStage()}}"
-                                                           (click)="approveExpenseClaim()" title="Approve Claim"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
-                                                    <input *ngIf="allowPaidExpenseClaim()"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Claim Paid" (click)="paidExpenseClaim()"
-                                                           title="Mark Claim as paid"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
-                                                    <input *ngIf="allowReturnExpenseClaim()"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Return Claim" (click)="returnExpenseClaim()"
-                                                           title="Return Claim"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
-                                                    <input *ngIf="allowResubmitExpenseClaim()"
-                                                           [disabled]="selected.saveInProgress" type="submit"
-                                                           value="Resubmit Claim" (click)="resubmitExpenseClaim()"
-                                                           title="Resubmit Claim"
-                                                           [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
-                                                </span>
-                      <input *ngIf="!confirmOutstanding && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
-                             type="submit"
-                             value="Delete Expense Claim" (click)="confirm.toggleDelete()"
-                             title="Delete Expense Claim"
-                             [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
-
-                      <span *ngIf="confirm.deleteConfirmOutstanding()">
+                        <span *ngIf="confirm.deleteConfirmOutstanding()">
                         <input *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
                                [disabled]="selected.saveInProgress" type="submit"
                                value="Confirm Delete of Item"
@@ -167,7 +171,7 @@
                                title="Cancel delete of Expense Claim"
                                [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
                       </span>
-                      <span *ngIf="confirm.approveConfirmOutstanding()">
+                        <span *ngIf="confirm.approveConfirmOutstanding()">
                         <span *ngIf="allowApproveExpenseClaim()">
                           <div *ngIf="notifyTarget.showAlert" class="mb-10">
                             <div class="alert {{notifyTarget.alertClass}}">
@@ -188,33 +192,32 @@
                                  [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
                         </span>
                       </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="col-sm-5" style="padding-left: 0px;">
-                <table
-                  class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
-                  <thead>
-                  <tr>
-                    <th width="33%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Date</th>
-                    <th width="33%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Who</th>
-                    <th width="34%" [ngClass]="{'inactive': isInactive(expenseClaim)}">
-                      Description
-                    </th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr *ngFor="let event of expenseClaim.expenseEvents trackBy: eventTracker">
-                    <td [textContent]="event.date | displayDate" class="nowrap"></td>
-                    <td [textContent]="event.memberId | memberIdToFullName : members"></td>
-                    <td [textContent]="event.eventType.description">
+                <div class="col-sm-5" style="padding-left: 0px;">
+                  <table
+                    class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                    <thead>
+                    <tr>
+                      <th width="33%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Date</th>
+                      <th width="33%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Who</th>
+                      <th width="34%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let event of expenseClaim.expenseEvents trackBy: eventTracker">
+                      <td [textContent]="event.date | displayDate" class="nowrap"></td>
+                      <td [textContent]="event.memberId | memberIdToFullName : members"></td>
+                      <td [textContent]="event.eventType.description">
                                                 <span *ngIf="event.reason" tooltip-placement="right"
                                                       tooltip="Reason: {{event.reason}}">Reason: {{event.reason}}</span>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -222,4 +225,4 @@
       </div>
     </div>
   </div>
-</div>
+</app-page>

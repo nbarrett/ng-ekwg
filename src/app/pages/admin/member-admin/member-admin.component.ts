@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
-import { BsModalService} from "ngx-bootstrap";
+import { BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -217,6 +217,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.logger.debug("showMemberDialog:", memberEditMode, member);
     const config = {
       class: "modal-lg",
+      animation: false,
       show: true,
       initialState: {
         memberEditMode, member, members: this.members
@@ -243,12 +244,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.logger.debug("sorting by field", field, "new value of filterSource", filterSource);
     this.applyFilterToMembers();
   }
-
-  // uploadSessionChanged() {
-  //   this.notify.setBusy();
-  //   this.notify.hide();
-  //   this.refreshMemberUpdateAudit().then(() => this.notify.clearBusy());
-  // }
 
   sortMembersUploadedBy(field) {
     this.applySortTo(field, this.memberFilterUploaded);

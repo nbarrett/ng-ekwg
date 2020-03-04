@@ -10,6 +10,7 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 @Injectable({
   providedIn: "root"
 })
+
 export class ContentMetadataService {
   private S3_BASE_URL = "api/aws/s3";
   private BASE_URL = "api/database/content-metadata";

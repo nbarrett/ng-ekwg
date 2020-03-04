@@ -1,0 +1,15 @@
+<div class="wrapper">
+  <div id="page-body" role="main">
+    <div class="body-header">
+      <div class="breadcrumbs">
+        <ul>
+          <li *ngFor="let page of pages"><a [routerLink]="'/' + page.href" [title]="page.title"
+                                            [textContent]="page.title"></a></li>
+          <li class="last" [textContent]="pageTitle"></li>
+        </ul>
+      </div>
+    </div>
+    <ng-content></ng-content>
+  </div>
+</div>
+

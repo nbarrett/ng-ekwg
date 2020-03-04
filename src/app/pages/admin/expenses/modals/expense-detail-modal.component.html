@@ -82,7 +82,7 @@
 
                   <div class="input-group">
                     <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.miles" type="text"
-                           [(ngModel)]-options="{debounce:1000}" (ngModelChange)="setExpenseItemFields()"
+                           (ngModelChange)="setExpenseItemFields()"
                            class="form-control input-sm" id="miles"
                            placeholder="Enter miles here">
                     <span class="input-group-addon">miles</span>
@@ -114,7 +114,7 @@
                   <span class="input-group-addon">£</span>
                   <input [disabled]="!editable || expenseItem.expenseType.travel"
                          placeholder="Enter cost here" [(ngModel)]="expenseItem.cost" id="cost"
-                         [(ngModel)]-options="{debounce:1000}" type="text" class="form-control input-sm"
+                         type="text" class="form-control input-sm"
                          aria-label="Amount">
                 </div>
               </div>
@@ -147,13 +147,13 @@
                        (click)="addReceipt()">
               </div>
 
-              <div *ngIf="uploadedFile" class="form-group">
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar"
-                       style="width:{{uploadedFile.progress}}%;">{{uploadedFile.progress}}% uploaded
-                  </div>
-                </div>
-              </div>
+<!--              <div *ngIf="uploadedFile" class="form-group">-->
+<!--                <div class="progress">-->
+<!--                  <div class="progress-bar" role="progressbar"-->
+<!--                       style="width:{{uploadedFile.progress}}%;">{{uploadedFile.progress}}% uploaded-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
             </div>
           </div>
         </div>

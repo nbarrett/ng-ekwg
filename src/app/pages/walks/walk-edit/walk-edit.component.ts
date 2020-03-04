@@ -15,7 +15,7 @@ import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
 import { WalkValidations } from "../../../models/walk-validations.model";
 import { Walk } from "../../../models/walk.model";
-import { NotificationDirective } from "../../../notifications/walks/notification.directive";
+import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
 import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
 import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -58,7 +58,7 @@ export class WalkEditComponent implements OnInit {
     this.displayedWalk = cloneDeep(displayedWalk);
   }
 
-  @ViewChild(NotificationDirective, {static: false}) notificationDirective: NotificationDirective;
+  @ViewChild(WalkNotificationDirective, {static: false}) notificationDirective: WalkNotificationDirective;
   public displayedWalk: DisplayedWalk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;

@@ -1,5 +1,11 @@
 import { ApiResponse } from "./api-response.model";
 
+export interface ExpenseFilter {
+  filter: (arg?: any) => boolean;
+  description: string;
+  disabled?: boolean;
+}
+
 export interface ExpenseClaim {
   id?: string;
   expenseEvents: ExpenseEvent[];
@@ -28,7 +34,8 @@ export interface ExpenseItem {
   receipt?: {
     awsFileName?: string;
     originalFileName?: string;
-    title: string, fileNameData: any };
+    title: string, fileNameData: any
+  };
 }
 
 export interface ExpenseEventType {

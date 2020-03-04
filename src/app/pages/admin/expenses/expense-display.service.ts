@@ -184,9 +184,11 @@ export class ExpenseDisplayService {
     return (this.memberLoginService.loggedInMember().memberId === this.expenseClaimCreatedEvent(expenseClaim).memberId);
   }
 
-  eventForEventType(expenseClaim: ExpenseClaim, eventType) {
+  eventForEventType(expenseClaim: ExpenseClaim, expenseEventType: ExpenseEventType): ExpenseEvent {
     if (expenseClaim) {
-      return find(expenseClaim.expenseEvents, event => isEqual(event.eventType, eventType));
+      return find(expenseClaim.expenseEvents, event => event.eventType.description === expenseEventType.description ) || {};
+    } else {
+      return {};
     }
   }
 

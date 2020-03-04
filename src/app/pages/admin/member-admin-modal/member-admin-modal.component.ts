@@ -69,11 +69,11 @@ export class MemberAdminModalComponent implements OnInit {
     });
 
     const existingRecordEditEnabled = this.allowEdits && this.memberEditMode.startsWith("Edit");
+    const memberId = this.member.id;
     this.allowConfirmDelete = false;
     this.allowCopy = existingRecordEditEnabled;
-    this.allowDelete = existingRecordEditEnabled;
+    this.allowDelete = !!memberId;
     this.memberUpdateAudits = [];
-    const memberId = this.memberService.extractMemberId(this.member);
     if (memberId) {
       this.logger.debug("querying MemberUpdateAuditService for memberId", memberId);
       this.memberUpdateAuditService.all({
