@@ -1,10 +1,13 @@
 import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { clone, find, isEqual, last } from "lodash-es";
+import clone from "lodash-es/clone";
+import find from "lodash-es/find";
+import isEmpty from "lodash-es/isEmpty";
+import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
@@ -43,6 +46,7 @@ export class ExpenseDisplayService {
     returned: {description: "Returned", atEndpoint: false, editable: true, notifyCreator: true, notifyApprover: true} as ExpenseEventType,
     paid: {description: "Paid", atEndpoint: true, notifyCreator: true, notifyApprover: true, notifyTreasurer: true} as ExpenseEventType
   };
+
   private receiptBaseUrl: string;
 
   constructor(
@@ -59,8 +63,23 @@ export class ExpenseDisplayService {
     private dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
     this.receiptBaseUrl = this.contentMetadata.baseUrl("expenseClaims");
-    this.logger = loggerFactory.createLogger(ExpenseDisplayService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ExpenseDisplayService, NgxLoggerLevel.DEBUG);
     this.refreshMembers();
+  }
+
+  createEvent(expenseClaim: ExpenseClaim, eventType: ExpenseEventType, reason?: string) {
+    if (!expenseClaim.expenseEvents) {
+      expenseClaim.expenseEvents = [];
+    }
+    const event: ExpenseEvent = {
+      date: this.dateUtils.nowAsValue(),
+      memberId: this.memberLoginService.loggedInMember().memberId,
+      eventType
+    };
+    if (reason) {
+      event.reason = reason;
+    }
+    expenseClaim.expenseEvents.push(event);
   }
 
   prefixedExpenseItemDescription(expenseItem) {
@@ -78,15 +97,15 @@ export class ExpenseDisplayService {
     }
     if (expenseItem.travel && expenseItem.expenseType.travel) {
       description = [
-        expenseItem.travel.from,
+        expenseItem.travel.from || "from",
         "to",
-        expenseItem.travel.to,
+        expenseItem.travel.to || "to",
         expenseItem.travel.returnJourney ? "return trip" : "single trip",
         "(" + expenseItem.travel.miles,
         "miles",
         expenseItem.travel.returnJourney ? "x 2" : "",
         "x",
-        expenseItem.travel.costPerMile * 100 + "p per mile)"
+        this.numberUtils.asNumber(expenseItem.travel.costPerMile * 100, 0) + "p per mile)"
       ].join(" ");
     } else {
       description = expenseItem.description;
@@ -140,16 +159,39 @@ export class ExpenseDisplayService {
     notify.error({title: "Expenses", message: "Your expense claim could not be saved. " + messageDefaulted});
   }
 
-  confirmDeleteExpenseItem(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim, expenseItem: ExpenseItem) {
-    this.logger.debug("removing", expenseItem);
-    const index = expenseClaim.expenseItems.indexOf(expenseItem);
-    if (index > -1) {
-      expenseClaim.expenseItems.splice(index, 1);
-    } else {
-      this.showExpenseErrorAlert(notify, "Could not delete expense item");
+  deleteExpenseItem(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim, expenseItem: ExpenseItem, index: number) {
+    this.saveExpenseItem(EditMode.DELETE, confirm, notify, expenseClaim, expenseItem, index);
+  }
+
+  saveExpenseItem(editMode: EditMode, confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim, expenseItem: ExpenseItem, index: number) {
+    const validateIndex = () => {
+      if (!(index >= 0)) {
+        this.showExpenseErrorAlert(notify, `Could not ${editMode} expense item due to invalid index: ${index}`);
+      }
+    };
+    this.logger.debug("before", editMode, index, "item", "item count", expenseClaim.expenseItems.length);
+    switch (editMode) {
+      case EditMode.ADD_NEW:
+        expenseClaim.expenseItems.push(expenseItem);
+        break;
+      case EditMode.DELETE:
+        validateIndex();
+        expenseClaim.expenseItems.splice(index, 1);
+        break;
+      case EditMode.EDIT:
+        validateIndex();
+        expenseClaim.expenseItems[index] = expenseItem;
+        break;
+      default:
+        notify.error("no idea how to handle " + editMode);
     }
+    this.logger.debug("after", editMode, index, "item", "item count", expenseClaim.expenseItems.length);
+    return this.saveExpenseClaim(confirm, notify, expenseClaim);
+  }
+
+  saveExpenseClaim(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim,) {
     this.recalculateClaimCost(expenseClaim);
-    this.expenseClaimService.update(expenseClaim)
+    return this.expenseClaimService.createOrUpdate(expenseClaim)
       .then(() => this.removeConfirm(confirm))
       .then(() => notify.clearBusy());
   }
@@ -171,32 +213,28 @@ export class ExpenseDisplayService {
   }
 
   memberCanEditClaim(expenseClaim: ExpenseClaim) {
-    if (!expenseClaim) {
-      return false;
-    }
     return this.memberOwnsClaim(expenseClaim) || this.memberLoginService.allowFinanceAdmin();
   }
 
   memberOwnsClaim(expenseClaim: ExpenseClaim) {
-    if (!expenseClaim) {
-      return false;
-    }
     return (this.memberLoginService.loggedInMember().memberId === this.expenseClaimCreatedEvent(expenseClaim).memberId);
   }
 
   eventForEventType(expenseClaim: ExpenseClaim, expenseEventType: ExpenseEventType): ExpenseEvent {
     if (expenseClaim) {
-      return find(expenseClaim.expenseEvents, event => event.eventType.description === expenseEventType.description ) || {};
+      return find(expenseClaim.expenseEvents, event => event.eventType.description === expenseEventType.description) || {};
     } else {
       return {};
     }
   }
 
-  expenseClaimHasEventType(expenseClaim, eventType) {
+  expenseClaimHasEventType(expenseClaim: ExpenseClaim, eventType: ExpenseEventType): boolean {
     if (!expenseClaim) {
       return false;
     }
-    return this.eventForEventType(expenseClaim, eventType);
+    const expenseEvent = this.eventForEventType(expenseClaim, eventType);
+    this.logger.off("expenseClaimHasEventType:eventType:", eventType.description, expenseEvent);
+    return !isEmpty(expenseEvent);
   }
 
   expenseClaimCreatedEvent(expenseClaim: ExpenseClaim): ExpenseEvent {
@@ -224,7 +262,7 @@ export class ExpenseDisplayService {
   }
 
   allowEditExpenseItem(expenseClaim: ExpenseClaim) {
-    return this.allowAddExpenseItem(expenseClaim) && expenseClaim && expenseClaim.id;
+    return expenseClaim.expenseItems.length > 0 && this.allowAddExpenseItem(expenseClaim) && expenseClaim && expenseClaim.id;
   }
 
   allowAddExpenseItem(expenseClaim: ExpenseClaim) {
@@ -243,4 +281,11 @@ export class ExpenseDisplayService {
     return this.memberLoginService.allowTreasuryAdmin() || this.memberLoginService.allowFinanceAdmin();
   }
 
+  showExpenseSuccessAlert(notify: AlertInstance, message: string, busy?: boolean) {
+    notify.success({title: "Expenses", message}, busy);
+  }
+
+  showExpenseProgressAlert(notify: AlertInstance, message: string, busy?: boolean) {
+    notify.progress({title: "Expenses", message}, busy);
+  }
 }

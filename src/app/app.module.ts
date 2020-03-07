@@ -45,7 +45,19 @@ import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
+import { ExpenseNotificationDirective } from "./notifications/expenses/expense-notification.directive";
+import { ExpenseNotificationApproverFirstApprovalComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
+import { ExpenseNotificationApproverPaidComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-paid.component";
+import { ExpenseNotificationApproverReturnedComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-returned.component";
+import { ExpenseNotificationApproverSecondApprovalComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-second-approval.component";
+import { ExpenseNotificationApproverSubmittedComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-submitted.component";
 import { ExpenseNotificationDetailsComponent } from "./notifications/expenses/templates/common/expense-notification-details.component";
+import { ExpenseNotificationCreatorPaidComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-paid.component";
+import { ExpenseNotificationCreatorReturnedComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-returned.component";
+import { ExpenseNotificationCreatorSecondApprovalComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-second-approval.component";
+import { ExpenseNotificationCreatorSubmittedComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-submitted.component";
+import { ExpenseNotificationTreasurerPaidComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-paid.component";
+import { ExpenseNotificationTreasurerSecondApprovalComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-second-approval.component";
 import { WalkNotificationDirective } from "./notifications/walks/walk-notification.directive";
 import { WalkNotificationChangesComponent } from "./notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "./notifications/walks/templates/common/walk-notification-details.component";
@@ -69,6 +81,7 @@ import { PageComponent } from "./page/page.component";
 import { AdminComponent } from "./pages/admin/admin/admin.component";
 import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { ExpenseDetailModalComponent } from "./pages/admin/expenses/modals/expense-detail-modal.component";
+import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expense-submit-modal.component";
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
@@ -104,6 +117,7 @@ import { FullNamePipe } from "./pipes/full-name.pipe";
 import { HumanisePipe } from "./pipes/humanise.pipe";
 import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displayed.pipe";
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
+import { MemberIdToFirstNamePipe } from "./pipes/member-id-to-first-name.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
 import { MoneyPipe } from "./pipes/money.pipe";
@@ -150,7 +164,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 @NgModule({
   declarations: [
     AccordionGroupComponent,
-    PageComponent,
     AdminComponent,
     AppComponent,
     AuditDeltaChangedItemsPipePipe,
@@ -165,6 +178,22 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     DisplayDatesPipe,
     DisplayDayPipe,
     EventNotePipe,
+    ExpenseDetailModalComponent,
+    ExpenseNotificationApproverFirstApprovalComponent,
+    ExpenseNotificationApproverPaidComponent,
+    ExpenseNotificationApproverReturnedComponent,
+    ExpenseNotificationApproverSecondApprovalComponent,
+    ExpenseNotificationApproverSubmittedComponent,
+    ExpenseNotificationCreatorPaidComponent,
+    ExpenseNotificationCreatorReturnedComponent,
+    ExpenseNotificationCreatorSecondApprovalComponent,
+    ExpenseNotificationCreatorSubmittedComponent,
+    ExpenseNotificationDetailsComponent,
+    ExpenseNotificationDirective,
+    ExpenseNotificationTreasurerPaidComponent,
+    ExpenseNotificationTreasurerSecondApprovalComponent,
+    ExpensesComponent,
+    ExpenseSubmitModalComponent,
     ForgotPasswordComponent,
     ForgotPasswordModalComponent,
     FullNamePipe,
@@ -187,10 +216,12 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     MemberAdminModalComponent,
     MemberBulkLoadComponent,
     MemberIdsToFullNamesPipe,
+    MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
+    MoneyPipe,
     NonRenderingComponent,
-    WalkNotificationDirective,
     NotificationUrlComponent,
+    PageComponent,
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
@@ -221,7 +252,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkNotificationCoordinatorRequestedComponent,
     WalkNotificationCoordinatorUpdatedComponent,
     WalkNotificationDetailsComponent,
-    ExpenseNotificationDetailsComponent,
+    WalkNotificationDirective,
     WalkNotificationFooterComponent,
     WalkNotificationLeaderApprovedComponent,
     WalkNotificationLeaderAwaitingApprovalComponent,
@@ -233,9 +264,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkValidationsListPipe,
     WalkVenueComponent,
     WalkViewComponent,
-    ExpensesComponent,
-    ExpenseDetailModalComponent,
-    MoneyPipe,
   ],
   imports: [
     FileUploadModule,
@@ -313,6 +341,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ExpenseDetailModalComponent,
     MemberAdminModalComponent,
     ForgotPasswordModalComponent,
+    ExpenseSubmitModalComponent,
+    ExpenseNotificationApproverSubmittedComponent,
     MeetupDescriptionComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,

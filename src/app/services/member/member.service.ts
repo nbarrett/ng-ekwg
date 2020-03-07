@@ -162,7 +162,7 @@ export class MemberService {
       .sortBy(member => member.firstName + member.lastName).value());
   }
 
-  toMember(memberIdOrObject, members) {
+  toMember(memberIdOrObject, members): Member {
     const memberId = this.extractMemberId(memberIdOrObject);
     return members.find(member => this.extractMemberId(member) === memberId);
   }

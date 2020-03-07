@@ -3,7 +3,7 @@ import { WalkNotification } from "../../models/walk-notification.model";
 import { WalkNotificationDetailsComponent } from "./templates/common/walk-notification-details.component";
 
 @Directive({
-  selector: "[app-notification-template]",
+  selector: "[app-walk-notification-template]",
 })
 export class WalkNotificationDirective {
   constructor(public viewContainerRef: ViewContainerRef) {
@@ -11,7 +11,8 @@ export class WalkNotificationDirective {
 }
 
 export class WalkNotificationComponentAndData {
-  constructor(public component: Type<WalkNotificationDetailsComponent>, public data: WalkNotification) {
+  constructor(public component: Type<WalkNotificationDetailsComponent>,
+              public data: WalkNotification) {
   }
 }
 

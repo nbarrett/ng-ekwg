@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
-import { BsModalService } from "ngx-bootstrap";
+import { BsModalService, ModalOptions } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
@@ -215,9 +215,9 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   showMemberDialog(member, memberEditMode) {
     this.logger.debug("showMemberDialog:", memberEditMode, member);
-    const config = {
+    const config: ModalOptions = {
       class: "modal-lg",
-      animation: false,
+      animated: false,
       show: true,
       initialState: {
         memberEditMode, member, members: this.members

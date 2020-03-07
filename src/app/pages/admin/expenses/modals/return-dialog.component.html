@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="thumbnail">
                         <div class="green-bullets-no-rule">
-                            <ul>You are about to return the Expense Claim for <strong [textContent]="expenseClaimCreatedEvent().memberId | memberIdToFullName : members"></strong>
+                            <ul>You are about to return the Expense Claim for <strong [textContent]="display.expenseClaimCreatedEvent(expenseClaim).memberId | memberIdToFullName : members"></strong>
                                 <li>Please enter a reason for the return below.</li>
                                 <li>An email will then be sent to them informing them of this reason.</li>
                             </ul>

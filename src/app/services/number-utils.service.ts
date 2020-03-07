@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import isNaN from "lodash-es/isNaN";
+import isNumber from "lodash-es/isNumber";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../functions/chain";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -35,15 +36,16 @@ export class NumberUtilsService {
     if (!numberString) {
       return 0;
     }
-    const isNumber: boolean = typeof numberString === "number";
-    if (isNumber && !decimalPlaces) {
+    const numberArgumentSupplied: boolean = isNumber(numberString);
+    const decimalPlacesSupplied: boolean = isNumber(decimalPlaces);
+    if (numberArgumentSupplied && !decimalPlacesSupplied) {
       return numberString;
     }
-    const numberValue: string = isNumber ? numberString : parseFloat(numberString.replace(/[^\d\.\-]/g, ""));
+    const numberValue: string = numberArgumentSupplied ? numberString : parseFloat(numberString.replace(/[^\d\.\-]/g, ""));
     if (isNaN(numberValue)) {
       return 0;
     }
-    const returnValue: number = decimalPlaces ? +parseFloat(numberValue).toFixed(decimalPlaces) : parseFloat(numberValue);
+    const returnValue: number = decimalPlacesSupplied ? +parseFloat(numberValue).toFixed(decimalPlaces) : parseFloat(numberValue);
     this.logger.debug("asNumber:", numberString, decimalPlaces, "->", returnValue);
     return returnValue;
   }

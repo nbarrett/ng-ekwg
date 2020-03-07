@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
-const expenseTypeSchema = mongoose.Schema({
+const expenseType = {
   value: {type: String},
   name: {type: String},
   travel: {type: Boolean},
-});
+};
 
-const expenseItemSchema = mongoose.Schema({
+const expenseItem = {
   cost: {type: Number},
   description: {type: String},
-  expenseType: expenseTypeSchema,
+  expenseType: expenseType,
   expenseDate: {type: Number},
   travel: {
     costPerMile: {type: Number},
@@ -19,9 +19,9 @@ const expenseItemSchema = mongoose.Schema({
     to: {type: String},
     returnJourney: {type: Boolean}
   }
-});
+};
 
-const expenseEventTypeSchema = mongoose.Schema({
+const expenseEventType = {
   description: {type: String},
   atEndpoint: {type: Boolean},
   actionable: {type: Boolean},
@@ -29,21 +29,27 @@ const expenseEventTypeSchema = mongoose.Schema({
   returned: {type: Boolean},
   notifyCreator: {type: Boolean},
   notifyApprover: {type: Boolean},
-});
+  notifyTreasurer: {type: Boolean},
+};
 
-const expenseEventSchema = mongoose.Schema({
+const expenseEvent = {
   reason: {type: String},
-  eventType: expenseEventTypeSchema,
+  eventType: expenseEventType,
   date: {type: Number},
   memberId: {type: String},
-});
+};
 
 const expenseClaimSchema = mongoose.Schema({
   receipt: {title: {type: String}, fileNameData: {type: Object}},
   id: {type: String},
-  expenseEvents: [expenseEventSchema],
-  expenseItems: [expenseItemSchema],
+  expenseEvents: [expenseEvent],
+  expenseItems: [expenseItem],
   cost: {type: Number},
+  bankDetails: {
+    accountName: {type: String},
+    accountNumber: {type: String},
+    sortCode: {type: String}
+  }
 }, {collection: "expenseClaims"});
 
 expenseClaimSchema.plugin(uniqueValidator);

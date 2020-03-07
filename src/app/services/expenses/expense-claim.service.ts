@@ -15,7 +15,7 @@ export class ExpenseClaimService {
 
   private BASE_URL = "/api/database/expense-claim";
   private logger: Logger;
-  private memberNotifications = new Subject<ExpenseClaimApiResponse>();
+  private expenseNotifications = new Subject<ExpenseClaimApiResponse>();
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
@@ -23,12 +23,14 @@ export class ExpenseClaimService {
     this.logger = loggerFactory.createLogger(ExpenseClaimService, NgxLoggerLevel.DEBUG);
   }
 
-  async all(dataQueryOptions?: DataQueryOptions): Promise<ExpenseClaim[]> {
+  notifications(): Observable<ExpenseClaimApiResponse> {
+    return this.expenseNotifications.asObservable();
+  }
+
+  all(dataQueryOptions?: DataQueryOptions): void {
     const params = this.commonDataService.toHttpParams(dataQueryOptions);
     this.logger.debug("all:dataQueryOptions", dataQueryOptions, "params", params.toString());
-    const apiResponse = await this.http.get<ExpenseClaimApiResponse>(`${this.BASE_URL}/all`, {params}).toPromise();
-    this.logger.debug("all - received", apiResponse);
-    return apiResponse.response as ExpenseClaim[];
+    this.responseFrom(this.http.get<ExpenseClaimApiResponse>(`${this.BASE_URL}/all`, {params}));
   }
 
   async createOrUpdate(expense: ExpenseClaim): Promise<ExpenseClaim> {
@@ -43,19 +45,17 @@ export class ExpenseClaimService {
     const shared = observable.pipe(share());
     shared.subscribe((expenseApiResponse: ExpenseClaimApiResponse) => {
       this.logger.info("expenseApiResponse", expenseApiResponse);
-      this.memberNotifications.next(expenseApiResponse);
+      this.expenseNotifications.next(expenseApiResponse);
     }, (httpErrorResponse: HttpErrorResponse) => {
       this.logger.error("httpErrorResponse", httpErrorResponse);
-      this.memberNotifications.next(httpErrorResponse.error);
+      this.expenseNotifications.next(httpErrorResponse.error);
     });
-    return await shared.toPromise();
+    return shared.toPromise();
   }
 
-  async getById(expenseId: string): Promise<ExpenseClaim> {
+  getById(expenseId: string): void {
     this.logger.debug("getById:", expenseId);
-    const apiResponse = await this.responseFrom(this.http.get<ExpenseClaimApiResponse>(`${this.BASE_URL}/${expenseId}`));
-    this.logger.debug("getById - received", apiResponse);
-    return apiResponse.response as ExpenseClaim;
+    this.responseFrom(this.http.get<ExpenseClaimApiResponse>(`${this.BASE_URL}/${expenseId}`));
   }
 
   async update(expense: ExpenseClaim): Promise<ExpenseClaim> {
@@ -65,16 +65,16 @@ export class ExpenseClaimService {
     return apiResponse.response as ExpenseClaim;
   }
 
-  async create(member: ExpenseClaim): Promise<ExpenseClaim> {
-    this.logger.debug("creating", member);
-    const apiResponse = await this.http.post<ExpenseClaimApiResponse>(this.BASE_URL, member).toPromise();
-    this.logger.debug("created", member, "- received", apiResponse);
+  async create(expenseClaim: ExpenseClaim): Promise<ExpenseClaim> {
+    this.logger.debug("creating", expenseClaim);
+    const apiResponse = await this.responseFrom(this.http.post<ExpenseClaimApiResponse>(this.BASE_URL, expenseClaim));
+    this.logger.debug("created", expenseClaim, "- received", apiResponse);
     return apiResponse.response as ExpenseClaim;
   }
 
   async delete(expense: ExpenseClaim): Promise<ExpenseClaim> {
     this.logger.debug("deleting", expense);
-    const apiResponse = await this.http.delete<ExpenseClaimApiResponse>(this.BASE_URL + "/" + expense.id).toPromise();
+    const apiResponse = await this.responseFrom(this.http.delete<ExpenseClaimApiResponse>(this.BASE_URL + "/" + expense.id));
     this.logger.debug("deleted", expense, "- received", apiResponse);
     return apiResponse.response as ExpenseClaim;
   }

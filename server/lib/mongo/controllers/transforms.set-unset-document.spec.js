@@ -82,6 +82,88 @@ it("transforms nested json", done => {
   done();
 });
 
+
+it("transforms arrays correctly in json", done => {
+
+  const json = {
+    "id": "5aa8666ac2ef1639d44610e4",
+    "cost": 100,
+    "expenseItems": [{
+      "expenseType": {"_id": "5e6035a4d723f575af56a4c1", "value": "other", "name": "Other"},
+      "expenseDate": 1519862400000,
+      "description": "Properss",
+      "cost": 100
+    }],
+    "expenseEvents": [{
+      "date": 1520985691493,
+      "memberId": "535954f3e4b0ddd860afdc72",
+      "eventType": {"_id": "5e6035a4d723f575af56a4c4", "description": "Created", "editable": true}
+    }, {
+      "date": 1520985737798,
+      "memberId": "535954f3e4b0ddd860afdc72",
+      "eventType": {
+        "_id": "5e6035a4d723f575af56a4c3",
+        "description": "Submitted",
+        "actionable": true,
+        "notifyCreator": true,
+        "notifyApprover": true
+      }
+    }, {
+      "date": 1520985869770,
+      "memberId": "533dae09e4b06994571391ae",
+      "eventType": {
+        "_id": "5e6035a4d723f575af56a4c2",
+        "description": "Returned",
+        "atEndpoint": false,
+        "editable": true,
+        "notifyCreator": true,
+        "notifyApprover": true
+      },
+      "reason": "dont be silly"
+    }]
+  }
+  expect(transforms.setUnSetDocument(json)).to.eql({
+    "$set": {
+      "cost": 100,
+      "expenseEvents": [{
+        "date": 1520985691493,
+        "memberId": "535954f3e4b0ddd860afdc72",
+        "eventType": {"_id": "5e6035a4d723f575af56a4c4", "description": "Created", "editable": true}
+      }, {
+        "date": 1520985737798,
+        "memberId": "535954f3e4b0ddd860afdc72",
+        "eventType": {
+          "_id": "5e6035a4d723f575af56a4c3",
+          "description": "Submitted",
+          "actionable": true,
+          "notifyCreator": true,
+          "notifyApprover": true
+        }
+      }, {
+        "date": 1520985869770,
+        "memberId": "533dae09e4b06994571391ae",
+        "eventType": {
+          "_id": "5e6035a4d723f575af56a4c2",
+          "description": "Returned",
+          "atEndpoint": false,
+          "editable": true,
+          "notifyCreator": true,
+          "notifyApprover": true
+        },
+        "reason": "dont be silly"
+      }],
+      "expenseItems": [{
+        "expenseType": {"_id": "5e6035a4d723f575af56a4c1", "value": "other", "name": "Other"},
+        "expenseDate": 1519862400000,
+        "description": "Properss",
+        "cost": 100
+      }],
+      "id": "5aa8666ac2ef1639d44610e4"
+    }
+  });
+  done();
+});
+
 it("transforms whole json", done => {
 
   const json = {

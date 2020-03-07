@@ -7,6 +7,11 @@ export interface ExpenseFilter {
 }
 
 export interface ExpenseClaim {
+  bankDetails?: {
+    accountName: string;
+    accountNumber: string;
+    sortCode: string;
+  };
   id?: string;
   expenseEvents: ExpenseEvent[];
   expenseItems: ExpenseItem[];
@@ -38,6 +43,21 @@ export interface ExpenseItem {
   };
 }
 
+export interface ExpenseNotificationConfiguration {
+  component: object;
+  memberIds: string[];
+  segmentType: string;
+  segmentNameSuffix: string;
+  destination: string;
+}
+
+export interface ExpenseNotificationContentSections {
+  sections: {
+    expense_id_url: string;
+    expense_notification_text: string;
+  };
+}
+
 export interface ExpenseEventType {
   description: string;
   atEndpoint?: boolean;
@@ -46,6 +66,7 @@ export interface ExpenseEventType {
   returned?: boolean;
   notifyCreator?: boolean;
   notifyApprover?: boolean;
+  notifyTreasurer?: boolean;
 }
 
 export interface ExpenseEvent {
@@ -58,4 +79,11 @@ export interface ExpenseEvent {
 export interface ExpenseClaimApiResponse extends ApiResponse {
   request: any;
   response?: ExpenseClaim | ExpenseClaim[];
+}
+
+export interface ExpenseNotificationMapping {
+  expenseEventType: ExpenseEventType;
+  notifyCreator?: object;
+  notifyApprover?: object;
+  notifyTreasurer?: object;
 }

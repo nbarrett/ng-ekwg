@@ -22,7 +22,7 @@
                     (ngModelChange)="refreshMembers($event)"
                     id="filter-members">
               <option *ngFor="let tableFilterItem of memberFilter.availableFilters"
-                      [ngValue]="tableFilterItem  "
+                      [ngValue]="tableFilterItem"
                       [textContent]="tableFilterItem.title">
               </option>
             </select>

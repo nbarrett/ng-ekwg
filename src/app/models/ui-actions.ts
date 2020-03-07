@@ -8,6 +8,13 @@ export enum ConfirmType {
   NONE = "none"
 }
 
+export enum EditMode {
+  ADD_NEW = "Add new",
+  DELETE = "Delete",
+  EDIT = "Edit existing",
+  COPY_EXISTING = "Copy existing"
+}
+
 export class Confirm {
   public type: ConfirmType = ConfirmType.NONE;
 

@@ -1,15 +1,23 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { clone, filter, find, first, isEqual, last } from "lodash-es";
-import { BsModalService } from "ngx-bootstrap";
+import { cloneDeep, first } from "lodash-es";
+import clone from "lodash-es/clone";
+import filter from "lodash-es/filter";
+import find from "lodash-es/find";
+import isArray from "lodash-es/isArray";
+import isEqual from "lodash-es/isEqual";
+import last from "lodash-es/last";
+import { BsModalService, ModalOptions } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { ApiResponse } from "../../../models/api-response.model";
 import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { ExpenseNotificationDirective } from "../../../notifications/expenses/expense-notification.directive";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -17,6 +25,7 @@ import { ContentMetadataService } from "../../../services/content-metadata.servi
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
+import { ExpenseNotificationService } from "../../../services/expenses/expense-notification.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
@@ -40,12 +49,10 @@ const SELECTED_EXPENSE = "Expense from last email link";
 export class ExpensesComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private expenseId: string;
-  private receiptBaseUrl: string;
   private dataError: boolean;
   private members: Member[];
   private expenseClaims: ExpenseClaim[];
   private unfilteredExpenseClaims: ExpenseClaim[];
-  private notificationsBaseUrl: string;
 
   private selected: {
     expenseClaim: ExpenseClaim,
@@ -59,9 +66,10 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private resubmit: boolean;
   private uploadedFile: string;
   public confirm = new Confirm();
-  private subscription: Subscription;
-  private saveInProgress: boolean;
+  private authSubscription: Subscription;
+  private expenseClaimSubscription: Subscription;
   public filters: ExpenseFilter[];
+  @ViewChild(ExpenseNotificationDirective, {static: false}) notificationDirective: ExpenseNotificationDirective;
 
   constructor(@Inject("MailchimpListService") private mailchimpListService,
               @Inject("MailchimpSegmentService") private mailchimpSegmentService,
@@ -85,6 +93,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
+              public notifications: ExpenseNotificationService,
               public display: ExpenseDisplayService,
               loggerFactory: LoggerFactory) {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
@@ -93,8 +102,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.notify.setBusy();
-    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.authSubscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.urlService.navigateTo("admin");
+    });
+    this.expenseClaimSubscription = this.expenseClaimService.notifications().subscribe(apiResponse => {
+      if (apiResponse.error) {
+        this.notifyError(apiResponse);
+      } else {
+        this.applyExpensesToView(apiResponse);
+      }
     });
     this.dataError = false;
     this.members = [];
@@ -131,7 +147,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         expenseItem: undefined,
         showOnlyMine: !this.display.allowAdminFunctions(),
         saveInProgress: false,
-        // filter: this.filters[1]
         filter: this.filters[!!this.expenseId ? 0 : 1]
       };
       this.logger.info("ngOnInit - expense-id:", this.expenseId, "this.filters:", this.filters, "this.selected:", this.selected);
@@ -139,19 +154,58 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         .then(() => this.refreshExpenses())
         .then(() => this.notify.setReady())
         .catch((error) => {
-          this.logger.error(error);
-          this.notify.error(error);
+          this.notifyError(error);
         });
     });
-
-    this.notificationsBaseUrl = "partials/expenses/notifications";
 
     this.memberLoginService.showLoginPromptWithRouteParameter("expenseId");
 
   }
 
+  private applyExpensesToView(apiResponse: ApiResponse) {
+    const expenseClaims: ExpenseClaim[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
+    this.logger.info("Received", expenseClaims.length, "expense", apiResponse.action, "notification(s)");
+    if (apiResponse.action === "query") {
+      this.unfilteredExpenseClaims = expenseClaims;
+    } else {
+      this.logger.debug("unfilteredExpenseClaims size before", this.unfilteredExpenseClaims.length);
+      expenseClaims.forEach(notifiedClaim => {
+        this.logger.debug("adding/replacing item", notifiedClaim);
+        this.unfilteredExpenseClaims = this.unfilteredExpenseClaims.filter(claim => claim.id !== notifiedClaim.id);
+        this.unfilteredExpenseClaims.push(notifiedClaim);
+      });
+      this.logger.debug("unfilteredExpenseClaims size after", this.unfilteredExpenseClaims.length);
+    }
+    this.applyFilter();
+  }
+
+  applyFilter() {
+    this.expenseClaims = chain(this.unfilteredExpenseClaims)
+      .filter(expenseClaim => this.display.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.display.memberOwnsClaim(expenseClaim) : true) : this.display.memberCanEditClaim(expenseClaim))
+      .filter(expenseClaim => {
+        return this.selected.filter.filter(expenseClaim);
+      }).sortBy(expenseClaim => {
+        const expenseClaimLatestEvent = this.display.expenseClaimLatestEvent(expenseClaim);
+        return expenseClaimLatestEvent ? expenseClaimLatestEvent.date : true;
+      }).value().reverse();
+    const outcome = `found ${this.expenseClaims.length} expense claim(s)`;
+    this.notify.progress({title: this.selected.filter.description, message: outcome});
+    this.logger.debug("query finished", outcome);
+    this.notify.clearBusy();
+  }
+
+  private notifyError(error) {
+    this.logger.error(typeof error);
+    if (error.error && error.error.includes("CastError")) {
+      this.noExpenseFound();
+    } else {
+      this.notify.error({title: "Expenses error", message: error});
+    }
+  }
+
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.authSubscription.unsubscribe();
+    this.expenseClaimSubscription.unsubscribe();
   }
 
   defaultExpenseClaim(): ExpenseClaim {
@@ -203,37 +257,47 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     const approvals = this.approvalEvents();
     this.notify.hide();
     if (approvals.length === 0) {
-      this.createEventAndSendNotifications(this.display.eventTypes["first-approval"]);
+      this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes["first-approval"]);
     } else if (approvals.length === 1) {
-      this.createEventAndSendNotifications(this.display.eventTypes["second-approval"]);
+      this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes["second-approval"]);
     } else {
-      this.notify.error("This expense claim already has " + approvals.length + " approvals!");
+      this.notifyError("This expense claim already has " + approvals.length + " approvals!");
     }
   }
 
   showAllExpenseClaims() {
     this.dataError = false;
-    this.urlService.navigateTo("/admin/expenses");
+    this.urlService.navigateTo("/admin", "expenses");
   }
 
   addExpenseClaim() {
     this.selectExpenseClaim(this.defaultExpenseClaim());
-    this.createEvent(this.display.eventTypes.created);
+    this.display.createEvent(this.selected.expenseClaim, this.display.eventTypes.created);
     this.addExpenseItem();
   }
 
+  doNothing(value?: any) {
+    // this.logger.debug("doing nothing ->", value.id);
+  }
+
+  selectFirstItem(expenseClaim: ExpenseClaim) {
+    this.selectExpenseClaim(expenseClaim);
+    if (!this.expenseItemSelected()) {
+      this.selectExpenseItem(first(this.selected.expenseClaim.expenseItems));
+    }
+  }
+
   selectExpenseItem(expenseItem: ExpenseItem) {
-    if (this.saveInProgress) {
-    } else {
+    if (!this.notifyTarget.busy && this.confirm.noneOutstanding()) {
+      this.logger.debug("selectExpenseItem:", expenseItem);
       this.selected.expenseItem = expenseItem;
     }
   }
 
   selectExpenseClaim(expenseClaim: ExpenseClaim) {
     this.logger.debug("selectExpenseClaim:", expenseClaim);
-    if (!this.saveInProgress) {
+    if (!this.notifyTarget.busy && this.confirm.noneOutstanding()) {
       this.selected.expenseClaim = expenseClaim;
-      this.selectExpenseItem(first(this.selected.expenseClaim.expenseItems));
     }
   }
 
@@ -248,11 +312,16 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   editExpenseItem() {
     this.removeConfirm();
     delete this.uploadedFile;
-    const config = {
+    const expenseItemIndex = this.selected.expenseClaim.expenseItems.indexOf(this.selected.expenseItem);
+    const config: ModalOptions = {
       class: "modal-lg",
+      animated: false,
       show: true,
       initialState: {
-        expenseItem: this.selected.expenseItem, expenseClaim: this.selected.expenseClaim
+        expenseItemIndex,
+        editable: this.display.editable(this.selected.expenseClaim),
+        expenseItem: cloneDeep(this.selected.expenseItem),
+        expenseClaim: cloneDeep(this.selected.expenseClaim),
       }
     };
     this.modalService.show(ExpenseDetailModalComponent, config);
@@ -279,32 +348,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
   }
 
-  createEvent(eventType, reason?: string) {
-    const expenseClaim = this.selected.expenseClaim;
-    if (!expenseClaim.expenseEvents) {
-      expenseClaim.expenseEvents = [];
-    }
-    const event: ExpenseEvent = {
-      date: this.dateUtils.nowAsValue(),
-      memberId: this.memberLoginService.loggedInMember().memberId,
-      eventType
-    };
-    if (reason) {
-      event.reason = reason;
-    }
-    expenseClaim.expenseEvents.push(event);
-  }
-
   addExpenseItem() {
     this.removeConfirm();
     const newExpenseItem = this.display.defaultExpenseItem();
-    this.selected.expenseClaim.expenseItems.push(newExpenseItem);
     this.selectExpenseItem(newExpenseItem);
     this.editExpenseItem();
   }
 
   allowClearError() {
-    return this.urlService.hasRouteParameter("expenseId") && this.dataError;
+    return this.expenseId && this.dataError;
   }
 
   allowReturnExpenseClaim() {
@@ -324,7 +376,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     if (this.lastApprovedByMe()) {
       this.notify.warning({
         title: "Duplicate approval warning",
-        message: "You were the previous approver, therefore " + this.nextApprovalStage() + " ought to be carried out by someone else. Are you sure you want to do this?"
+        message: `You were the previous approver, therefore ${this.nextApprovalStage()} ought to be carried out by someone else. Are you sure you want to do this?`
       });
     }
   }
@@ -350,18 +402,20 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     return item.expenseDate && item.expenseType;
   }
 
+  claimTracker(index: number, item: ExpenseClaim) {
+    return item.id;
+  }
+
   showExpenseDeleted() {
-    return this.showExpenseSuccessAlert("Expense was deleted successfully");
+    return this.display.showExpenseSuccessAlert(this.notify, "Expense was deleted successfully");
   }
 
   confirmDeleteExpenseClaim() {
-    this.showExpenseProgressAlert("Deleting expense claim", true);
+    this.display.showExpenseProgressAlert(this.notify, "Deleting expense claim", true);
 
     this.expenseClaimService.delete(this.selected.expenseClaim)
-      .then(() => this.hideExpenseClaim())
-      .then(() => this.showExpenseDeleted())
-      .then(() => this.refreshExpenses())
       .then(() => this.removeConfirm())
+      .then(() => this.showExpenseDeleted())
       .then(() => this.notify.clearBusy());
   }
 
@@ -389,7 +443,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   confirmReturnExpenseClaim(reason) {
     this.hideReturnDialog();
-    return this.createEventAndSendNotifications(this.display.eventTypes.returned, reason);
+    return this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes.returned, reason);
   }
 
   hideReturnDialog() {
@@ -405,7 +459,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   confirmPaidExpenseClaim() {
-    this.createEventAndSendNotifications(this.display.eventTypes.paid)
+    this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes.paid)
       .then(() => this.hidePaidDialog());
   }
 
@@ -417,160 +471,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.hidePaidDialog();
   }
 
-  confirmSubmitExpenseClaim() {
-    if (this.resubmit) {
-      this.selected.expenseClaim.expenseEvents = [this.display.eventForEventType(this.selected.expenseClaim, this.display.eventTypes.created)];
-    }
-    this.createEventAndSendNotifications(this.display.eventTypes.submitted);
-  }
-
   resubmitExpenseClaim() {
     this.submitExpenseClaim(true);
   }
 
-  createEventAndSendNotifications(eventType, reason?: string) {
-    this.notify.setBusy();
-    this.saveInProgress = true;
-    const expenseClaimCreatedEvent = this.display.expenseClaimCreatedEvent(this.selected.expenseClaim);
-    const sendNotificationsToAllRoles = () => {
-      return this.memberService.getById(expenseClaimCreatedEvent.memberId)
-        .then(member => {
-          this.logger.debug("sendNotification:", "memberId", expenseClaimCreatedEvent.memberId, "member", member);
-          const memberFullName = this.fullNameWithAliasPipe.transform(member);
-          return Promise.resolve(this.showExpenseProgressAlert("Preparing to email " + memberFullName))
-            .then(() => this.hideSubmitDialog())
-            .then(() => sendCreatorNotifications())
-            .then(() => sendApproverNotifications())
-            .then(() => sendTreasurerNotifications());
-
-          const sendCreatorNotifications = () => {
-            if (eventType.notifyCreator) {
-              return sendNotificationsTo({
-                templateUrl: templateForEvent("creator", eventType),
-                memberIds: [expenseClaimCreatedEvent.memberId],
-                segmentType: "directMail",
-                segmentNameSuffix: "",
-                destination: "creator"
-              });
-            }
-            return false;
-          };
-
-          const sendApproverNotifications = () => {
-            if (eventType.notifyApprover) {
-              return sendNotificationsTo({
-                templateUrl: templateForEvent("approver", eventType),
-                memberIds: this.memberService.allMemberIdsWithPrivilege("financeAdmin", this.members),
-                segmentType: "expenseApprover",
-                segmentNameSuffix: "approval ",
-                destination: "approvers"
-              });
-            }
-            return Promise.resolve(false);
-          };
-
-          const sendTreasurerNotifications = () => {
-            if (eventType.notifyTreasurer) {
-              return sendNotificationsTo({
-                templateUrl: templateForEvent("treasurer", eventType),
-                memberIds: this.memberService.allMemberIdsWithPrivilege("treasuryAdmin", this.members),
-                segmentType: "expenseTreasurer",
-                segmentNameSuffix: "payment ",
-                destination: "treasurer"
-              });
-            }
-            return false;
-          };
-
-          const templateForEvent = (role, eventType) => {
-            return this.notificationsBaseUrl + "/" + role + "/" + eventType.description.toLowerCase().replace(" ", "-") + "-notification.html";
-          };
-
-          const sendNotificationsTo = (templateAndNotificationMembers) => {
-            this.logger.debug("sendNotificationsTo:", templateAndNotificationMembers);
-            const campaignName = "Expense " + eventType.description + " notification (to " + templateAndNotificationMembers.destination + ")";
-            const campaignNameAndMember = campaignName + " (" + memberFullName + ")";
-            const segmentName = "Expense notification " + templateAndNotificationMembers.segmentNameSuffix + "(" + memberFullName + ")";
-            if (templateAndNotificationMembers.memberIds.length === 0) {
-              throw new Error("No members have been configured as " + templateAndNotificationMembers.destination + " therefore notifications for this step will fail!!");
-            }
-            return Promise.resolve(templateAndNotificationMembers.templateUrl)
-              .then((templateData) => renderTemplateContent(templateData))
-              .then((expenseNotificationText) => populateContentSections(expenseNotificationText))
-              .then((contentSections) => sendNotification(contentSections, templateAndNotificationMembers))
-              .catch((error) => this.display.showExpenseEmailErrorAlert(this.notify, error));
-
-            const populateContentSections = (expenseNotificationText) => {
-              return {
-                sections: {
-                  expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenseId/${this.selected.expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
-                  expense_notification_text: expenseNotificationText
-                }
-              };
-            };
-
-            const sendNotification = (contentSections, templateAndNotificationMembers) => {
-              const createOrSaveMailchimpSegment = () => {
-                return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.mailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType)}, templateAndNotificationMembers.memberIds, segmentName, this.members);
-              };
-
-              const saveSegmentDataToMember = (segmentResponse) => {
-                this.mailchimpSegmentService.setMemberSegmentId(member, templateAndNotificationMembers.segmentType, segmentResponse.segment.id);
-                return this.memberService.update(member);
-              };
-
-              const sendEmailCampaign = () => {
-                this.showExpenseProgressAlert("Sending " + campaignNameAndMember);
-                return this.mailchimpConfig.getConfig()
-                  .then(config => {
-                    const campaignId = config.mailchimp.campaigns.expenseNotification.campaignId;
-                    const segmentId = this.mailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType);
-                    this.logger.debug("about to replicateAndSendWithOptions with campaignName", campaignNameAndMember, "campaign Id", campaignId, "segmentId", segmentId);
-                    return this.mailchimpCampaignService.replicateAndSendWithOptions({
-                      campaignId,
-                      campaignName: campaignNameAndMember,
-                      contentSections,
-                      segmentId
-                    });
-                  })
-                  .then(() => {
-                    this.showExpenseProgressAlert("Sending of " + campaignNameAndMember + " was successful", true);
-                  });
-              };
-
-              return createOrSaveMailchimpSegment()
-                .then((segmentResponse) => saveSegmentDataToMember(segmentResponse))
-                .then(() => sendEmailCampaign())
-                .then(() => notifyEmailSendComplete());
-
-              const notifyEmailSendComplete = () => {
-                this.showExpenseSuccessAlert("Sending of " + campaignName + " was successful. Check your inbox for progress.");
-              };
-            };
-          };
-        });
-    };
-
-    return Promise.resolve(this.createEvent(eventType, reason))
-      .then(() => sendNotificationsToAllRoles())
-      .then(() => (() => this.expenseClaimService.createOrUpdate(this.selected.expenseClaim)));
-
-    const renderTemplateContent = (templateData) => {
-      // const task = new Promise();
-      // const templateFunction = $compile(templateData);
-      // const templateElement = templateFunction($scope);
-      // $timeout(() => {
-      //   this.$digest();
-      //   task.resolve();
-      // });
-      return Promise.resolve("templateElement.html()");
-    };
-
-  }
-
   refreshMembers() {
     if (this.memberLoginService.memberLoggedIn()) {
-      this.notify.progress("Refreshing member data...");
+      this.notify.progress({title: "Expenses", message: "Refreshing member data..."});
       return this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
         this.logger.debug("refreshMembers: found", members.length, "members");
         return this.members = members;
@@ -579,65 +486,38 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   changeFilter($event?: ExpenseFilter) {
+    this.logger.info("changeFilter fired with", $event);
     this.selected.filter = $event;
     this.refreshExpenses();
+  }
+
+  query(): void {
+    this.logger.info("expenseFilter.description", this.selected.filter.description, "expenseId", this.expenseId);
+    try {
+      if (this.selected.filter.description === SELECTED_EXPENSE && this.expenseId) {
+        this.expenseClaimService.getById(this.expenseId);
+      } else {
+        this.expenseClaimService.all();
+      }
+    } catch (error) {
+      this.notifyError(error);
+    }
+  }
+
+  noExpenseFound() {
+    this.dataError = true;
+    this.notify.warning({
+      title: "Expense claim could not be found",
+      message: "Try opening again from the link in the notification email, or click Show All Expense Claims"
+    });
   }
 
   refreshExpenses() {
     this.dataError = false;
     this.notify.setBusy();
-    this.logger.debug("refreshExpenses started:");
-    this.notify.progress("Filtering for " + this.selected.filter.description + "...");
+    this.notify.progress({title: this.selected.filter.description, message: "searching..."});
     this.logger.debug("refreshing expenseFilter", this.selected.filter);
-
-    const noExpenseFound = (error?) => {
-      this.dataError = true;
-      return this.notify.warning({
-        title: "Expense claim could not be found",
-        message: "Try opening again from the link in the notification email, or click Show All Expense Claims"
-      });
-    };
-
-    const query = () => {
-      this.logger.info("expenseFilter.description", this.selected.filter.description, "expenseId", this.expenseId);
-      if (this.selected.filter.description === SELECTED_EXPENSE && this.expenseId) {
-        return this.expenseClaimService.getById(this.expenseId)
-          .then(expense => {
-            if (!expense) {
-              return noExpenseFound();
-            } else {
-              return [expense];
-            }
-          })
-          .catch(error => noExpenseFound(error));
-      } else {
-        return this.expenseClaimService.all();
-      }
-    };
-
-    return query()
-      .then(expenseClaims => {
-        this.unfilteredExpenseClaims = [];
-        this.expenseClaims = chain(expenseClaims)
-          .filter(expenseClaim => this.display.allowAdminFunctions() ? (this.selected.showOnlyMine ? this.display.memberOwnsClaim(expenseClaim) : true) : this.display.memberCanEditClaim(expenseClaim))
-          .filter(expenseClaim => {
-            this.unfilteredExpenseClaims.push(expenseClaim);
-            return this.selected.filter.filter(expenseClaim);
-          }).sortBy(expenseClaim => {
-            const expenseClaimLatestEvent = this.display.expenseClaimLatestEvent(expenseClaim);
-            return expenseClaimLatestEvent ? expenseClaimLatestEvent.date : true;
-          }).value().reverse();
-        const outcome = `${this.selected.filter.description} - found ${this.expenseClaims.length} expense claim(s)`;
-        this.notify.progress(outcome);
-        this.logger.debug("query finished", outcome);
-        this.notify.clearBusy();
-        return this.expenseClaims;
-      }, (error) => this.notify.error(error))
-      .catch((error) => this.notify.error(error));
-  }
-
-  private showExpenseProgressAlert(message: string, busy?: boolean) {
-    this.notify.progress({title: "Expenses", message}, busy);
+    this.query();
   }
 
   allowAddExpenseClaim() {
@@ -656,4 +536,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     return expenseClaim === this.selected.expenseClaim;
   }
 
+  expenseItemSelected(): boolean {
+    return this.selected.expenseClaim.expenseItems.includes(this.selected.expenseItem);
+  }
 }

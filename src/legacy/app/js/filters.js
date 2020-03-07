@@ -47,11 +47,6 @@ angular.module('ekwgApp')
       return $filter(FilterUtils.nameFilter(alias))(MemberService.toMember(memberId, members), defaultValue);
     }
   })
-  .filter('memberIdToFirstName', function ($filter, MemberService) {
-    return function (memberId, members, defaultValue) {
-      return $filter('firstName')(MemberService.toMember(memberId, members), defaultValue);
-    }
-  })
   .filter('humanize', function () {
     return function (string) {
       return s.humanize(string);

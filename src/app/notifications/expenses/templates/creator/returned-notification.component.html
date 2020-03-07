@@ -1,7 +1,0 @@
-<div style="font-size:12px">
-    <p>We are sorry to let you know that the EKWG expense claim you created on <span [textContent]="expenseClaimCreatedEvent().date | displayDate" class="nowrap"></span>
-        with the <span [textContent]="expenseClaim.expenseItems.length"></span> item(s) listed below has been returned to you:
-    </p>
-    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
-    <p *ngIf="expenseClaimLatestEvent().reason">The reason we can't process your expense claim is as follows: <span [textContent]="expenseClaimLatestEvent().reason"></span>.</p>
-</div>

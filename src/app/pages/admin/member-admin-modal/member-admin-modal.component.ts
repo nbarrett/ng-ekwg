@@ -5,6 +5,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member, MemberUpdateAudit } from "../../../models/member.model";
+import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { DbUtilsService } from "../../../services/db-utils.service";
 import { EmailSubscriptionService } from "../../../services/email-subscription.service";
@@ -27,7 +28,7 @@ export class MemberAdminModalComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   member: Member;
-  memberEditMode: string;
+  editMode: EditMode;
   lastLoggedIn: number;
   private mailchimpApiUrl: string;
   membershipExpiryDate: Date;
@@ -68,7 +69,7 @@ export class MemberAdminModalComponent implements OnInit {
       this.mailchimpApiUrl = config.mailchimp.apiUrl;
     });
 
-    const existingRecordEditEnabled = this.allowEdits && this.memberEditMode.startsWith("Edit");
+    const existingRecordEditEnabled = this.allowEdits && this.editMode === EditMode.EDIT;
     const memberId = this.member.id;
     this.allowConfirmDelete = false;
     this.allowCopy = existingRecordEditEnabled;
@@ -107,6 +108,7 @@ export class MemberAdminModalComponent implements OnInit {
   confirmDeleteMemberDetails() {
     this.memberService.delete(this.member).then(() => this.bsModalRef.hide());
   }
+
   viewMailchimpListEntry(item: string) {
     return window.open(`${this.mailchimpApiUrl}/lists/members/view?id=${item}`);
   }
@@ -186,7 +188,7 @@ export class MemberAdminModalComponent implements OnInit {
     this.emailSubscriptionService.defaultMailchimpSettings(copiedMember, true);
     this.profileConfirmationService.unconfirmProfile(copiedMember);
     this.member = copiedMember;
-    this.memberEditMode = "Copy Existing";
+    this.editMode = EditMode.COPY_EXISTING;
     this.notify.success("Existing Member copied! Make changes here and save to create new member.");
   }
 

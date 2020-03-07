@@ -9,7 +9,7 @@
                 <div class="modal-body">
                     <div class="thumbnail">
                         <div class="green-bullets-no-rule">
-                            <ul>You are about to mark the Expense Claim for <strong [textContent]="expenseClaimCreatedEvent().memberId | memberIdToFullName : members"></strong> as <strong>Paid</strong>
+                            <ul>You are about to mark the Expense Claim for <strong [textContent]="display.expenseClaimCreatedEvent(expenseClaim).memberId | memberIdToFullName : members"></strong> as <strong>Paid</strong>
                                 <li>This should be done once the payment to their bank account has been organised.</li>
                                 <li>An email will now be sent to them informing them of this.</li>
                             </ul>

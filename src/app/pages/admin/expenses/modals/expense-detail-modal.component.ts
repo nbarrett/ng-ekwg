@@ -1,11 +1,10 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
-import cloneDeep from "lodash-es/cloneDeep";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
-import { ExpenseClaim, ExpenseItem } from "../../../../models/expense.model";
-import { Confirm } from "../../../../models/ui-actions";
-import { WalkNotificationDirective } from "../../../../notifications/walks/walk-notification.directive";
+import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../models/expense.model";
+import { Confirm, EditMode } from "../../../../models/ui-actions";
+import { ExpenseNotificationDirective } from "../../../../notifications/expenses/expense-notification.directive";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -23,21 +22,21 @@ export class ExpenseDetailModalComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public expenseItem: ExpenseItem;
-  public expenseClaim: ExpenseClaim;
-  editable: boolean;
+  public editable: boolean;
   public saveInProgress: boolean;
   private logger: Logger;
-  private expense: ExpenseClaim;
+  public expenseClaim: ExpenseClaim;
+  public editMode: EditMode;
   public confirm = new Confirm();
-
-  // @Input("expense")
-  // set cloneWalk(expense: ExpenseClaim) {
-  //   this.logger.debug("cloning expense for edit");
-  //   this.expense = cloneDeep(expense);
-  // }
-
-  @ViewChild(WalkNotificationDirective, {static: false}) notificationDirective: WalkNotificationDirective;
   uploadedFile: any;
+  expenseDate: Date;
+  public expenseItemIndex: number;
+
+  @ViewChild(ExpenseNotificationDirective, {static: false}) notificationDirective: ExpenseNotificationDirective;
+
+  expenseTypeTracker(expenseType: ExpenseType) {
+    return expenseType.value;
+  }
 
   constructor(public bsModalRef: BsModalRef,
               private notifierService: NotifierService,
@@ -52,7 +51,9 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("constructed:", this.expenseItem, this.expenseClaim);
+    this.editMode = this.expenseItemIndex === -1 ? EditMode.ADD_NEW : EditMode.EDIT;
+    this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
+    this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
   }
 
@@ -60,15 +61,14 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.bsModalRef.hide();
   }
 
-  expenseTypeChange() {
-    const item = this.expenseItem;
-    this.logger.debug("this.expenseClaim.expenseType", item.expenseType);
-    if (item.expenseType.travel) {
-      if (!item.travel) {
-        item.travel = this.display.defaultExpenseItem().travel;
+  expenseTypeChange(expenseType: ExpenseType) {
+    this.logger.debug("this.expenseClaim.expenseType", expenseType);
+    if (expenseType.travel) {
+      if (!this.expenseItem.travel) {
+        this.expenseItem.travel = this.display.defaultExpenseItem().travel;
       }
     } else {
-      delete item.travel;
+      this.expenseItem.travel = undefined;
     }
     this.setExpenseItemFields();
   }
@@ -77,28 +77,29 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.notify.progress({title: "Expenses", message}, busy);
   }
 
-  saveExpenseClaim(expenseClaim: ExpenseClaim) {
-    this.saveInProgress = true;
+  saveExpenseClaim() {
+    this.logger.debug("this.editMode", this.editMode);
     this.showExpenseProgressAlert("Saving expense claim", true);
     this.setExpenseItemFields();
-    return (this.expenseClaimService.createOrUpdate(expenseClaim))
+    this.display.saveExpenseItem(this.editMode, this.confirm, this.notify, this.expenseClaim, this.expenseItem, this.expenseItemIndex)
       .then(() => this.bsModalRef.hide())
-      .then(() => this.notify.clearBusy());
+      .then(() => this.notify.clearBusy())
+      .catch(error => this.notify.error(error));
   }
 
   setExpenseItemFields() {
     if (this.expenseItem) {
-      this.expenseItem.expenseDate = this.dateUtils.asValueNoTime(this.expenseItem.expenseDate);
       if (this.expenseItem.travel) {
         this.expenseItem.travel.miles = this.numberUtils.asNumber(this.expenseItem.travel.miles);
       }
       this.expenseItem.description = this.display.expenseItemDescription(this.expenseItem);
       this.expenseItem.cost = this.display.expenseItemCost(this.expenseItem);
     }
-    this.display.recalculateClaimCost(this.expenseClaim);
+    // this.display.recalculateClaimCost(this.expenseClaim);
   }
 
   onExpenseDateChange(date: Date) {
+    this.logger.debug("date", date);
     this.expenseItem.expenseDate = this.dateUtils.asValueNoTime(date);
   }
 
@@ -110,4 +111,7 @@ export class ExpenseDetailModalComponent implements OnInit {
     delete this.expenseItem.receipt;
   }
 
+  onFileSelect($file: any) {
+
+  }
 }

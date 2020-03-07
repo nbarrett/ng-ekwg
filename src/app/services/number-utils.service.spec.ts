@@ -54,6 +54,16 @@ describe("NumberUtilsService", () => {
       expect(service.asNumber(120.45167, 3)).toBe(120.452);
     });
 
+    it("should accept a numeric number and round to zero decimal places", () => {
+      const service: NumberUtilsService = TestBed.get(NumberUtilsService);
+      expect(service.asNumber( 28.000000000000004, 0)).toBe(28);
+    });
+
+    it("should accept a numeric number and round to specified decimal places", () => {
+      const service: NumberUtilsService = TestBed.get(NumberUtilsService);
+      expect(service.asNumber( 28.12345, 3)).toBe(28.123);
+    });
+
   });
 
   describe("sumValues", () => {

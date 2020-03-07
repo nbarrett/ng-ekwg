@@ -25,6 +25,9 @@ export class Logger {
     this.logger.warn(this.logPrefix(), ...additional);
   }
 
+  off(...additional: any[]) {
+  }
+
 }
 
 @Injectable({

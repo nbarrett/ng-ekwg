@@ -1,9 +1,0 @@
-<div style="font-size:12px">
-    <p>This email is to notify you as an Expense Approver, that <strong [textContent]="expenseClaimLatestEvent().memberId | memberIdToFullName : members"></strong>
-        has just returned <strong [textContent]="(expenseClaimCreatedEvent().memberId | memberIdToFullName : members) + '\'s'" class="nowrap"></strong>
-        EKWG expense claim as follows:
-    </p>
-    <ng-include src="'partials/expenses/notifications/common/expense-claim-table.html'"></ng-include>
-    <br>
-    <p *ngIf="expenseClaimLatestEvent().reason">The reason given was as follows: <span [textContent]="expenseClaimLatestEvent().reason"></span>.</p>
-</div>

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import escapeRegExp from "lodash-es/escapeRegExp";
 import has from "lodash-es/has";
@@ -42,6 +43,8 @@ export class StringUtilsService {
     const extractedMessage = this.isAlertMessage(message) ? message.message : message;
     if (extractedMessage instanceof TypeError) {
       returnValue = extractedMessage.toString();
+    } else if (extractedMessage instanceof HttpErrorResponse) {
+      returnValue = extractedMessage.statusText + " - " + this.stringifyObject(extractedMessage.error);
     } else if (has(extractedMessage, ["error", "message"])) {
       returnValue = extractedMessage.error.message + (extractedMessage.error.error ? " - " + extractedMessage.error.error : "");
     } else if (has(extractedMessage, ["error", "errmsg"])) {
