@@ -5,18 +5,18 @@ import find from "lodash-es/find";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../../models/expense.model";
-import { Member } from "../../../models/member.model";
-import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
-import { ContentMetadataService } from "../../../services/content-metadata.service";
-import { DateUtilsService } from "../../../services/date-utils.service";
-import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
-import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MemberLoginService } from "../../../services/member/member-login.service";
-import { MemberService } from "../../../services/member/member.service";
-import { AlertInstance } from "../../../services/notifier.service";
-import { NumberUtilsService } from "../../../services/number-utils.service";
-import { UrlService } from "../../../services/url.service";
+import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../models/expense.model";
+import { Member } from "../../models/member.model";
+import { Confirm, ConfirmType, EditMode } from "../../models/ui-actions";
+import { ContentMetadataService } from "../content-metadata.service";
+import { DateUtilsService } from "../date-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MemberLoginService } from "../member/member-login.service";
+import { MemberService } from "../member/member.service";
+import { AlertInstance } from "../notifier.service";
+import { NumberUtilsService } from "../number-utils.service";
+import { UrlService } from "../url.service";
+import { ExpenseClaimService } from "./expense-claim.service";
 
 @Injectable({
   providedIn: "root"
@@ -151,7 +151,7 @@ export class ExpenseDisplayService {
   }
 
   showExpenseEmailErrorAlert(notify: AlertInstance, message: string) {
-    notify.error({title: "Expenses", message: "Your expense claim email processing failed. " + message});
+    notify.error({title: "Expenses Error", message: "Your expense claim email processing failed. " + message});
   }
 
   showExpenseErrorAlert(notify: AlertInstance, message?: string) {
@@ -242,11 +242,18 @@ export class ExpenseDisplayService {
   }
 
   expenseClaimLatestEvent(expenseClaim: ExpenseClaim): ExpenseEvent {
-    return expenseClaim ? last(expenseClaim.expenseEvents) : {};
+    this.logger.off("expenseClaimLatestEvent:", expenseClaim);
+    return isEmpty(expenseClaim) ? {} : last(expenseClaim.expenseEvents) || {};
   }
 
   expenseClaimStatus(expenseClaim: ExpenseClaim): ExpenseEventType {
-    return this.expenseClaimLatestEvent(expenseClaim).eventType;
+    this.logger.off("expenseClaimStatus:", expenseClaim);
+    if (isEmpty(expenseClaim)) {
+      return {};
+    } else {
+      this.logger.off("expenseClaimStatus:", expenseClaim);
+      return this.expenseClaimLatestEvent(expenseClaim).eventType || {};
+    }
   }
 
   editable(expenseClaim: ExpenseClaim) {
@@ -262,7 +269,7 @@ export class ExpenseDisplayService {
   }
 
   allowEditExpenseItem(expenseClaim: ExpenseClaim) {
-    return expenseClaim.expenseItems.length > 0 && this.allowAddExpenseItem(expenseClaim) && expenseClaim && expenseClaim.id;
+    return isEmpty(expenseClaim) ? false : expenseClaim.expenseItems.length > 0 && this.allowAddExpenseItem(expenseClaim) && expenseClaim && expenseClaim.id;
   }
 
   allowAddExpenseItem(expenseClaim: ExpenseClaim) {

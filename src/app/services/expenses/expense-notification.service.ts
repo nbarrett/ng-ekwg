@@ -1,15 +1,7 @@
 import { ComponentFactoryResolver, Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import {
-  ExpenseClaim,
-  ExpenseEvent,
-  ExpenseEventType,
-  ExpenseNotificationConfiguration,
-  ExpenseNotificationContentSections,
-  ExpenseNotificationMapping
-} from "../../models/expense.model";
-import { Member } from "../../models/member.model";
-import { ExpenseNotificationComponentAndData, ExpenseNotificationDirective } from "../../notifications/expenses/expense-notification.directive";
+import { ExpenseEventType, ExpenseNotificationContentSections, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../models/expense.model";
+import { ExpenseNotificationComponentAndData } from "../../notifications/expenses/expense-notification.directive";
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
 import { ExpenseNotificationApproverPaidComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-paid.component";
 import { ExpenseNotificationApproverReturnedComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-returned.component";
@@ -20,7 +12,7 @@ import { ExpenseNotificationCreatorSecondApprovalComponent } from "../../notific
 import { ExpenseNotificationCreatorSubmittedComponent } from "../../notifications/expenses/templates/creator/expense-notification-creator-submitted.component";
 import { ExpenseNotificationTreasurerPaidComponent } from "../../notifications/expenses/templates/treasurer/expense-notification-treasurer-paid.component";
 import { ExpenseNotificationTreasurerSecondApprovalComponent } from "../../notifications/expenses/templates/treasurer/expense-notification-treasurer-second-approval.component";
-import { ExpenseDisplayService } from "../../pages/admin/expenses/expense-display.service";
+import { ExpenseDisplayService } from "./expense-display.service";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
@@ -56,10 +48,10 @@ export class ExpenseNotificationService {
     private displayDatePipe: DisplayDatePipe,
     public display: ExpenseDisplayService,
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseNotificationService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ExpenseNotificationService, NgxLoggerLevel.DEBUG);
   }
 
-  private expenseEventNotificationMappingsFor(eventType: ExpenseEventType) {
+  private expenseEventNotificationMappingsFor(eventType: ExpenseEventType): ExpenseNotificationMapping {
     const mappings: ExpenseNotificationMapping[] = [
       {
         expenseEventType: this.display.eventTypes.submitted,
@@ -91,10 +83,10 @@ export class ExpenseNotificationService {
     return mappings.find(mapping => mapping.expenseEventType === eventType);
   }
 
-  public generateNotificationHTML(expenseClaim: ExpenseClaim, notificationDirective: ExpenseNotificationDirective, component): string {
-    const componentAndData = new ExpenseNotificationComponentAndData(component, expenseClaim);
+  public generateNotificationHTML(request: ExpenseNotificationRequest): string {
+    const componentAndData = new ExpenseNotificationComponentAndData(request.component, request.expenseClaim);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentAndData.component);
-    const viewContainerRef = notificationDirective.viewContainerRef;
+    const viewContainerRef = request.notificationDirective.viewContainerRef;
     viewContainerRef.clear();
     const componentRef = viewContainerRef.createComponent(componentFactory);
     componentRef.instance.expenseClaim = componentAndData.data;
@@ -104,70 +96,67 @@ export class ExpenseNotificationService {
     return html;
   }
 
-  sendCreatorNotifications(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, eventType: ExpenseEventType, expenseClaim: ExpenseClaim, members: Member[], member: Member, memberFullName: string, expenseClaimCreatedEvent: ExpenseEvent) {
-    if (eventType.notifyCreator) {
-      return this.sendNotificationsTo(notify, expenseNotificationDirective, eventType, expenseClaim, member, memberFullName, {
-        component: this.expenseEventNotificationMappingsFor(eventType).notifyCreator,
-        memberIds: [expenseClaimCreatedEvent.memberId],
-        segmentType: "directMail",
-        segmentNameSuffix: "",
-        destination: "creator"
-      }, members);
-    }
-    return false;
-  }
-
-  sendApproverNotifications(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, eventType: ExpenseEventType, expenseClaim: ExpenseClaim, members: Member[], member: Member, memberFullName: string) {
-    if (eventType.notifyApprover) {
-      return this.sendNotificationsTo(notify, expenseNotificationDirective, eventType, expenseClaim, member, memberFullName, {
-        component: this.expenseEventNotificationMappingsFor(eventType).notifyApprover,
-        memberIds: this.memberService.allMemberIdsWithPrivilege("financeAdmin", members),
-        segmentType: "expenseApprover",
-        segmentNameSuffix: "approval ",
-        destination: "approvers"
-      }, members);
+  sendCreatorNotifications(request: ExpenseNotificationRequest) {
+    if (request.eventType.notifyCreator) {
+      request.memberIds = [request.expenseClaimCreatedEvent.memberId];
+      request.segmentType = "directMail";
+      request.segmentNameSuffix = "";
+      request.destination = "creator";
+      request.component = this.expenseEventNotificationMappingsFor(request.eventType).notifyCreator;
+      return this.sendNotificationsTo(request);
     }
     return Promise.resolve(false);
   }
 
-  sendTreasurerNotifications(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, eventType: ExpenseEventType, expenseClaim: ExpenseClaim, members: Member[], member: Member, memberFullName: string) {
-    if (eventType.notifyTreasurer) {
-      return this.sendNotificationsTo(notify, expenseNotificationDirective, eventType, expenseClaim, member, memberFullName, {
-        component: this.expenseEventNotificationMappingsFor(eventType).notifyTreasurer,
-        memberIds: this.memberService.allMemberIdsWithPrivilege("treasuryAdmin", members),
-        segmentType: "expenseTreasurer",
-        segmentNameSuffix: "payment ",
-        destination: "treasurer"
-      }, members);
+  sendApproverNotifications(request: ExpenseNotificationRequest) {
+    if (request.eventType.notifyApprover) {
+      request.component = this.expenseEventNotificationMappingsFor(request.eventType).notifyApprover;
+      request.memberIds = this.memberService.allMemberIdsWithPrivilege("financeAdmin", request.members);
+      request.segmentType = "expenseApprover";
+      request.segmentNameSuffix = "approval ";
+      request.destination = "approvers";
+      return this.sendNotificationsTo(request);
     }
-    return false;
+    return Promise.resolve(false);
   }
 
-  createOrSaveMailchimpSegment(templateAndNotificationMembers, member: Member, segmentName: string, members: Member[]) {
-    return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.mailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType)}, templateAndNotificationMembers.memberIds, segmentName, members);
+  sendTreasurerNotifications(request: ExpenseNotificationRequest) {
+    request.component = this.expenseEventNotificationMappingsFor(request.eventType).notifyTreasurer;
+    if (request.eventType.notifyTreasurer) {
+      request.memberIds = this.memberService.allMemberIdsWithPrivilege("treasuryAdmin", request.members);
+      request.segmentType = "expenseTreasurer";
+      request.segmentNameSuffix = "payment ";
+      request.destination = "treasurer";
+      return this.sendNotificationsTo(request);
+    }
+    return Promise.resolve(false);
   }
 
-  saveSegmentDataToMember(segmentResponse, templateAndNotificationMembers, member) {
-    this.mailchimpSegmentService.setMemberSegmentId(member, templateAndNotificationMembers.segmentType, segmentResponse.segment.id);
-    return this.memberService.update(member);
+  createOrSaveMailchimpSegment(request: ExpenseNotificationRequest) {
+    return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.mailchimpSegmentService.getMemberSegmentId(request.member, request.segmentType)}, request.memberIds, request.segmentName, request.members);
   }
 
-  sendEmailCampaign(notify: AlertInstance, campaignName: string, campaignNameAndMember: string, templateAndNotificationMembers, member, contentSections: ExpenseNotificationContentSections) {
-    this.display.showExpenseProgressAlert(notify, "Sending " + campaignNameAndMember);
+  saveSegmentDataToMember(segmentResponse, request: ExpenseNotificationRequest) {
+    this.mailchimpSegmentService.setMemberSegmentId(request.member, request.segmentType, segmentResponse.segment.id);
+    return this.memberService.update(request.member);
+  }
+
+  sendEmailCampaign(request: ExpenseNotificationRequest, contentSections: ExpenseNotificationContentSections) {
+    this.display.showExpenseProgressAlert(request.notify, `Sending ${request.campaignNameAndMember}`);
     return this.mailchimpConfig.getConfig()
       .then(config => {
         const campaignId = config.mailchimp.campaigns.expenseNotification.campaignId;
-        const segmentId = this.mailchimpSegmentService.getMemberSegmentId(member, templateAndNotificationMembers.segmentType);
-        this.logger.debug("about to replicateAndSendWithOptions with campaignName", campaignNameAndMember, "campaign Id", campaignId, "segmentId", segmentId);
+        const segmentId = this.mailchimpSegmentService.getMemberSegmentId(request.member, request.segmentType);
+        this.logger.debug("about to replicateAndSendWithOptions with campaignName", request.campaignNameAndMember, "campaign Id", campaignId, "segmentId", segmentId);
         return this.mailchimpCampaignService.replicateAndSendWithOptions({
           campaignId,
-          campaignName: campaignNameAndMember,
+          campaignName: request.campaignNameAndMember,
           contentSections,
           segmentId
         });
       })
       .then(() => {
-        this.display.showExpenseProgressAlert(notify, `Sending of ${campaignNameAndMember} was successful`, true);
+        this.display.showExpenseProgressAlert(request.notify, `Sending of ${request.campaignNameAndMember} was successful`, true);
       });
   }
 
@@ -175,50 +164,49 @@ export class ExpenseNotificationService {
     this.display.showExpenseSuccessAlert(notify, `Sending of ${campaignName} was successful. Check your inbox for progress.`);
   }
 
-  sendNotification(notify: AlertInstance, contentSections: ExpenseNotificationContentSections, templateAndNotificationMembers, member, campaignName: string, campaignNameAndMember: string, segmentName: string, members: Member[]) {
-    return this.createOrSaveMailchimpSegment(templateAndNotificationMembers, member, segmentName, members)
-      .then((segmentResponse) => this.saveSegmentDataToMember(segmentResponse, templateAndNotificationMembers, member))
-      .then(() => this.sendEmailCampaign(notify, campaignName, campaignNameAndMember, templateAndNotificationMembers, member, contentSections))
-      .then(() => this.notifyEmailSendComplete(notify, campaignName));
+  sendNotification(request: ExpenseNotificationRequest, contentSections: ExpenseNotificationContentSections) {
+    return this.createOrSaveMailchimpSegment(request)
+      .then((segmentResponse) => this.saveSegmentDataToMember(segmentResponse, request))
+      .then(() => this.sendEmailCampaign(request, contentSections))
+      .then(() => this.notifyEmailSendComplete(request.notify, request.campaignName));
 
   }
 
-  sendNotificationsTo(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, eventType: ExpenseEventType, expenseClaim: ExpenseClaim, member: Member, memberFullName: string, templateAndNotificationMembers: ExpenseNotificationConfiguration, members: Member[]) {
-    this.logger.debug("sendNotificationsTo:", templateAndNotificationMembers);
-    const campaignName: string = "Expense " + eventType.description + " notification (to " + templateAndNotificationMembers.destination + ")";
-    const campaignNameAndMember: string = campaignName + " (" + memberFullName + ")";
-    const segmentName = "Expense notification " + templateAndNotificationMembers.segmentNameSuffix + "(" + memberFullName + ")";
-    if (templateAndNotificationMembers.memberIds.length === 0) {
-      throw new Error("No members have been configured as " + templateAndNotificationMembers.destination + " therefore notifications for this step will fail!!");
+  sendNotificationsTo(request: ExpenseNotificationRequest) {
+    this.logger.debug("sendNotificationsTo:", request);
+    request.campaignName = `Expense ${request.eventType.description} notification (to ${request.destination})`;
+    request.campaignNameAndMember = `${request.campaignName} (${request.memberFullName})`;
+    request.segmentName = `Expense notification ${request.segmentNameSuffix}(${request.memberFullName})`;
+    if (request.memberIds.length === 0) {
+      throw new Error(`No members have been configured as ${request.destination} therefore notifications for this step will fail!!`);
     }
-    const contentSections = {
+    return this.sendNotification(request, {
       sections: {
-        expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenseId/${expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
-        expense_notification_text: this.generateNotificationHTML(expenseClaim, expenseNotificationDirective, templateAndNotificationMembers.component)
+        expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenses/${request.expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
+        expense_notification_text: this.generateNotificationHTML(request)
       }
-    };
-    return this.sendNotification(notify, contentSections, templateAndNotificationMembers, member, campaignName, campaignNameAndMember, segmentName, members)
-      .catch((error) => this.display.showExpenseEmailErrorAlert(notify, error));
+    }).catch((error) => this.display.showExpenseEmailErrorAlert(request.notify, error));
   }
 
-  sendNotificationsToAllRoles(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, expenseClaim: ExpenseClaim, expenseClaimCreatedEvent: ExpenseEvent, eventType: ExpenseEventType, members: Member[]) {
-    return this.memberService.getById(expenseClaimCreatedEvent.memberId)
+  sendNotificationsToAllRoles(request: ExpenseNotificationRequest) {
+    return this.memberService.getById(request.expenseClaimCreatedEvent.memberId)
       .then(member => {
-        this.logger.debug("sendNotification:", "memberId", expenseClaimCreatedEvent.memberId, "member", member);
-        const memberFullName = this.fullNameWithAliasPipe.transform(member);
-        return Promise.resolve(this.display.showExpenseProgressAlert(notify, `Preparing to email ${memberFullName}`))
-          .then(() => this.sendCreatorNotifications(notify, expenseNotificationDirective, eventType, expenseClaim, members, member, memberFullName, expenseClaimCreatedEvent))
-          .then(() => this.sendApproverNotifications(notify, expenseNotificationDirective, eventType, expenseClaim, members, member, memberFullName))
-          .then(() => this.sendTreasurerNotifications(notify, expenseNotificationDirective, eventType, expenseClaim, members, member, memberFullName));
+        this.logger.debug("sendNotification:", "memberId", request.expenseClaimCreatedEvent.memberId, "member", member);
+        request.member = member;
+        request.memberFullName = this.fullNameWithAliasPipe.transform(member);
+        return Promise.resolve(this.display.showExpenseProgressAlert(request.notify, `Preparing to email ${request.memberFullName}`))
+          .then(() => this.sendCreatorNotifications(request))
+          .then(() => this.sendApproverNotifications(request))
+          .then(() => this.sendTreasurerNotifications(request));
       });
   }
 
-  createEventAndSendNotifications(notify: AlertInstance, expenseNotificationDirective: ExpenseNotificationDirective, expenseClaim: ExpenseClaim, members: Member[], eventType: ExpenseEventType, reason?: string) {
-    notify.setBusy();
-    const expenseClaimCreatedEvent = this.display.expenseClaimCreatedEvent(expenseClaim);
-    return Promise.resolve(this.display.createEvent(expenseClaim, eventType, reason))
-      .then(() => this.sendNotificationsToAllRoles(notify, expenseNotificationDirective, expenseClaim, expenseClaimCreatedEvent, eventType, members))
-      .then(() => (() => this.expenseClaimService.createOrUpdate(expenseClaim)));
+  createEventAndSendNotifications(request: ExpenseNotificationRequest) {
+    request.notify.setBusy();
+    request.expenseClaimCreatedEvent = this.display.expenseClaimCreatedEvent(request.expenseClaim);
+    return Promise.resolve(this.display.createEvent(request.expenseClaim, request.eventType, request.reason))
+      .then(() => this.sendNotificationsToAllRoles(request))
+      .then(() => this.expenseClaimService.createOrUpdate(request.expenseClaim));
   }
 
 }

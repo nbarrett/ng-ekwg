@@ -5,6 +5,7 @@ import clone from "lodash-es/clone";
 import filter from "lodash-es/filter";
 import find from "lodash-es/find";
 import isArray from "lodash-es/isArray";
+import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
 import last from "lodash-es/last";
 import { BsModalService, ModalOptions } from "ngx-bootstrap";
@@ -14,7 +15,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ApiResponse } from "../../../models/api-response.model";
-import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem } from "../../../models/expense.model";
+import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem, ExpenseNotificationRequest } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ExpenseNotificationDirective } from "../../../notifications/expenses/expense-notification.directive";
@@ -25,6 +26,7 @@ import { ContentMetadataService } from "../../../services/content-metadata.servi
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
+import { ExpenseDisplayService } from "../../../services/expenses/expense-display.service";
 import { ExpenseNotificationService } from "../../../services/expenses/expense-notification.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
@@ -36,8 +38,8 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { NumberUtilsService } from "../../../services/number-utils.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { ExpenseDisplayService } from "./expense-display.service";
 import { ExpenseDetailModalComponent } from "./modals/expense-detail-modal.component";
+import { ExpenseSubmitModalComponent } from "./modals/expense-submit-modal.component";
 
 const SELECTED_EXPENSE = "Expense from last email link";
 
@@ -170,9 +172,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     } else {
       this.logger.debug("unfilteredExpenseClaims size before", this.unfilteredExpenseClaims.length);
       expenseClaims.forEach(notifiedClaim => {
-        this.logger.debug("adding/replacing item", notifiedClaim);
         this.unfilteredExpenseClaims = this.unfilteredExpenseClaims.filter(claim => claim.id !== notifiedClaim.id);
-        this.unfilteredExpenseClaims.push(notifiedClaim);
+        if (apiResponse.action !== "delete") {
+          this.logger.debug("adding/replacing item", notifiedClaim);
+          this.unfilteredExpenseClaims.push(notifiedClaim);
+        } else {
+          this.logger.debug("not adding", notifiedClaim, "as", apiResponse.action);
+        }
       });
       this.logger.debug("unfilteredExpenseClaims size after", this.unfilteredExpenseClaims.length);
     }
@@ -192,6 +198,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.notify.progress({title: this.selected.filter.description, message: outcome});
     this.logger.debug("query finished", outcome);
     this.notify.clearBusy();
+    this.selectFirstItem(first(this.expenseClaims));
   }
 
   private notifyError(error) {
@@ -256,10 +263,15 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   confirmApproveExpenseClaim() {
     const approvals = this.approvalEvents();
     this.notify.hide();
-    if (approvals.length === 0) {
-      this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes["first-approval"]);
-    } else if (approvals.length === 1) {
-      this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes["second-approval"]);
+    if (approvals.length <= 1) {
+      const request: ExpenseNotificationRequest = {
+        notify: this.notify,
+        notificationDirective: this.notificationDirective,
+        expenseClaim: this.selected.expenseClaim,
+        members: this.members,
+        eventType: approvals.length === 0 ? this.display.eventTypes["first-approval"] : this.display.eventTypes["second-approval"],
+      };
+      this.notifications.createEventAndSendNotifications(request);
     } else {
       this.notifyError("This expense claim already has " + approvals.length + " approvals!");
     }
@@ -276,13 +288,9 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.addExpenseItem();
   }
 
-  doNothing(value?: any) {
-    // this.logger.debug("doing nothing ->", value.id);
-  }
-
   selectFirstItem(expenseClaim: ExpenseClaim) {
     this.selectExpenseClaim(expenseClaim);
-    if (!this.expenseItemSelected()) {
+    if (!this.expenseItemSelected() && this.selected.expenseClaim) {
       this.selectExpenseItem(first(this.selected.expenseClaim.expenseItems));
     }
   }
@@ -309,8 +317,9 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.confirm.type = ConfirmType.NONE;
   }
 
-  editExpenseItem() {
+  editExpenseItem(expenseItem: ExpenseItem) {
     this.removeConfirm();
+    this.selectExpenseItem(expenseItem);
     delete this.uploadedFile;
     const expenseItemIndex = this.selected.expenseClaim.expenseItems.indexOf(this.selected.expenseItem);
     const config: ModalOptions = {
@@ -325,11 +334,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       }
     };
     this.modalService.show(ExpenseDetailModalComponent, config);
-  }
-
-  hideExpenseClaim() {
-    this.removeConfirm();
-    // $("#expense-detail-dialog").modal("hide");
   }
 
   ekwgFileUpload() {
@@ -351,8 +355,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   addExpenseItem() {
     this.removeConfirm();
     const newExpenseItem = this.display.defaultExpenseItem();
-    this.selectExpenseItem(newExpenseItem);
-    this.editExpenseItem();
+    this.editExpenseItem(newExpenseItem);
   }
 
   allowClearError() {
@@ -365,10 +368,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       && this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.submitted)
       && !this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.returned)
       && this.display.expenseClaimStatus(this.selected.expenseClaim).actionable;
-  }
-
-  showExpenseSuccessAlert(message?: string, busy?: boolean) {
-    this.notify.success(message, busy);
   }
 
   approveExpenseClaim() {
@@ -419,18 +418,24 @@ export class ExpensesComponent implements OnInit, OnDestroy {
       .then(() => this.notify.clearBusy());
   }
 
-  submitExpenseClaim(state: boolean) {
-    this.resubmit = state;
-    // $("#submit-dialog").modal("show");
+  submitExpenseClaim(resubmit: boolean) {
+    const config: ModalOptions = {
+      class: "modal-lg",
+      animated: false,
+      show: true,
+      initialState: {
+        members: this.members,
+        resubmit,
+        expenseClaim: cloneDeep(this.selected.expenseClaim),
+        notificationDirective: this.notificationDirective
+      }
+    };
+    this.modalService.show(ExpenseSubmitModalComponent, config);
   }
 
   hideSubmitDialog() {
     // $("#submit-dialog").modal("hide");
     this.resubmit = false;
-  }
-
-  cancelSubmitExpenseClaim() {
-    this.hideSubmitDialog();
   }
 
   returnExpenseClaim() {
@@ -443,7 +448,14 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   confirmReturnExpenseClaim(reason) {
     this.hideReturnDialog();
-    return this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes.returned, reason);
+    return this.notifications.createEventAndSendNotifications({
+      notify: this.notify,
+      notificationDirective: this.notificationDirective,
+      expenseClaim: this.selected.expenseClaim,
+      members: this.members,
+      eventType: this.display.eventTypes.returned,
+      reason,
+    });
   }
 
   hideReturnDialog() {
@@ -459,7 +471,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   confirmPaidExpenseClaim() {
-    this.notifications.createEventAndSendNotifications(this.notify, this.notificationDirective, this.selected.expenseClaim, this.members, this.display.eventTypes.paid)
+    this.notifications.createEventAndSendNotifications({
+      notify: this.notify,
+      notificationDirective: this.notificationDirective,
+      expenseClaim: this.selected.expenseClaim,
+      members: this.members,
+      eventType: this.display.eventTypes.paid,
+    })
       .then(() => this.hidePaidDialog());
   }
 
@@ -537,6 +555,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   expenseItemSelected(): boolean {
-    return this.selected.expenseClaim.expenseItems.includes(this.selected.expenseItem);
+    return isEmpty(this.selected.expenseClaim) ? false : this.selected.expenseClaim.expenseItems.includes(this.selected.expenseItem);
   }
 }

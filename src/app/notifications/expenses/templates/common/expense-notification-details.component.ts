@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ExpenseClaim } from "../../../../models/expense.model";
 import { Member } from "../../../../models/member.model";
-import { ExpenseDisplayService } from "../../../../pages/admin/expenses/expense-display.service";
+import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
 
 @Component({

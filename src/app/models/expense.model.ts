@@ -1,4 +1,9 @@
+import { Type } from "@angular/core";
+import { ExpenseNotificationDirective } from "../notifications/expenses/expense-notification.directive";
+import { ExpenseNotificationDetailsComponent } from "../notifications/expenses/templates/common/expense-notification-details.component";
+import { AlertInstance } from "../services/notifier.service";
 import { ApiResponse } from "./api-response.model";
+import { Member } from "./member.model";
 
 export interface ExpenseFilter {
   filter: (arg?: any) => boolean;
@@ -8,9 +13,9 @@ export interface ExpenseFilter {
 
 export interface ExpenseClaim {
   bankDetails?: {
-    accountName: string;
-    accountNumber: string;
-    sortCode: string;
+    accountName?: string;
+    accountNumber?: string;
+    sortCode?: string;
   };
   id?: string;
   expenseEvents: ExpenseEvent[];
@@ -43,12 +48,24 @@ export interface ExpenseItem {
   };
 }
 
-export interface ExpenseNotificationConfiguration {
-  component: object;
-  memberIds: string[];
-  segmentType: string;
-  segmentNameSuffix: string;
-  destination: string;
+export interface ExpenseNotificationRequest {
+  expenseClaim: ExpenseClaim;
+  notify: AlertInstance;
+  members: Member[];
+  eventType: ExpenseEventType;
+  notificationDirective: ExpenseNotificationDirective;
+  expenseClaimCreatedEvent?: ExpenseEvent;
+  member?: Member;
+  memberIds?: string[];
+  component?: Type<ExpenseNotificationDetailsComponent>;
+  segmentType?: string;
+  segmentNameSuffix?: string;
+  memberFullName?: string;
+  campaignName?: string;
+  campaignNameAndMember?: string;
+  segmentName?: string;
+  destination?: string;
+  reason?: string;
 }
 
 export interface ExpenseNotificationContentSections {
@@ -59,7 +76,7 @@ export interface ExpenseNotificationContentSections {
 }
 
 export interface ExpenseEventType {
-  description: string;
+  description?: string;
   atEndpoint?: boolean;
   actionable?: boolean;
   editable?: boolean;
@@ -83,7 +100,7 @@ export interface ExpenseClaimApiResponse extends ApiResponse {
 
 export interface ExpenseNotificationMapping {
   expenseEventType: ExpenseEventType;
-  notifyCreator?: object;
-  notifyApprover?: object;
-  notifyTreasurer?: object;
+  notifyCreator?: any;
+  notifyApprover?: any;
+  notifyTreasurer?: any;
 }

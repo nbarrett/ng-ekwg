@@ -1,17 +1,16 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../models/expense.model";
 import { Confirm, EditMode } from "../../../../models/ui-actions";
-import { ExpenseNotificationDirective } from "../../../../notifications/expenses/expense-notification.directive";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../../services/notifier.service";
 import { NumberUtilsService } from "../../../../services/number-utils.service";
 import { StringUtilsService } from "../../../../services/string-utils.service";
-import { ExpenseDisplayService } from "../expense-display.service";
+import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
 
 @Component({
   selector: "app-expense-detail-modal",
@@ -32,7 +31,9 @@ export class ExpenseDetailModalComponent implements OnInit {
   expenseDate: Date;
   public expenseItemIndex: number;
 
-  @ViewChild(ExpenseNotificationDirective, {static: false}) notificationDirective: ExpenseNotificationDirective;
+  expenseTypeComparer(item1: ExpenseType, item2: ExpenseType): boolean {
+    return item1 && item2 ? item1.value === item2.value : item1 === item2;
+  }
 
   expenseTypeTracker(expenseType: ExpenseType) {
     return expenseType.value;
@@ -73,13 +74,9 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.setExpenseItemFields();
   }
 
-  showExpenseProgressAlert(message, busy?) {
-    this.notify.progress({title: "Expenses", message}, busy);
-  }
-
   saveExpenseClaim() {
     this.logger.debug("this.editMode", this.editMode);
-    this.showExpenseProgressAlert("Saving expense claim", true);
+    this.display.showExpenseProgressAlert(this.notify, "Saving expense claim", true);
     this.setExpenseItemFields();
     this.display.saveExpenseItem(this.editMode, this.confirm, this.notify, this.expenseClaim, this.expenseItem, this.expenseItemIndex)
       .then(() => this.bsModalRef.hide())
@@ -95,7 +92,7 @@ export class ExpenseDetailModalComponent implements OnInit {
       this.expenseItem.description = this.display.expenseItemDescription(this.expenseItem);
       this.expenseItem.cost = this.display.expenseItemCost(this.expenseItem);
     }
-    // this.display.recalculateClaimCost(this.expenseClaim);
+    this.display.recalculateClaimCost(this.expenseClaim);
   }
 
   onExpenseDateChange(date: Date) {

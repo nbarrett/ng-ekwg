@@ -4735,6 +4735,18 @@ input[type="radio"]:checked + label {
   cursor: pointer;
 }
 
+.inline-radio-label input[type="radio"] + label {
+  display: inline;
+  padding: 3px 13px 5px 26px;
+  margin: 9px 4px 0px 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.radio-inline-no-padding {
+  padding-left: 0px;
+}
+
 .input-sm {
   font-size: 15px;
 }
