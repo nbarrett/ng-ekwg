@@ -375,7 +375,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   }
 
   bulkUploadRamblersDataStart() {
-    const elementById: HTMLElement = this.document.getElementById("select-bulk-load-file");
+    const elementById: HTMLElement = this.document.getElementById("browse-to-file");
     this.logger.info("bulkUploadRamblersDataStart:elementById", elementById);
     elementById.click();
   }

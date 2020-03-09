@@ -23,7 +23,7 @@ export class ExpenseSubmitModalComponent implements OnInit {
   private resubmit: boolean;
   public expenseClaim: ExpenseClaim;
   private notificationDirective: ExpenseNotificationDirective;
-  bankDetails: string;
+  supplyBankDetailsChoice: string;
 
   constructor(public bsModalRef: BsModalRef,
               private notifierService: NotifierService,
@@ -35,8 +35,11 @@ export class ExpenseSubmitModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.bankDetails = (!!this.expenseClaim.bankDetails).toString();
-    this.logger.debug("constructed: expenseClaim:", this.expenseClaim, "resubmit:", this.resubmit, "bankDetails", this.bankDetails);
+    const bankDetailsExist: boolean = !!this.expenseClaim.bankDetails;
+    if (bankDetailsExist) {
+      this.supplyBankDetailsChoice = (bankDetailsExist).toString();
+    }
+    this.logger.debug("constructed: expenseClaim:", this.expenseClaim, "resubmit:", this.resubmit, "bankDetails", this.supplyBankDetailsChoice);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
   }
 

@@ -1,7 +1,7 @@
 import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnInit } from "@angular/core";
-import get from "lodash-es/get";
+import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -36,11 +36,12 @@ export class ExpenseDetailModalComponent implements OnInit {
   expenseDate: Date;
   public expenseItemIndex: number;
   public hasFileOver = false;
-  public fileUploader: FileUploader = new FileUploader({
+  public uploader: FileUploader = new FileUploader({
     url: "/api/aws/s3/file-upload",
     disableMultipart: false,
     autoUpload: true,
-    // additionalParameter: {},
+    parametersBeforeFiles: true,
+    additionalParameter: {},
     authTokenHeader: "Authorization",
     authToken: `Bearer ${this.authService.authToken()}`,
     formatDataFunctionIsAsync: false,
@@ -77,7 +78,7 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
     this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.fileUploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
         if (response instanceof HttpErrorResponse) {
@@ -86,35 +87,19 @@ export class ExpenseDetailModalComponent implements OnInit {
           this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
         } else {
           const uploadResponse = JSON.parse(response);
-          this.logger.info("JSON response:", uploadResponse);
-          const expenseItem = this.expenseItem;
-
-          // // "rootFolder": "expenseClaims",
-          // //   "uploadedFile": {
-          // //   "fieldname": "file",
-          // //     "originalname": "michelangelos.png",
-          //
-          // const receipt = {
-          //   receipt: {
-          //     originalFileName: "Please find attached your paid Invoice.pdf",
-          //     awsFileName: "d6ba4db3-520e-4bb9-8735-393a50b6fc9e.pdf",
-          //     title: "OS Invoice"
-          //   }
-          // };
-          const oldTitle = get(expenseItem, ["receipt", "title"]);
-          expenseItem.receipt = uploadResponse.response.fileNameData;
-          expenseItem.receipt.title = oldTitle || expenseItem.receipt.originalFileName;
+          this.expenseItem.receipt = uploadResponse.response.fileNameData;
+          this.expenseItem.receipt.title = this.expenseItem.receipt.originalFileName;
+          this.logger.info("JSON response:", uploadResponse, "receipt:", this.expenseItem.receipt);
           this.notify.clearBusy();
-          this.notify.warning({title: "Add receipt", message: expenseItem.receipt});
+          this.notify.success({title: "New receipt added", message: this.expenseItem.receipt.title});
         }
       }
     );
   }
 
   browseToReceipt() {
-    this.notify.setBusy();
-    const elementById: HTMLElement = this.document.getElementById("select-bulk-load-file");
-    this.logger.info("bulkUploadRamblersDataStart:elementById", elementById);
+    const elementById: HTMLElement = this.document.getElementById("browse-to-file");
+    this.logger.info("browseToReceipt:elementById", elementById);
     elementById.click();
   }
 
@@ -168,7 +153,12 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.expenseItem.receipt = undefined;
   }
 
-  onFileSelect($file: any) {
-    this.logger.info("onFileSelect", $file);
+  onFileSelect($file: File[]) {
+    this.notify.setBusy();
+    this.notify.progress({title: "Expense receipt upload", message: `uploading ${first($file).name} - please wait...`});
+  }
+
+  fileDropped($event: File[]) {
+    this.logger.info("fileDropped:", $event);
   }
 }

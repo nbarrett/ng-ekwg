@@ -2690,7 +2690,7 @@ table.inactive th {
 }
 
 .disabled-button-form {
-  margin: 0px 0px 0px 0px;
+  margin: 0px 4px 0px 0px;
   background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999;
   color: rgb(230, 230, 230);
   border: none;

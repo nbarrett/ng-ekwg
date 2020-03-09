@@ -209,7 +209,7 @@ export class ExpenseDisplayService {
   }
 
   receiptUrl(expenseItem: ExpenseItem) {
-    return expenseItem && expenseItem.receipt ? this.urlService.baseUrl() + this.receiptBaseUrl + "/" + expenseItem.receipt.awsFileName : "";
+    return expenseItem && expenseItem.receipt ? `${this.urlService.baseUrl()}/${this.receiptBaseUrl}/${expenseItem.receipt.awsFileName}` : "";
   }
 
   memberCanEditClaim(expenseClaim: ExpenseClaim) {
