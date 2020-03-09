@@ -81,6 +81,8 @@ import { PageComponent } from "./page/page.component";
 import { AdminComponent } from "./pages/admin/admin/admin.component";
 import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { ExpenseDetailModalComponent } from "./pages/admin/expenses/modals/expense-detail-modal.component";
+import { ExpensePaidModalComponent } from "./pages/admin/expenses/modals/expense-paid-modal.component";
+import { ExpenseReturnModalComponent } from "./pages/admin/expenses/modals/expense-return-modal.component";
 import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expense-submit-modal.component";
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
@@ -193,7 +195,9 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ExpenseNotificationTreasurerPaidComponent,
     ExpenseNotificationTreasurerSecondApprovalComponent,
     ExpensesComponent,
+    ExpensePaidModalComponent,
     ExpenseSubmitModalComponent,
+    ExpenseReturnModalComponent,
     ForgotPasswordComponent,
     ForgotPasswordModalComponent,
     FullNamePipe,
@@ -348,6 +352,10 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ExpenseNotificationCreatorSecondApprovalComponent,
     ExpenseNotificationCreatorSubmittedComponent,
     ExpenseNotificationDetailsComponent,
+    ExpenseNotificationTreasurerPaidComponent,
+    ExpenseNotificationTreasurerSecondApprovalComponent,
+    ExpensePaidModalComponent,
+    ExpenseReturnModalComponent,
     ExpenseSubmitModalComponent,
     ForgotPasswordModalComponent,
     LoginModalComponent,

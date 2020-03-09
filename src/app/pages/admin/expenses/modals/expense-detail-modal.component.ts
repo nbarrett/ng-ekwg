@@ -1,16 +1,21 @@
-import { Component, OnInit } from "@angular/core";
+import { DOCUMENT } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, Inject, OnInit } from "@angular/core";
+import get from "lodash-es/get";
+import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuthService } from "../../../../auth/auth.service";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../models/expense.model";
 import { Confirm, EditMode } from "../../../../models/ui-actions";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
+import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../../services/notifier.service";
 import { NumberUtilsService } from "../../../../services/number-utils.service";
 import { StringUtilsService } from "../../../../services/string-utils.service";
-import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
 
 @Component({
   selector: "app-expense-detail-modal",
@@ -30,6 +35,20 @@ export class ExpenseDetailModalComponent implements OnInit {
   uploadedFile: any;
   expenseDate: Date;
   public expenseItemIndex: number;
+  public hasFileOver = false;
+  public fileUploader: FileUploader = new FileUploader({
+    url: "/api/aws/s3/file-upload",
+    disableMultipart: false,
+    autoUpload: true,
+    // additionalParameter: {},
+    authTokenHeader: "Authorization",
+    authToken: `Bearer ${this.authService.authToken()}`,
+    formatDataFunctionIsAsync: false,
+  });
+
+  public fileOver(e: any): void {
+    this.hasFileOver = e;
+  }
 
   expenseTypeComparer(item1: ExpenseType, item2: ExpenseType): boolean {
     return item1 && item2 ? item1.value === item2.value : item1 === item2;
@@ -39,7 +58,9 @@ export class ExpenseDetailModalComponent implements OnInit {
     return expenseType.value;
   }
 
-  constructor(public bsModalRef: BsModalRef,
+  constructor(@Inject(DOCUMENT) private document: Document,
+              public bsModalRef: BsModalRef,
+              private authService: AuthService,
               private notifierService: NotifierService,
               private expenseClaimService: ExpenseClaimService,
               private stringUtils: StringUtilsService,
@@ -56,6 +77,45 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
     this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.fileUploader.response.subscribe((response: string | HttpErrorResponse) => {
+        this.logger.debug("response", response, "type", typeof response);
+        this.notify.clearBusy();
+        if (response instanceof HttpErrorResponse) {
+          this.notify.error({title: "Upload failed", message: response.error});
+        } else if (response === "Unauthorized") {
+          this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
+        } else {
+          const uploadResponse = JSON.parse(response);
+          this.logger.info("JSON response:", uploadResponse);
+          const expenseItem = this.expenseItem;
+
+          // // "rootFolder": "expenseClaims",
+          // //   "uploadedFile": {
+          // //   "fieldname": "file",
+          // //     "originalname": "michelangelos.png",
+          //
+          // const receipt = {
+          //   receipt: {
+          //     originalFileName: "Please find attached your paid Invoice.pdf",
+          //     awsFileName: "d6ba4db3-520e-4bb9-8735-393a50b6fc9e.pdf",
+          //     title: "OS Invoice"
+          //   }
+          // };
+          const oldTitle = get(expenseItem, ["receipt", "title"]);
+          expenseItem.receipt = uploadResponse.response.fileNameData;
+          expenseItem.receipt.title = oldTitle || expenseItem.receipt.originalFileName;
+          this.notify.clearBusy();
+          this.notify.warning({title: "Add receipt", message: expenseItem.receipt});
+        }
+      }
+    );
+  }
+
+  browseToReceipt() {
+    this.notify.setBusy();
+    const elementById: HTMLElement = this.document.getElementById("select-bulk-load-file");
+    this.logger.info("bulkUploadRamblersDataStart:elementById", elementById);
+    elementById.click();
   }
 
   cancelExpenseChange() {
@@ -81,7 +141,7 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.display.saveExpenseItem(this.editMode, this.confirm, this.notify, this.expenseClaim, this.expenseItem, this.expenseItemIndex)
       .then(() => this.bsModalRef.hide())
       .then(() => this.notify.clearBusy())
-      .catch(error => this.notify.error(error));
+      .catch(error => this.display.showExpenseErrorAlert(this.notify, error));
   }
 
   setExpenseItemFields() {
@@ -105,10 +165,10 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   removeReceipt() {
-    delete this.expenseItem.receipt;
+    this.expenseItem.receipt = undefined;
   }
 
   onFileSelect($file: any) {
-
+    this.logger.info("onFileSelect", $file);
   }
 }

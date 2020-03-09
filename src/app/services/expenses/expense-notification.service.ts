@@ -185,7 +185,7 @@ export class ExpenseNotificationService {
         expense_id_url: `Please click <a href="${this.urlService.baseUrl()}/admin/expenses/${request.expenseClaim.id}" target="_blank">this link</a> to see the details of the above expense claim, or to make changes to it.`,
         expense_notification_text: this.generateNotificationHTML(request)
       }
-    }).catch((error) => this.display.showExpenseEmailErrorAlert(request.notify, error));
+    });
   }
 
   sendNotificationsToAllRoles(request: ExpenseNotificationRequest) {
@@ -206,7 +206,8 @@ export class ExpenseNotificationService {
     request.expenseClaimCreatedEvent = this.display.expenseClaimCreatedEvent(request.expenseClaim);
     return Promise.resolve(this.display.createEvent(request.expenseClaim, request.eventType, request.reason))
       .then(() => this.sendNotificationsToAllRoles(request))
-      .then(() => this.expenseClaimService.createOrUpdate(request.expenseClaim));
+      .then(() => this.expenseClaimService.createOrUpdate(request.expenseClaim))
+      .catch((error) => this.display.showExpenseEmailErrorAlert(request.notify, error));
   }
 
 }

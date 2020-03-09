@@ -18,7 +18,13 @@ const expenseItem = {
     from: {type: String},
     to: {type: String},
     returnJourney: {type: Boolean}
-  }
+  },
+  receipt: {
+    awsFileName: {type: String},
+    originalFileName: {type: String},
+    title: {type: String},
+    fileNameData: {type: Object}
+  },
 };
 
 const expenseEventType = {
@@ -40,7 +46,6 @@ const expenseEvent = {
 };
 
 const expenseClaimSchema = mongoose.Schema({
-  receipt: {title: {type: String}, fileNameData: {type: Object}},
   id: {type: String},
   expenseEvents: [expenseEvent],
   expenseItems: [expenseItem],
@@ -55,4 +60,3 @@ const expenseClaimSchema = mongoose.Schema({
 expenseClaimSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model("expense-claim", expenseClaimSchema);
-

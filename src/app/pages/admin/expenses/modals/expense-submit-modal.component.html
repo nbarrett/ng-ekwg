@@ -1,13 +1,14 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title">Submit <em>Expense Claim</em></h4>
     </div>
     <div class="modal-body">
       <div class="thumbnail">
         <div class="green-bullets-no-rule">
-          <h1>You are about to submit your Expense Claim</h1>
+          <h2>You are about to {{resubmit ? 'resubmit' : 'submit'}} your expense claim</h2>
           <ul>
             <li>If you supply us with your bank account details below we will be able to pay your claim electronically
               which will speed up the claim processing time.

@@ -1,9 +1,10 @@
 import { Component, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { cloneDeep, first } from "lodash-es";
-import clone from "lodash-es/clone";
+import cloneDeep from "lodash-es/cloneDeep";
+import extend from "lodash-es/extend";
 import filter from "lodash-es/filter";
 import find from "lodash-es/find";
+import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
@@ -39,6 +40,8 @@ import { NumberUtilsService } from "../../../services/number-utils.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { ExpenseDetailModalComponent } from "./modals/expense-detail-modal.component";
+import { ExpensePaidModalComponent } from "./modals/expense-paid-modal.component";
+import { ExpenseReturnModalComponent } from "./modals/expense-return-modal.component";
 import { ExpenseSubmitModalComponent } from "./modals/expense-submit-modal.component";
 
 const SELECTED_EXPENSE = "Expense from last email link";
@@ -216,7 +219,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   defaultExpenseClaim(): ExpenseClaim {
-    return clone({
+    return cloneDeep({
       cost: 0,
       expenseItems: [],
       expenseEvents: []
@@ -297,13 +300,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   selectExpenseItem(expenseItem: ExpenseItem) {
     if (!this.notifyTarget.busy && this.confirm.noneOutstanding()) {
-      this.logger.debug("selectExpenseItem:", expenseItem);
+      this.logger.off("selectExpenseItem:", expenseItem);
       this.selected.expenseItem = expenseItem;
     }
   }
 
   selectExpenseClaim(expenseClaim: ExpenseClaim) {
-    this.logger.debug("selectExpenseClaim:", expenseClaim);
+    this.logger.off("selectExpenseClaim:", expenseClaim);
     if (!this.notifyTarget.busy && this.confirm.noneOutstanding()) {
       this.selected.expenseClaim = expenseClaim;
     }
@@ -320,20 +323,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   editExpenseItem(expenseItem: ExpenseItem) {
     this.removeConfirm();
     this.selectExpenseItem(expenseItem);
-    delete this.uploadedFile;
+    this.uploadedFile = undefined;
     const expenseItemIndex = this.selected.expenseClaim.expenseItems.indexOf(this.selected.expenseItem);
-    const config: ModalOptions = {
-      class: "modal-lg",
-      animated: false,
-      show: true,
-      initialState: {
-        expenseItemIndex,
-        editable: this.display.editable(this.selected.expenseClaim),
-        expenseItem: cloneDeep(this.selected.expenseItem),
-        expenseClaim: cloneDeep(this.selected.expenseClaim),
-      }
-    };
-    this.modalService.show(ExpenseDetailModalComponent, config);
+    this.modalService.show(ExpenseDetailModalComponent, this.createModalOptions({
+      expenseItemIndex,
+      editable: this.display.editable(this.selected.expenseClaim),
+      expenseItem: cloneDeep(this.selected.expenseItem),
+    }));
   }
 
   ekwgFileUpload() {
@@ -419,74 +415,36 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   submitExpenseClaim(resubmit: boolean) {
-    const config: ModalOptions = {
-      class: "modal-lg",
-      animated: false,
-      show: true,
-      initialState: {
-        members: this.members,
-        resubmit,
-        expenseClaim: cloneDeep(this.selected.expenseClaim),
-        notificationDirective: this.notificationDirective
-      }
-    };
-    this.modalService.show(ExpenseSubmitModalComponent, config);
-  }
-
-  hideSubmitDialog() {
-    // $("#submit-dialog").modal("hide");
-    this.resubmit = false;
+    this.modalService.show(ExpenseSubmitModalComponent, this.createModalOptions({resubmit}));
   }
 
   returnExpenseClaim() {
-    // $("#return-dialog").modal("show");
+    this.modalService.show(ExpenseReturnModalComponent, this.createModalOptions());
   }
 
   allowSubmitExpenseClaim(expenseClaim: ExpenseClaim) {
     return this.display.allowEditExpenseItem(expenseClaim) && !this.allowResubmitExpenseClaim();
   }
 
-  confirmReturnExpenseClaim(reason) {
-    this.hideReturnDialog();
-    return this.notifications.createEventAndSendNotifications({
-      notify: this.notify,
-      notificationDirective: this.notificationDirective,
-      expenseClaim: this.selected.expenseClaim,
-      members: this.members,
-      eventType: this.display.eventTypes.returned,
-      reason,
-    });
-  }
-
-  hideReturnDialog() {
-    // $("#return-dialog").modal("hide");
-  }
-
-  cancelReturnExpenseClaim() {
-    this.hideReturnDialog();
-  }
-
   paidExpenseClaim() {
-    // $("#paid-dialog").modal("show");
+    this.modalService.show(ExpensePaidModalComponent, this.createModalOptions());
   }
 
-  confirmPaidExpenseClaim() {
-    this.notifications.createEventAndSendNotifications({
-      notify: this.notify,
-      notificationDirective: this.notificationDirective,
-      expenseClaim: this.selected.expenseClaim,
-      members: this.members,
-      eventType: this.display.eventTypes.paid,
-    })
-      .then(() => this.hidePaidDialog());
-  }
-
-  hidePaidDialog() {
-    // $("#paid-dialog").modal("hide");
-  }
-
-  cancelPaidExpenseClaim() {
-    this.hidePaidDialog();
+  private createModalOptions(initialState?: any): ModalOptions {
+    return {
+      class: "modal-lg",
+      animated: false,
+      backdrop: "static",
+      ignoreBackdropClick: false,
+      keyboard: true,
+      focus: true,
+      show: true,
+      initialState: extend({
+        members: this.members,
+        expenseClaim: cloneDeep(this.selected.expenseClaim),
+        notificationDirective: this.notificationDirective
+      }, initialState)
+    };
   }
 
   resubmitExpenseClaim() {

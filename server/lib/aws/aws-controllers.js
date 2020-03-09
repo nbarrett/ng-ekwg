@@ -1,5 +1,6 @@
 "use strict";
 let config = require("../config/config.js");
+const {first, isObject, map} = require("lodash");
 let url = require("url");
 let debug = require("debug")(config.logNamespace("aws"));
 let AWS = require("aws-sdk");
@@ -20,22 +21,20 @@ function expiryTime() {
   return expiryDate;
 }
 
-exports.get = function (req, res, next) {
+exports.get = (req, res, next) => {
   debug("req.method:", req.method, "req.url:", req.url, "req.params", req.params);
   var remoteUrl = `${baseHostingUrl}/${req.params.bucket}${req.params[0]}`;
   debug("mapping Request from", req.method, req.url, "-> server path", remoteUrl);
-  http.get(remoteUrl, function (serverResponse) {
+  http.get(remoteUrl, serverResponse => {
     serverResponse.pipe(res);
-  }).on("error", function (e) {
+  }).on("error", e => {
     debug("Got error", e.message, "on s3 request", remoteUrl);
   });
 };
 
-exports.getConfig = function (req, res) {
-  return res.send(config.aws);
-};
+exports.getConfig = (req, res) => res.send(config.aws);
 
-exports.s3Policy = function (req, res) {
+exports.s3Policy = (req, res) => {
   debug("req.query.mimeType", req.query.mimeType, "req.query.objectKey", req.query.objectKey);
   var s3Policy = {
     "expiration": expiryTime(),
@@ -66,8 +65,8 @@ exports.s3Policy = function (req, res) {
   });
 };
 
-exports.listBuckets = function (req, res) {
-  s3.listBuckets(function (err, data) {
+exports.listBuckets = (req, res) => {
+  s3.listBuckets((err, data) => {
     debug("data.Buckets", data);
     if (!err) {
       return res.status(200).send(data);
@@ -77,11 +76,11 @@ exports.listBuckets = function (req, res) {
   });
 };
 
-exports.putObject = function (req, res) {
-  let uploadedFile = _.first(req.files);
+exports.putObject = (req, res) => {
+  let uploadedFile = first(req.files);
   debug("received file", uploadedFile.originalname, "into location", uploadedFile.path, "containing", uploadedFile.size, "bytes");
   return exports.putObjectDirect(req.params.key, req.params.file)
-    .then(function (response) {
+    .then(response => {
       if (response.error) {
         return res.status(500).send(response);
       } else {
@@ -90,9 +89,9 @@ exports.putObject = function (req, res) {
     });
 };
 
-exports.putObjectDirect = function (rootFolder, fileName, localFileName) {
+exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
   debug("configured with", s3Config);
-  let bucket = config.aws.bucket;
+  const bucket = config.aws.bucket;
 
   let objectKey = `${rootFolder}/${path.basename(fileName)}`;
   let data = fs.readFileSync(localFileName);
@@ -104,24 +103,24 @@ exports.putObjectDirect = function (rootFolder, fileName, localFileName) {
   };
   debug(`Saving file to ${bucket}/${objectKey}`);
   return s3.putObject(params).promise()
-    .then(function (data) {
+    .then(data => {
       let information = `Successfully uploaded file to ${bucket}/${objectKey}`;
       debug(information, "->", data);
       return ({responseData: data, information: information});
     })
-    .catch(function (error) {
+    .catch(error => {
       let errorMessage = `Failed to upload object to ${bucket}/${objectKey}`;
       debug(errorMessage, "->", error);
       return ({responseData: error, error: errorMessage});
     });
 };
 
-exports.getObject = function (req, res) {
+exports.getObject = (req, res) => {
   var key = req.params.key + "/" + req.params.file;
   var options = {Bucket: config.aws.bucket, Key: key};
   debug("getting object", options);
   s3.getObject(options).createReadStream().pipe(res)
-    .on("error", function (e) {
+    .on("error", e => {
       debug("Got error", e.message, "on s3 request", key);
     });
 };

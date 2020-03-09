@@ -82,9 +82,6 @@ angular.module('ekwgApp')
     fieldPopulated: fieldPopulated,
   }
 })
-  .factory('ExpenseClaimsService', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('expenseClaims');
-  })
   .factory('RamblersUploadAudit', function ($mongolabResourceHttp) {
     return $mongolabResourceHttp('ramblersUploadAudit');
   })
