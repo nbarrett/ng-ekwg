@@ -37,6 +37,7 @@
     "@angular/platform-browser-dynamic": "8.2.14",
     "@angular/router": "8.2.14",
     "@angular/upgrade": "8.2.14",
+    "@ng-select/ng-select": "3.7.3",
     "@types/lodash-es": "4.17.3",
     "@types/underscore.string": "0.0.38",
     "angular": "1.7.9",

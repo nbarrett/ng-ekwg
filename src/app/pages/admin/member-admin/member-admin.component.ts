@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import cloneDeep from "lodash-es/cloneDeep";
+import extend from "lodash-es/extend";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
 import { BsModalService, ModalOptions } from "ngx-bootstrap";
@@ -22,8 +24,8 @@ import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { LoginModalComponent } from "../../login/login-modal/login-modal.component";
 import { MemberAdminModalComponent } from "../member-admin-modal/member-admin-modal.component";
+import { SendEmailsModalComponent } from "../send-emails/send-emails-modal.component";
 
 @Component({
   selector: "app-member-admin",
@@ -231,8 +233,22 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   showSendEmailsDialog() {
-    // change this to MemberAdminSendEmailsComponent
-    this.modalService.show(LoginModalComponent);
+    this.modalService.show(SendEmailsModalComponent, this.createModalOptions());
+  }
+
+  private createModalOptions(initialState?: any): ModalOptions {
+    return {
+      class: "modal-lg",
+      animated: false,
+      backdrop: "static",
+      ignoreBackdropClick: false,
+      keyboard: true,
+      focus: true,
+      show: true,
+      initialState: extend({
+        members: this.members
+      }, initialState)
+    };
   }
 
   applySortTo(field, filterSource) {

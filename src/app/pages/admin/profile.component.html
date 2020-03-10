@@ -1,19 +1,19 @@
-<uib-accordion-group is-open="personalDetailsOpen">
-  <uib-accordion-heading>
-        <div class="accordion-title" ng-click="showArea('personal-details')">
+<accordion-group is-open="personalDetailsOpen">
+  <accordion-heading>
+        <div class="accordion-title" (click)="showArea('personal-details')">
             <img src="assets/images/ramblers/icon-members.png"
            alt="members area">
       Personal details <i class="pull-right fa fa-lg darkred"
-                          ng-class="{'fa fa-minus-circle': personalDetailsOpen, 'fa fa-plus-circle': !personalDetailsOpen}"></i>
+                          [ngClass]="{'fa fa-minus-circle': personalDetailsOpen, 'fa fa-plus-circle': !personalDetailsOpen}"></i>
     </div>
-  </uib-accordion-heading>
+  </accordion-heading>
   <form name="personalDetails" novalidate>
     <div class="thumbnail">
       <div class="row">
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-first-name">First Name</label>
-            <input ng-model="currentMember.firstName" type="text" class="form-control input-sm"
+            <input [(ngModel)]="currentMember.firstName" type="text" class="form-control input-sm"
                    id="prof-first-name"
                    placeholder="Enter First Name here">
           </div>
@@ -21,7 +21,7 @@
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-last-name">Last Name</label>
-            <input ng-model="currentMember.lastName" type="text" required class="form-control input-sm"
+            <input [(ngModel)]="currentMember.lastName" type="text" required class="form-control input-sm"
                    id="prof-last-name"
                    placeholder="Enter Last Name here">
           </div>
@@ -31,7 +31,7 @@
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-mobile-number">Mobile Number</label>
-            <input ng-model="currentMember.mobileNumber" type="text" required class="form-control input-sm"
+            <input [(ngModel)]="currentMember.mobileNumber" type="text" required class="form-control input-sm"
                    id="prof-mobile-number"
                    placeholder="Enter mobile number here">
           </div>
@@ -39,7 +39,7 @@
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-contact-email">Contact Email</label>
-            <input ng-model="currentMember.email" type="text" required class="form-control input-sm"
+            <input [(ngModel)]="currentMember.email" type="text" required class="form-control input-sm"
                    id="prof-contact-email"
                    placeholder="Enter contact email here">
           </div>
@@ -47,33 +47,33 @@
       </div>
       <div class="row">
         <div class="col col-sm-4">
-          <input type="submit" ng-disabled="false" value="Save Changes" ng-click="savePersonalDetails()"
+          <input type="submit" [disabled]="false" value="Save Changes" (click)="savePersonalDetails()"
                  class="button-form button-profile round">
-          <input type="submit" value="Undo Changes" ng-click="undoPersonalDetails()"
+          <input type="submit" value="Undo Changes" (click)="undoPersonalDetails()"
                  class="button-form button-profile round">
         </div>
         <div class="col col-sm-8">
-          <div ng-hide="!showAlertPersonalDetails" class="alert {{alertClass}}">{{alertMessage}}</div>
+          <div *ngIf=!"!showAlertPersonalDetails" class="alert {{alertClass}}">{{alertMessage}}</div>
         </div>
       </div>
     </div>
   </form>
-</uib-accordion-group>
-<uib-accordion-group is-open="loginDetailsOpen">
-  <uib-accordion-heading>
-        <div class="accordion-title" ng-click="showArea('login-details')">
+</accordion-group>
+<accordion-group is-open="loginDetailsOpen">
+  <accordion-heading>
+        <div class="accordion-title" (click)="showArea('login-details')">
             <img src="assets/images/ramblers/icon-members.png" alt="members area">
       Login details and password <i class="pull-right fa fa-lg darkred"
-                                    ng-class="{'fa fa-minus-circle': loginDetailsOpen, 'fa fa-plus-circle': !loginDetailsOpen}"></i>
+                                    [ngClass]="{'fa fa-minus-circle': loginDetailsOpen, 'fa fa-plus-circle': !loginDetailsOpen}"></i>
     </div>
-  </uib-accordion-heading>
+  </accordion-heading>
   <form name="loginDetails" novalidate>
     <div class="thumbnail">
       <div class="row">
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-login-user-name">Login User Name</label>
-            <input ng-model="enteredMemberCredentials.userName" type="text" class="form-control input-sm"
+            <input [(ngModel)]="enteredMemberCredentials.userName" type="text" class="form-control input-sm"
                    id="prof-login-user-name"
                    placeholder="Enter login user name here">
           </div>
@@ -83,14 +83,14 @@
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-new-password">New Password</label>
-            <input ng-model="enteredMemberCredentials.newPassword" type="password"
+            <input [(ngModel)]="enteredMemberCredentials.newPassword" type="password"
                    class="form-control input-sm" id="prof-new-password" placeholder="Enter new password">
           </div>
         </div>
         <div class="col col-sm-6">
           <div class="form-group">
             <label for="prof-new-password-confirm">Confirm New Password</label>
-            <input ng-model="enteredMemberCredentials.newPasswordConfirm" type="password"
+            <input [(ngModel)]="enteredMemberCredentials.newPasswordConfirm" type="password"
                    class="form-control input-sm" id="prof-new-password-confirm"
                    placeholder="Confirm new password">
           </div>
@@ -98,26 +98,26 @@
       </div>
       <div class="row">
         <div class="col col-sm-4">
-          <input type="submit" value="Save Changes" ng-click="saveLoginDetails()"
+          <input type="submit" value="Save Changes" (click)="saveLoginDetails()"
                  class="button-form button-profile round">
-          <input type="submit" value="Undo Changes" ng-click="undoLoginDetails()"
+          <input type="submit" value="Undo Changes" (click)="undoLoginDetails()"
                  class="button-form button-profile round">
         </div>
         <div class="col col-sm-8">
-          <div ng-hide="!showAlertLoginDetails" class="alert {{alertClass}}">{{alertMessage}}</div>
+          <div *ngIf=!"!showAlertLoginDetails" class="alert {{alertClass}}">{{alertMessage}}</div>
         </div>
       </div>
     </div>
   </form>
-</uib-accordion-group>
-<uib-accordion-group is-open="contactPreferencesOpen">
-  <uib-accordion-heading>
-        <div class="accordion-title" ng-click="showArea('contact-preferences')" §>
+</accordion-group>
+<accordion-group is-open="contactPreferencesOpen">
+  <accordion-heading>
+        <div class="accordion-title" (click)="showArea('contact-preferences')" §>
             <img src="assets/images/ramblers/icon-members.png" alt="members area">
       Contact preferences <i class="pull-right fa fa-lg darkred"
-                             ng-class="{'fa fa-minus-circle': contactPreferencesOpen, 'fa fa-plus-circle': !contactPreferencesOpen}"></i>
+                             [ngClass]="{'fa fa-minus-circle': contactPreferencesOpen, 'fa fa-plus-circle': !contactPreferencesOpen}"></i>
     </div>
-  </uib-accordion-heading>
+  </accordion-heading>
   <form name="contactPreferences" novalidate>
     <div class="thumbnail">
       <div class="row">
@@ -127,19 +127,19 @@
             <p>You can change your emailing preferences at any time using the subscription checkboxes
               below:</p>
 
-            <label ng-class="{'ui-state-active': currentMember.mailchimpLists.walks.subscribed}"
+            <label [ngClass]="{'ui-state-active': currentMember.mailchimpLists.walks.subscribed}"
                    for="prof-subscribe-walks-emails">Walks emails
-              <input ng-model="currentMember.mailchimpLists.walks.subscribed" type="checkbox"
+              <input [(ngModel)]="currentMember.mailchimpLists.walks.subscribed" type="checkbox"
                      id="prof-subscribe-walks-emails">
             </label>
-            <label ng-class="{'ui-state-active': currentMember.mailchimpLists.socialEvents.subscribed}"
+            <label [ngClass]="{'ui-state-active': currentMember.mailchimpLists.socialEvents.subscribed}"
                    for="prof-subscribe-social-events-emails">Social events emails
-              <input ng-model="currentMember.mailchimpLists.socialEvents.subscribed" type="checkbox"
+              <input [(ngModel)]="currentMember.mailchimpLists.socialEvents.subscribed" type="checkbox"
                      id="prof-subscribe-social-events-emails">
             </label>
-            <label ng-class="{'ui-state-active': currentMember.mailchimpLists.general.subscribed}"
+            <label [ngClass]="{'ui-state-active': currentMember.mailchimpLists.general.subscribed}"
                    for="prof-subscribe-general-emails">General emails
-              <input ng-model="currentMember.mailchimpLists.general.subscribed" type="checkbox"
+              <input [(ngModel)]="currentMember.mailchimpLists.general.subscribed" type="checkbox"
                      id="prof-subscribe-general-emails">
             </label>
 
@@ -153,15 +153,15 @@
       </div>
       <div class="row">
         <div class="col col-sm-4">
-          <input type="submit" ng-disabled="false" value="Save Changes" ng-click="saveContactPreferences()"
+          <input type="submit" [disabled]="false" value="Save Changes" (click)="saveContactPreferences()"
                  class="button-form button-profile round">
-          <input type="submit" value="Undo Changes" ng-click="undoContactPreferences()"
+          <input type="submit" value="Undo Changes" (click)="undoContactPreferences()"
                  class="button-form button-profile round">
         </div>
         <div class="col col-sm-8">
-          <div ng-hide="!showAlertContactPreferences" class="alert {{alertClass}}">{{alertMessage}}</div>
+          <div *ngIf=!"!showAlertContactPreferences" class="alert {{alertClass}}">{{alertMessage}}</div>
         </div>
       </div>
     </div>
   </form>
-</uib-accordion-group>
+</accordion-group>

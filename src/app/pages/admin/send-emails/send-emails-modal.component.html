@@ -1,0 +1,159 @@
+<div bsModal class="modal-lg">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal"
+              (click)="this.bsModalRef.hide()" aria-hidden="true"> &times;
+      </button>
+      <h4 class="modal-title">Send <em>Emails</em> to Members</h4>
+    </div>
+    <div class="modal-body">
+      <div class="thumbnail thumbnail-admin-edit">
+        <div class="row">
+          <div class="col-sm-9">
+            <div class="form-group">
+              <label for="contact-member">Email Type</label>
+              <select class="form-control input-sm"
+                      [disabled]="notifyTarget.busy"
+                      (ngModelChange)="populateMembers(true)"
+                      [(ngModel)]="display.emailType">
+                <option *ngFor="let emailType of display.emailTypes"
+                        [ngValue]="emailType"
+                        [textContent]="emailType.name"
+                        class="form-control" id="contact-member">
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-3 panel-toggle">
+            <a *ngIf="!display.showHelp"
+               (click)="showHelp(true, [tooltip1, tooltip2])" [href]="">
+              <i class="glyphicon glyphicon-question-sign markdown-preview-icon"></i> show help</a>
+            <a *ngIf="display.showHelp" (click)="showHelp(false,[tooltip1, tooltip2])" [href]="">
+              <i class="glyphicon glyphicon-question-sign"></i> hide help</a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="radio-selections">Pre-select
+                members</label>
+              <div id="radio-selections">
+                <div placement="top" triggers="" #tooltip1="bs-tooltip"
+                     [tooltip]="display.emailType.dateTooltip" class="row">
+                  <div *ngIf="display.recentMemberEmailsSelected()" class="col-sm-6">
+                    <input
+                      type="radio"
+                      [(ngModel)]="display.emailType.memberSelection"
+                      [disabled]="notifyTarget.busy"
+                      id="recently-added"
+                      value="recently-added"
+                      (click)="populateRecentlyAddedMembers(true)"
+                      title="Expiring before {{display.memberFilterDate | displayDate }}">
+
+                    <label (click)="populateExpiredMembers()"
+                           for="recently-added">Added in last
+                      {{display.emailType.monthsInPast}} month(s):
+                    </label>
+                  </div>
+                  <div *ngIf="display.expiryEmailsSelected()" class="col-sm-6">
+                    <input
+                      type="radio"
+                      [(ngModel)]="display.emailType.memberSelection"
+                      [disabled]="notifyTarget.busy"
+                      id="expired-members"
+                      value="expired-members"
+                      (click)="populateExpiredMembers(true)"
+                      title="Expiring before {{display.memberFilterDate | displayDate }}">
+
+                    <label (click)="populateExpiredMembers(true)"
+                           for="expired-members">
+                      {{display.emailType.monthsInPast}} months past expiry date:
+                    </label>
+                  </div>
+                  <div class="col-sm-6">
+                   <span class="input-group calendar-in-label">
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input [ngModel]="memberFilterDate"
+                               (ngModelChange)="onMemberFilterDateChange($event)"
+                               placeholder="enter date"
+                               #dp="bsDatepicker"
+                               bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
+                               containerClass: 'theme-ramblers'}"
+                               type="text" class="form-control input-sm"
+                               id="memberFilterDate"/>
+                        <div class="input-group-btn">
+                          <button class="btn btn-default btn-sm"
+                                  (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
+                            class="glyphicon glyphicon-calendar"></i></button>
+                        </div>
+                      </div>
+                    </div>
+                   </span>
+                  </div>
+                </div>
+                <input *ngIf="display.expiryEmailsSelected()" type="radio"
+                       [(ngModel)]="display.emailType.memberSelection"
+                       [disabled]="notifyTarget.busy"
+                       id="missing-bulk-load-members"
+                       value="missing-from-bulk-load"
+                       (click)="populateMembersMissingFromBulkLoad(true)"
+                       title="Not of last bulk load">
+                <label *ngIf="display.expiryEmailsSelected()"
+                       (click)="populateMembersMissingFromBulkLoad()"
+                       for="missing-bulk-load-members">Missing from last bulk load</label>
+
+                <input type="radio" [disabled]="notifyTarget.busy"
+                       [(ngModel)]="display.emailType.memberSelection"
+                       id="clear-members" value="Clear all"
+                       (click)="clearDisplayEmailMembers()"
+                       title="Clear current selection">
+                <label (click)="clearDisplayEmailMembers()" for="clear-members">Clear
+                  all and enter manually</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="top"
+                 [tooltip]="helpMembers()">
+              <label>{{display.passwordResetCaption()}}
+                <ng-select class="ramblers multi-select" [items]="display.selectableMembers"
+                           bindLabel="memberInformation"
+                           bindValue="id"
+                           [groupBy]="groupByFn"
+                           [groupValue]="groupValueFn"
+                           [multiple]="true"
+                           [closeOnSelect]="false"
+                           [(ngModel)]="display.emailMembers">
+                  <ng-template ng-optgroup-tmp let-item="item">
+                    <span style="vertical-align: middle;">{{item.name}} members </span>
+                    <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
+                  </ng-template>
+                </ng-select>
+                <br>
+                <small>Selected: {{display.emailMembers | json}}</small>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
+          class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+          {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" [disabled]="notifyTarget.busy" *ngIf="!sendEmailsDisabled()"
+             value="Send {{display.emailType.name}} email"
+             (click)="sendEmails()"
+             title="Send {{display.emailType.name}} email to the {{display.emailMembers.length}} member(s)"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+      <input type="submit" [disabled]="notifyTarget.busy" value="Cancel"
+             (click)="cancelSendEmails()" title="Close this dialog"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+    </div>
+  </div>
+</div>

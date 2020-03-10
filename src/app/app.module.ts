@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { ActivatedRoute } from "@angular/router";
 import { setUpLocationSync } from "@angular/router/upgrade";
 import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
+import { NgSelectModule } from "@ng-select/ng-select";
 import { Angular2CsvModule } from "angular2-csv";
 import { FileUploadModule } from "ng2-file-upload";
 import { ModalModule } from "ngx-bootstrap";
@@ -58,7 +59,6 @@ import { ExpenseNotificationCreatorSecondApprovalComponent } from "./notificatio
 import { ExpenseNotificationCreatorSubmittedComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-submitted.component";
 import { ExpenseNotificationTreasurerPaidComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-paid.component";
 import { ExpenseNotificationTreasurerSecondApprovalComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-second-approval.component";
-import { WalkNotificationDirective } from "./notifications/walks/walk-notification.directive";
 import { WalkNotificationChangesComponent } from "./notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "./notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationFooterComponent } from "./notifications/walks/templates/common/walk-notification-footer.component";
@@ -75,6 +75,7 @@ import { WalkNotificationLeaderDeletedComponent } from "./notifications/walks/te
 import { WalkNotificationLeaderRequestedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-requested.component";
 import { WalkNotificationLeaderUpdatedComponent } from "./notifications/walks/templates/leader/walk-notification-leader-updated.component";
 import { MeetupDescriptionComponent } from "./notifications/walks/templates/meetup/meetup-description.component";
+import { WalkNotificationDirective } from "./notifications/walks/walk-notification.directive";
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { PageComponent } from "./page/page.component";
@@ -87,6 +88,7 @@ import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expen
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
+import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
@@ -268,8 +270,10 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkValidationsListPipe,
     WalkVenueComponent,
     WalkViewComponent,
+    SendEmailsModalComponent,
   ],
   imports: [
+    NgSelectModule,
     FileUploadModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
@@ -340,6 +344,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   entryComponents: [
     AppComponent,
     ContactUsDirective,
+    SendEmailsModalComponent,
     ExpenseDetailModalComponent,
     ExpenseNotificationApproverFirstApprovalComponent,
     ExpenseNotificationApproverPaidComponent,
