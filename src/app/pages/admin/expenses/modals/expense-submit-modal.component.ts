@@ -19,8 +19,8 @@ export class ExpenseSubmitModalComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
 
-  private members: Member[];
-  private resubmit: boolean;
+  public members: Member[];
+  public resubmit: boolean;
   public expenseClaim: ExpenseClaim;
   private notificationDirective: ExpenseNotificationDirective;
   supplyBankDetailsChoice: string;

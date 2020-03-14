@@ -19,7 +19,7 @@ export class ExpenseReturnModalComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
 
-  private members: Member[];
+  public members: Member[];
   public expenseClaim: ExpenseClaim;
   private notificationDirective: ExpenseNotificationDirective;
   public returnReason: string;

@@ -26,6 +26,27 @@ describe("DateUtilsService", () => {
 
   });
 
+  describe("asDateValue", () => {
+
+    it("should return DateValue instance when passed a string and a date format", () => {
+      const dateUtils: DateUtilsService = TestBed.get(DateUtilsService);
+      const dateValue = dateUtils.asDateValue(1402614000000);
+      expect(dateValue.value).toEqual(1402614000000);
+      expect(dateValue.date.getDate()).toEqual(13);
+      expect(dateValue.date.getMonth()).toEqual(5);
+      expect(dateValue.date.getFullYear()).toEqual(2014);
+    });
+
+    it("should support a Date as an argument", () => {
+      const dateUtils: DateUtilsService = TestBed.get(DateUtilsService);
+      const dateValue = dateUtils.asDateValue(new Date(2014, 5, 13));
+      expect(dateValue.value).toEqual(1402614000000);
+      expect(dateValue.date.getDate()).toEqual(13);
+      expect(dateValue.date.getMonth()).toEqual(5);
+      expect(dateValue.date.getFullYear()).toEqual(2014);
+    });
+  });
+
   describe("nowAsValue", () => {
     it("should return a millisecond timestamp value as of now", () => {
       const dateUtils: DateUtilsService = TestBed.get(DateUtilsService);
@@ -61,7 +82,8 @@ describe("DateUtilsService", () => {
         .toEqual("Fri 13 June 2014, 11:07:44 pm");
       expect(dateUtils.asString(1402614000000, undefined, "ddd DD MMMM YYYY, h:mm:ss a"))
         .toEqual("Fri 13 June 2014, 12:00:00 am");
-      expect(dateUtils.asString(1402614000000, undefined, "ddd DD MMMM YYYY, h:mm:ss a")).toEqual("Fri 13 June 2014, 12:00:00 am");
+      expect(dateUtils.asString(1402614000000, undefined, "ddd DD MMMM YYYY, h:mm:ss a"))
+        .toEqual("Fri 13 June 2014, 12:00:00 am");
     });
 
     it("should return string version of date in format 2 given a string, input format 1 and output format 2", () => {

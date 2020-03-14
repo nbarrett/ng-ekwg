@@ -64,7 +64,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     expenseItem: ExpenseItem,
     filter: ExpenseFilter,
     showOnlyMine: boolean,
-    saveInProgress: boolean
   };
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
@@ -151,7 +150,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         expenseClaim: undefined,
         expenseItem: undefined,
         showOnlyMine: !this.display.allowAdminFunctions(),
-        saveInProgress: false,
         filter: this.filters[!!this.expenseId ? 0 : 1]
       };
       this.logger.info("ngOnInit - expense-id:", this.expenseId, "this.filters:", this.filters, "this.selected:", this.selected);

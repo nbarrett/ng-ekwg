@@ -462,10 +462,6 @@ h3 small {
   width: 100%;
 }
 
-.multi-select {
-  font-size: 12px;
-}
-
 .ui-select-multiple.ui-select-bootstrap .ui-select-match .close {
   color: #A8B400;
 }
@@ -621,7 +617,9 @@ img {
 }
 
 .calendar-in-label {
-  display: inline-flex;
+  /*display: inline-flex;*/
+  font-weight: normal;
+  padding-left: 15px;
 }
 
 .panel-toggle {

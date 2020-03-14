@@ -122,14 +122,14 @@
         </div>
 
         <div *ngIf="!expenseItem.expenseType.travel">
-          <input type="submit" [disabled]="notifyTarget.busy"
+          <input type="submit" [disabled]="notifyTarget.busy || !editable"
                  value="Browse for receipt"
                  (click)="browseToReceipt()"
                  class="button-form mb-10 w-100"
-                 [ngClass]="{'disabled-button-form': notifyTarget.busy }">
-          <input *ngIf="expenseItem.receipt" [disabled]="notifyTarget.busy" type="submit"
+                 [ngClass]="{'disabled-button-form': notifyTarget.busy || !editable  }">
+          <input *ngIf="expenseItem.receipt" [disabled]="notifyTarget.busy || !editable" type="submit"
                  value="Remove receipt" (click)="removeReceipt()" title="Remove Receipt"
-                 [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
+                 [ngClass]="notifyTarget.busy || !editable ? 'disabled-button-form': 'button-form'">
           <span class="hidden-input">
             <input id="browse-to-file" name="receipt"
                    type="file" value="Upload"
@@ -151,15 +151,10 @@
             <a target="_blank" id="receipt" [href]="display.receiptUrl(expenseItem)"
                [textContent]="display.receiptTitle(expenseItem)"></a>
             <input *ngIf="display.allowAddExpenseItem(expenseClaim)" [(ngModel)]="expenseItem.receipt.title"
+                   [disabled]="notifyTarget.busy || !editable"
                    type="text"
                    class="form-control input-sm" id="receiptTitle"
                    placeholder="Enter a title for this receipt">
-          </div>
-          <div *ngIf="display.allowAddExpenseItem(expenseClaim)" class="form-group">
-            <span class="hidden-input">
-              <input id="hidden-input" type="file" value="Replace"
-                     (select)="onFileSelect($event)" title="Replace this image">
-            </span>
           </div>
         </div>
       </div>

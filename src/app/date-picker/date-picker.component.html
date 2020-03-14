@@ -1,0 +1,14 @@
+<div class="input-group">
+  <input [ngModel]="dateValue.date"
+         (ngModelChange)="onModelChange($event)"
+         placeholder="enter date"
+         #dp="bsDatepicker"
+         bsDatepicker [bsConfig]="{  isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
+                               containerClass: 'theme-ramblers'}"
+         type="text" class="form-control input-sm"/>
+  <div class="input-group-btn">
+    <button class="btn btn-default btn-sm"
+            (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
+      class="glyphicon glyphicon-calendar"></i></button>
+  </div>
+</div>

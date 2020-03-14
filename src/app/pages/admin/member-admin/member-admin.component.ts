@@ -44,7 +44,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   public memberFilter: TableFilter;
 
   private memberFilterUploaded: any;
-  public listsUpdating: boolean;
   filters: any;
   private subscription: Subscription;
 

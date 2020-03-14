@@ -2,6 +2,7 @@ import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
 import * as moment from "moment-timezone";
 import { NgxLoggerLevel } from "ngx-logger";
+import { DateValue } from "../models/date.model";
 import { Walk } from "../models/walk.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NumberUtilsService } from "./number-utils.service";
@@ -69,6 +70,14 @@ export class DateUtilsService {
 
   displayDay(dateValue): string {
     return this.asString(dateValue, undefined, this.formats.displayDay);
+  }
+
+  asDateValue(dateValue?: any, inputFormat?: string): DateValue {
+    const moment = this.asMoment(dateValue, inputFormat);
+    return {
+      value: moment.valueOf(),
+      date: moment.toDate()
+    };
   }
 
   asValueNoTime(dateValue?: any, inputFormat?: string): number {

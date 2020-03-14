@@ -164,6 +164,7 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
+import { DatePickerComponent } from "./date-picker/date-picker.component";
 
 @NgModule({
   declarations: [
@@ -271,6 +272,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkVenueComponent,
     WalkViewComponent,
     SendEmailsModalComponent,
+    DatePickerComponent,
   ],
   imports: [
     NgSelectModule,

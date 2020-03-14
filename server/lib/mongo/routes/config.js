@@ -6,6 +6,7 @@ const controller = require("./../controllers/crud-controller").create(config);
 const router = express.Router();
 
 router.post("", authConfig.authenticate(), controller.create);
+router.put("/:id", authConfig.authenticate(), controller.update);
 router.get("", controller.findByConditions);
 router.delete("/:id", authConfig.authenticate(), controller.delete);
 

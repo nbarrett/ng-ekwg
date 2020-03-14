@@ -1,10 +1,12 @@
 import { Component, Inject, OnInit } from "@angular/core";
+import { NgSelectComponent } from "@ng-select/ng-select";
 import { find, map } from "lodash-es";
 import { BsModalRef, BsModalService, TooltipDirective } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { Member } from "../../../models/member.model";
+import { DateValue } from "../../../models/date.model";
+import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { EmailSubscriptionService } from "../../../services/email-subscription.service";
@@ -13,11 +15,6 @@ import { MailchimpConfigService } from "../../../services/mailchimp-config.servi
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
-
-const CAMPAIGN_TYPE_WELCOME = "welcome";
-const CAMPAIGN_TYPE_PASSWORD_RESET = "passwordReset";
-const CAMPAIGN_TYPE_EXPIRED_MEMBERS_WARNING = "expiredMembersWarning";
-const CAMPAIGN_TYPE_EXPIRED_MEMBERS = "expiredMembers";
 
 @Component({
   selector: "app-member-admin-send-emails-modal",
@@ -30,9 +27,13 @@ export class SendEmailsModalComponent implements OnInit {
   private logger: Logger;
   public display: any = {};
   members: Member[] = [];
-  today = this.dateUtils.momentNowNoTime().valueOf();
+  public selectableMembers: MemberFilterSelection[] = [];
+  public selectedMemberIds: string[] = [];
+  memberSelectorName = "recently-added";
   private alertTypeResetPassword: boolean;
-  memberFilterDate: Date;
+  memberFilterDate: DateValue;
+  public emailTypes: MemberEmailType[] = [];
+  public emailType: MemberEmailType;
 
   constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
               @Inject("MailchimpCampaignService") private mailchimpCampaignService,
@@ -50,103 +51,115 @@ export class SendEmailsModalComponent implements OnInit {
     this.logger = loggerFactory.createLogger(SendEmailsModalComponent, NgxLoggerLevel.DEBUG);
   }
 
-  selectedAccounts = ["Michael"];
-  accounts = [
-    {name: "Jill", email: "jill@email.com", age: 15, country: undefined, child: {state: "Active"}},
-    {name: "Henry", email: "henry@email.com", age: 10, country: undefined, child: {state: "Active"}},
-    {name: "Meg", email: "meg@email.com", age: 7, country: null, child: {state: "Active"}},
-    {name: "Adam", email: "adam@email.com", age: 12, country: "United States", child: {state: "Active"}},
-    {name: "Homer", email: "homer@email.com", age: 47, country: "", child: {state: "Active"}},
-    {name: "Samantha", email: "samantha@email.com", age: 30, country: "United States", child: {state: "Active"}},
-    {name: "Amalie", email: "amalie@email.com", age: 12, country: "Argentina", child: {state: "Active"}},
-    {name: "Estefanía", email: "estefania@email.com", age: 21, country: "Argentina", child: {state: "Active"}},
-    {name: "Adrian", email: "adrian@email.com", age: 21, country: "Ecuador", child: {state: "Active"}},
-    {name: "Wladimir", email: "wladimir@email.com", age: 30, country: "Ecuador", child: {state: "Inactive"}},
-    {name: "Natasha", email: "natasha@email.com", age: 54, country: "Ecuador", child: {state: "Inactive"}},
-    {name: "Nicole", email: "nicole@email.com", age: 43, country: "Colombia", child: {state: "Inactive"}},
-    {name: "Michael", email: "michael@email.com", age: 15, country: "Colombia", child: {state: "Inactive"}},
-    {name: "Nicolás", email: "nicole@email.com", age: 43, country: "Colombia", child: {state: "Inactive"}}
-  ];
+  selectClick(select: NgSelectComponent) {
+    this.logger.info("selectClick:select.isOpen", select.isOpen);
+  }
 
-  groupByFn1 = (item) => item.child.state;
-  groupByFn = (item) => item.memberGrouping;
+  onChange(event?: any) {
+    this.notify.warning({
+      title: "Member selection",
+      message: `${this.selectedMemberIds.length} members manually selected`
+    });
+  }
 
-  groupValueFn = (_: string, children: any[]) => ({name: children[0].memberGrouping, total: children.length});
+  groupBy(member: MemberFilterSelection) {
+    return member.memberGrouping;
+  }
+
+  groupValue(_: string, children: any[]) {
+    return ({name: children[0].memberGrouping, total: children.length});
+  }
+
+  emailTypeChanged(memberEmailType: MemberEmailType) {
+    this.populateMembers(memberEmailType.memberSelectorName);
+  }
+
+  memberSelectorNamed(name: string): MemberSelector {
+    return this.memberSelectors().find(item => item.name === name);
+  }
+
+  memberSelectors(): MemberSelector[] {
+    return [
+      {
+        name: "recently-added",
+        memberMapper: (member) => this.renderCreatedInformation(member),
+        memberFilter: (member) => this.recentlyAddedMembers(member)
+      },
+      {
+        name: "expired-members",
+        memberMapper: (member) => this.renderExpiryInformation(member),
+        memberFilter: (member) => this.expiredMembers(member)
+      },
+      {
+        name: "missing-from-bulk-load-members",
+        memberMapper: (member) => this.renderExpiryInformation(member),
+        memberFilter: (member) => this.missingFromBulkLoad(member)
+      }];
+  }
 
   ngOnInit() {
     this.logger.debug("constructed with members", this.members.length, "members");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.display = {
-      showHelp: false,
-      selectableMembers: [],
-      emailMembers: [],
-      saveInProgress: false,
-      monthsInPast: 1,
-      memberFilterDate: undefined,
-      emailType: {name: "(loading)"},
-      passwordResetCaption: () => "About to send a " + this.display.emailType.name + " to " + this.display.emailMembers.length + " member" + (this.display.emailMembers.length === 1 ? "" : "s"),
-      expiryEmailsSelected: () => this.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS_WARNING || this.display.emailType.type === CAMPAIGN_TYPE_EXPIRED_MEMBERS,
-      recentMemberEmailsSelected: () => this.display.emailType.type === CAMPAIGN_TYPE_WELCOME || this.display.emailType.type === CAMPAIGN_TYPE_PASSWORD_RESET
-    };
-
+    this.memberFilterDate = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf());
     this.mailchimpConfig.getConfig()
       .then(config => {
-        this.display.emailTypes = [
+        this.emailTypes = [
           {
             preSend: () => this.addPasswordResetIdToMembers(),
-            type: CAMPAIGN_TYPE_WELCOME,
             name: config.mailchimp.campaigns.welcome.name,
             monthsInPast: config.mailchimp.campaigns.welcome.monthsInPast,
             campaignId: config.mailchimp.campaigns.welcome.campaignId,
             segmentId: config.mailchimp.segments.general.welcomeSegmentId,
-            memberSelection: "recently-added",
-            postSend: () => this.noAction(),
-            dateTooltip: "All members created in the last " + config.mailchimp.campaigns.welcome.monthsInPast + " month are displayed as a default, as these are most likely to need a welcome email sent"
+            memberSelectorName: "recently-added",
+            label: `Added in last ${config.mailchimp.campaigns.welcome.monthsInPast} month(s)`,
+            dateTooltip: `All members created in the last ${config.mailchimp.campaigns.welcome.monthsInPast} month are displayed as a default, as these are most likely to need a welcome email sent`
           },
           {
             preSend: () => this.addPasswordResetIdToMembers(),
-            type: CAMPAIGN_TYPE_PASSWORD_RESET,
             name: config.mailchimp.campaigns.passwordReset.name,
             monthsInPast: config.mailchimp.campaigns.passwordReset.monthsInPast,
             campaignId: config.mailchimp.campaigns.passwordReset.campaignId,
             segmentId: config.mailchimp.segments.general.passwordResetSegmentId,
-            memberSelection: "recently-added",
-            postSend: () => this.noAction(),
-            dateTooltip: "All members created in the last " + config.mailchimp.campaigns.passwordReset.monthsInPast + " month are displayed as a default"
+            memberSelectorName: "recently-added",
+            dateTooltip: `All members created in the last ${config.mailchimp.campaigns.passwordReset.monthsInPast} month are displayed as a default`
           },
           {
             preSend: () => this.includeInNextMailchimpListUpdate(),
-            type: CAMPAIGN_TYPE_EXPIRED_MEMBERS_WARNING,
             name: config.mailchimp.campaigns.expiredMembersWarning.name,
             monthsInPast: config.mailchimp.campaigns.expiredMembersWarning.monthsInPast,
             campaignId: config.mailchimp.campaigns.expiredMembersWarning.campaignId,
             segmentId: config.mailchimp.segments.general.expiredMembersWarningSegmentId,
-            memberSelection: "expired-members",
-            postSend: () => this.noAction(),
-            dateTooltip: "Using the expiry date field, you can choose which members will automatically be included. " +
-              "A date " + config.mailchimp.campaigns.expiredMembersWarning.monthsInPast + " months in the past has been pre-selected, to avoid including members whose membership renewal is still progress"
+            memberSelectorName: "expired-members",
+            dateTooltip: `Using the expiry date field, you can choose which members will automatically be included. A date ${config.mailchimp.campaigns.expiredMembersWarning.monthsInPast} months in the past has been pre-selected, to avoid including members whose membership renewal is still progress`
           },
           {
             preSend: () => this.includeInNextMailchimpListUpdate(),
-            type: CAMPAIGN_TYPE_EXPIRED_MEMBERS,
             name: config.mailchimp.campaigns.expiredMembers.name,
             monthsInPast: config.mailchimp.campaigns.expiredMembers.monthsInPast,
             campaignId: config.mailchimp.campaigns.expiredMembers.campaignId,
             segmentId: config.mailchimp.segments.general.expiredMembersSegmentId,
-            memberSelection: "expired-members",
+            memberSelectorName: "expired-members",
             postSend: () => this.removeExpiredMembersFromGroup(),
             dateTooltip: "Using the expiry date field, you can choose which members will automatically be included. " +
               "A date 3 months in the past has been pre-selected, to avoid including members whose membership renewal is still progress"
           }
         ];
-        this.display.emailType = this.display.emailTypes[0];
-        this.populateMembers(true);
-        this.populateSelectableMembers();
+        this.emailType = this.emailTypes[0];
+        this.populateSelectedMembers();
+        this.populateMembers("recently-added");
+        this.display = {
+          showHelp: false,
+          monthsInPast: 1,
+        };
       });
   }
 
+  passwordResetCaption() {
+    return `About to send a ${this.emailType.name} to ${this.selectedMemberIds.length} member${this.selectedMemberIds.length === 1 ? "" : "s"}`;
+  }
+
   helpMembers() {
-    return `Click below and select from the dropdown the members that you want to send a ${this.display.emailType.name} email to. You can type in  part of their name to find them more quickly. Repeat this step as many times as required to build up an list of members`;
+    return `Click below and select from the dropdown the members that you want to send a ${this.emailType.name} email to. You can type in  part of their name to find them more quickly. Repeat this step as many times as required to build up an list of members`;
   }
 
   showHelp(show: boolean, tooltips: TooltipDirective[]) {
@@ -159,159 +172,115 @@ export class SendEmailsModalComponent implements OnInit {
     this.bsModalRef.hide();
   }
 
-  populateSelectableMembers() {
-    this.display.selectableMembers = chain(this.members)
+  populateSelectedMembers(): void {
+    const memberSelector = this.memberSelectorNamed(this.memberSelectorName);
+    this.selectableMembers = this.members
       .filter(member => this.emailSubscriptionService.includeMemberInEmailList("general", member))
-      .map(member => this.renderSelectableMembers(member))
-      .value();
-    this.logger.debug("populateSelectableMembers:found", this.display.selectableMembers.length, "members");
+      .map(member => memberSelector.memberMapper(member));
+    this.selectedMemberIds = this.selectableMembers
+      .filter(member => memberSelector.memberFilter(member.member))
+      .map(member => member.member.id);
+    this.logger.debug("populateSelectableMembers:based on", this.memberSelectorName, "filtered", this.members.length, "members -> ", this.selectableMembers.length, "email enabled members ->", this.selectedMemberIds.length, "selected members");
+    this.notify.warning({
+      title: "Member selection",
+      message: `${this.selectedMemberIds.length} members were added to selection based on ${memberSelector.name}`
+    });
   }
 
   calculateMemberFilterDate() {
-    const dateFilter = this.dateUtils.momentNowNoTime().subtract(this.display && this.display.emailType.monthsInPast, "months");
-    this.memberFilterDate = dateFilter.toDate();
-    this.display.memberFilterDate = dateFilter.valueOf();
-    this.logger.info("calculateMemberFilterDate:", this.display.memberFilterDate, this.memberFilterDate);
+    const dateFilter = this.dateUtils.momentNowNoTime().subtract(this.display && this.emailType.monthsInPast, "months");
+    this.memberFilterDate = this.dateUtils.asDateValue(dateFilter);
+    this.logger.info("calculateMemberFilterDate:", this.memberFilterDate);
   }
 
-  clearDisplayEmailMembers() {
-    this.display.emailMembers = [];
+  clearSelectedMembers() {
+    this.selectedMemberIds = [];
     this.notify.warning({
       title: "Member selection",
       message: "current member selection was cleared"
     });
   }
 
-  renderSelectableMembers(member) {
-    return this.display.expiryEmailsSelected() ? this.renderExpiryInformation(member) : this.renderCreatedInformation(member);
-  }
-
-  renderExpiryInformation(member) {
-    const expiredActive = member.membershipExpiryDate < this.today ? "expired" : "active";
+  renderExpiryInformation(member): MemberFilterSelection {
+    const today = this.dateUtils.momentNowNoTime().valueOf();
+    const expiredActive = member.membershipExpiryDate < today ? "expired" : "active";
     const memberGrouping = member.receivedInLastBulkLoad ? expiredActive : "missing from last bulk load";
-    const datePrefix = memberGrouping === "expired" ? ": " : ", " + (member.membershipExpiryDate < this.today ? "expired" : "expiry") + ": ";
-    const memberInformation = this.fullNameWithAliasPipe.transform(member) + " (" + memberGrouping + datePrefix + (this.dateUtils.displayDate(member.membershipExpiryDate) || "not known") + ")";
-    return {id: member.id, memberInformation, memberGrouping};
+    const datePrefix = memberGrouping === "expired" ? ": " : ", " + (member.membershipExpiryDate < today ? "expired" : "expiry") + ": ";
+    const memberInformation = `${this.fullNameWithAliasPipe.transform(member)} (${memberGrouping}${datePrefix}${this.dateUtils.displayDate(member.membershipExpiryDate) || "not known"})`;
+    return {member, memberInformation, memberGrouping};
   }
 
-  renderCreatedInformation(member) {
-    const memberGrouping = member.membershipExpiryDate < this.today ? "expired" : "active";
-    const memberInformation = this.fullNameWithAliasPipe.transform(member) + " (created " + (this.dateUtils.displayDate(member.createdDate) || "not known") + ")";
-    return {id: member.id, memberInformation, memberGrouping};
+  renderCreatedInformation(member): MemberFilterSelection {
+    const memberGrouping = member.membershipExpiryDate < this.dateUtils.momentNowNoTime().valueOf() ? "expired" : "active";
+    const memberInformation = `${this.fullNameWithAliasPipe.transform(member)} (created ${this.dateUtils.displayDate(member.createdDate) || "not known"})`;
+    return {member, memberInformation, memberGrouping};
   }
 
-  memberGrouping = member => member.memberGrouping;
-
-  onMemberFilterDateChange(date: Date) {
-    this.logger.debug("date", date);
-    this.display.memberFilterDate = this.dateUtils.asValueNoTime(date);
+  memberGrouping(member: MemberFilterSelection) {
+    return member.memberGrouping;
   }
 
-  populateMembersBasedOnFilter(filter) {
-    this.logger.debug("populateExpiredMembers: display.emailType ->", this.display.emailType);
-    this.notify.setBusy();
-    this.notify.warning({
-      title: "Automatically adding expired members",
-      message: " - please wait for list to be populated"
-    });
-
-    this.display.memberFilterDate = this.dateUtils.convertDateField(this.display.memberFilterDate);
-
-    this.display.emailMembers = chain(this.display.selectableMembers)
-      .filter(filter);
-    this.notify.warning({
-      title: "Members added to email selection",
-      message: "automatically added " + this.display.emailMembers.length + " members"
-    });
-    this.notify.clearBusy();
+  onMemberFilterDateChange(dateValue: DateValue) {
+    this.memberFilterDate = dateValue;
+    this.logger.debug("this.memberFilterDate", this.memberFilterDate);
   }
 
-  populateMembers(recalcMemberFilterDate) {
-    this.logger.debug("this.display.memberSelection", this.display.emailType.memberSelection);
-    this.populateSelectableMembers();
-    switch (this.display.emailType.memberSelection) {
-      case "recently-added":
-        this.populateRecentlyAddedMembers(recalcMemberFilterDate);
-        break;
-      case "expired-members":
-        this.populateExpiredMembers(recalcMemberFilterDate);
-        break;
-    }
+  populateMembers(value: string) {
+    this.memberSelectorName = value;
+    this.logger.debug("populateMembers:memberSelectorName:", this.memberSelectorName, "value:", value);
+    this.calculateMemberFilterDate();
+    this.populateSelectedMembers();
   }
 
-  populateRecentlyAddedMembers(recalcMemberFilterDate) {
-    if (recalcMemberFilterDate) {
-      this.calculateMemberFilterDate();
-    }
-    this.populateMembersBasedOnFilter(member => {
-      this.logger.debug("populateMembersBasedOnFilter:member", member);
-      return member.groupMember && (member.createdDate >= this.display.memberFilterDate);
-    });
+  recentlyAddedMembers(member: Member): boolean {
+    const selected = !!(member.groupMember && (member.createdDate >= this.memberFilterDate.value));
+    this.logger.off("populateMembersBasedOnFilter:selected", selected, "member:", member);
+    return selected;
   }
 
-  populateExpiredMembers(recalcMemberFilterDate?: any) {
-    this.logger.debug("populateExpiredMembers:recalcMemberFilterDate", recalcMemberFilterDate);
-    if (recalcMemberFilterDate) {
-      this.calculateMemberFilterDate();
-    }
-    this.populateMembersBasedOnFilter(member => {
-      const expirationExceeded = member.membershipExpiryDate < this.display.memberFilterDate;
-      this.logger.debug("populateMembersBasedOnFilter:expirationExceeded", expirationExceeded, member);
-      return member.groupMember && member.membershipExpiryDate && expirationExceeded;
-    });
+  expiredMembers(member: Member): boolean {
+    const expirationExceeded = member.membershipExpiryDate < this.memberFilterDate.value;
+    this.logger.off("populateMembersBasedOnFilter:expirationExceeded", expirationExceeded, member);
+    return member.groupMember && member.membershipExpiryDate && expirationExceeded;
   }
 
-  populateMembersMissingFromBulkLoad(recalcMemberFilterDate?: any) {
-    if (recalcMemberFilterDate) {
-      this.calculateMemberFilterDate();
-    }
-    this.populateMembersBasedOnFilter(member => {
-      this.logger.debug("populateMembersBasedOnFilter:member", member);
-      return member.groupMember && member.membershipExpiryDate && !member.receivedInLastBulkLoad;
-    });
+  missingFromBulkLoad(member: Member): boolean {
+    return member.groupMember && member.membershipExpiryDate && !member.receivedInLastBulkLoad;
   }
 
-  displayEmailMembersToMembers() {
-    return chain(this.display.emailMembers)
-      .map(memberId => find(this.members, member => this.memberService.extractMemberId(member) === memberId.id))
-      .filter(member => member && member.email).value();
+  selectedMembersWithEmails() {
+    return this.selectedMemberIds.map(memberId => this.members.find(member => member.id === memberId))
+      .filter(member => member && member.email);
   }
 
   addPasswordResetIdToMembers() {
-
     const saveMemberPromises = [];
-
-    map(this.displayEmailMembersToMembers(), member => {
+    map(this.selectedMembersWithEmails(), member => {
       this.memberService.setPasswordResetId(member);
       this.emailSubscriptionService.resetUpdateStatusForMember(member);
       saveMemberPromises.push(this.memberService.createOrUpdate(member));
     });
 
-    return Promise.all(saveMemberPromises).then(() => this.notify.success("Password reset prepared for " + saveMemberPromises.length + " member(s)"));
+    return Promise.all(saveMemberPromises).then(() => this.notifySuccess(`Password reset prepared for ${saveMemberPromises.length} member(s)`));
 
   }
 
   includeInNextMailchimpListUpdate() {
 
-    const saveMemberPromises = [];
-
-    map(this.displayEmailMembersToMembers(), member => {
+    const saveMemberPromises = this.selectedMembersWithEmails().map(member => {
       this.emailSubscriptionService.resetUpdateStatusForMember(member);
-      saveMemberPromises.push(this.memberService.createOrUpdate(member));
+      return this.memberService.createOrUpdate(member);
     });
 
-    return Promise.all(saveMemberPromises).then(() => this.notify.success("Member expiration prepared for " + saveMemberPromises.length + " member(s)"));
+    return Promise.all(saveMemberPromises).then(() => this.notifySuccess(`Member expiration prepared for ${saveMemberPromises.length} member(s)`));
 
-  }
-
-  noAction() {
   }
 
   removeExpiredMembersFromGroup() {
-    this.logger.debug("removing ", this.display.emailMembers.length, "members from group");
+    this.logger.debug("removing ", this.selectedMemberIds.length, "members from group");
     const saveMemberPromises = [];
 
-    chain(this.display.emailMembers)
+    chain(this.selectedMemberIds)
       .map(memberId => find(this.members, member => this.memberService.extractMemberId(member) === memberId.id)).map(member => {
       member.groupMember = false;
       this.emailSubscriptionService.resetUpdateStatusForMember(member);
@@ -319,7 +288,7 @@ export class SendEmailsModalComponent implements OnInit {
     });
 
     return Promise.all(saveMemberPromises)
-      .then(() => this.notify.success("EKWG group membership removed for " + saveMemberPromises.length + " member(s)"));
+      .then(() => this.notifySuccess(`EKWG group membership has now been removed for ${saveMemberPromises.length} member(s)`));
   }
 
   cancelSendEmails() {
@@ -327,20 +296,20 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   sendEmailsDisabled() {
-    return this.display.emailMembers.length === 0;
+    return this.selectedMemberIds.length === 0;
   }
 
   sendEmails() {
     this.alertTypeResetPassword = true;
-    this.display.saveInProgress = true;
     this.display.duplicate = false;
-    Promise.resolve(this.notify.success("Preparing to email " + this.display.emailMembers.length + " member" + (this.display.emailMembers.length === 1 ? "" : "s"), true))
-      .then(() => this.display.emailType.preSend())
+    this.notify.setBusy();
+    Promise.resolve(this.notifySuccess(`Preparing to email ${this.selectedMemberIds.length} member${this.selectedMemberIds.length === 1 ? "" : "s"}`))
+      .then(() => this.invokeIfDefined(this.emailType.preSend))
       .then(() => this.updateGeneralList())
       .then(() => this.createOrSaveMailchimpSegment())
-      .then((segmentResponse) => this.saveSegmentDataToMailchimpConfig(segmentResponse))
-      .then((segmentId) => this.sendEmailCampaign(segmentId))
-      .then(() => this.display.emailType.postSend())
+      .then(segmentResponse => this.saveSegmentDataToMailchimpConfig(segmentResponse))
+      .then(segmentId => this.sendEmailCampaign(segmentId))
+      .then(() => this.invokeIfDefined(this.emailType.postSend))
       .then(() => this.notify.clearBusy())
       .then(() => this.cancel())
       .then(() => this.resetSendFlags())
@@ -359,14 +328,14 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   createOrSaveMailchimpSegment() {
-    return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.display.emailType.segmentId}, this.display.emailMembers, this.display.emailType.name, this.members);
+    return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.emailType.segmentId}, this.selectedMemberIds, this.emailType.name, this.members);
   }
 
   saveSegmentDataToMailchimpConfig(segmentResponse) {
     this.logger.debug("saveSegmentDataToMailchimpConfig:segmentResponse", segmentResponse);
     return this.mailchimpConfig.getConfig()
       .then(config => {
-        config.mailchimp.segments.general[this.display.emailType.type + "SegmentId"] = segmentResponse.segment.id;
+        config.mailchimp.segments.general[`${this.emailType.name}SegmentId`] = segmentResponse.segment.id;
         return this.mailchimpConfig.saveConfig(config)
           .then(() => {
             this.logger.debug("saveSegmentDataToMailchimpConfig:returning segment id", segmentResponse.segment.id);
@@ -376,22 +345,16 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   sendEmailCampaign(segmentId) {
-    const members = this.display.emailMembers.length + " member(s)";
-    this.notify.success("Sending " + this.display.emailType.name + " email to " + members);
-    this.logger.debug("about to sendEmailCampaign:", this.display.emailType.type, "campaign Id", this.display.emailType.campaignId, "segmentId", segmentId, "campaignName", this.display.emailType.name);
+    const members = `${this.selectedMemberIds.length} member(s)`;
+    this.notifySuccess(`Sending ${this.emailType.name} email to ${members}`);
+    this.logger.debug("about to sendEmailCampaign:", this.emailType.name, "campaign Id", this.emailType.campaignId, "segmentId", segmentId, "campaignName", this.emailType.name);
     return this.mailchimpCampaignService.replicateAndSendWithOptions({
-      campaignId: this.display.emailType.campaignId,
-      campaignName: this.display.emailType.name,
+      campaignId: this.emailType.campaignId,
+      campaignName: this.emailType.name,
       segmentId
     }).then(() => {
-      this.notify.success("Sending of " + this.display.emailType.name + " to " + members + " was successful");
+      this.notifySuccess(`Sending of ${this.emailType.name} to ${members} was successful`);
     });
-  }
-
-  emailMemberList() {
-    return chain(this.display.emailMembers)
-      .sortBy(emailMember => emailMember.text).map(emailMember => emailMember.text)
-      .value().join(", ");
   }
 
   handleSendError(errorResponse) {
@@ -399,9 +362,22 @@ export class SendEmailsModalComponent implements OnInit {
     this.logger.error(errorResponse);
     this.notify.error({
       title: "Your notification could not be sent",
-      message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + this.stringUtils.stringify(errorResponse.error)) : "")
+      message: `${errorResponse.message || errorResponse}${errorResponse.error ? (`. Error was: ${this.stringUtils.stringify(errorResponse.error)}`) : ""}`
     });
     this.notify.clearBusy();
+  }
+
+  private notifySuccess(message: string) {
+    this.notify.success({title: "Send emails", message});
+  }
+
+  private invokeIfDefined(possibleFunction: () => any) {
+    this.logger.debug("invokeIfDefined:", possibleFunction);
+    if (possibleFunction) {
+      return possibleFunction();
+    } else {
+      return Promise.resolve();
+    }
   }
 
 }

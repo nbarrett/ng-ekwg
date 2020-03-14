@@ -1,5 +1,29 @@
 import { ApiResponse } from "./api-response.model";
 
+export interface MemberFilterSelection {
+  member: Member;
+  memberInformation: string;
+  memberGrouping: string;
+}
+
+export interface MemberEmailType {
+  name: string;
+  label?: string;
+  monthsInPast: number;
+  dateTooltip: string;
+  preSend?: () => Promise<void>;
+  memberSelectorName: string;
+  campaignId: string;
+  postSend?: () => Promise<void>;
+  segmentId: number;
+}
+
+export interface MemberSelector {
+  name: string;
+  memberMapper: (member: Member) => MemberFilterSelection;
+  memberFilter: (member: Member) => boolean;
+}
+
 export interface MemberCookie {
   memberId: string;
   walkAdmin: boolean;
@@ -97,7 +121,7 @@ export interface MemberBulkLoadAudit extends Auditable {
   members: RamblersMember[];
 }
 
-export interface  MemberUpdateAudit extends Auditable {
+export interface MemberUpdateAudit extends Auditable {
   id?: string;
   uploadSessionId: string;
   updateTime: number;
