@@ -11,6 +11,9 @@ import { AdminComponent } from "./pages/admin/admin/admin.component";
 import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
+import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
+import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
+import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
@@ -29,6 +32,10 @@ const routes: Routes = [
   {path: "admin/expenses/:expense-id", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/profile", component: LoginDetailsComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/login-details", component: LoginDetailsComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/email-subscriptions", component: EmailSubscriptionsComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/personal-details", component: PersonalDetailsComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "forgot-password", component: ForgotPasswordComponent},

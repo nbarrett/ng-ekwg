@@ -17,75 +17,75 @@
       </div>
 
       <div *ngIf="loggedIn" class="row">
-        <div class="col-sm-4 item-panel">
-          <div (click)="memberAdmin()" class="item-icon">
-            <i class="fas fa-users-cog fa-3x ramblers"></i>
-            <h5>Member admin</h5>
-            <p class="green-bullets-no-rule">
-              <app-markdown-editor category="admin" name="member-admin-help"
-                                   description="Member admin help"></app-markdown-editor>
+        <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+          <div (click)="personalDetails()" class="item-icon">
+            <i class="far fa-id-card fa-3x ramblers"></i>
+            <h5>Personal details</h5>
+            <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+              <app-markdown-editor category="admin" name="personal-details-help"
+                                   description="Personal details help"></app-markdown-editor>
             </p>
           </div>
         </div>
-        <div class="col-sm-4 item-panel">
+        <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+          <div (click)="changePassword()" class="item-icon">
+            <i class="fas fa-unlock-alt fa-3x ramblers"></i>
+            <h5>Change password</h5>
+            <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+              <app-markdown-editor category="admin" name="login-details-help"
+                                   description="Login details help"></app-markdown-editor>
+            </p>
+          </div>
+        </div>
+        <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+          <div (click)="emailSubscriptions()" class="item-icon">
+            <i class="fas fa-envelope-open-text fa-3x ramblers"></i>
+            <h5>Email subscriptions</h5>
+            <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+              <app-markdown-editor category="admin" name="contact-preferences-help"
+                                   description="Contact preferences help"></app-markdown-editor>
+            </p>
+          </div>
+        </div>
+        <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
           <div (click)="expensese()" class="item-icon">
-            <i class="fas fa-cash-register fa-3x army-green"></i>
+            <i class="fas fa-cash-register fa-3x ramblers"></i>
             <h5>Expenses</h5>
-            <p class="green-bullets-no-rule">
+            <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
               <app-markdown-editor category="admin" name="expenses-help"
                                    description="Expenses help"></app-markdown-editor>
             </p>
           </div>
         </div>
-        <div class="col-sm-4 item-panel">
+        <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
+          <div (click)="memberAdmin()" class="item-icon">
+            <i class="fas fa-users-cog fa-3x ramblers"></i>
+            <h5>Member admin</h5>
+            <p class="green-bullets-no-rule item-text">
+              <app-markdown-editor category="admin" name="member-admin-help"
+                                   description="Member admin help"></app-markdown-editor>
+            </p>
+          </div>
+        </div>
+        <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
           <div (click)="bulkLoadAudit()" class="item-icon">
-            <i class="fas fa-mail-bulk fa-3x meetup"></i>
+            <i class="fas fa-mail-bulk fa-3x ramblers"></i>
             <h5>Member bulk load</h5>
-          <p class="green-bullets-no-rule">
-            <app-markdown-editor category="admin" name="bulk-load-help"
-                                 description="Member bulk load audit help"></app-markdown-editor>
-          </p>
+            <p class="green-bullets-no-rule item-text">
+              <app-markdown-editor category="admin" name="bulk-load-help"
+                                   description="Member bulk load audit help"></app-markdown-editor>
+            </p>
           </div>
         </div>
-        <div class="col-sm-4 item-panel">
+        <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
           <div (click)="memberLoginAudit()" class="item-icon">
-            <i class="fas fa-book fa-3x french-puce"></i>
+            <i class="fas fa-book fa-3x ramblers"></i>
             <h5>Member Login Audit</h5>
+            <p class="green-bullets-no-rule item-text">
+              <app-markdown-editor category="admin" name="member-login-audit-help"
+                                   description="Member login audit help"></app-markdown-editor>
+            </p>
           </div>
-          <p class="green-bullets-no-rule">
-            <app-markdown-editor category="admin" name="member-login-audit-help"
-                                 description="Member login audit help"></app-markdown-editor>
-          </p>
-        </div>
-        <div class="col-sm-4 item-panel">
-          <div (click)="personalDetails()" class="item-icon">
-            <i class="far fa-id-card calendar fa-3x"></i>
-            <h5>Personal details</h5>
-          </div>
-          <p class="green-bullets-no-rule">
-            <app-markdown-editor category="admin" name="personal-details-help"
-                                 description="Personal details help"></app-markdown-editor>
-          </p>
-        </div>
-        <div class="col-sm-4 item-panel">
-          <div (click)="loginDetails()" class="item-icon">
-            <i class="fas fa-sign-in-alt fa-3x"></i>
-            <h5>Login details</h5>
-          </div>
-          <p class="green-bullets-no-rule">
-            <app-markdown-editor category="admin" name="login-details-help"
-                                 description="Login details help"></app-markdown-editor>
-          </p>
-        </div>
-        <div class="col-sm-4 item-panel">
-          <div (click)="contactPreferences()" class="item-icon">
-            <i class="fas fa-at fa-3x"></i>
-            <h5>Contact preferences</h5>
-          </div>
-          <p class="green-bullets-no-rule">
-            <app-markdown-editor category="admin" name="contact-preferences-help"
-                                 description="Contact preferences help"></app-markdown-editor>
-          </p>
         </div>
       </div>
     </div>

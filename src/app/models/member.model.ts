@@ -1,5 +1,11 @@
 import { ApiResponse } from "./api-response.model";
 
+export enum ProfileUpdateType {
+  LOGIN_DETAILS = "login details",
+  PERSONAL_DETAILS = "personal details",
+  CONTACT_PREFERENCES = "contact preferences"
+}
+
 export interface MemberFilterSelection {
   member: Member;
   memberInformation: string;
@@ -22,6 +28,12 @@ export interface MemberSelector {
   name: string;
   memberMapper: (member: Member) => MemberFilterSelection;
   memberFilter: (member: Member) => boolean;
+}
+
+export interface EnteredMemberCredentials {
+  userName?: string;
+  newPassword?: string;
+  newPasswordConfirm?: string;
 }
 
 export interface MemberCookie {

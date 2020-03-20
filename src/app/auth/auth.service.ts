@@ -2,7 +2,7 @@ import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
-import { tap } from "rxjs/operators";
+import { share, tap } from "rxjs/operators";
 import { AuthPayload, AuthResponse } from "../models/auth-data.model";
 import { AuthTokens } from "../models/auth-tokens";
 import { LoginResponse } from "../models/member.model";
@@ -25,17 +25,17 @@ export class AuthService {
               private loggerFactory: LoggerFactory,
               private broadcastService: BroadcastService,
               private siteEditService: SiteEditService) {
-    this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.DEBUG);
   }
 
-  login(userName, password): Observable<LoginResponse> {
+  login(userName, password): Promise<LoginResponse> {
     const url = `${this.BASE_URL}/login`;
     this.logger.debug("logging in", userName, "via", url);
     const body = {userName, password};
     return this.performAuthPost(url, body, "login", NamedEventType.MEMBER_LOGIN_COMPLETE);
   }
 
-  forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string): Observable<LoginResponse> {
+  forgotPassword(credentialOne: string, credentialTwo: string, userDetails: string): Promise<LoginResponse> {
     const url = `${this.BASE_URL}/forgot-password`;
     const type = "forgot password";
     this.logger.debug(type + "credentialOne:", credentialOne, "credentialTwo:", credentialTwo, "via", url);
@@ -43,7 +43,7 @@ export class AuthService {
     return this.performAuthPost(url, body, type);
   }
 
-  resetPassword(userName, newPassword, newPasswordConfirm): Observable<LoginResponse> {
+  resetPassword(userName, newPassword, newPasswordConfirm): Promise<LoginResponse> {
     const url = `${this.BASE_URL}/reset-password`;
     const type = "resetting password";
     this.logger.debug(type + " for", userName, "via", url);
@@ -51,7 +51,7 @@ export class AuthService {
     return this.performAuthPost(url, body, type);
   }
 
-  logout(): Observable<LoginResponse> {
+  logout(): Promise<LoginResponse> {
     const url = `${this.BASE_URL}/logout`;
     this.logger.debug("logging out user via", url);
     const loginResponseObservable = this.performAuthPost(url, {
@@ -62,23 +62,25 @@ export class AuthService {
     return loginResponseObservable;
   }
 
-  private performAuthPost(url: string, body: object, postType: string, broadcastEvent?: NamedEventType): Observable<LoginResponse> {
-    this.http.post<any>(url, body)
-      .subscribe((authResponse: AuthResponse) => {
-        this.logger.info(postType, "- authResponse", authResponse);
-        if (authResponse.tokens) {
-          this.storeTokens(authResponse.tokens);
-        }
-        this.authResponseSubject.next(authResponse.loginResponse);
-        if (broadcastEvent) {
-          this.broadcastService.broadcast(broadcastEvent);
-        }
-      }, (httpErrorResponse: HttpErrorResponse) => {
-        this.logger.error(postType, "- error", httpErrorResponse);
-        const loginResponse: LoginResponse = httpErrorResponse.error.loginResponse;
-        this.authResponseSubject.next(loginResponse);
-      });
-    return this.authResponse();
+  private async performAuthPost(url: string, body: object, postType: string, broadcastEvent?: NamedEventType): Promise<LoginResponse> {
+    const shared: Observable<AuthResponse> = this.http.post<any>(url, body);
+    shared.pipe(share());
+    shared.subscribe((authResponse: AuthResponse) => {
+      this.logger.info(postType, "- authResponse", authResponse);
+      if (authResponse.tokens) {
+        this.storeTokens(authResponse.tokens);
+      }
+      this.authResponseSubject.next(authResponse.loginResponse);
+      if (broadcastEvent) {
+        this.broadcastService.broadcast(broadcastEvent);
+      }
+    }, (httpErrorResponse: HttpErrorResponse) => {
+      this.logger.error(postType, "- error", httpErrorResponse);
+      const loginResponse: LoginResponse = httpErrorResponse.error.loginResponse;
+      this.authResponseSubject.next(loginResponse);
+    });
+    const authResponse = await shared.toPromise();
+    return authResponse.loginResponse;
   }
 
   authResponse() {

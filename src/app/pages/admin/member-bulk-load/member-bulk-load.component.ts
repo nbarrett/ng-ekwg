@@ -37,7 +37,7 @@ import { MemberAdminModalComponent } from "../member-admin-modal/member-admin-mo
 @Component({
   selector: "app-bulk-load",
   templateUrl: "./member-bulk-load.component.html",
-  styleUrls: ["./member-bulk-load.component.sass"]
+  styleUrls: ["./member-bulk-load.component.sass", "./../admin/admin.component.sass"]
 })
 export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;

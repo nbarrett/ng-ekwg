@@ -45,7 +45,8 @@ exports.migrateTemplate = (req, res) => {
     ["ng-href", "[href]"],
     ["ng-options", "<option *ngFor"],
     ["uib-", ""],
-    [" in ", " of "]
+    [" in ", " of "],
+    ["contact-us", "app-contact-us"]
   ];
 
   try {

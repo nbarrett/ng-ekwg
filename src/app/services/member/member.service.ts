@@ -4,6 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { share } from "rxjs/operators";
 import { chain } from "../../functions/chain";
+import { DataQueryOptions } from "../../models/api-request.model";
 import { MailchimpSubscription, Member, MemberApiResponse } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
 import { DbUtilsService } from "../db-utils.service";
@@ -53,19 +54,19 @@ export class MemberService {
   }
 
   getMemberForUserName(userName: string): Promise<Member> {
-    return this.query({userName: userName.toLowerCase()});
+    return this.query({criteria: {userName: userName.toLowerCase()}});
   }
 
-  async query(criteria?: object): Promise<Member> {
-    const params = this.commonDataService.toHttpParams(criteria);
-    this.logger.debug("find-one:criteria", criteria, "params", params.toString());
-    const apiResponse = await this.http.get<Member>(`${this.BASE_URL}/find-one`, {params}).toPromise();
+  async query(dataQueryOptions?: DataQueryOptions): Promise<Member> {
+    const params = this.commonDataService.toHttpParams(dataQueryOptions);
+    this.logger.debug("find-one:criteria", dataQueryOptions, "params", params.toString());
+    const apiResponse = await this.responseFrom(this.http.get<MemberApiResponse>(`${this.BASE_URL}/find-one`, {params}));
     this.logger.debug("find-one:received", apiResponse);
-    return apiResponse;
+    return apiResponse.response as Member;
   }
 
-  async all(criteria?: object): Promise<Member[]> {
-    const params = this.commonDataService.toHttpParams(criteria);
+  async all(dataQueryOptions?: DataQueryOptions): Promise<Member[]> {
+    const params = this.commonDataService.toHttpParams(dataQueryOptions);
     this.logger.debug("all:params", params.toString());
     const response = await this.responseFrom(this.http.get<MemberApiResponse>(`${this.BASE_URL}/all`, {params}));
     const responses = response.response as Member[];
@@ -141,22 +142,24 @@ export class MemberService {
 
   allLimitedFields(filterFunction) {
     return this.all({
-      mailchimpLists: 1,
-      groupMember: 1,
-      socialMember: 1,
-      financeAdmin: 1,
-      treasuryAdmin: 1,
-      fileAdmin: 1,
-      committee: 1,
-      walkChangeNotifications: 1,
-      email: 1,
-      displayName: 1,
-      contactId: 1,
-      mobileNumber: 1,
-      id: 1,
-      firstName: 1,
-      lastName: 1,
-      nameAlias: 1
+      select: {
+        mailchimpLists: 1,
+        groupMember: 1,
+        socialMember: 1,
+        financeAdmin: 1,
+        treasuryAdmin: 1,
+        fileAdmin: 1,
+        committee: 1,
+        walkChangeNotifications: 1,
+        email: 1,
+        displayName: 1,
+        contactId: 1,
+        mobileNumber: 1,
+        id: 1,
+        firstName: 1,
+        lastName: 1,
+        nameAlias: 1
+      }
     }).then(members => chain(members)
       .filter(filterFunction)
       .sortBy(member => member.firstName + member.lastName).value());

@@ -8,7 +8,8 @@ import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeMod
 import { NgSelectModule } from "@ng-select/ng-select";
 import { Angular2CsvModule } from "angular2-csv";
 import { FileUploadModule } from "ng2-file-upload";
-import { ModalModule } from "ngx-bootstrap";
+import { CollapseModule } from "ngx-bootstrap/collapse";
+import { ModalModule } from "ngx-bootstrap/modal";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
@@ -88,6 +89,9 @@ import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expen
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
+import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
+import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
+import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
 import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
@@ -178,10 +182,12 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     ContactUsComponent,
     ContactUsDirective,
     CreatedAuditPipe,
+    DatePickerComponent,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    EmailSubscriptionsComponent,
     EventNotePipe,
     ExpenseDetailModalComponent,
     ExpenseNotificationApproverFirstApprovalComponent,
@@ -197,10 +203,10 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     ExpenseNotificationDirective,
     ExpenseNotificationTreasurerPaidComponent,
     ExpenseNotificationTreasurerSecondApprovalComponent,
-    ExpensesComponent,
     ExpensePaidModalComponent,
-    ExpenseSubmitModalComponent,
     ExpenseReturnModalComponent,
+    ExpensesComponent,
+    ExpenseSubmitModalComponent,
     ForgotPasswordComponent,
     ForgotPasswordModalComponent,
     FullNamePipe,
@@ -210,6 +216,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     JoinUsComponent,
     LastConfirmedDateDisplayed,
     LoginComponent,
+    LoginDetailsComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
@@ -232,8 +239,10 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
+    PersonalDetailsComponent,
     ResetPasswordModalComponent,
     SearchFilterPipe,
+    SendEmailsModalComponent,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
@@ -271,12 +280,8 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     WalkValidationsListPipe,
     WalkVenueComponent,
     WalkViewComponent,
-    SendEmailsModalComponent,
-    DatePickerComponent,
   ],
   imports: [
-    NgSelectModule,
-    FileUploadModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     Angular2CsvModule,
@@ -284,10 +289,13 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     BrowserAnimationsModule,
     BrowserModule,
     BsDatepickerModule.forRoot(),
+    CollapseModule.forRoot(),
+    FileUploadModule,
     HttpClientModule,
     LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.ERROR}),
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
+    NgSelectModule,
     PopoverModule.forRoot(),
     TabsModule.forRoot(),
     TooltipModule.forRoot(),
@@ -303,6 +311,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     BroadcastService,
     ChangedItemsPipe,
     ClipboardServiceProvider,
+    CommitteeConfigService,
     CommitteeReferenceDataService,
     CookieService,
     CreatedAuditPipe,
@@ -320,7 +329,6 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     LastConfirmedDateDisplayed,
     MailchimpCampaignServiceProvider,
     MailchimpConfigService,
-    CommitteeConfigService,
     MailchimpListServiceProvider,
     MailchimpSegmentServiceProvider,
     MeetupEventSummaryPipe,
@@ -346,7 +354,6 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
   entryComponents: [
     AppComponent,
     ContactUsDirective,
-    SendEmailsModalComponent,
     ExpenseDetailModalComponent,
     ExpenseNotificationApproverFirstApprovalComponent,
     ExpenseNotificationApproverPaidComponent,
@@ -370,6 +377,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     MeetupDescriptionComponent,
     MemberAdminModalComponent,
     ResetPasswordModalComponent,
+    SendEmailsModalComponent,
     WalkNotificationChangesComponent,
     WalkNotificationCoordinatorApprovedComponent,
     WalkNotificationCoordinatorAwaitingApprovalComponent,

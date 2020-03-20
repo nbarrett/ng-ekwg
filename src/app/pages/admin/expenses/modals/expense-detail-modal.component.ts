@@ -74,6 +74,9 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (!this.editable) {
+      this.uploader.options.allowedMimeType = [];
+    }
     this.editMode = this.expenseItemIndex === -1 ? EditMode.ADD_NEW : EditMode.EDIT;
     this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
     this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
@@ -145,10 +148,6 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.expenseItem.expenseDate = this.dateUtils.asValueNoTime(date);
   }
 
-  addReceipt() {
-    // $("#hidden-input").click();
-  }
-
   removeReceipt() {
     this.expenseItem.receipt = undefined;
   }
@@ -160,5 +159,10 @@ export class ExpenseDetailModalComponent implements OnInit {
 
   fileDropped($event: File[]) {
     this.logger.info("fileDropped:", $event);
+  }
+
+  confirmDeleteExpenseItem(expenseClaim: ExpenseClaim, expenseItem: ExpenseItem, expenseItemIndex: number) {
+    this.display.saveExpenseItem(EditMode.DELETE, this.confirm, this.notify, expenseClaim, expenseItem, expenseItemIndex)
+      .then(() => this.bsModalRef.hide());
   }
 }

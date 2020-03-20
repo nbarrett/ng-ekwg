@@ -3,9 +3,35 @@
     <ng-template app-expense-notification-template></ng-template>
   </div>
   <div class="thumbnail">
-    <div *ngIf="notifyTarget.showAlert" class="row">
+    <span class="pull-right">
+      <span *ngIf="expandable" class="markdown-preview-icon collapsed" [attr.aria-expanded]="!expandable"
+            aria-controls="expenseHelp" tooltip-placement="left"
+            tooltip="Click to show help" (click)="expand()">
+        <i class="fa fa-caret-up fa-2x"></i>
+      </span>
+      <span *ngIf="!expandable" class="markdown-preview-icon expanded" tooltip-placement="left"
+            tooltip="Click to hide help" (click)="collapse()">
+        <i class="fa fa-caret-down fa-2x"></i>
+      </span>
+    </span>
+    <div id="expenseHelp" [collapse]="expandable" class="row">
+      <div class="col-sm-3">
+        <div class="item-panel-heading table-pointer" tooltip="Click to hide help" (click)="collapse()">
+          <i class="fas fa-cash-register fa-5x ramblers"></i>
+          <h5>Expenses</h5>
+        </div>
+      </div>
+      <div class="col-sm-9">
+        <p class="green-bullets-no-rule mt-8">
+          <app-markdown-editor category="admin" name="expenses-detailed-help"
+                               description="Expenses help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="notifyTarget.showAlert"
+         (click)="toggle()" tooltip="Click to {{showOrHide}} help" class="row">
       <div class="col-sm-12">
-        <div class="alert {{notifyTarget.alertClass}}"><i
+        <div class="alert {{notifyTarget.alertClass}} table-pointer"><i
           class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
           {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
         </div>
@@ -20,12 +46,14 @@
                 <div *ngIf="allowClearError()" class="form-group">
                   <input type="submit" value="Show All Expense Claims"
                          (click)="showAllExpenseClaims()" title="Show All Expense Claims"
-                         [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                         [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                 </div>
                 <div *ngIf="allowAddExpenseClaim()" class="form-group">
+                  <input type="submit" [disabled]="false" value="Back to admin" (click)="backToAdmin()"
+                         class="button-form button-form-left">
                   <input type="submit" value="Add Expense Claim"
                          (click)="addExpenseClaim()" title="Add new Expense Claim"
-                         [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                         [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                 </div>
 
                 <div class="form-group">
@@ -47,7 +75,7 @@
                     <div class="checkbox-group">
                       <label [ngClass]="{'ui-state-active': selected.showOnlyMine}"
                              (click)="refreshExpenses()"
-                             for="show-only-mine">Show only my expense claims
+                             for="show-only-mine">Show only mine
                         <input [(ngModel)]="selected.showOnlyMine"
                                type="checkbox" id="show-only-mine">
                       </label>
@@ -73,15 +101,15 @@
                         [ngClass]="expenseItem === this.selected.expenseItem? 'active selected':'default'">
                       <td [textContent]="expenseItem.expenseDate | displayDate" class="nowrap"></td>
                       <td [ngClass]="{'inactive': isInactive(expenseClaim)}">
-                        <a [routerLink]="" queryParamsHandling="preserve" *ngIf="!selected.saveInProgress"
+                        <a [routerLink]="" queryParamsHandling="preserve" *ngIf="!notifyTarget.busy"
                            [textContent]="display.prefixedExpenseItemDescription(expenseItem)"
                            (click)="editExpenseItem(expenseItem)" href=""></a>
-                        <span *ngIf="selected.saveInProgress"
+                        <span *ngIf="notifyTarget.busy"
                               [textContent]="display.prefixedExpenseItemDescription(expenseItem)"></span>
-                        <div *ngIf="!selected.saveInProgress && expenseItem.receipt"> receipt:
+                        <div *ngIf="!notifyTarget.busy && expenseItem.receipt"> receipt:
                           <a target="_blank" [href]="display.receiptUrl(expenseItem)"
                              [textContent]="display.receiptTitle(expenseItem)"></a></div>
-                        <div *ngIf="selected.saveInProgress && expenseItem.receipt"> receipt:
+                        <div *ngIf="notifyTarget.busy && expenseItem.receipt"> receipt:
                           {{display.receiptTitle(expenseItem)}}
                         </div>
                       </td>
@@ -89,7 +117,8 @@
                     </tr>
                     <tr>
                       <td><strong>Total</strong></td>
-                      <td *ngIf="expenseClaim.expenseItems"><strong [textContent]="expenseClaim.expenseItems.length +' item(s)'"></strong>
+                      <td *ngIf="expenseClaim.expenseItems"><strong
+                        [textContent]="expenseClaim.expenseItems.length +' item(s)'"></strong>
                       </td>
                       <td class="text-right"><strong [textContent]="expenseClaim.cost | asMoney"></strong></td>
                     </tr>
@@ -99,60 +128,60 @@
                     <div class="form-group">
                       <span *ngIf="!confirmOutstanding()">
                         <input type="submit" *ngIf="display.allowAddExpenseItem(this.selected.expenseClaim)"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Add Item" (click)="addExpenseItem()" title="Add Item"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                         <input type="submit" *ngIf="display.allowEditExpenseItem(this.selected.expenseClaim)"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Edit Item" (click)="editExpenseItem(selected.expenseItem)"
                                title="Edit Claim"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                         <input type="submit" *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Delete Item" (click)="confirm.toggleDelete()"
                                title="Delete item"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                         <input type="submit" *ngIf="allowSubmitExpenseClaim(selected.expenseClaim)"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Submit Claim" (click)="submitExpenseClaim(false)"
                                title="Submit Claim for approval"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                         <input type="submit" *ngIf="allowApproveExpenseClaim()"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="{{nextApprovalStage()}}"
                                (click)="approveExpenseClaim()" title="Approve Claim"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                         <input type="submit" *ngIf="allowPaidExpenseClaim()"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Claim Paid" (click)="paidExpenseClaim()"
                                title="Mark Claim as paid"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                         <input type="submit" *ngIf="allowReturnExpenseClaim()"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Return Claim" (click)="returnExpenseClaim()"
                                title="Return Claim"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form amber-confirm'">
                         <input type="submit" *ngIf="allowResubmitExpenseClaim()"
-                               [disabled]="selected.saveInProgress"
+                               [disabled]="notifyTarget.busy"
                                value="Resubmit Claim" (click)="resubmitExpenseClaim()"
                                title="Resubmit Claim"
-                               [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                       </span>
                       <input type="submit"
                              *ngIf="!confirmOutstanding() && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
                              value="Delete Expense Claim" (click)="confirm.toggleDelete()"
                              title="Delete Expense Claim"
-                             [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form'">
+                             [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
 
                       <span *ngIf="confirm.deleteConfirmOutstanding()">
                           <input type="submit" *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
-                                 [disabled]="selected.saveInProgress"
+                                 [disabled]="notifyTarget.busy"
                                  value="Confirm Delete of Item"
                                  (click)="display.deleteExpenseItem(confirm, notify, expenseClaim, selected.expenseItem, expenseClaim.expenseItems.indexOf(selected.expenseItem))"
                                  title="Confirm delete of this item"
                                  class="button-form button-confirm">
                           <input *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
-                                 [disabled]="selected.saveInProgress"
+                                 [disabled]="notifyTarget.busy"
                                  value="Cancel Delete of Item" (click)="removeConfirm()" type="submit"
                                  title="Cancel delete of this expense item"
                                  class="button-form button-form-left green-confirm">
@@ -165,7 +194,7 @@
                                  value="Cancel Delete of Expense Claim" type="submit"
                                  (click)="cancelDeleteExpenseClaim()"
                                  title="Cancel delete of Expense Claim"
-                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
+                                 [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                         </span>
                       <span *ngIf="confirm.approveConfirmOutstanding()">
                         <span *ngIf="allowApproveExpenseClaim()">
@@ -176,16 +205,16 @@
                                 *ngIf="notifyTarget.alertTitle">{{notifyTarget.alertTitle}}
                                 : </strong> {{notifyTarget.alertMessage}} </div>
                           </div>
-                          <input [disabled]="selected.saveInProgress" type="submit"
+                          <input [disabled]="notifyTarget.busy" type="submit"
                                  value="Confirm {{nextApprovalStage()}}"
                                  (click)="confirmApproveExpenseClaim()"
                                  title="Confirm {{nextApprovalStage()}} of Claim"
-                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form green-confirm'">
-                          <input [disabled]="selected.saveInProgress" type="submit"
+                                 [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
+                          <input [disabled]="notifyTarget.busy" type="submit"
                                  value="Cancel {{nextApprovalStage()}}"
                                  (click)="removeConfirm()"
                                  title="Cancel {{nextApprovalStage()}} of Claim"
-                                 [ngClass]="selected.saveInProgress ? 'disabled-button-form': 'button-form amber-confirm'">
+                                 [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form amber-confirm'">
                         </span>
                       </span>
                     </div>
@@ -205,7 +234,7 @@
                       <td [textContent]="event.date | displayDate" class="nowrap"></td>
                       <td [textContent]="event.memberId | memberIdToFullName : members"></td>
                       <td [textContent]="event.eventType.description">
-                                                <span *ngIf="event.reason" tooltip-placement="right"
+                                                <span *ngIf="event.reason" [placement]="'right'"
                                                       tooltip="Reason: {{event.reason}}">Reason: {{event.reason}}</span>
                       </td>
                     </tr>

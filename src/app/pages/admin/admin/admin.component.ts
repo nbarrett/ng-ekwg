@@ -17,12 +17,13 @@ import { UrlService } from "../../../services/url.service";
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class AdminComponent implements OnInit, OnDestroy {
-  allowAdminEdits: boolean;
   private logger: Logger;
   private subscription: Subscription;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public loggedIn: boolean;
+  public allowAdminEdits: boolean;
+  itemCols: number;
 
   constructor(private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
@@ -67,14 +68,15 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   personalDetails() {
+    this.urlService.navigateTo("admin", "personal-details");
+  }
+
+  changePassword() {
+    this.urlService.navigateTo("admin", "login-details");
 
   }
 
-  loginDetails() {
-
-  }
-
-  contactPreferences() {
-
+  emailSubscriptions() {
+    this.urlService.navigateTo("admin", "email-subscriptions");
   }
 }

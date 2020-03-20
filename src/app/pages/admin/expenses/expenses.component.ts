@@ -49,7 +49,7 @@ const SELECTED_EXPENSE = "Expense from last email link";
 @Component({
   selector: "app-expenses",
   templateUrl: "./expenses.component.html",
-  styleUrls: ["./expenses.component.sass"]
+  styleUrls: ["../admin/admin.component.sass", "./expenses.component.sass"]
 })
 export class ExpensesComponent implements OnInit, OnDestroy {
   private logger: Logger;
@@ -74,6 +74,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private expenseClaimSubscription: Subscription;
   public filters: ExpenseFilter[];
   @ViewChild(ExpenseNotificationDirective, {static: false}) notificationDirective: ExpenseNotificationDirective;
+  expandable: boolean;
+  showOrHide = "hide";
 
   constructor(@Inject("MailchimpListService") private mailchimpListService,
               @Inject("MailchimpSegmentService") private mailchimpSegmentService,
@@ -235,7 +237,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   allowApproveExpenseClaim() {
-    return false;
+    return this.approvalEvents().length === 0;
   }
 
   lastApprovedByMe() {
@@ -379,7 +381,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   allowPaidExpenseClaim() {
-    return this.memberLoginService.allowTreasuryAdmin() && [this.display.eventTypes.submitted.description, this.display.eventTypes["second-approval"].description, this.display.eventTypes["first-approval"].description]
+    return this.memberLoginService.allowTreasuryAdmin() && [this.display.eventTypes["first-approval"].description]
       .includes(this.display.expenseClaimLatestEvent(this.selected.expenseClaim).eventType.description);
   }
 
@@ -512,5 +514,27 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   expenseItemSelected(): boolean {
     return isEmpty(this.selected.expenseClaim) ? false : this.selected.expenseClaim.expenseItems.includes(this.selected.expenseItem);
+  }
+
+  backToAdmin() {
+    this.urlService.navigateTo("admin");
+  }
+
+  expand() {
+    this.expandable = false;
+    this.showOrHide = "hide";
+  }
+
+  collapse() {
+    this.expandable = true;
+    this.showOrHide = "show";
+  }
+
+  toggle() {
+    if (this.expandable) {
+      this.expand();
+    } else {
+      this.collapse();
+    }
   }
 }
