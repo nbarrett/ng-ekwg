@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AdminAuthGuard } from "./admin-auth-guard.service";
+import { LoggedInGuard } from "./admin-login-guard.service";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
@@ -11,6 +12,7 @@ import { AdminComponent } from "./pages/admin/admin/admin.component";
 import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
+import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
 import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
@@ -28,14 +30,15 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 const routes: Routes = [
   {path: "admin", component: AdminComponent},
-  {path: "admin/expenses", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/expenses/:expense-id", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/expenses", component: ExpensesComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/expenses/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/member-login-audit", component: MemberLoginAuditComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/profile", component: LoginDetailsComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/login-details", component: LoginDetailsComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/email-subscriptions", component: EmailSubscriptionsComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/personal-details", component: PersonalDetailsComponent, canActivate: [AdminAuthGuard]},
+  {path: "admin/profile", component: LoginDetailsComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/login-details", component: LoginDetailsComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/email-subscriptions", component: EmailSubscriptionsComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/personal-details", component: PersonalDetailsComponent, canActivate: [LoggedInGuard]},
   {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "forgot-password", component: ForgotPasswordComponent},

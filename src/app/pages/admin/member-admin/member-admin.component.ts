@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import cloneDeep from "lodash-es/cloneDeep";
 import extend from "lodash-es/extend";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
@@ -61,7 +60,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 

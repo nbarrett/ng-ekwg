@@ -208,7 +208,7 @@ body {
 }
 
 .walk-item {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
 }
 
@@ -439,7 +439,7 @@ h3 small {
 }
 
 .admin-header-container {
-  padding: 6px 0px 2px 6px;
+  padding: 6px 6px 2px 6px;
 }
 
 .admin-header-container-with-tabs {
@@ -1304,7 +1304,7 @@ table.tbl-group-events {
 .group-events-checkbox-on {
   padding: 0px 6px 0px 32px;
   list-style: none;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
   background-position-x: left;
   background-position-y: top;
   cursor: pointer;
@@ -1329,12 +1329,12 @@ table.tbl-group-events {
 
 .checkbox-off {
   padding: 0px 0px 0px 0px;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox.png") no-repeat;
   background-position: center;
 }
 
 .checkbox-on {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
   background-position: center;
 }
 
@@ -1705,7 +1705,7 @@ h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
 }
 
 .language-link a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
 }
 
@@ -1719,7 +1719,7 @@ h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
   font-weight: normal;
   padding: 4px 0 4px 21px;
   list-style: none;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") 0px 9px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") 0px 9px no-repeat;
 }
 
 .no-bullets ul li {
@@ -1727,7 +1727,7 @@ h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover {
 }
 
 hr {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   height: 5px;
   border: none !important;
 }
@@ -1735,21 +1735,21 @@ hr {
 .body-content ul {
   font-weight: bold;
   padding: 0 0 10px 10px;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
 }
 
 .body-content ul li {
   font-weight: normal;
   padding: 4px 0 4px 21px;
   list-style: none;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") 0px 9px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") 0px 9px no-repeat;
 }
 
 .body-content ul.check-list li {
   font-weight: normal;
   padding: 4px 0 4px 21px;
   list-style: none;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") 0px 7px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") 0px 7px no-repeat;
   background-size: 12px 12px;
 }
 
@@ -1968,7 +1968,7 @@ a.svg:after {
 .home-lower .lower-left {
   float: left;
   width: 610px;
-  background:url("../../../../legacy/app/assets/images/ramblers/top-nav-divider.png") top right repeat-y;
+  background: url("../../../../legacy/app/assets/images/ramblers/top-nav-divider.png") top right repeat-y;
   padding-right: 10px;
 }
 
@@ -2030,12 +2030,12 @@ a.svg:after {
 footer .footer-header {
   background: #eee;
   height: 120px;
-  background:url("../../../../legacy/app/assets/images/ramblers/footer-bg.png") no-repeat top #eee;
+  background: url("../../../../legacy/app/assets/images/ramblers/footer-bg.png") no-repeat top #eee;
 }
 
 .home footer .footer-header {
   height: 120px;
-  background:url("../../../../legacy/app/assets/images/ramblers/footer-bg.png") no-repeat top #eee;
+  background: url("../../../../legacy/app/assets/images/ramblers/footer-bg.png") no-repeat top #eee;
 }
 
 footer .footer-inner {
@@ -2065,7 +2065,7 @@ footer .footer-inner .footer-content {
 .footer-col h4 {
   font-size: 22px;
   color: #fff;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   padding: 20px 0 10px 0;
   margin: 0;
 }
@@ -2105,7 +2105,7 @@ footer .footer-inner .footer-content {
   float: left;
   width: 100%;
   padding: 10px 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") top left repeat-x;
 }
 
 .footer-base .copyright {
@@ -2207,7 +2207,7 @@ footer .footer-inner .footer-content {
 }
 
 .testimonial .quote-start {
-  background:url("../../../../legacy/app/assets/images/ramblers/quote-start.png") no-repeat top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/quote-start.png") no-repeat top left;
   width: 58px;
   height: 43px;
   position: absolute;
@@ -2216,7 +2216,7 @@ footer .footer-inner .footer-content {
 }
 
 .testimonial .quote-end {
-  background:url("../../../../legacy/app/assets/images/ramblers/quote-end.png") no-repeat top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/quote-end.png") no-repeat top left;
   width: 58px;
   height: 43px;
   position: absolute;
@@ -2242,7 +2242,7 @@ footer .footer-inner .footer-content {
 }
 
 .right-column .testimonial .quote-start {
-  background:url("../../../../legacy/app/assets/images/ramblers/quote-small-start.png") no-repeat top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/quote-small-start.png") no-repeat top left;
   width: 45px;
   height: 33px;
   position: absolute;
@@ -2251,7 +2251,7 @@ footer .footer-inner .footer-content {
 }
 
 .right-column .testimonial .quote-end {
-  background:url("../../../../legacy/app/assets/images/ramblers/quote-small-end.png") no-repeat top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/quote-small-end.png") no-repeat top left;
   width: 45px;
   height: 33px;
   position: absolute;
@@ -2279,7 +2279,7 @@ ul.ui-tabs-nav {
 ul.ui-tabs-nav li {
   text-align: center;
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-vert.png") top right repeat-y;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-vert.png") top right repeat-y;
   width: 80px;
   padding: 0 10px;
 }
@@ -2301,7 +2301,7 @@ ul.ui-tabs-nav li a {
 
 ul.ui-tabs-nav li.ui-state-active a,
 ul.ui-tabs-nav li a:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-tabber.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-tabber.png") no-repeat;
   color: #fff;
 }
 
@@ -2318,7 +2318,7 @@ ul.ui-tabs-nav li a:hover {
 
 .ui-tabs-panel ul li {
   padding: 5px;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   color: #999;
 }
 
@@ -2336,12 +2336,12 @@ ul.ui-tabs-nav li a:hover {
 }
 
 .icon-box-orange {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-supportus.png") 190px 10px no-repeat #C75B12;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-supportus.png") 190px 10px no-repeat #C75B12;
   color: #fff;
 }
 
 .icon-box-blue {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-gowalking.png") 190px 10px no-repeat #007A87;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-gowalking.png") 190px 10px no-repeat #007A87;
   color: #fff;
 }
 
@@ -2361,22 +2361,22 @@ ul.ui-tabs-nav li a:hover {
 }
 
 .icon-box-green {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-getinvolved.png") 190px 10px no-repeat #206C49;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-getinvolved.png") 190px 10px no-repeat #206C49;
   color: #fff;
 }
 
 .home .icon-box-orange {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-supportus.png") 250px 10px no-repeat #C75B12;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-supportus.png") 250px 10px no-repeat #C75B12;
   color: #fff;
 }
 
 .home .icon-box-blue {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-gowalking.png") 250px 10px no-repeat #007A87;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-gowalking.png") 250px 10px no-repeat #007A87;
   color: #fff;
 }
 
 .home .icon-box-green {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-getinvolved.png") 250px 10px no-repeat #206C49;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-getinvolved.png") 250px 10px no-repeat #206C49;
   color: #fff;
 }
 
@@ -2410,7 +2410,7 @@ div.icon-box-relatedlinks h2 {
 
 .icon-box ul li {
   padding: 5px 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") bottom left repeat-x;
 }
 
 .icon-box ul li.last {
@@ -2422,11 +2422,11 @@ div.icon-box-relatedlinks h2 {
   color: #fff;
   font-size: 18px;
   padding: 0 0 0 25px;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") left 5px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") left 5px no-repeat;
 }
 
 .icon-box-route {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-findroute.png") 190px 8px no-repeat #fff;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-findroute.png") 190px 8px no-repeat #fff;
   border: 1px solid #999;
 }
 
@@ -2437,12 +2437,12 @@ div.icon-box-relatedlinks h2 {
 }
 
 .icon-box-facebook {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-facebook-pebble.png") 190px 10px no-repeat #3C5A9A;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-facebook-pebble.png") 190px 10px no-repeat #3C5A9A;
   color: #fff;
 }
 
 .icon-box-twitter {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-twitter-pebble.png") 190px 10px no-repeat #00ACED;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-twitter-pebble.png") 190px 10px no-repeat #00ACED;
   color: #fff;
 }
 
@@ -2486,7 +2486,7 @@ img[src~="bordered"] {
   font-size: 11px;
   font-weight: bold;
   border-radius: 6px 6px 6px 6px;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 7px 8px no-repeat #333;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 7px 8px no-repeat #333;
 }
 
 .cta-edit-more a {
@@ -2494,7 +2494,7 @@ img[src~="bordered"] {
 }
 
 .cta-edit-more:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 7px 8px no-repeat #782327;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 7px 8px no-repeat #782327;
   cursor: pointer;
 }
 
@@ -2507,7 +2507,7 @@ img[src~="bordered"] {
   padding: 7px 6px 7px 22px;
   font-size: 11px;
   font-weight: bold;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 7px 8px no-repeat #333;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 7px 8px no-repeat #333;
 }
 
 .partner-pics ul {
@@ -2670,7 +2670,7 @@ table.inactive th {
 
 .button-form {
   margin: 0px 4px 0px 0px;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #333;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #333;
   color: #fff;
   border: none;
   padding: 8px 10px 8px 22px;
@@ -2683,7 +2683,7 @@ table.inactive th {
 }
 
 .button-form:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #782327;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #782327;
   cursor: pointer;
 }
 
@@ -2727,7 +2727,7 @@ table.inactive th {
 }
 
 .cta-red, .cta-red a, .cta-red:hover, .cta-red a:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #C60C30;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 8px 8px #C60C30;
 }
 
 .button-form-left {
@@ -2755,7 +2755,7 @@ table.inactive th {
 }
 
 .after-image-rule {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top repeat-x;
   padding: 20px 0 10px 0;
   margin: 0;
 }
@@ -2785,43 +2785,43 @@ table.inactive th {
 }
 
 .button-confirm {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #C60C30
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #C60C30
 }
 
 .button-confirm:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #eb0c35
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #eb0c35
 }
 
 .green-confirm {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #1D9630
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #1D9630
 }
 
 .green-confirm:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px rgb(32, 191, 57);
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px rgb(32, 191, 57);
 }
 
 .amber-confirm {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #e89349
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #e89349
 }
 
 .amber-confirm:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #FFA64D
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #FFA64D
 }
 
 .blue-confirm {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #007C89
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #007C89
 }
 
 .blue-confirm:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #0097a4
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #0097a4
 }
 
 .yellow-confirm {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #c7c164
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 7px 10px #c7c164
 }
 
 .yellow-confirm:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #d6d072
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 7px 10px #d6d072
 }
 
 .general-description {
@@ -2909,17 +2909,17 @@ table.inactive th {
 }
 
 .cta-facebook-blue {
-  background:url("../../../../legacy/app/assets/images/local/facebook.ico") 9px 11px no-repeat #3b5998;
+  background: url("../../../../legacy/app/assets/images/local/facebook.ico") 9px 11px no-repeat #3b5998;
   background-size: 21px;
 }
 
 .cta-instagram {
-  background:url("../../../../legacy/app/assets/images/local/instagram.ico") 12px 15px no-repeat #f2f2f2;
+  background: url("../../../../legacy/app/assets/images/local/instagram.ico") 12px 15px no-repeat #f2f2f2;
   background-size: 19px;
 }
 
 .cta-darkred {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327;
 }
 
 .cta-green {
@@ -2931,7 +2931,7 @@ table.inactive th {
 }
 
 .cta-grey a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 15px 7px no-repeat #333;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-large-green.png") 15px 7px no-repeat #333;
 }
 
 .cta-grey a.campaign-link {
@@ -2940,7 +2940,7 @@ table.inactive th {
 }
 
 .cta-orange a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #C75B12;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #C75B12;
 }
 
 .cta-orange a.campaign-link {
@@ -2949,7 +2949,7 @@ table.inactive th {
 }
 
 .cta-blue a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #007A87;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #007A87;
 }
 
 .cta-blue a.campaign-link {
@@ -2958,7 +2958,7 @@ table.inactive th {
 }
 
 .cta-darkred a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327;
 }
 
 .cta-darkred a.campaign-link {
@@ -2967,7 +2967,7 @@ table.inactive th {
 }
 
 .cta-green a {
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #206C49;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 15px 10px no-repeat #206C49;
 }
 
 .cta-green a.campaign-link {
@@ -2976,7 +2976,7 @@ table.inactive th {
 }
 
 .cta-rss a {
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-rss.png") 12px 4px no-repeat #C75B12;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-rss.png") 12px 4px no-repeat #C75B12;
   padding-left: 40px;
 }
 
@@ -2998,7 +2998,7 @@ table.inactive th {
 
 .breadcrumbs ul li {
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-breadcrumb.gif") no-repeat right;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-breadcrumb.gif") no-repeat right;
   padding-right: 12px;
   margin-right: 5px;
 }
@@ -3028,7 +3028,7 @@ table.inactive th {
 .article-list .article-item {
   float: left;
   width: 100%;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-white-hor.png") top left repeat-x;
   padding: 10px 0;
 }
 
@@ -3046,7 +3046,7 @@ table.inactive th {
 }
 
 .article-list .article-item .article-content ul li {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
 }
 
@@ -3117,7 +3117,7 @@ table.inactive th {
 }
 
 .c3 .box-img .box-link {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
   padding: 0 0 0 15px;
   font-size: 16px;
   color: #782226;
@@ -3150,7 +3150,7 @@ table.inactive th {
 }
 
 .c2 .box-img .box-link {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
   padding: 0 0 0 15px;
   font-size: 16px;
   color: #782226;
@@ -3165,7 +3165,7 @@ table.inactive th {
   float: left;
   width: 100%;
   margin-bottom: 20px;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
   padding: 20px 0 0 0;
 }
 
@@ -3184,7 +3184,7 @@ table.inactive th {
 }
 
 .c1 .box-img .box-link {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
   padding: 0 0 0 15px;
   font-size: 16px;
   color: #782226;
@@ -3228,13 +3228,13 @@ img[src*="#thumbnail"] {
   padding-left: 30px;
   padding-bottom: 0;
   margin: 18px 0 0 4px;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat top left;
 }
 
 .ticked-bold-list ul li a {
   display: block;
   font-weight: bold;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat left;
 }
 
 .ticked-bold-list p {
@@ -3271,7 +3271,7 @@ img[src*="#thumbnail"] {
 
 .link-list ul li {
   padding: 5px 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   color: #999;
 }
 
@@ -3283,7 +3283,7 @@ img[src*="#thumbnail"] {
 .link-list .more-link {
   display: block;
   float: right;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat left;
   padding: 0 0 0 15px;
   margin-top: 6px;
   font-weight: bold;
@@ -3341,13 +3341,13 @@ img[src*="#thumbnail"] {
 }
 
 .check-list ul li {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x bottom left;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x bottom left;
 }
 
 .check-list ul li span {
   display: block;
   padding: 10px 0 10px 30px;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-green-tick.png") no-repeat left;
 }
 
 .check-list ul li.last {
@@ -3358,25 +3358,25 @@ img[src*="#thumbnail"] {
   list-style: none;
   padding: 0;
   margin: 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-pdf.jpg") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-pdf.jpg") no-repeat left;
 }
 
 .file-doc {
   list-style: none;
   padding: 0;
   margin: 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-doc.jpg") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-doc.jpg") no-repeat left;
 }
 
 .file-default {
   list-style: none;
   padding: 0;
   margin: 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/icon-default.jpg") no-repeat left;
+  background: url("../../../../legacy/app/assets/images/ramblers/icon-default.jpg") no-repeat left;
 }
 
 .membership-grades {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
   padding-top: 15px;
 }
 
@@ -3392,12 +3392,12 @@ img[src*="#thumbnail"] {
 
 .membership-grades .ui-tabs-nav li.ui-state-active a,
 .membership-grades .ui-tabs-nav li a:hover {
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-tabber-large.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-tabber-large.png") no-repeat;
   color: #fff;
 }
 
 .membership-grades .ui-tabs-nav li {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-vert.png") top right repeat-y;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-vert.png") top right repeat-y;
   width: auto;
 }
 
@@ -3471,14 +3471,14 @@ img[src*="#thumbnail"] {
 }
 
 .nav-box ul li {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x bottom left;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x bottom left;
   padding: 0;
 }
 
 .nav-box ul li a {
   display: block;
   padding: 8px 0 8px 20px;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 0px 12px;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat 0px 12px;
   background-position: top left;
 }
 
@@ -3493,7 +3493,7 @@ img[src*="#thumbnail"] {
 
 .pagination {
   padding: 10px 0 0 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x top left;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x top left;
   float: left;
   width: 100%;
   margin: 0 0 20px 0;
@@ -3529,17 +3529,17 @@ img[src*="#thumbnail"] {
 }
 
 .pagination ul li a.page-prev {
-  background:url("../../../../legacy/app/assets/images/ramblers/pagination-prev.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/pagination-prev.png") no-repeat;
 }
 
 .pagination ul li a.page-next {
-  background:url("../../../../legacy/app/assets/images/ramblers/pagination-next.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/pagination-next.png") no-repeat;
 }
 
 .pagination ul li span.active {
   display: block;
   color: #fff;
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-pagination.gif") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-pagination.gif") no-repeat;
   padding: 1px 6px;
 }
 
@@ -3605,7 +3605,7 @@ img[src*="#thumbnail"] {
   height: 35px;
   padding-top: 5px;
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") top no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") top no-repeat;
   color: #fff;
   text-align: center;
   font-weight: bold;
@@ -3615,7 +3615,7 @@ img[src*="#thumbnail"] {
 .event-calendar .event-months li a:hover {
   display: block;
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") center -90px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") center -90px no-repeat;
   color: #000;
 }
 
@@ -3631,7 +3631,7 @@ img[src*="#thumbnail"] {
   height: 35px;
   padding-top: 5px;
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") center -180px no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-event-cal.png") center -180px no-repeat;
   color: #999;
   text-align: center;
   font-weight: bold;
@@ -3800,7 +3800,7 @@ ul.sbOptions li.last a {
   width: 100%;
   margin-bottom: 15px;
   padding-bottom: 10px;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
 }
 
 .form-section h2 {
@@ -3844,11 +3844,11 @@ ul.sbOptions li.last a {
   width: 220px;
   height: 80px;
   padding: 10px;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-radio-large.gif") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-radio-large.gif") no-repeat;
 }
 
 .radio-but-large label.ui-state-active {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-radio-large-active.gif") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-radio-large-active.gif") no-repeat;
 }
 
 .radio-but-large h3 {
@@ -3873,11 +3873,11 @@ ul.sbOptions li.last a {
 .radio-but-small label, .radio-but-small-thin label {
   display: block;
   padding: 4px 10px 10px 30px;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-radio.png") no-repeat 0px 0px;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-radio.png") no-repeat 0px 0px;
 }
 
 .radio-but-small label.ui-state-active, .radio-but-small-thin label.ui-state-active {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-radio-active.png") no-repeat 0px 0px;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-radio-active.png") no-repeat 0px 0px;
 }
 
 .print-preview {
@@ -3906,17 +3906,17 @@ ul.sbOptions li.last a {
 }
 
 .checkbox-group label.ui-state-active {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
 }
 
 .checkbox-off {
   padding: 0px 0px 0px 0px;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox.png") no-repeat;
   background-position: center;
 }
 
 .checkbox-on {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat;
   background-position: center;
 }
 
@@ -3933,7 +3933,7 @@ ul.sbOptions li.last a {
 }
 
 .checkbox-inline label.ui-state-active {
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
 }
 
 .txt-box-mid {
@@ -3969,7 +3969,7 @@ ul.sbOptions li.last a {
 
 .ju-footer .but-next {
   float: right;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 48px 10px #333;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-green.png") no-repeat 48px 10px #333;
   color: #fff;
   border: none;
   padding: 3px 25px 3px 8px;
@@ -4020,7 +4020,7 @@ ul.sbOptions li.last a {
 }
 
 .tweet ul li {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
   padding: 10px 0;
 }
 
@@ -4059,7 +4059,7 @@ ul.sbOptions li.last a {
 
 .vol-item .morelink {
   float: right;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
   font-weight: bold;
 }
@@ -4069,7 +4069,7 @@ ul.sbOptions li.last a {
 }
 
 .file-item {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   padding: 15px 0;
   float: left;
   width: 100%;
@@ -4098,7 +4098,7 @@ ul.sbOptions li.last a {
 
 .file-item .morelink {
   float: left;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
   font-weight: bold;
 }
@@ -4119,7 +4119,7 @@ ul.sbOptions li.last a {
   margin-bottom: 20px;
   float: left;
   width: 100%;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
   padding: 10px 0 0 0;
 }
 
@@ -4129,7 +4129,7 @@ ul.sbOptions li.last a {
   width: 100%;
   padding: 0;
   margin: 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   padding: 0 0 10px 0;
 }
 
@@ -4149,12 +4149,12 @@ ul.sbOptions li.last a {
 }
 
 .atoz ul li.active {
-  background:url("../../../../legacy/app/assets/images/ramblers/bg-atoz.gif") no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bg-atoz.gif") no-repeat;
   color: #fff;
 }
 
 .atoz-section {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   padding: 10px 0;
   float: left;
   width: 100%;
@@ -4206,7 +4206,7 @@ ul.sbOptions li.last a {
 
 .atoz-section .morelink {
   float: right;
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") left no-repeat;
   padding: 2px 0 2px 15px;
   font-weight: bold;
 }
@@ -4273,7 +4273,7 @@ ul.sbOptions li.last a {
 }
 
 .comment {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
   padding: 10px 0;
   overflow: hidden;
 }
@@ -4323,7 +4323,7 @@ ul.sbOptions li.last a {
   float: left;
   width: 100%;
   padding: 8px 0;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
 }
 
 .article-info .last {
@@ -4353,7 +4353,7 @@ ul.sbOptions li.last a {
   text-decoration: none;
   padding: 6px 8px 8px 24px;
   width: auto;
-  background:url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 9px 10px no-repeat #C60C30;
+  background: url("../../../../legacy/app/assets/images/ramblers/bull-white-trans.png") 9px 10px no-repeat #C60C30;
   font-family: 'BitterBold', sans-serif;
   font-size: 14px;
 }
@@ -4371,7 +4371,7 @@ ul.sbOptions li.last a {
   width: 400px;
   padding: 10px 0 10px 30px;
   margin: 0 20px 0 20px;
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x scroll left bottom transparent;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x scroll left bottom transparent;
 }
 
 #event-detail-container .form-container .event-detail-row .event-detail-label {
@@ -4390,7 +4390,7 @@ ul.sbOptions li.last a {
 }
 
 .ui-tabs-panel .more-link {
-  background:url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat scroll left center transparent;
+  background: url("../../../../legacy/app/assets/images/ramblers/bul-grey.png") no-repeat scroll left center transparent;
   display: block;
   float: right;
   font-weight: bold;
@@ -4410,7 +4410,7 @@ ul.sbOptions li.last a {
 }
 
 .other-events ul li {
-  background:url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x scroll left bottom transparent;
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") repeat-x scroll left bottom transparent;
   color: #333;
   padding: 5px 0;
 }
@@ -4755,6 +4755,14 @@ input[type="radio"]:checked + label {
   margin-left: 6px;
 }
 
+.ml-8 {
+  margin-left: 8px;
+}
+
+.ml-12 {
+  margin-left: 12px;
+}
+
 .mt-0 {
   margin-top: 0px;
 }
@@ -4825,6 +4833,18 @@ input[type="radio"]:checked + label {
 
 .mb-12 {
   margin-bottom: 12px;
+}
+
+.pb-6 {
+  padding-bottom: 6px;
+}
+
+.pb-8 {
+  padding-bottom: 8px;
+}
+
+.pb-10 {
+  padding-bottom: 10px;
 }
 
 .btn-toggle {
@@ -5156,6 +5176,11 @@ input[type="radio"]:checked + label {
   display: block;
   font-weight: bold;
   padding-left: 26px;
-  background:url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
+  background: url("../../../../legacy/app/assets/images/ramblers/but-checkbox-active.png") no-repeat 3px 0px;
 }
 
+.fit-contents {
+  display: inline-block;
+  position: absolute;
+  float: left;
+}

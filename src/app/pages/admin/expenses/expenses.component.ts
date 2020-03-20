@@ -103,7 +103,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               public display: ExpenseDisplayService,
               loggerFactory: LoggerFactory) {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.logger = loggerFactory.createLogger(ExpensesComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpensesComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -20,7 +20,7 @@
         <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
           <div (click)="personalDetails()" class="item-icon">
             <i class="far fa-id-card fa-3x ramblers"></i>
-            <h5>Personal details</h5>
+            <h5>Contact details</h5>
             <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
               <app-markdown-editor category="admin" name="personal-details-help"
                                    description="Personal details help"></app-markdown-editor>

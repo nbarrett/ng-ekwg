@@ -47,7 +47,7 @@ export class PersonalDetailsComponent implements OnInit, OnDestroy {
               private urlService: UrlService,
               public profileService: ProfileService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PersonalDetailsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(PersonalDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   private notify: AlertInstance;

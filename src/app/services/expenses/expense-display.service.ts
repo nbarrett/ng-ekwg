@@ -63,7 +63,7 @@ export class ExpenseDisplayService {
     private dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
     this.receiptBaseUrl = this.contentMetadata.baseUrl("expenseClaims");
-    this.logger = loggerFactory.createLogger(ExpenseDisplayService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseDisplayService, NgxLoggerLevel.OFF);
     this.refreshMembers();
   }
 

@@ -40,7 +40,7 @@ export class ProfileService implements OnInit {
               private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ProfileService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ProfileService, NgxLoggerLevel.OFF);
   }
 
   private logger: Logger;

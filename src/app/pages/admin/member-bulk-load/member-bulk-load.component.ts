@@ -88,7 +88,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberBulkLoadComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberBulkLoadComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

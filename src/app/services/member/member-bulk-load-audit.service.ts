@@ -24,7 +24,7 @@ export class MemberBulkLoadAuditService {
               private dbUtils: DbUtilsService,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberBulkLoadAuditService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberBulkLoadAuditService, NgxLoggerLevel.OFF);
   }
 
   private async responseFrom(observable: Observable<MemberBulkLoadAuditApiResponse>): Promise<MemberBulkLoadAuditApiResponse> {

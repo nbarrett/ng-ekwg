@@ -140,7 +140,7 @@ export class MemberService {
     return (memberIdOrObject && memberIdOrObject.id) ? memberIdOrObject.id : memberIdOrObject;
   }
 
-  allLimitedFields(filterFunction) {
+  allLimitedFields(filterFunction?: (value?: any) => boolean) {
     return this.all({
       select: {
         mailchimpLists: 1,
@@ -161,7 +161,7 @@ export class MemberService {
         nameAlias: 1
       }
     }).then(members => chain(members)
-      .filter(filterFunction)
+      .filter(filterFunction || (() => true))
       .sortBy(member => member.firstName + member.lastName).value());
   }
 

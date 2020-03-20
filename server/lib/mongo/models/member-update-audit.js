@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const member = require("./member");
 
 const memberUpdateAuditSchema = mongoose.Schema({
-  id: {type: String},
   uploadSessionId: {type: String},
   updateTime: {type: Number},
   memberAction: {type: String},

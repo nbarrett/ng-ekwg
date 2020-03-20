@@ -13,7 +13,7 @@ export class GoogleMapsService {
   private logger: Logger;
 
   constructor(private http: HttpClient, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(GoogleMapsService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(GoogleMapsService, NgxLoggerLevel.OFF);
   }
 
   async getConfig(): Promise<GoogleMapsConfig> {

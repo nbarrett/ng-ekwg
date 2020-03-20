@@ -31,7 +31,7 @@ export class AdminComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(AdminComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(AdminComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {
@@ -64,7 +64,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   memberLoginAudit() {
-
+    this.urlService.navigateTo("admin", "member-login-audit");
   }
 
   personalDetails() {

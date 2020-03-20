@@ -48,7 +48,7 @@ export class ExpenseNotificationService {
     private displayDatePipe: DisplayDatePipe,
     public display: ExpenseDisplayService,
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseNotificationService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseNotificationService, NgxLoggerLevel.OFF);
   }
 
   private expenseEventNotificationMappingsFor(eventType: ExpenseEventType): ExpenseNotificationMapping {

@@ -22,6 +22,7 @@ import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { AdminAuthGuard } from "./admin-auth-guard.service";
+import { LoggedInGuard } from "./admin-login-guard.service";
 import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
@@ -89,6 +90,7 @@ import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expen
 import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
+import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
 import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
@@ -232,6 +234,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
+    MemberLoginAuditComponent,
     MoneyPipe,
     NonRenderingComponent,
     NotificationUrlComponent,
@@ -327,6 +330,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     FullNameWithAliasPipe,
     HumanisePipe,
     LastConfirmedDateDisplayed,
+    LoggedInGuard,
     MailchimpCampaignServiceProvider,
     MailchimpConfigService,
     MailchimpListServiceProvider,

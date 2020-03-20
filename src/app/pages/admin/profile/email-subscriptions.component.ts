@@ -47,7 +47,7 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private routerHistoryService: RouterHistoryService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(EmailSubscriptionsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(EmailSubscriptionsComponent, NgxLoggerLevel.OFF);
   }
 
   private notify: AlertInstance;

@@ -10,6 +10,7 @@ import { DateUtilsService } from "../services/date-utils.service";
 export class DatePickerComponent implements OnInit {
 
   @Input() dateValue: DateValue;
+  @Input() size: string;
   @Output() dateChange: EventEmitter<DateValue> = new EventEmitter();
 
   constructor(private dateUtils: DateUtilsService) {

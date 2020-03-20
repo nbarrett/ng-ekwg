@@ -48,7 +48,7 @@ export class SendEmailsModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SendEmailsModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SendEmailsModalComponent, NgxLoggerLevel.OFF);
   }
 
   selectClick(select: NgSelectComponent) {

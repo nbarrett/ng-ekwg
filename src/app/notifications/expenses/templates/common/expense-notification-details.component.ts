@@ -19,7 +19,7 @@ export class ExpenseNotificationDetailsComponent implements OnInit, AfterViewIni
   constructor(
     public display: ExpenseDisplayService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseNotificationDetailsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

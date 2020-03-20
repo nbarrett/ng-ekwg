@@ -27,7 +27,7 @@ export class MemberBulkLoadService {
               private memberNamingService: MemberNamingService,
               private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberBulkLoadService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberBulkLoadService, NgxLoggerLevel.OFF);
   }
 
   processResponse(apiResponse: MemberBulkLoadAuditApiResponse, members: Member[], notify: AlertInstance): Promise<any> {

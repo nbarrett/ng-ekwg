@@ -20,7 +20,7 @@ export class ExpenseClaimService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseClaimService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseClaimService, NgxLoggerLevel.OFF);
   }
 
   notifications(): Observable<ExpenseClaimApiResponse> {

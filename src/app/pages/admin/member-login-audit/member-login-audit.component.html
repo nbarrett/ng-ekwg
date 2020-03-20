@@ -1,0 +1,81 @@
+<app-page lastBreadcrumb="admin" pageTitle="Member Admin">
+  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame round" *ngIf="auditFilter">
+    <div class="admin-header-background round">
+      <div class="admin-header-container pb-6">
+        <div class="form-inline">
+          <div class="form-group">
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="glyphicon glyphicon-search"></i>
+              </div>
+              <input id="quick-search" [(ngModel)]="quickSearch"
+                     (ngModelChange)="onSearchChange($event)"
+                     name="quickSearch"
+                     class="form-control input-md"
+                     type="text" placeholder="Quick Search">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="filter-audit" class="form-inline ml-12 mr-12">
+              Filter logins since:</label>
+            <app-date-picker id="filter-audit" class="input-group"
+                             [size]="'md round'"
+                             (dateChange)="onFilterDateChange($event)"
+                             [dateValue]="filterDateValue">
+            </app-date-picker>
+          </div>
+          <div class="form-group">
+            <input type="submit" [disabled]="notifyTarget.busy || auditFilter.results.length==0"
+                   value="Delete Displayed Audit"
+                   (click)="deleteSelectedMemberAudit()"
+                   class="button-form ml-6 mr-6"
+                   [ngClass]="{'disabled-button-form': notifyTarget.busy || auditFilter.results.length==0 }">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" *ngIf="notifyTarget.showAlert">
+            <div class="alert {{notifyTarget.alertClass}} mt-8"><i
+              class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <table class="round tbl-green-g table-responsive table-striped table-hover table-condensed">
+        <thead>
+        <tr class="white-anchor">
+          <th (click)="sortAuditBy('loginTime')">Time
+            <span class="sorting-header" *ngIf="showAuditColumn('loginTime')"
+                  [textContent]="auditFilter.sortDirection"></span>
+          </th>
+          <th (click)="sortAuditBy('userName')">User Name
+            <span class="sorting-header" *ngIf="showAuditColumn('userName')"
+                  [textContent]="auditFilter.sortDirection"></span>
+          </th>
+          <th (click)="sortAuditBy('member')">Full Name
+            <span class="sorting-header" *ngIf="showAuditColumn('member')"
+                  [textContent]="auditFilter.sortDirection"></span>
+          </th>
+          <th (click)="sortAuditBy('loginResponse.memberLoggedIn')">Login Successful
+            <span class="sorting-header" *ngIf="showAuditColumn('loginResponse.memberLoggedIn')"
+                  [textContent]="auditFilter.sortDirection"></span>
+          </th>
+          <th (click)="sortAuditBy('loginResponse.alertMessage')">Login Response
+            <span class="sorting-header" *ngIf="showAuditColumn('loginResponse.alertMessage')"
+                  [textContent]="auditFilter.sortDirection"></span>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let memberAudit of auditFilter.results">
+          <td class="nowrap">{{memberAudit?.loginTime | displayDateAndTime}}</td>
+          <td>{{memberAudit?.userName}}</td>
+          <td>{{memberAudit?.member | fullNameWithAlias :''}}</td>
+          <td [ngClass]="memberAudit?.loginResponse?.memberLoggedIn ? 'checkbox-on' : 'checkbox-off'"></td>
+          <td>{{memberAudit?.loginResponse?.alertMessage}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</app-page>

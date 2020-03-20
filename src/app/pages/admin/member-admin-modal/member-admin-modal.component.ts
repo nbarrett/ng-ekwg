@@ -58,7 +58,7 @@ export class MemberAdminModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberAdminModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

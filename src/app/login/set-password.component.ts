@@ -24,7 +24,7 @@ export class SetPasswordComponent implements OnInit {
               private memberService: MemberService,
               private authService: AuthService,
               private route: ActivatedRoute, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SetPasswordComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SetPasswordComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

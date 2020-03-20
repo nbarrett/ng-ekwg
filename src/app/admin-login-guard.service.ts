@@ -4,12 +4,12 @@ import { Observable } from "rxjs";
 import { MemberLoginService } from "./services/member/member-login.service";
 
 @Injectable()
-export class AdminAuthGuard implements CanActivate {
+export class LoggedInGuard implements CanActivate {
   constructor(private memberLoginService: MemberLoginService, private router: Router) {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> | Promise<boolean> {
-    const allowed = this.memberLoginService.allowMemberAdminEdits();
+    const allowed = this.memberLoginService.memberLoggedIn();
     if (!allowed) {
       this.router.navigate(["/"]);
     }

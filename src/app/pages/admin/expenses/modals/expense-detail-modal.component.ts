@@ -70,7 +70,7 @@ export class ExpenseDetailModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseDetailModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseDetailModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

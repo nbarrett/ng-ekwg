@@ -30,7 +30,7 @@ export class ExpenseReturnModalComponent implements OnInit {
               private notifications: ExpenseNotificationService,
               public display: ExpenseDisplayService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseReturnModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ExpenseReturnModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -50,7 +50,7 @@ export class LoginDetailsComponent implements OnInit, OnDestroy {
               private routerHistoryService: RouterHistoryService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginDetailsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(LoginDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   private notify: AlertInstance;
