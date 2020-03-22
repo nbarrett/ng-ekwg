@@ -5,8 +5,7 @@
   <div class="thumbnail">
     <span class="pull-right">
       <span *ngIf="expandable" class="markdown-preview-icon collapsed" [attr.aria-expanded]="!expandable"
-            aria-controls="expenseHelp" tooltip-placement="left"
-            tooltip="Click to show help" (click)="expand()">
+            aria-controls="expenseHelp" (click)="expand()">
         <i class="fa fa-caret-up fa-2x"></i>
       </span>
       <span *ngIf="!expandable" class="markdown-preview-icon expanded" tooltip-placement="left"
@@ -49,8 +48,8 @@
                          [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                 </div>
                 <div *ngIf="allowAddExpenseClaim()" class="form-group">
-                  <input type="submit" [disabled]="false" value="Back to admin" (click)="backToAdmin()"
-                         class="button-form button-form-left">
+                  <input type="submit" [disabled]="notifyTarget.busy" value="Back to admin" (click)="backToAdmin()"
+                         [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                   <input type="submit" value="Add Expense Claim"
                          (click)="addExpenseClaim()" title="Add new Expense Claim"
                          [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
@@ -198,12 +197,12 @@
                         </span>
                       <span *ngIf="confirm.approveConfirmOutstanding()">
                         <span *ngIf="allowApproveExpenseClaim()">
-                          <div *ngIf="notifyTarget.showAlert" class="mb-10">
-                            <div class="alert {{notifyTarget.alertClass}}">
-                              <i class="glyphicon {{notifyTarget.alert.icon}}"> </i>
+                          <div *ngIf="notifyConfirmTarget.showAlert" class="mb-10">
+                            <div class="alert {{notifyConfirmTarget.alertClass}}">
+                              <i class="glyphicon {{notifyConfirmTarget.alert.icon}}"> </i>
                               <strong
-                                *ngIf="notifyTarget.alertTitle">{{notifyTarget.alertTitle}}
-                                : </strong> {{notifyTarget.alertMessage}} </div>
+                                *ngIf="notifyConfirmTarget.alertTitle">{{notifyConfirmTarget.alertTitle}}
+                                : </strong> {{notifyConfirmTarget.alertMessage}} </div>
                           </div>
                           <input [disabled]="notifyTarget.busy" type="submit"
                                  value="Confirm {{nextApprovalStage()}}"

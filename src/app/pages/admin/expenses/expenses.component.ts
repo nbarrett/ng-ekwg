@@ -66,8 +66,9 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     showOnlyMine: boolean,
   };
   private notify: AlertInstance;
+  private notifyConfirm: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  private resubmit: boolean;
+  public notifyConfirmTarget: AlertTarget = {};
   private uploadedFile: string;
   public confirm = new Confirm();
   private authSubscription: Subscription;
@@ -103,6 +104,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
               public display: ExpenseDisplayService,
               loggerFactory: LoggerFactory) {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.notifyConfirm = this.notifierService.createAlertInstance(this.notifyConfirmTarget);
     this.logger = loggerFactory.createLogger(ExpensesComponent, NgxLoggerLevel.OFF);
   }
 
@@ -237,8 +239,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   allowApproveExpenseClaim() {
-    return this.approvalEvents().length === 0;
-  }
+    return this.approvalEvents().length === 0 && !this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.paid);
+    }
 
   lastApprovedByMe() {
     const approvalEvents = this.approvalEvents();
@@ -265,7 +267,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   confirmApproveExpenseClaim() {
     const approvals = this.approvalEvents();
-    this.notify.hide();
+    this.notifyConfirm.hide();
     if (approvals.length <= 1) {
       const request: ExpenseNotificationRequest = {
         notify: this.notify,
@@ -369,10 +371,12 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   approveExpenseClaim() {
     this.confirm.type = ConfirmType.APPROVE;
     if (this.lastApprovedByMe()) {
-      this.notify.warning({
+      this.notifyConfirm.warning({
         title: "Duplicate approval warning",
         message: `You were the previous approver, therefore ${this.nextApprovalStage()} ought to be carried out by someone else. Are you sure you want to do this?`
       });
+    } else {
+      this.notifyConfirm.hide();
     }
   }
 

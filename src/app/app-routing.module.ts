@@ -14,8 +14,8 @@ import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.co
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
-import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
-import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
+import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
+import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
@@ -35,10 +35,10 @@ const routes: Routes = [
   {path: "admin/expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
   {path: "admin/member-login-audit", component: MemberLoginAuditComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
-  {path: "admin/profile", component: LoginDetailsComponent, canActivate: [LoggedInGuard]},
-  {path: "admin/login-details", component: LoginDetailsComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/profile", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/change-password", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},
   {path: "admin/email-subscriptions", component: EmailSubscriptionsComponent, canActivate: [LoggedInGuard]},
-  {path: "admin/personal-details", component: PersonalDetailsComponent, canActivate: [LoggedInGuard]},
+  {path: "admin/contact-details", component: ContactDetailsComponent, canActivate: [LoggedInGuard]},
   {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "forgot-password", component: ForgotPasswordComponent},

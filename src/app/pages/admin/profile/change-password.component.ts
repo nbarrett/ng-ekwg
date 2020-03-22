@@ -25,11 +25,11 @@ import { ProfileService } from "./profile.service";
 const pleaseTryAgain = " - please try again";
 
 @Component({
-  selector: "app-profile-personal-details",
-  templateUrl: "./login-details.component.html",
+  selector: "app-change-password",
+  templateUrl: "./change-password.component.html",
   styleUrls: ["./../admin/admin.component.sass"],
 })
-export class LoginDetailsComponent implements OnInit, OnDestroy {
+export class ChangePasswordComponent implements OnInit, OnDestroy {
   public member: Member;
   private subscription: Subscription;
 
@@ -50,7 +50,7 @@ export class LoginDetailsComponent implements OnInit, OnDestroy {
               private routerHistoryService: RouterHistoryService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginDetailsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ChangePasswordComponent, NgxLoggerLevel.OFF);
   }
 
   private notify: AlertInstance;

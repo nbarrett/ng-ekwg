@@ -18,7 +18,7 @@
 
       <div *ngIf="loggedIn" class="row">
         <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
-          <div (click)="personalDetails()" class="item-icon">
+          <div (click)="contactDetails()" class="item-icon">
             <i class="far fa-id-card fa-3x ramblers"></i>
             <h5>Contact details</h5>
             <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
@@ -80,7 +80,7 @@
         <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
           <div (click)="memberLoginAudit()" class="item-icon">
             <i class="fas fa-book fa-3x ramblers"></i>
-            <h5>Member Login Audit</h5>
+            <h5>Member login audit</h5>
             <p class="green-bullets-no-rule item-text">
               <app-markdown-editor category="admin" name="member-login-audit-help"
                                    description="Member login audit help"></app-markdown-editor>

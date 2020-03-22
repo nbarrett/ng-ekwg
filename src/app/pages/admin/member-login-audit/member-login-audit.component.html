@@ -25,11 +25,25 @@
             </app-date-picker>
           </div>
           <div class="form-group">
-            <input type="submit" [disabled]="notifyTarget.busy || auditFilter.results.length==0"
-                   value="Delete Displayed Audit"
-                   (click)="deleteSelectedMemberAudit()"
+            <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy" value="Back to admin" (click)="backToAdmin()"
                    class="button-form ml-6 mr-6"
+                   [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
+            <input type="submit" *ngIf="confirm.noneOutstanding()"
+                   [disabled]="notifyTarget.busy || auditFilter.results.length==0"
+                   value="Delete displayed audit"
+                   (click)="deleteSelectedMemberAudit()"
+                   class="button-form mr-6"
                    [ngClass]="{'disabled-button-form': notifyTarget.busy || auditFilter.results.length==0 }">
+            <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
+                   [disabled]="notifyTarget.busy"
+                   value="Confirm delete of {{auditFilter.results.length}} audit records"
+                   (click)="deleteSelectedMemberAuditConfirm()"
+                   class="button-form button-confirm ml-6 mr-6" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
+            <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
+                   [disabled]="notifyTarget.busy"
+                   value="Cancel"
+                   (click)="cancelDeleteSelectedMemberAudit()"
+                   class="button-form green-confirm" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
           </div>
         </div>
         <div class="row">

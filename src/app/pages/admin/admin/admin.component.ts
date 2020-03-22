@@ -67,12 +67,12 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.urlService.navigateTo("admin", "member-login-audit");
   }
 
-  personalDetails() {
-    this.urlService.navigateTo("admin", "personal-details");
+  contactDetails() {
+    this.urlService.navigateTo("admin", "contact-details");
   }
 
   changePassword() {
-    this.urlService.navigateTo("admin", "login-details");
+    this.urlService.navigateTo("admin", "change-password");
 
   }
 

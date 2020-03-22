@@ -92,8 +92,8 @@ import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.co
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
-import { LoginDetailsComponent } from "./pages/admin/profile/login-details.component";
-import { PersonalDetailsComponent } from "./pages/admin/profile/personal-details.component";
+import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
+import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
 import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
@@ -218,7 +218,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     JoinUsComponent,
     LastConfirmedDateDisplayed,
     LoginComponent,
-    LoginDetailsComponent,
+    ChangePasswordComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
@@ -242,7 +242,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
-    PersonalDetailsComponent,
+    ContactDetailsComponent,
     ResetPasswordModalComponent,
     SearchFilterPipe,
     SendEmailsModalComponent,

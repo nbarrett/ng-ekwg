@@ -11,6 +11,7 @@ import { ApiResponse } from "../../../models/api-response.model";
 import { DateValue } from "../../../models/date.model";
 import { Member, MemberAuthAudit } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, TableFilter } from "../../../models/table-filtering.model";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -38,6 +39,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   private memberFilterUploaded: any;
   private subscription: Subscription;
   private memberAudits: MemberAuthAudit[] = [];
+  public confirm = new Confirm();
   filterDateValue: DateValue;
   private logoutSubscription: Subscription;
 
@@ -66,7 +68,6 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     this.searchChangeObservable.pipe(debounceTime(250))
       .pipe(distinctUntilChanged())
       .subscribe(searchTerm => this.applyFilterToAudits(searchTerm));
-    this.notifyProgress("finding audit data...");
     this.auditFilter = {
       sortField: "loginTime",
       sortFunction: MEMBER_SORT,
@@ -94,6 +95,14 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   }
 
   deleteSelectedMemberAudit() {
+    this.confirm.type = ConfirmType.DELETE;
+  }
+
+  cancelDeleteSelectedMemberAudit() {
+    this.confirm.type = ConfirmType.NONE;
+  }
+
+  deleteSelectedMemberAuditConfirm() {
     const recordCount = this.auditFilter.results.length;
     this.notifyProgress(`Deleting ${recordCount} member audit record(s)...`);
     const removePromises = this.auditFilter.results.map(record => {
@@ -103,6 +112,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     Promise.all(removePromises).then(() => {
       this.notifyProgress(`Deleted ${recordCount} member audit record(s)`);
       this.notify.clearBusy();
+      this.cancelDeleteSelectedMemberAudit();
     });
   }
 
@@ -190,6 +200,11 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     this.notify.setBusy();
     this.logger.debug("date change", dateValue, "filterDate:", this.filterDateValue.value);
     this.filterDateValue = dateValue;
+    this.notifyProgress("finding audit data...");
     this.refreshMemberAudit();
+  }
+
+  backToAdmin() {
+    this.urlService.navigateTo("admin");
   }
 }

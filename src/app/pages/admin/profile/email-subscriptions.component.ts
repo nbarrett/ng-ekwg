@@ -22,7 +22,7 @@ import { UrlService } from "../../../services/url.service";
 import { ProfileService } from "./profile.service";
 
 @Component({
-  selector: "app-profile-personal-details",
+  selector: "app-email-subscriptions",
   templateUrl: "./email-subscriptions.component.html",
   styleUrls: ["./../admin/admin.component.sass"],
 })

@@ -22,11 +22,11 @@ import { UrlService } from "../../../services/url.service";
 import { ProfileService } from "./profile.service";
 
 @Component({
-  selector: "app-profile-personal-details",
-  templateUrl: "./personal-details.component.html",
+  selector: "app-contact-details",
+  templateUrl: "./contact-details.component.html",
   styleUrls: ["./../admin/admin.component.sass"],
 })
-export class PersonalDetailsComponent implements OnInit, OnDestroy {
+export class ContactDetailsComponent implements OnInit, OnDestroy {
   public member: Member;
   private subscription: Subscription;
 
@@ -47,7 +47,7 @@ export class PersonalDetailsComponent implements OnInit, OnDestroy {
               private urlService: UrlService,
               public profileService: ProfileService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PersonalDetailsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContactDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   private notify: AlertInstance;
