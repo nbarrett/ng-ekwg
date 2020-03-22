@@ -241,7 +241,7 @@ angular.module('ekwgApp')
     };
 
     $scope.fileUrl = function (committeeFile) {
-      return committeeFile && committeeFile.fileNameData ? URLService.baseUrl() + $scope.committeeFileBaseUrl + '/' + committeeFile.fileNameData.awsFileName : '';
+      return committeeFile && committeeFile.fileNameData ? URLService.baseUrl() + '/' + $scope.committeeFileBaseUrl + '/' + committeeFile.fileNameData.awsFileName : '';
     };
 
     $scope.fileTitle = function (committeeFile) {
