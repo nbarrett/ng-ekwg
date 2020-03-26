@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import cloneDeep from "lodash-es/cloneDeep";
 import extend from "lodash-es/extend";
@@ -25,13 +25,16 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
 import { ExpenseDisplayService } from "../../../services/expenses/expense-display.service";
 import { ExpenseNotificationService } from "../../../services/expenses/expense-notification.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
+import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
+import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberBulkLoadService } from "../../../services/member/member-bulk-load.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -78,30 +81,30 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   expandable: boolean;
   showOrHide = "hide";
 
-  constructor(@Inject("MailchimpListService") private mailchimpListService,
-              @Inject("MailchimpSegmentService") private mailchimpSegmentService,
-              @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+  constructor(private authService: AuthService,
+              private broadcastService: BroadcastService,
               private contentMetadata: ContentMetadataService,
-              private memberBulkUploadService: MemberBulkLoadService,
-              private memberService: MemberService,
-              private searchFilterPipe: SearchFilterPipe,
-              private mailchimpConfig: MailchimpConfigService,
+              private dateUtils: DateUtilsService,
               private expenseClaimService: ExpenseClaimService,
               private fullNameWithAliasPipe: FullNameWithAliasPipe,
-              private notifierService: NotifierService,
-              private modalService: BsModalService,
-              private dateUtils: DateUtilsService,
+              private mailchimpCampaignService: MailchimpCampaignService,
+              private mailchimpConfig: MailchimpConfigService,
+              private mailchimpListService: MailchimpListService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
-              private urlService: UrlService,
-              private emailSubscriptionService: EmailSubscriptionService,
-              private numberUtils: NumberUtilsService,
-              private stringUtils: StringUtilsService,
-              private authService: AuthService,
-              private broadcastService: BroadcastService,
+              private mailchimpSegmentService: MailchimpSegmentService,
+              private memberBulkUploadService: MemberBulkLoadService,
               private memberLoginService: MemberLoginService,
+              private memberService: MemberService,
+              private modalService: BsModalService,
+              private notifierService: NotifierService,
+              private numberUtils: NumberUtilsService,
               private route: ActivatedRoute,
-              public notifications: ExpenseNotificationService,
+              private searchFilterPipe: SearchFilterPipe,
+              private stringUtils: StringUtilsService,
+              private urlService: UrlService,
               public display: ExpenseDisplayService,
+              public notifications: ExpenseNotificationService,
               loggerFactory: LoggerFactory) {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notifyConfirm = this.notifierService.createAlertInstance(this.notifyConfirmTarget);
@@ -240,7 +243,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   allowApproveExpenseClaim() {
     return this.approvalEvents().length === 0 && !this.display.expenseClaimHasEventType(this.selected.expenseClaim, this.display.eventTypes.paid);
-    }
+  }
 
   lastApprovedByMe() {
     const approvalEvents = this.approvalEvents();

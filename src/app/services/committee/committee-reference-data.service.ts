@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnInit } from "@angular/core";
 import get from "lodash-es/get";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -15,20 +15,17 @@ import { CommitteeMember } from "./committee-member.model";
 export class CommitteeReferenceDataService {
   private messageSource = new Subject<CommitteeMember[]>();
   private logger: Logger;
-  public events: Observable<CommitteeMember[]>;
   private localFileTypes: FileType[] = [];
   private localCommitteeMembers: CommitteeMember[] = [];
   private referenceData: object = {};
 
   constructor(private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.events = this.messageSource.asObservable();
-    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.DEBUG);
     this.queryData();
   }
 
-  private queryData(): void {
+  queryData(): void {
     this.committeeConfig.getConfig().then(referenceData => {
-      this.logger.debug("queryData:referenceData", referenceData);
       this.localFileTypes = get(referenceData, "committee.fileTypes");
       this.localCommitteeMembers = map(get(referenceData, "committee.contactUs"), (data, type) => ({
         type,
@@ -39,9 +36,12 @@ export class CommitteeReferenceDataService {
         email: data.email
       }));
       this.referenceData = referenceData;
-      this.logger.debug("queryData:localCommitteeMembers", this.localCommitteeMembers);
       this.messageSource.next(this.localCommitteeMembers);
     });
+  }
+
+  events(): Observable<CommitteeMember[]> {
+    return this.messageSource.asObservable();
   }
 
   fileTypes(): FileType[] {

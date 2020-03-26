@@ -1,7 +1,9 @@
-import { HttpParams } from "@angular/common/http";
+import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { each } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Observable, Subject } from "rxjs";
+import { share } from "rxjs/operators";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -13,6 +15,18 @@ export class CommonDataService {
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommonDataService, NgxLoggerLevel.OFF);
+  }
+
+  public async responseFrom<T>(logger: Logger, observable: Observable<T>, notifications: Subject<T>): Promise<T> {
+    const shared = observable.pipe(share());
+    shared.subscribe((apiResponse: T) => {
+      logger.info("received", apiResponse);
+      notifications.next(apiResponse);
+    }, (httpErrorResponse: HttpErrorResponse) => {
+      logger.error("http error response", httpErrorResponse);
+      notifications.next(httpErrorResponse.error);
+    });
+    return await shared.toPromise();
   }
 
   public toHttpParams(criteria: object): HttpParams {

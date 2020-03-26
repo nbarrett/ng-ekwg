@@ -1,13 +1,15 @@
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { BsModalRef } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
+import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
@@ -31,16 +33,16 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   public readonly credentialTwoLabel = "Ramblers membership number or home postcode";
   private forgottenPasswordMember: Member;
 
-  constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
-              @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+  constructor(private authService: AuthService,
+              private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfigService: MailchimpConfigService,
-              private emailSubscriptionService: EmailSubscriptionService,
-              public bsModalRef: BsModalRef,
-              private stringUtils: StringUtilsService,
-              private authService: AuthService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+              private mailchimpSegmentService: MailchimpSegmentService,
               private memberLoginService: MemberLoginService,
-              private urlService: UrlService,
               private notifierService: NotifierService,
+              private stringUtils: StringUtilsService,
+              private urlService: UrlService,
+              public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.OFF);
   }
@@ -120,7 +122,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   }
 
   updateGeneralList() {
-    return this.emailSubscriptionService.createBatchSubscriptionForList("general", [this.forgottenPasswordMember]);
+    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("general", [this.forgottenPasswordMember]);
   }
 
   sendForgottenPasswordEmailToMember() {

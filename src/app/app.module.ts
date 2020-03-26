@@ -144,10 +144,9 @@ import { CommitteeConfigService } from "./services/commitee-config.service";
 import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
 import { ConfigService } from "./services/config.service";
 import { ContentMetadataService } from "./services/content-metadata.service";
-import { ContentTextService } from "./services/content-text.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { DbUtilsService } from "./services/db-utils.service";
-import { EmailSubscriptionService } from "./services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
 import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
@@ -295,7 +294,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     CollapseModule.forRoot(),
     FileUploadModule,
     HttpClientModule,
-    LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.ERROR}),
+    LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.DEBUG}),
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
     NgSelectModule,
@@ -323,7 +322,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
-    EmailSubscriptionService,
+    MailchimpListSubscriptionService,
     EventNotePipe,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
@@ -333,7 +332,6 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     LoggedInGuard,
     MailchimpCampaignServiceProvider,
     MailchimpConfigService,
-    MailchimpListServiceProvider,
     MailchimpSegmentServiceProvider,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
@@ -411,7 +409,6 @@ export class AppModule implements DoBootstrap {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsDirective}))
-      // .factory("$location", downgradeInjectable($locationShim))
       .factory("LegacyUrlService", LegacyUrlService)
       .factory("PageService", downgradeInjectable(PageService))
       .factory("DbUtils", downgradeInjectable(DbUtilsService))
@@ -419,17 +416,12 @@ export class AppModule implements DoBootstrap {
       .factory("ContentMetaDataService", downgradeInjectable(ContentMetadataService))
       .factory("NumberUtils", downgradeInjectable(NumberUtilsService))
       .factory("ContentMetadataService", downgradeInjectable(ContentMetadataService))
-      .factory("MailchimpConfig", downgradeInjectable(MailchimpConfigService))
       .factory("CommitteeConfig", downgradeInjectable(CommitteeConfigService))
       .factory("ProfileConfirmationService", downgradeInjectable(ProfileConfirmationService))
       .factory("MemberLoginService", downgradeInjectable(MemberLoginService))
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
-      .factory("ContentText", downgradeInjectable(ContentTextService))
       .factory("Config", downgradeInjectable(ConfigService))
-      .factory("EmailSubscriptionService", downgradeInjectable(EmailSubscriptionService))
       .factory("MemberService", downgradeInjectable(MemberService))
-      .factory("MemberNamingService", downgradeInjectable(MemberNamingService))
-      .factory("MailchimpErrorParserService", downgradeInjectable(MailchimpErrorParserService))
       .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))

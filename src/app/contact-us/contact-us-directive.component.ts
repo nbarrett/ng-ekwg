@@ -35,7 +35,7 @@ export class ContactUsDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.dataSub = this.committeeReferenceData.events.subscribe(referenceData => {
+    this.dataSub = this.committeeReferenceData.events().subscribe(referenceData => {
       this.logger.debug("received event", referenceData);
     });
   }

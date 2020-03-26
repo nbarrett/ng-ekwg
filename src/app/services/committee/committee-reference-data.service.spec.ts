@@ -1,73 +1,92 @@
-import { HttpClientTestingModule } from "@angular/common/http/testing";
-import { TestBed } from "@angular/core/testing";
-import { RouterTestingModule } from "@angular/router/testing";
-import { CookieService } from "ngx-cookie-service";
+import { async, TestBed } from "@angular/core/testing";
 import { LoggerTestingModule } from "ngx-logger/testing";
-import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
-import { FullNamePipe } from "../../pipes/full-name.pipe";
-import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
+import { CommitteeConfigService } from "../commitee-config.service";
 import { CommitteeMember } from "./committee-member.model";
 import { CommitteeReferenceDataService } from "./committee-reference-data.service";
 
-const NIC: CommitteeMember = {
-  type: "secretary",
-  email: "secretary@ekwg.co.uk",
-  fullName: "Nicola Meadway",
-  memberId: "589a4fa9c2ef165d6194adae",
-  nameAndDescription: "Secretary (Nicola Meadway)",
-  description: "Secretary"
+const NIC = {
+  description: "Secretary",
+  fullName: "Nic Meadway",
+  memberId: "578bb704bd966f28bff5081b",
+  email: "secretary@ekwg.co.uk"
 };
-const mockData = [
-  {
-    type: "chairman",
-    fullName: "Kerry O'Grady",
-    memberId: "53595420e4b094f2b232ca16",
-    nameAndDescription: "Chairman (Kerry O'Grady)",
-    description: "Chairman"
-  },
-  NIC,
-  {
-    type: "treasurer",
-    fullName: "Jon Inglett",
-    memberId: "5a25ed0fc2ef1616079080d5",
-    nameAndDescription: "Treasurer (Jon Inglett)",
-    description: "Treasurer"
-  },
-  {
-    type: "membership",
-    fullName: "Desiree Nel",
-    memberId: "535954ebe4b094f2b232cb1c",
-    nameAndDescription: "Membership (Desiree Nel)",
-    description: "Membership"
-  }];
 
-const committeConfig = {
-  getConfig: () => Promise.resolve(mockData)
+const EXPECTED_NIC: CommitteeMember = {
+  type: "secretary",
+  description: "Secretary",
+  fullName: "Nic Meadway",
+  memberId: "578bb704bd966f28bff5081b",
+  email: "secretary@ekwg.co.uk",
+  nameAndDescription: "Secretary (Nic Meadway)"
+};
+
+const mockData = {
+  committee: {
+    contactUs: {
+      chairman: {
+        description: "Chairman",
+        fullName: "Kerry O'Grady",
+        email: "chairman@ekwg.co.uk",
+        memberId: "52c595b3e4b003b51a33dac0"
+      },
+      secretary: NIC,
+      treasurer: {
+        description: "Treasurer",
+        fullName: "Jon Inglett",
+        email: "treasurer@ekwg.co.uk",
+        memberId: "5a22f683bd966f3d367dbd80"
+      },
+      membership: {
+        description: "Membership",
+        fullName: "Jenny Brown",
+        email: "membership@ekwg.co.uk",
+        memberId: "5318ce73a08549a65a4a2899"
+      },
+      social: {
+        description: "Social Co-ordinator",
+        fullName: "Andrew Goh",
+        email: "social@ekwg.co.uk",
+        memberId: "5a281ddec2ef160584439b1f"
+      },
+      walks: {
+        description: "Walks Co-ordinator",
+        fullName: "Stuart Maisner",
+        email: "walks@ekwg.co.uk",
+        memberId: "55470ac1e4b0996846fa82ba"
+      },
+      support: {
+        description: "Technical Support",
+        fullName: "Nick Barrett",
+        email: "nick.barrett@ekwg.co.uk",
+        memberId: "52ab5d94e4b0f92ce9a5caee"
+      }
+    }
+  }
 };
 
 describe("CommitteeReferenceDataService", () => {
 
-  beforeEach(() => new Promise((resolve, reject) => {
-    TestBed.configureTestingModule({
-      imports: [LoggerTestingModule, HttpClientTestingModule, RouterTestingModule],
-      declarations: [],
-      providers: [CookieService, MemberIdToFullNamePipe,
-        FullNamePipe,
-        FullNameWithAliasPipe,
-        {
-          provide: "CommitteeConfig", useValue: committeConfig
-        }],
-    });
-    resolve();
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [LoggerTestingModule],
+    providers: [{
+      provide: CommitteeConfigService, useValue: {
+        getConfig: () => Promise.resolve(mockData)
+      }
+    }]
   }));
 
-  // it("should be created", (done: DoneFn) => {
-  //   const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
-  //   service.committeeMembersForRole("secretary")(response => {
-  //   });
-  //   expect(.toBe([NIC]);
-  // });
-// ));
-})
-;
+  it("should return members for role", async(() => {
+    const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
+    setTimeout(() => {
+      expect(service.committeeMembersForRole("secretary")).toEqual([EXPECTED_NIC]);
+    }, 0);
+  }));
 
+  it("should return committee members", async(() => {
+    const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
+    setTimeout(() => {
+      expect(service.committeeMembers()[1]).toEqual(EXPECTED_NIC);
+    }, 0);
+  }));
+
+});

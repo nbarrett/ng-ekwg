@@ -21,9 +21,10 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
+import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MemberBulkLoadAuditService } from "../../../services/member/member-bulk-load-audit.service";
 import { MemberBulkLoadService } from "../../../services/member/member-bulk-load.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -69,7 +70,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(@Inject(DOCUMENT) private document: Document,
-              @Inject("MailchimpListService") private mailchimpListService,
+              private mailchimpListService: MailchimpListService,
               private contentMetadata: ContentMetadataService,
               private memberBulkUploadService: MemberBulkLoadService,
               private memberService: MemberService,
@@ -81,7 +82,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private urlService: UrlService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
               private broadcastService: BroadcastService,
@@ -194,7 +195,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
 
   createMemberFromAudit(memberFromAudit) {
     const member = cloneDeep(memberFromAudit);
-    this.emailSubscriptionService.defaultMailchimpSettings(member, true);
+    this.mailchimpListSubscriptionService.defaultMailchimpSettings(member, true);
     member.groupMember = true;
     this.modalService.show(MemberAdminModalComponent, {
       class: "modal-lg",

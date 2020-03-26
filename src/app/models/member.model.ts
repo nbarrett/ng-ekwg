@@ -1,4 +1,5 @@
 import { ApiResponse } from "./api-response.model";
+import { MailchimpSubscription } from "./mailchimp.model";
 
 export enum ProfileUpdateType {
   LOGIN_DETAILS = "login details",
@@ -168,14 +169,6 @@ export interface LoginResponse {
   alertMessage?: string;
   showResetPassword?: boolean;
   memberLoggedIn?: boolean;
-}
-
-export interface MailchimpSubscription {
-  subscribed?: boolean;
-  updated?: boolean;
-  leid?: string;
-  lastUpdated?: number;
-  email?: { email: string, leid?: string };
 }
 
 export interface MemberApiResponse extends ApiResponse {

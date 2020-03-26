@@ -4,14 +4,10 @@ import { LoggerTestingModule } from "ngx-logger/testing";
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
+import { MemberService } from "./member/member.service";
 
 import { NumberUtilsService } from "./number-utils.service";
 import { StringUtilsService } from "./string-utils.service";
-
-const memberService = {
-  allLimitedFields: () => Promise.resolve({email: "test@example.com"}),
-  filterFor: {GROUP_MEMBERS: ""}
-};
 
 describe("NumberUtilsService", () => {
   beforeEach(() => TestBed.configureTestingModule({
@@ -21,7 +17,10 @@ describe("NumberUtilsService", () => {
       MemberIdToFullNamePipe,
       FullNamePipe,
       FullNameWithAliasPipe,
-      {provide: "MemberService", useValue: memberService}]
+      {provide: MemberService, useValue: {
+          allLimitedFields: () => Promise.resolve({email: "test@example.com"}),
+          filterFor: {GROUP_MEMBERS: ""}
+        }}]
   }));
 
   describe("asNumber", () => {

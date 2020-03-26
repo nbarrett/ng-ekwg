@@ -9,7 +9,7 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -34,7 +34,7 @@ export class ContactDetailsComponent implements OnInit, OnDestroy {
               private broadcastService: BroadcastService,
               private contentMetadata: ContentMetadataService,
               private dateUtils: DateUtilsService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private memberLoginService: MemberLoginService,
               private memberService: MemberService,

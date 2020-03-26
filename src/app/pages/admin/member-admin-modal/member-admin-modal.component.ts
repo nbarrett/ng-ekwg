@@ -8,9 +8,9 @@ import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { DbUtilsService } from "../../../services/db-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpLinkService } from "../../../services/mailchimp/mailchimp-link.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberNamingService } from "../../../services/member/member-naming.service";
 import { MemberUpdateAuditService } from "../../../services/member/member-update-audit.service";
@@ -30,7 +30,6 @@ export class MemberAdminModalComponent implements OnInit {
   member: Member;
   editMode: EditMode;
   lastLoggedIn: number;
-  private mailchimpApiUrl: string;
   membershipExpiryDate: Date;
   private logger: Logger;
   members: Member[] = [];
@@ -42,18 +41,18 @@ export class MemberAdminModalComponent implements OnInit {
   public saveInProgress: boolean;
   private duplicate: boolean;
 
-  constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
-              @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+  constructor(private mailchimpSegmentService: MailchimpSegmentService,
+              private mailchimpCampaignService: MailchimpCampaignService,
               private notifierService: NotifierService,
               private memberUpdateAuditService: MemberUpdateAuditService,
               private memberNamingService: MemberNamingService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
               private modalService: BsModalService,
-              private mailchimpConfigService: MailchimpConfigService,
+              private mailchimpLinkService: MailchimpLinkService,
               private memberLoginService: MemberLoginService,
               private profileConfirmationService: ProfileConfirmationService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private dbUtils: DbUtilsService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
@@ -65,10 +64,6 @@ export class MemberAdminModalComponent implements OnInit {
     this.logger.debug("constructed with member", this.member, this.members.length, "members");
     this.allowEdits = this.memberLoginService.allowMemberAdminEdits();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.mailchimpConfigService.getConfig().then(config => {
-      this.mailchimpApiUrl = config.mailchimp.apiUrl;
-    });
-
     const existingRecordEditEnabled = this.allowEdits && this.editMode === EditMode.EDIT;
     const memberId = this.member.id;
     this.allowConfirmDelete = false;
@@ -109,8 +104,8 @@ export class MemberAdminModalComponent implements OnInit {
     this.memberService.delete(this.member).then(() => this.bsModalRef.hide());
   }
 
-  viewMailchimpListEntry(item: string) {
-    return window.open(`${this.mailchimpApiUrl}/lists/members/view?id=${item}`);
+  viewMailchimpListEntry(leid: string) {
+    return window.open(`${this.mailchimpLinkService.listView(leid)}`);
   }
 
   profileSettingsConfirmedChecked() {
@@ -175,7 +170,7 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   preProcessMemberBeforeSave() {
-    return this.emailSubscriptionService.resetUpdateStatusForMember(this.member);
+    return this.mailchimpListSubscriptionService.resetUpdateStatusForMember(this.member);
   }
 
   saveAndHide() {
@@ -185,7 +180,7 @@ export class MemberAdminModalComponent implements OnInit {
 
   copyDetailsToNewMember() {
     const copiedMember = omit(this.member, "id");
-    this.emailSubscriptionService.defaultMailchimpSettings(copiedMember, true);
+    this.mailchimpListSubscriptionService.defaultMailchimpSettings(copiedMember, true);
     this.profileConfirmationService.unconfirmProfile(copiedMember);
     this.member = copiedMember;
     this.editMode = EditMode.COPY_EXISTING;

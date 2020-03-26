@@ -12,18 +12,20 @@ import { ExpenseNotificationCreatorSecondApprovalComponent } from "../../notific
 import { ExpenseNotificationCreatorSubmittedComponent } from "../../notifications/expenses/templates/creator/expense-notification-creator-submitted.component";
 import { ExpenseNotificationTreasurerPaidComponent } from "../../notifications/expenses/templates/treasurer/expense-notification-treasurer-paid.component";
 import { ExpenseNotificationTreasurerSecondApprovalComponent } from "../../notifications/expenses/templates/treasurer/expense-notification-treasurer-second-approval.component";
-import { ExpenseDisplayService } from "./expense-display.service";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MailchimpConfigService } from "../mailchimp-config.service";
+import { MailchimpCampaignService } from "../mailchimp/mailchimp-campaign.service";
+import { MailchimpSegmentService } from "../mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { MemberService } from "../member/member.service";
 import { AlertInstance, NotifierService } from "../notifier.service";
 import { UrlService } from "../url.service";
 import { ExpenseClaimService } from "./expense-claim.service";
+import { ExpenseDisplayService } from "./expense-display.service";
 
 @Injectable({
   providedIn: "root"
@@ -33,8 +35,8 @@ export class ExpenseNotificationService {
   private logger: Logger;
 
   constructor(
-    @Inject("MailchimpSegmentService") private mailchimpSegmentService,
-    @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+    private mailchimpSegmentService: MailchimpSegmentService,
+    private mailchimpCampaignService: MailchimpCampaignService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     private mailchimpConfig: MailchimpConfigService,
     protected memberService: MemberService,
@@ -96,7 +98,7 @@ export class ExpenseNotificationService {
     return html;
   }
 
-  sendCreatorNotifications(request: ExpenseNotificationRequest) {
+  sendCreatorNotifications(request: ExpenseNotificationRequest): Promise<any> {
     if (request.eventType.notifyCreator) {
       request.memberIds = [request.expenseClaimCreatedEvent.memberId];
       request.segmentType = "directMail";
@@ -108,7 +110,7 @@ export class ExpenseNotificationService {
     return Promise.resolve(false);
   }
 
-  sendApproverNotifications(request: ExpenseNotificationRequest) {
+  sendApproverNotifications(request: ExpenseNotificationRequest): Promise<any> {
     if (request.eventType.notifyApprover) {
       request.component = this.expenseEventNotificationMappingsFor(request.eventType).notifyApprover;
       request.memberIds = this.memberService.allMemberIdsWithPrivilege("financeAdmin", request.members);
@@ -120,7 +122,7 @@ export class ExpenseNotificationService {
     return Promise.resolve(false);
   }
 
-  sendTreasurerNotifications(request: ExpenseNotificationRequest) {
+  sendTreasurerNotifications(request: ExpenseNotificationRequest): Promise<any> {
     request.component = this.expenseEventNotificationMappingsFor(request.eventType).notifyTreasurer;
     if (request.eventType.notifyTreasurer) {
       request.memberIds = this.memberService.allMemberIdsWithPrivilege("treasuryAdmin", request.members);
@@ -178,7 +180,7 @@ export class ExpenseNotificationService {
     request.campaignNameAndMember = `${request.campaignName} (${request.memberFullName})`;
     request.segmentName = `Expense notification ${request.segmentNameSuffix}(${request.memberFullName})`;
     if (request.memberIds.length === 0) {
-      throw new Error(`No members have been configured as ${request.destination} therefore notifications for this step will fail!!`);
+     return Promise.reject(`No members have been configured as ${request.destination} therefore notifications for this step will fail!!`);
     }
     return this.sendNotification(request, {
       sections: {

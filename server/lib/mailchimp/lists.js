@@ -9,13 +9,13 @@ let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
  * GET list of lists.
  */
 
-exports.list = function (req, res) {
+exports.list = (req, res) => {
   var requestData = {};
   var messageType = "list lists";
   debug(messageType, requestData);
-  mc.lists.list(requestData, function (responseData) {
+  mc.lists.list(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -24,19 +24,20 @@ exports.list = function (req, res) {
  * list members.
  */
 
-exports.members = function (req, res) {
+exports.members = (req, res) => {
   var requestData = {
     id: messageHandler.mapListTypeToId(req, debug),
     status: "subscribed",
     opts: {
       start: 0,
       limit: 100,
-    }};
+    }
+  };
   var messageType = "list members";
   debug(messageType, requestData);
-  mc.lists.members(requestData, function (responseData) {
+  mc.lists.members(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -45,16 +46,16 @@ exports.members = function (req, res) {
  * Subscribe an email to a list.
  */
 
-exports.subscribe = function (req, res) {
+exports.subscribe = (req, res) => {
   var requestData = {
     id: messageHandler.mapListTypeToId(req, debug),
     email: {email: req.body.email},
   };
   var messageType = "subscribe member to mailing list";
   debug(messageType, requestData);
-  mc.lists.subscribe(requestData, function (responseData) {
+  mc.lists.subscribe(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -63,7 +64,7 @@ exports.subscribe = function (req, res) {
  * batch subscribe a complete list.
  */
 
-exports.batchSubscribe = function (req, res) {
+exports.batchSubscribe = (req, res) => {
   var requestData = {
     id: messageHandler.mapListTypeToId(req, debug),
     batch: req.body,
@@ -73,9 +74,9 @@ exports.batchSubscribe = function (req, res) {
   };
   var messageType = "batch subscribe to list";
   debug(messageType, JSON.stringify(requestData));
-  mc.lists.batchSubscribe(requestData, function (responseData) {
+  mc.lists.batchSubscribe(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -85,7 +86,7 @@ exports.batchSubscribe = function (req, res) {
  * batch unsubscribe a complete list.
  */
 
-exports.batchUnsubscribe = function (req, res) {
+exports.batchUnsubscribe = (req, res) => {
   var requestData = {
     id: messageHandler.mapListTypeToId(req, debug),
     batch: req.body,
@@ -95,9 +96,9 @@ exports.batchUnsubscribe = function (req, res) {
   };
   var messageType = "batch unsubscribe from list";
   debug(messageType, requestData);
-  mc.lists.batchUnsubscribe(requestData, function (responseData) {
+  mc.lists.batchUnsubscribe(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };

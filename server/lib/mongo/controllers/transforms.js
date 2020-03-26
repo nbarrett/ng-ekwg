@@ -39,20 +39,20 @@ exports.criteria = req => {
   return {_id: req.params.id};
 };
 
-exports.parseQueryStringParameters = (req) => {
-  const parse = (queryParameter) => {
-    if (req.query) {
-      const value = req.query[queryParameter];
-      return value ? typeof value === "string" ? JSON.parse(value) : value : {};
-    } else {
-      return {};
-    }
-  };
+exports.parse = (req, queryParameter) => {
+  if (req.query) {
+    const value = req.query[queryParameter];
+    return value ? typeof value === "string" ? JSON.parse(value) : value : {};
+  } else {
+    return {};
+  }
+};
 
+exports.parseQueryStringParameters = (req) => {
   return {
-    criteria: parse("criteria"),
-    select: parse("select"),
-    sort: parse("sort")
+    criteria: exports.parse(req, "criteria"),
+    select: exports.parse(req, "select"),
+    sort: exports.parse(req, "sort")
   }
 };
 

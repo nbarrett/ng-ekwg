@@ -1,9 +1,11 @@
 "use strict";
-let config = require("../config/config");
-let debug = require("debug")(config.logNamespace("mailchimp:routes:segments"));
-let messageHandler = require("./messageHandler");
-let mcapi = require("mailchimp-api");
-let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
+const config = require("../config/config");
+const debug = require("debug")(config.logNamespace("mailchimp:routes:segments"));
+const messageHandler = require("./messageHandler");
+const mcapi = require("mailchimp-api");
+const transforms = require("./../mongo/controllers/transforms");
+
+const mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 
 /*
 
@@ -103,8 +105,8 @@ exports.segmentMembersAdd = function (req, res) {
 exports.segmentMembersDel = function (req, res) {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
-    "seg_id": req.body.segmentId,
-    "batch": req.body.segmentMembers,
+    "seg_id": transforms.parse(req, "segmentId"),
+    "batch": transforms.parse(req, "segmentMembers"),
   };
   var messageType = "static segment delete";
   messageHandler.logRequestData(messageType, requestData, debug);

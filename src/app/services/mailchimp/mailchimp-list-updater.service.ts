@@ -1,10 +1,11 @@
 import { Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
-import { EmailSubscriptionService } from "../email-subscription.service";
+import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { AlertInstance } from "../notifier.service";
 import { StringUtilsService } from "../string-utils.service";
+import { MailchimpListService } from "./mailchimp-list.service";
 
 @Injectable({
   providedIn: "root"
@@ -12,9 +13,9 @@ import { StringUtilsService } from "../string-utils.service";
 export class MailchimpListUpdaterService {
   private logger: Logger;
 
-  constructor(@Inject("MailchimpListService") private mailchimpListService,
+  constructor(private mailchimpListService: MailchimpListService,
               private stringUtils: StringUtilsService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.OFF);
   }
@@ -62,19 +63,19 @@ export class MailchimpListUpdaterService {
 
   private resetAllBatchSubscriptions(members: Member[]) {
     // careful with calling this - it resets all batch subscriptions to default values
-    this.emailSubscriptionService.resetAllBatchSubscriptions(members, false);
+    this.mailchimpListSubscriptionService.resetAllBatchSubscriptions(members, false);
   }
 
   private updateWalksList(members, notify: AlertInstance) {
-    return this.emailSubscriptionService.createBatchSubscriptionForList("walks", members);
+    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("walks", members);
   }
 
   private updateSocialEventsList(members, notify: AlertInstance) {
-    return this.emailSubscriptionService.createBatchSubscriptionForList("socialEvents", members);
+    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("socialEvents", members);
   }
 
   private updateGeneralList(members, notify: AlertInstance) {
-    return this.emailSubscriptionService.createBatchSubscriptionForList("general", members);
+    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("general", members);
   }
 
   private notifyUpdatesComplete(members, notify: AlertInstance) {

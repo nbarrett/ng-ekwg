@@ -1,37 +1,35 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
 import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
-import { chain } from "../functions/chain";
-import { MailchimpBatchSubscriptionResponse } from "../models/mailchimp.model";
-import { MailchimpSubscription, Member } from "../models/member.model";
-import { DateUtilsService } from "./date-utils.service";
-import { Logger, LoggerFactory } from "./logger-factory.service";
-import { MailchimpErrorParserService } from "./mailchimp-error-parser.service";
-import { MemberLoginService } from "./member/member-login.service";
-import { MemberService } from "./member/member.service";
+import { chain } from "../../functions/chain";
+import { MailchimpSubscription, Subscriber } from "../../models/mailchimp.model";
+import { Member } from "../../models/member.model";
+import { DateUtilsService } from "../date-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MailchimpErrorParserService } from "../mailchimp-error-parser.service";
+import { MemberLoginService } from "../member/member-login.service";
+import { MemberService } from "../member/member.service";
+import { MailchimpListService } from "./mailchimp-list.service";
 
 @Injectable({
   providedIn: "root"
 })
-export class EmailSubscriptionService {
-
-  private BASE_URL = "/api/mailchimp";
+export class MailchimpListSubscriptionService {
   private logger: Logger;
 
   constructor(private memberService: MemberService,
               private dateUtils: DateUtilsService,
-              private http: HttpClient,
+              private mailchimpListService: MailchimpListService,
               private memberLoginService: MemberLoginService,
               private mailchimpErrorParserService: MailchimpErrorParserService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(EmailSubscriptionService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MailchimpListSubscriptionService, NgxLoggerLevel.OFF);
   }
 
   resetAllBatchSubscriptions(members, subscribedState) {
     const savePromises = [];
-    this.logger.debug("Resetting Mailchimp subscriptions for " + members.length + " members");
+    this.logger.debug(`Resetting Mailchimp subscriptions for ${members.length} members`);
     each(members, member => {
       this.defaultMailchimpSettings(member, subscribedState);
       savePromises.push(this.memberService.update(member));
@@ -59,7 +57,7 @@ export class EmailSubscriptionService {
     };
   }
 
-  addMailchimpIdentifiersToRequest(member, listType, request) {
+  addMailchimpIdentifiersToRequest(member, listType, request?: any) {
     const mailchimpIdentifiers: MailchimpSubscription = {email: {email: member.email}};
     if (member.mailchimpLists[listType].leid) {
       mailchimpIdentifiers.email.leid = member.mailchimpLists[listType].leid;
@@ -72,7 +70,7 @@ export class EmailSubscriptionService {
   }
 
   createBatchSubscriptionForList(listType, members): Promise<Member[]> {
-    this.logger.debug("Sending " + listType + " member data to Mailchimp");
+    this.logger.debug(`Sending ${listType} member data to Mailchimp`);
     const batchedMembers = [];
     const subscriptionEntries = chain(members)
       .filter(member => this.includeMemberInSubscription(listType, member))
@@ -92,27 +90,26 @@ export class EmailSubscriptionService {
       }).value();
     this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionEntries.length, "members");
     if (subscriptionEntries.length > 0) {
-      const url = `${this.BASE_URL}/lists/${listType}/batchSubscribe`;
       this.logger.info("sending", subscriptionEntries.length, listType, "subscriptions to mailchimp", subscriptionEntries);
-      return this.http.post<MailchimpBatchSubscriptionResponse>(url, subscriptionEntries).toPromise()
+      return this.mailchimpListService.batchSubscribe(listType, subscriptionEntries)
         .then(response => {
           this.logger.info("createBatchSubscriptionForList response", response);
           const errorResponse = this.mailchimpErrorParserService.extractError(response);
           this.logger.info("createBatchSubscriptionForList response:errorResponse", errorResponse, "error:", errorResponse.error);
           if (errorResponse.error) {
             return Promise.reject({
-              message: "Sending of " + listType + " list subscription to Mailchimp was not successful",
+              message: `Sending of ${listType} list subscription to Mailchimp was not successful`,
               error: errorResponse.error
             });
           } else {
             const totalResponseCount = response.updates.concat(response.adds).concat(response.errors).length;
-            this.logger.debug("Send of " + subscriptionEntries.length + " " + listType + " members completed - processing " + totalResponseCount + " Mailchimp response(s)");
+            this.logger.debug(`Send of ${subscriptionEntries.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
             const savePromises = [];
             this.processValidResponses(listType, response.updates.concat(response.adds), batchedMembers, savePromises);
             this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
             return Promise.all(savePromises).then(() => {
               return this.refreshMembersIfAdmin().then(refreshedMembers => {
-                this.logger.debug("Send of " + subscriptionEntries.length + " members to " + listType + " list completed with " + response.add_count + " member(s) added, " + response.update_count + " updated and " + response.error_count + " error(s)");
+                this.logger.debug(`Send of ${subscriptionEntries.length} members to ${listType} list completed with ${response.add_count} member(s) added, ${response.update_count} updated and ${response.error_count} error(s)`);
                 return refreshedMembers;
               });
             });
@@ -120,12 +117,12 @@ export class EmailSubscriptionService {
         }).catch(response => {
           const data = response.error;
           this.logger.error(response);
-          const errorMessage = "Sending of " + listType + " member data to Mailchimp was not successful due to response: " + data;
+          const errorMessage = `Sending of ${listType} member data to Mailchimp was not successful due to response: ${data}`;
           this.logger.error(errorMessage);
           return Promise.reject(errorMessage);
         });
     } else {
-      const message = "No " + listType + " updates to send Mailchimp";
+      const message = `No ${listType} updates to send Mailchimp`;
       this.logger.info(message);
       this.logger.debug(message);
       return this.refreshMembersIfAdmin();
@@ -162,8 +159,8 @@ export class EmailSubscriptionService {
     }
   }
 
-  includeSubscriberInUnsubscription(listType, allMembers, subscriber) {
-    return this.includeMemberInUnsubscription(listType, this.responseToMember(listType, allMembers, subscriber));
+  includeInUnsubscribe(listType: string, members: Member[], subscriber: Subscriber) {
+    return this.includeMemberInUnsubscription(listType, this.responseToMember(listType, members, subscriber));
   }
 
   resetUpdateStatusForMember(member) {
@@ -173,24 +170,24 @@ export class EmailSubscriptionService {
     member.mailchimpLists.general.updated = false;
   }
 
-  responseToMember(listType, allMembers, mailchimpResponse) {
-    return allMembers.find(member => {
-      const matchedOnListSubscriberId = mailchimpResponse.leid && member.mailchimpLists[listType].leid && (mailchimpResponse.leid.toString() === member.mailchimpLists[listType].leid.toString());
-      const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (mailchimpResponse.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
-      const matchedOnCurrentEmail = member.email && mailchimpResponse.email.toLowerCase() === member.email.toLowerCase();
+  responseToMember(listType, members: Member[], subscriber: Subscriber) {
+    return members.find(member => {
+      const matchedOnListSubscriberId = subscriber.leid && member.mailchimpLists[listType].leid && (subscriber.leid.toString() === member.mailchimpLists[listType].leid.toString());
+      const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (subscriber.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
+      const matchedOnCurrentEmail = member.email && subscriber.email.toLowerCase() === member.email.toLowerCase();
       return (matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail);
     });
   }
 
-  findMemberAndMarkAsUpdated(listType, batchedMembers, response) {
-    const member = this.responseToMember(listType, batchedMembers, response);
+  findMemberAndMarkAsUpdated(listType: string, batchedMembers: any[], subscriber: Subscriber) {
+    const member = this.responseToMember(listType, batchedMembers, subscriber);
     if (member) {
-      member.mailchimpLists[listType].leid = response.leid;
+      member.mailchimpLists[listType].leid = subscriber.leid;
       member.mailchimpLists[listType].updated = true; // updated == true means up to date e.g. nothing to send to mailchimo
       member.mailchimpLists[listType].lastUpdated = this.dateUtils.nowAsValue();
       member.mailchimpLists[listType].email = member.email;
     } else {
-      this.logger.debug("From " + batchedMembers.length + " members, could not find any member related to response " + JSON.stringify(response));
+      this.logger.debug(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(subscriber)}`);
     }
     return member;
   }
@@ -201,7 +198,7 @@ export class EmailSubscriptionService {
       if (member) {
         member.mailchimpLists[listType].code = undefined;
         member.mailchimpLists[listType].error = undefined;
-        this.logger.debug("processing valid response for member " + member.email);
+        this.logger.debug(`processing valid response for member ${member.email}`);
         savePromises.push(this.memberService.updateMailSubscription(member.id, listType, member.mailchimpLists[listType]));
       }
     });
@@ -211,7 +208,7 @@ export class EmailSubscriptionService {
     each(errorResponses, response => {
       const member = this.findMemberAndMarkAsUpdated(listType, batchedMembers, response.email);
       if (member) {
-        this.logger.debug("processing error response for member " + member.email);
+        this.logger.debug(`processing error response for member ${member.email}`);
         member.mailchimpLists[listType].code = response.code;
         member.mailchimpLists[listType].error = response.error;
         if ([210, 211, 212, 213, 214, 215, 220, 250].includes(response.code)) {

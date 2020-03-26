@@ -38,16 +38,6 @@ export const WalksServiceProvider = {
   deps: ["$injector"]
 };
 
-export function MailchimpListService($injector) {
-  return $injector.get("MailchimpListService");
-}
-
-export const MailchimpListServiceProvider = {
-  provide: "MailchimpListService",
-  useFactory: MailchimpListService,
-  deps: ["$injector"]
-};
-
 export function MailchimpSegmentService($injector) {
   return $injector.get("MailchimpSegmentService");
 }

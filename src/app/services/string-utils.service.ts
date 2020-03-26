@@ -95,7 +95,7 @@ export class StringUtilsService {
     return has(message, ["message"]) && has(message, ["title"]);
   }
 
-  stripLineBreaks(str, andTrim) {
+  stripLineBreaks(str, andTrim: boolean) {
     const replacedValue = str.replace(/(\r\n|\n|\r)/gm, "");
     return andTrim && replacedValue ? replacedValue.trim() : replacedValue;
   }

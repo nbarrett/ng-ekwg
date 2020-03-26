@@ -9,9 +9,10 @@ import { DateValue } from "../../../models/date.model";
 import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
@@ -35,8 +36,8 @@ export class SendEmailsModalComponent implements OnInit {
   public emailTypes: MemberEmailType[] = [];
   public emailType: MemberEmailType;
 
-  constructor(@Inject("MailchimpSegmentService") private mailchimpSegmentService,
-              @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+  constructor(private mailchimpSegmentService: MailchimpSegmentService,
+              private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
@@ -44,7 +45,7 @@ export class SendEmailsModalComponent implements OnInit {
               private fullNameWithAliasPipe: FullNameWithAliasPipe,
               private modalService: BsModalService,
               private mailchimpConfigService: MailchimpConfigService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
@@ -175,7 +176,7 @@ export class SendEmailsModalComponent implements OnInit {
   populateSelectedMembers(): void {
     const memberSelector = this.memberSelectorNamed(this.memberSelectorName);
     this.selectableMembers = this.members
-      .filter(member => this.emailSubscriptionService.includeMemberInEmailList("general", member))
+      .filter(member => this.mailchimpListSubscriptionService.includeMemberInEmailList("general", member))
       .map(member => memberSelector.memberMapper(member));
     this.selectedMemberIds = this.selectableMembers
       .filter(member => memberSelector.memberFilter(member.member))
@@ -257,7 +258,7 @@ export class SendEmailsModalComponent implements OnInit {
     const saveMemberPromises = [];
     map(this.selectedMembersWithEmails(), member => {
       this.memberService.setPasswordResetId(member);
-      this.emailSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
       saveMemberPromises.push(this.memberService.createOrUpdate(member));
     });
 
@@ -268,7 +269,7 @@ export class SendEmailsModalComponent implements OnInit {
   includeInNextMailchimpListUpdate() {
 
     const saveMemberPromises = this.selectedMembersWithEmails().map(member => {
-      this.emailSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
       return this.memberService.createOrUpdate(member);
     });
 
@@ -283,7 +284,7 @@ export class SendEmailsModalComponent implements OnInit {
     chain(this.selectedMemberIds)
       .map(memberId => find(this.members, member => this.memberService.extractMemberId(member) === memberId.id)).map(member => {
       member.groupMember = false;
-      this.emailSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
       saveMemberPromises.push(this.memberService.createOrUpdate(member));
     });
 
@@ -322,7 +323,7 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   updateGeneralList() {
-    return this.emailSubscriptionService.createBatchSubscriptionForList("general", this.members).then(updatedMembers => {
+    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("general", this.members).then(updatedMembers => {
       this.members = updatedMembers;
     });
   }

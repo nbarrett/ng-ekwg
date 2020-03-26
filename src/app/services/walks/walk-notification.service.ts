@@ -5,7 +5,6 @@ import { WalkCampaignConfiguration } from "../../models/walk-campaign-configurat
 import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkEventNotificationMapping, WalkEventType } from "../../models/walk-event-type.model";
 import { WalkNotification } from "../../models/walk-notification.model";
-import { WalkNotificationComponentAndData, WalkNotificationDirective } from "../../notifications/walks/walk-notification.directive";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationCoordinatorApprovedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
 import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
@@ -18,12 +17,14 @@ import { WalkNotificationLeaderAwaitingApprovalComponent } from "../../notificat
 import { WalkNotificationLeaderAwaitingWalkDetailsComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-awaiting-walk-details.component";
 import { WalkNotificationLeaderRequestedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-requested.component";
 import { WalkNotificationLeaderUpdatedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-updated.component";
+import { WalkNotificationComponentAndData, WalkNotificationDirective } from "../../notifications/walks/walk-notification.directive";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MailchimpConfigService } from "../mailchimp-config.service";
+import { MailchimpSegmentService } from "../mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { MemberService } from "../member/member.service";
 import { AlertInstance, NotifierService } from "../notifier.service";
@@ -38,8 +39,8 @@ export class WalkNotificationService {
   private logger: Logger;
 
   constructor(
-    @Inject("MailchimpSegmentService") private mailchimpSegmentService,
-    @Inject("MailchimpCampaignService") private mailchimpCampaignService,
+    private mailchimpSegmentService: MailchimpSegmentService,
+    private mailchimpCampaignService: MailchimpCampaignService,
     @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     private mailchimpConfig: MailchimpConfigService,
     protected memberService: MemberService,

@@ -30,7 +30,7 @@ angular.module('ekwgApp')
       logger.info('fileTypes ->', $scope.fileTypes);
     }
 
-    CommitteeReferenceData.events.subscribe(function (referenceData) {
+    CommitteeReferenceData.events().subscribe(function (referenceData) {
       if (referenceData) {
         assignFileTypes();
       }

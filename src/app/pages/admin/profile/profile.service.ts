@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { isEmpty } from "lodash-es";
 import { BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -9,7 +9,7 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { EmailSubscriptionService } from "../../../services/email-subscription.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -23,7 +23,7 @@ import { UrlService } from "../../../services/url.service";
   providedIn: "root"
 })
 
-export class ProfileService implements OnInit {
+export class ProfileService  {
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
@@ -33,7 +33,7 @@ export class ProfileService implements OnInit {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               private profileConfirmationService: ProfileConfirmationService,
-              private emailSubscriptionService: EmailSubscriptionService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
@@ -45,10 +45,6 @@ export class ProfileService implements OnInit {
 
   private logger: Logger;
   filters: any;
-
-  ngOnInit() {
-    this.logger.debug("ngOnInit");
-  }
 
   public subscribeToLogout(logger: Logger): Subscription {
     return this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
@@ -90,7 +86,7 @@ export class ProfileService implements OnInit {
 
   saveMemberDetails(notify: AlertInstance, profileUpdateType: ProfileUpdateType, member: Member) {
     this.logger.debug("saveMemberDetails:", profileUpdateType);
-    this.emailSubscriptionService.resetUpdateStatusForMember(member);
+    this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
     return this.memberService.update(member)
       .then(() => this.saveOrUpdateSuccessful(notify, profileUpdateType))
       .catch((error) => this.saveOrUpdateUnsuccessful(notify, profileUpdateType, error));
