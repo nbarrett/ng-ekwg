@@ -49,7 +49,7 @@ export class LoggerFactory {
   }
 
   isLoggerConfig(config: NgxLoggerLevel | LoggerConfig): config is LoggerConfig {
-    return (config as LoggerConfig).level !== undefined;
+    return (config instanceof LoggerConfig);
   }
 
 }

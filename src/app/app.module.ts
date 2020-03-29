@@ -94,6 +94,7 @@ import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.c
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
+import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "./pages/login/login-modal/login-modal.component";
@@ -239,6 +240,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     PageNavigatorComponent,
     PageTitleComponent,
     PanelExpanderComponent,
+    PrivacyPolicyComponent,
     ContactDetailsComponent,
     ResetPasswordModalComponent,
     SearchFilterPipe,

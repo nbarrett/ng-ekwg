@@ -17,6 +17,7 @@ import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscri
 import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
+import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
@@ -29,6 +30,7 @@ import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
 
 const routes: Routes = [
+  {path: "privacy-policy", component: PrivacyPolicyComponent},
   {path: "admin", component: AdminComponent},
   {path: "admin/expenses", component: ExpensesComponent, canActivate: [LoggedInGuard]},
   {path: "admin/expenses/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
