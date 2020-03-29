@@ -1,6 +1,7 @@
 import { ComponentFactoryResolver, Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseEventType, ExpenseNotificationContentSections, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../models/expense.model";
+import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../models/expense.model";
+import { MailchimpExpenseOtherContent } from "../../models/mailchimp.model";
 import { ExpenseNotificationComponentAndData } from "../../notifications/expenses/expense-notification.directive";
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
 import { ExpenseNotificationApproverPaidComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-paid.component";
@@ -143,7 +144,7 @@ export class ExpenseNotificationService {
     return this.memberService.update(request.member);
   }
 
-  sendEmailCampaign(request: ExpenseNotificationRequest, contentSections: ExpenseNotificationContentSections) {
+  sendEmailCampaign(request: ExpenseNotificationRequest, contentSections: MailchimpExpenseOtherContent) {
     this.display.showExpenseProgressAlert(request.notify, `Sending ${request.campaignNameAndMember}`);
     return this.mailchimpConfig.getConfig()
       .then(config => {
@@ -166,7 +167,7 @@ export class ExpenseNotificationService {
     this.display.showExpenseSuccessAlert(notify, `Sending of ${campaignName} was successful. Check your inbox for progress.`);
   }
 
-  sendNotification(request: ExpenseNotificationRequest, contentSections: ExpenseNotificationContentSections) {
+  sendNotification(request: ExpenseNotificationRequest, contentSections: MailchimpExpenseOtherContent) {
     return this.createOrSaveMailchimpSegment(request)
       .then((segmentResponse) => this.saveSegmentDataToMember(segmentResponse, request))
       .then(() => this.sendEmailCampaign(request, contentSections))

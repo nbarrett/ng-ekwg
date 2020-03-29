@@ -11,7 +11,7 @@ export class MailchimpLinkService {
   private logger: Logger;
 
   constructor(private mailchimpConfigService: MailchimpConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpLinkService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpLinkService, NgxLoggerLevel.OFF);
     this.queryData();
   }
 

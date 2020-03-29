@@ -14,7 +14,7 @@ export class CommonDataService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommonDataService, {level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.LOG});
+    this.logger = loggerFactory.createLogger(CommonDataService, {level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF});
   }
 
   public async responseFrom<T>(logger: Logger, observable: Observable<T>, notifications: Subject<T>): Promise<T> {

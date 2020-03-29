@@ -148,6 +148,7 @@ import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpCampaignService } from "./services/mailchimp/mailchimp-campaign.service";
+import { MailchimpLinkService } from "./services/mailchimp/mailchimp-link.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpSegmentService } from "./services/mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "./services/member/member-login.service";
@@ -422,6 +423,7 @@ export class AppModule implements DoBootstrap {
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))
       .factory("BroadcastService", downgradeInjectable(BroadcastService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
+      .factory("MailchimpLinkService", downgradeInjectable(MailchimpLinkService))
       .factory("MailchimpSegmentService", downgradeInjectable(MailchimpSegmentService))
       .factory("MailchimpCampaignService", downgradeInjectable(MailchimpCampaignService))
       .factory("MailchimpConfig", downgradeInjectable(MailchimpConfigService))

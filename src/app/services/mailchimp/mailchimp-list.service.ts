@@ -4,7 +4,19 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { chain } from "../../functions/chain";
 import { ApiResponse } from "../../models/api-response.model";
-import { MailchimpBatchSubscriptionResponse, MailchimpListResponse, Subscriber, SubscriberIdentifiers } from "../../models/mailchimp.model";
+import {
+  MailchimpBatchSubscriptionResponse,
+  MailchimpBatchUnsubscribeResponse,
+  MailchimpListDeleteSegmentMembersResponse,
+  MailchimpListResponse,
+  MailchimpListSegmentAddResponse,
+  MailchimpListSegmentDeleteResponse,
+  MailchimpListSegmentMembersAddResponse,
+  MailchimpListSegmentRenameResponse,
+  MailchimpListSegmentResetResponse,
+  MailchimpSubscriber,
+  SubscriberIdentifiers
+} from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
@@ -27,37 +39,37 @@ export class MailchimpListService {
               private commonDataService: CommonDataService,
               private memberService: MemberService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.OFF);
   }
 
-  async addSegment(listType: string, segmentName: string) {
+  async addSegment(listType: string, segmentName: string): Promise<MailchimpListSegmentAddResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentAdd`, {segmentName}), this.notifications)).response;
   }
 
-  async addSegmentMembers(listType: string, segmentId: string, segmentMembers) {
+  async addSegmentMembers(listType: string, segmentId: number, segmentMembers): Promise<MailchimpListSegmentMembersAddResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersAdd`, {
       segmentId,
       segmentMembers
     }), this.notifications)).response;
   }
 
-  async deleteSegmentMembers(listType: string, segmentId: string, segmentMembers) {
+  async deleteSegmentMembers(listType: string, segmentId: number, segmentMembers): Promise<MailchimpListDeleteSegmentMembersResponse> {
     const params: HttpParams = this.commonDataService.toHttpParams({segmentId, segmentMembers});
     return (await this.commonDataService.responseFrom(this.logger, this.http.delete<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersDel`, {params}), this.notifications)).response;
   }
 
-  async resetSegment(listType: string, segmentId: string) {
+  async resetSegment(listType: string, segmentId: number): Promise<MailchimpListSegmentResetResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.put<ApiResponse>(`${this.BASE_URL}/${listType}/segmentReset`, {segmentId}), this.notifications)).response;
   }
 
-  async renameSegment(listType: string, segmentId: string, segmentName: string) {
+  async renameSegment(listType: string, segmentId: number, segmentName: string): Promise<MailchimpListSegmentRenameResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentRename`, {
       segmentId,
       segmentName
     }), this.notifications)).response;
   }
 
-  async deleteSegment(listType: string, segmentId: string) {
+  async deleteSegment(listType: string, segmentId: number): Promise<MailchimpListSegmentDeleteResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.delete<ApiResponse>(`${this.BASE_URL}/${listType}/segmentDel/${segmentId}`), this.notifications)).response;
   }
 
@@ -69,7 +81,7 @@ export class MailchimpListService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/${listType}`), this.notifications)).response;
   }
 
-  async batchUnsubscribe(listType: string, subscribers): Promise<MailchimpBatchSubscriptionResponse> {
+  async batchUnsubscribe(listType: string, subscribers): Promise<MailchimpBatchUnsubscribeResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/batchUnsubscribe`, subscribers), this.notifications)).response;
   }
 
@@ -126,7 +138,7 @@ export class MailchimpListService {
       }));
   }
 
-  responseToMember(listType, members: Member[], subscriber: Subscriber) {
+  responseToMember(listType, members: Member[], subscriber: MailchimpSubscriber) {
     return members.find(member => {
       const matchedOnListSubscriberId = subscriber.leid && member.mailchimpLists[listType].leid && (subscriber.leid.toString() === member.mailchimpLists[listType].leid.toString());
       const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (subscriber.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
@@ -149,7 +161,7 @@ export class MailchimpListService {
     }
   }
 
-  includeInUnsubscribe(listType: string, members: Member[], subscriber: Subscriber) {
+  includeInUnsubscribe(listType: string, members: Member[], subscriber: MailchimpSubscriber) {
     return this.includeMemberInUnsubscription(listType, this.responseToMember(listType, members, subscriber));
   }
 
@@ -160,7 +172,7 @@ export class MailchimpListService {
     member.mailchimpLists.general.updated = false;
   }
 
-  findMemberAndMarkAsUpdated(listType: string, batchedMembers: any[], subscriber: Subscriber) {
+  findMemberAndMarkAsUpdated(listType: string, batchedMembers: any[], subscriber: MailchimpSubscriber) {
     const member = this.responseToMember(listType, batchedMembers, subscriber);
     if (member) {
       member.mailchimpLists[listType].leid = subscriber.leid;
@@ -173,7 +185,7 @@ export class MailchimpListService {
     return member;
   }
 
-  includeMemberInEmailList(listType, member) {
+  includeMemberInEmailList(listType, member): boolean {
     if (member.email && member.mailchimpLists[listType].subscribed) {
       if (listType === "socialEvents") {
         return member.groupMember && member.socialMember;
@@ -185,7 +197,7 @@ export class MailchimpListService {
     }
   }
 
-  includeMemberInSubscription(listType, member) {
+  includeMemberInSubscription(listType, member): boolean {
     return this.includeMemberInEmailList(listType, member) && !member.mailchimpLists[listType].updated;
   }
 

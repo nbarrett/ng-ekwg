@@ -68,13 +68,6 @@ export interface ExpenseNotificationRequest {
   reason?: string;
 }
 
-export interface ExpenseNotificationContentSections {
-  sections: {
-    expense_id_url: string;
-    expense_notification_text: string;
-  };
-}
-
 export interface ExpenseEventType {
   description?: string;
   atEndpoint?: boolean;

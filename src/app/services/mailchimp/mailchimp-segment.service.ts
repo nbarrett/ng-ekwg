@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "src/app/models/member.model";
+import { MailchimpListSegmentAddResponse } from "../../models/mailchimp.model";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberService } from "../member/member.service";
@@ -20,7 +21,7 @@ export class MailchimpSegmentService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.OFF);
   }
 
   renameSegment(listType, segmentId, segmentNameInput) {
@@ -64,7 +65,7 @@ export class MailchimpSegmentService {
     }
   }
 
-  addSegmentMembersDuringAdd(listType, segmentMembers, addSegmentResponse) {
+  addSegmentMembersDuringAdd(listType, segmentMembers, addSegmentResponse: MailchimpListSegmentAddResponse) {
     if (segmentMembers.length > 0) {
       return this.mailchimpListService.addSegmentMembers(listType, addSegmentResponse.id, segmentMembers)
         .then(addMemberResponse => ({segment: addSegmentResponse, members: addMemberResponse}));

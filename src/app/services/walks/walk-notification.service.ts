@@ -1,5 +1,6 @@
 import { ComponentFactoryResolver, Inject, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { MailchimpGenericOtherContent } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { WalkCampaignConfiguration } from "../../models/walk-campaign-configuration.model";
 import { DisplayedWalk } from "../../models/walk-displayed.model";
@@ -187,7 +188,7 @@ export class WalkNotificationService {
     this.logger.debug("sendNotificationsTo:", walkCampaignConfiguration);
     const campaignName = walkCampaignConfiguration.emailSubject + " (" + walkEventType.description + ")";
     const segmentName = walkCampaignConfiguration.segmentName;
-    const contentSections = {
+    const contentSections: MailchimpGenericOtherContent = {
       sections: {
         notification_text: walkCampaignConfiguration.notificationText
       }
@@ -212,7 +213,7 @@ export class WalkNotificationService {
     this.memberService.update(member);
   }
 
-  private sendEmailCampaign(notify: AlertInstance, member: Member, campaignName: string, contentSections, walkCampaignConfiguration: WalkCampaignConfiguration) {
+  private sendEmailCampaign(notify: AlertInstance, member: Member, campaignName: string, contentSections: MailchimpGenericOtherContent, walkCampaignConfiguration: WalkCampaignConfiguration) {
     notify.progress({
       title: "Sending Notifications", message: "Sending " + campaignName
     });

@@ -3,7 +3,6 @@ const config = require("../config/config");
 const router = express.Router();
 const routes = require("./index");
 const lists = require("./lists");
-const groups = require("./groups");
 const segments = require("./segments");
 const campaigns = require("./campaigns");
 const reports = require("./reports");
@@ -14,14 +13,6 @@ router.get("/lists/:listType", lists.members);
 router.post("/lists/:listType/batchSubscribe", lists.batchSubscribe);
 router.post("/lists/:listType/batchUnsubscribe", lists.batchUnsubscribe);
 router.post("/lists/:listType/subscribe", lists.subscribe);
-
-router.post("/lists/:listType/interestGroupAdd", groups.interestGroupAdd);
-router.delete("/lists/:listType/interestGroupDel", groups.interestGroupDel);
-router.post("/lists/:listType/interestGroupingAdd", groups.interestGroupingAdd);
-router.delete("/lists/:listType/interestGroupingDel", groups.interestGroupingDel);
-router.get("/lists/:listType/interestGroupings", groups.interestGroupings);
-router.put("/lists/:listType/interestGroupingUpdate", groups.interestGroupingUpdate);
-router.put("/lists/:listType/interestGroupUpdate", groups.interestGroupUpdate);
 
 router.post("/lists/:listType/segmentAdd", segments.segmentAdd);
 router.delete("/lists/:listType/segmentDel/:segmentId", segments.segmentDel);

@@ -14,16 +14,16 @@ let _str = require("underscore.string");
 
  */
 
-exports.content = function (req, res) {
+exports.content = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
     "seg_id": req.body.segmentId,
   };
   var messageType = "campaign content";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.content(requestData, function (responseData) {
+  mc.campaigns.content(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -35,7 +35,7 @@ exports.content = function (req, res) {
 
  */
 
-exports.create = function (req, res) {
+exports.create = (req, res) => {
 
   var requestData = {
     "type": "regular",
@@ -53,9 +53,9 @@ exports.create = function (req, res) {
   };
   var messageType = "campaign add";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.create(requestData, function (responseData) {
+  mc.campaigns.create(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -68,16 +68,16 @@ exports.create = function (req, res) {
 
  */
 
-exports["delete"] = function (req, res) {
+exports["delete"] = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
   };
 
   var messageType = "campaign delete";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns["delete"](requestData, function (responseData) {
+  mc.campaigns["delete"](requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -89,7 +89,7 @@ exports["delete"] = function (req, res) {
 
  */
 
-exports.list = function (req, res) {
+exports.list = (req, res) => {
   var requestData = {
     filters: {
       status: req.query.status || "save",
@@ -112,7 +112,7 @@ exports.list = function (req, res) {
     }
   }
 
-  mc.campaigns.list(requestData, function (responseData) {
+  mc.campaigns.list(requestData, responseData => {
 
     function addDateField(campaign, fieldName, campaignResponse) {
       if (campaign[fieldName]) {
@@ -124,7 +124,7 @@ exports.list = function (req, res) {
       total: responseData.data.length,
       errors: responseData.errors,
       data: _.chain(responseData.data)
-        .map(function (campaign) {
+        .map(campaign => {
           var campaignFields = _.pick(campaign, ["id", "web_id", "list_id", "template_id", "title", "subject", "saved_segment", "status", "from_name", "archive_url_long"]);
           addDateField(campaign, "create_time", campaignFields);
           addDateField(campaign, "send_time", campaignFields);
@@ -134,7 +134,7 @@ exports.list = function (req, res) {
     } : responseData.data;
 
     messageHandler.processSuccessfulResponse(req, res, filteredResponse, messageType + " with " + filteredResponse.total + " data items -", debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -146,15 +146,15 @@ exports.list = function (req, res) {
 
  */
 
-exports.replicate = function (req, res) {
+exports.replicate = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
   };
   var messageType = "campaign replicate";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.replicate(requestData, function (responseData) {
+  mc.campaigns.replicate(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -166,16 +166,16 @@ exports.replicate = function (req, res) {
 
  */
 
-exports.scheduleBatch = function (req, res) {
+exports.scheduleBatch = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
     "seg_id": req.body.segmentId,
   };
   var messageType = "segment reset";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.scheduleBatch(requestData, function (responseData) {
+  mc.campaigns.scheduleBatch(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -187,16 +187,16 @@ exports.scheduleBatch = function (req, res) {
 
  */
 
-exports.schedule = function (req, res) {
+exports.schedule = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
     "get_counts": true,
   };
   var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.schedule(requestData, function (responseData) {
+  mc.campaigns.schedule(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -208,16 +208,16 @@ exports.schedule = function (req, res) {
 
  */
 
-exports.segmentTest = function (req, res) {
+exports.segmentTest = (req, res) => {
   var requestData = {
     "list_id": messageHandler.mapListTypeToId(req, debug),
     "get_counts": true,
   };
   var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.segmentTest(requestData, function (responseData) {
+  mc.campaigns.segmentTest(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -229,15 +229,15 @@ exports.segmentTest = function (req, res) {
 
  */
 
-exports.send = function (req, res) {
+exports.send = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
   };
   var messageType = "campaign send";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.send(requestData, function (responseData) {
+  mc.campaigns.send(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -249,16 +249,16 @@ exports.send = function (req, res) {
 
  */
 
-exports.sendTest = function (req, res) {
+exports.sendTest = (req, res) => {
   var requestData = {
     "id": messageHandler.mapListTypeToId(req, debug),
     "get_counts": true,
   };
   var messageType = "campaign send test";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.sendTest(requestData, function (responseData) {
+  mc.campaigns.sendTest(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -270,15 +270,15 @@ exports.sendTest = function (req, res) {
 
  */
 
-exports.templateContent = function (req, res) {
+exports.templateContent = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
   };
   var messageType = "campaign template content";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.templateContent(requestData, function (responseData) {
+  mc.campaigns.templateContent(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -290,16 +290,16 @@ exports.templateContent = function (req, res) {
 
  */
 
-exports.unschedule = function (req, res) {
+exports.unschedule = (req, res) => {
   var requestData = {
     "cid": req.params.campaignId,
     "get_counts": true,
   };
   var messageType = "list segments";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.unschedule(requestData, function (responseData) {
+  mc.campaigns.unschedule(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };
@@ -316,7 +316,7 @@ exports.unschedule = function (req, res) {
 
  */
 
-exports.update = function (req, res) {
+exports.update = (req, res) => {
   //  options, content, segment_opts)
   var requestData = {
     "cid": req.params.campaignId,
@@ -325,9 +325,9 @@ exports.update = function (req, res) {
 
   var messageType = "campaign update";
   messageHandler.logRequestData(messageType, requestData, debug);
-  mc.campaigns.update(requestData, function (responseData) {
+  mc.campaigns.update(requestData, responseData => {
     messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, function (error) {
+  }, error => {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
   });
 };

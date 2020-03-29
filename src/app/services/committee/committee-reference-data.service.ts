@@ -20,7 +20,7 @@ export class CommitteeReferenceDataService {
   private referenceData: object = {};
 
   constructor(private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeReferenceDataService, NgxLoggerLevel.OFF);
     this.queryData();
   }
 
