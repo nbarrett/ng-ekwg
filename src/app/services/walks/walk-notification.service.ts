@@ -24,6 +24,7 @@ import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MailchimpConfigService } from "../mailchimp-config.service";
+import { MailchimpCampaignService } from "../mailchimp/mailchimp-campaign.service";
 import { MailchimpSegmentService } from "../mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { MemberService } from "../member/member.service";
@@ -141,7 +142,7 @@ export class WalkNotificationService {
   }
 
   private sendLeaderNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: WalkNotificationDirective,
-                                  walkNotification: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<void> {
+                                  walkNotification: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<any> {
     if (walkEventType.notifyLeader) {
       const leaderHTML = this.generateNotificationHTML(walkNotification, notificationDirective, this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyLeader as WalkNotificationDetailsComponent);
       return this.sendNotificationsTo(notify, member, members, walkEventType, {
@@ -157,7 +158,7 @@ export class WalkNotificationService {
   }
 
   private sendCoordinatorNotifications(notify: AlertInstance, member: Member, members: Member[], notificationDirective: WalkNotificationDirective,
-                                       displayedWalk: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<void> {
+                                       displayedWalk: WalkNotification, walkEventType: WalkEventType, walkLeaderName: string, walkDate: string): Promise<any> {
     if (walkEventType.notifyCoordinator) {
       const coordinatorHTML = this.generateNotificationHTML(displayedWalk, notificationDirective, this.walkEventNotificationMappingsFor(walkEventType.eventType).notifyCoordinator as WalkNotificationDetailsComponent);
       const memberIds = this.memberService.allMemberIdsWithPrivilege("walkChangeNotifications", members);
@@ -180,7 +181,7 @@ export class WalkNotificationService {
 
   private sendNotificationsTo(notify: AlertInstance, member: Member, members: Member[], walkEventType: WalkEventType, walkCampaignConfiguration: WalkCampaignConfiguration) {
     if (walkCampaignConfiguration.memberIds.length === 0) {
-      throw new Error("No members have been configured as " + walkCampaignConfiguration.destination
+      return Promise.reject("No members have been configured as " + walkCampaignConfiguration.destination
         + " therefore notifications cannot be sent");
     }
     this.logger.debug("sendNotificationsTo:", walkCampaignConfiguration);

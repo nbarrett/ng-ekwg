@@ -15,9 +15,9 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
+import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -53,7 +53,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private notifierService: NotifierService,
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
-              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+              private mailchimpListService: MailchimpListService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
@@ -273,7 +273,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   addMember() {
     const member: Member = {};
-    this.mailchimpListSubscriptionService.defaultMailchimpSettings(member, true);
+    this.mailchimpListService.defaultMailchimpSettings(member, true);
     member.groupMember = true;
     member.socialMember = true;
     this.showMemberDialog(member, "Add New");

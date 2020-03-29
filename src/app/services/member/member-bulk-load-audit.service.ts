@@ -1,8 +1,7 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
-import { share } from "rxjs/operators";
 import { DataQueryOptions } from "../../models/api-request.model";
 import { MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
@@ -27,18 +26,6 @@ export class MemberBulkLoadAuditService {
     this.logger = loggerFactory.createLogger(MemberBulkLoadAuditService, NgxLoggerLevel.OFF);
   }
 
-  private async responseFrom(observable: Observable<MemberBulkLoadAuditApiResponse>): Promise<MemberBulkLoadAuditApiResponse> {
-    const shared = observable.pipe(share());
-    shared.subscribe((memberBulkLoadAuditApiResponse: MemberBulkLoadAuditApiResponse) => {
-      this.logger.info("memberBulkLoadAuditApiResponse", memberBulkLoadAuditApiResponse);
-      this.bulkLoadNotifications.next(memberBulkLoadAuditApiResponse);
-    }, (httpErrorResponse: HttpErrorResponse) => {
-      this.logger.error("httpErrorResponse", httpErrorResponse);
-      this.bulkLoadNotifications.next(httpErrorResponse.error);
-    });
-    return await shared.toPromise();
-  }
-
   notifications(): Observable<MemberBulkLoadAuditApiResponse> {
     return this.bulkLoadNotifications.asObservable();
   }
@@ -46,7 +33,7 @@ export class MemberBulkLoadAuditService {
   async all(criteria?: DataQueryOptions): Promise<MemberBulkLoadAudit[]> {
     const params = this.commonDataService.toHttpParams(criteria);
     this.logger.debug("all:params", params.toString());
-    const response = await this.responseFrom(this.http.get<MemberBulkLoadAuditApiResponse>(`${this.BASE_URL}/all`, {params}));
+    const response = await this.commonDataService.responseFrom(this.logger, this.http.get<MemberBulkLoadAuditApiResponse>(`${this.BASE_URL}/all`, {params}), this.bulkLoadNotifications);
     const responses = response.response as MemberBulkLoadAudit[];
     this.logger.debug("all:params", params.toString(), "received", responses.length, "audits");
     return responses;
@@ -54,14 +41,14 @@ export class MemberBulkLoadAuditService {
 
   async create(audit: MemberBulkLoadAudit): Promise<MemberBulkLoadAudit> {
     this.logger.debug("creating", audit);
-    const apiResponse = await this.http.post<MemberBulkLoadAuditApiResponse>(this.BASE_URL, this.dbUtils.performAudit(audit)).toPromise();
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<MemberBulkLoadAuditApiResponse>(this.BASE_URL, this.dbUtils.performAudit(audit)), this.bulkLoadNotifications);
     this.logger.debug("created", audit, "- received", apiResponse);
     return apiResponse.response as MemberBulkLoadAudit;
   }
 
   async delete(audit: MemberBulkLoadAudit): Promise<MemberBulkLoadAudit> {
     this.logger.debug("deleting", audit);
-    const apiResponse = await this.http.delete<MemberBulkLoadAuditApiResponse>(this.BASE_URL + "/" + audit.id).toPromise();
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.delete<MemberBulkLoadAuditApiResponse>(this.BASE_URL + "/" + audit.id), this.bulkLoadNotifications);
     this.logger.debug("deleted", audit, "- received", apiResponse);
     return apiResponse.response as MemberBulkLoadAudit;
   }

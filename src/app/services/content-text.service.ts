@@ -12,7 +12,7 @@ export class ContentTextService {
   private BASE_URL = "/api/database/content-text";
 
   constructor(private http: HttpClient, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContentTextService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContentTextService, NgxLoggerLevel.INFO);
   }
 
   async all(): Promise<ContentText[]> {

@@ -7,7 +7,7 @@ exports.processSuccessfulResponse = function (req, res, response, messageType, d
 
 exports.processUnsuccessfulResponse = function (req, res, error, messageType, debug) {
   debug("Received", messageType, "error response", JSON.stringify(error));
-  res.json({error});
+  res.json({request: {messageType}, error: error});
 };
 
 exports.logRequestData = function (messageType, requestData, debug) {

@@ -3,7 +3,7 @@ import each from "lodash-es/each";
 import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
-import { MailchimpSubscription, Subscriber } from "../../models/mailchimp.model";
+import { MailchimpSubscription } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -31,7 +31,7 @@ export class MailchimpListSubscriptionService {
     const savePromises = [];
     this.logger.debug(`Resetting Mailchimp subscriptions for ${members.length} members`);
     each(members, member => {
-      this.defaultMailchimpSettings(member, subscribedState);
+      this.mailchimpListService.defaultMailchimpSettings(member, subscribedState);
       savePromises.push(this.memberService.update(member));
     });
 
@@ -47,14 +47,6 @@ export class MailchimpListSubscriptionService {
     } else {
       return Promise.resolve([]);
     }
-  }
-
-  defaultMailchimpSettings(member: Member, subscribedState: boolean) {
-    member.mailchimpLists = {
-      walks: {subscribed: subscribedState},
-      socialEvents: {subscribed: subscribedState},
-      general: {subscribed: subscribedState}
-    };
   }
 
   addMailchimpIdentifiersToRequest(member, listType, request?: any) {
@@ -73,7 +65,7 @@ export class MailchimpListSubscriptionService {
     this.logger.debug(`Sending ${listType} member data to Mailchimp`);
     const batchedMembers = [];
     const subscriptionEntries = chain(members)
-      .filter(member => this.includeMemberInSubscription(listType, member))
+      .filter(member => this.mailchimpListService.includeMemberInSubscription(listType, member))
       .map(member => {
         batchedMembers.push(member);
         const request = {
@@ -129,72 +121,9 @@ export class MailchimpListSubscriptionService {
     }
   }
 
-  includeMemberInEmailList(listType, member) {
-    if (member.email && member.mailchimpLists[listType].subscribed) {
-      if (listType === "socialEvents") {
-        return member.groupMember && member.socialMember;
-      } else {
-        return member.groupMember;
-      }
-    } else {
-      return false;
-    }
-  }
-
-  includeMemberInSubscription(listType, member) {
-    return this.includeMemberInEmailList(listType, member) && !member.mailchimpLists[listType].updated;
-  }
-
-  includeMemberInUnsubscription(listType, member) {
-    if (!member || !member.groupMember) {
-      return true;
-    } else if (member.mailchimpLists) {
-      if (listType === "socialEvents") {
-        return (!member.socialMember && member.mailchimpLists[listType].subscribed);
-      } else {
-        return (!member.mailchimpLists[listType].subscribed);
-      }
-    } else {
-      return false;
-    }
-  }
-
-  includeInUnsubscribe(listType: string, members: Member[], subscriber: Subscriber) {
-    return this.includeMemberInUnsubscription(listType, this.responseToMember(listType, members, subscriber));
-  }
-
-  resetUpdateStatusForMember(member) {
-    // updated == false means not up to date with mail e.g. next list update will send this data to mailchimo
-    member.mailchimpLists.walks.updated = false;
-    member.mailchimpLists.socialEvents.updated = false;
-    member.mailchimpLists.general.updated = false;
-  }
-
-  responseToMember(listType, members: Member[], subscriber: Subscriber) {
-    return members.find(member => {
-      const matchedOnListSubscriberId = subscriber.leid && member.mailchimpLists[listType].leid && (subscriber.leid.toString() === member.mailchimpLists[listType].leid.toString());
-      const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (subscriber.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
-      const matchedOnCurrentEmail = member.email && subscriber.email.toLowerCase() === member.email.toLowerCase();
-      return (matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail);
-    });
-  }
-
-  findMemberAndMarkAsUpdated(listType: string, batchedMembers: any[], subscriber: Subscriber) {
-    const member = this.responseToMember(listType, batchedMembers, subscriber);
-    if (member) {
-      member.mailchimpLists[listType].leid = subscriber.leid;
-      member.mailchimpLists[listType].updated = true; // updated == true means up to date e.g. nothing to send to mailchimo
-      member.mailchimpLists[listType].lastUpdated = this.dateUtils.nowAsValue();
-      member.mailchimpLists[listType].email = member.email;
-    } else {
-      this.logger.debug(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(subscriber)}`);
-    }
-    return member;
-  }
-
   processValidResponses(listType, validResponses, batchedMembers, savePromises) {
     each(validResponses, response => {
-      const member = this.findMemberAndMarkAsUpdated(listType, batchedMembers, response);
+      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, response);
       if (member) {
         member.mailchimpLists[listType].code = undefined;
         member.mailchimpLists[listType].error = undefined;
@@ -206,7 +135,7 @@ export class MailchimpListSubscriptionService {
 
   processErrorResponses(listType, errorResponses, batchedMembers, savePromises) {
     each(errorResponses, response => {
-      const member = this.findMemberAndMarkAsUpdated(listType, batchedMembers, response.email);
+      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, response.email);
       if (member) {
         this.logger.debug(`processing error response for member ${member.email}`);
         member.mailchimpLists[listType].code = response.code;

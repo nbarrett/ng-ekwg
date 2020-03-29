@@ -20,6 +20,7 @@ const googleMaps = require("./lib/google-maps/googleMaps");
 const mailchimp = require("./lib/mailchimp/mailchimp");
 const contentText = require("./lib/mongo/routes/content-text");
 const auth = require("./lib/mongo/routes/auth");
+const logs = require("./lib/middleware/logs");
 const member = require("./lib/mongo/routes/member");
 const memberBulkLoadAudit = require("./lib/mongo/routes/member-bulk-load-update");
 const memberUpdateAuditRoutes = require("./lib/mongo/routes/member-update-audit");
@@ -29,15 +30,14 @@ const expenseClaim = require("./lib/mongo/routes/expense-claim");
 const configRoutes = require("./lib/mongo/routes/config");
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
-
 app.use(compression())
 app.set("port", config.server.listenPort);
 app.disable("view cache");
 app.use(favicon(path.join(config.server.distFolder, "assets/images/ramblers/favicon.ico")));
 app.use(logger(config.env));
 app.use(methodOverride());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/api/ramblers", ramblers);
@@ -57,6 +57,7 @@ app.use("/api/database/member-bulk-load-audit", memberBulkLoadAudit);
 app.use("/api/database/member-auth-audit", memberAuthAuditRoutes);
 app.use("/api/database/member-update-audit", memberUpdateAuditRoutes);
 app.use("/api/database/config", configRoutes);
+app.use("/api/logs", logs);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {
   res.sendFile(path.join(config.server.distFolder, "index.html"));

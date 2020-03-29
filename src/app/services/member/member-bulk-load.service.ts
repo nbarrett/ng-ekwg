@@ -5,8 +5,8 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { DateUtilsService } from "../date-utils.service";
-import { MailchimpListSubscriptionService } from "../mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MailchimpListService } from "../mailchimp/mailchimp-list.service";
 import { AlertInstance } from "../notifier.service";
 import { MemberBulkLoadAuditService } from "./member-bulk-load-audit.service";
 import { MemberNamingService } from "./member-naming.service";
@@ -22,7 +22,7 @@ export class MemberBulkLoadService {
   constructor(private memberUpdateAuditService: MemberUpdateAuditService,
               private memberBulkLoadAuditService: MemberBulkLoadAuditService,
               private memberService: MemberService,
-              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+              private mailchimpListService: MailchimpListService,
               private displayDate: DisplayDatePipe,
               private memberNamingService: MemberNamingService,
               private dateUtils: DateUtilsService,
@@ -125,7 +125,7 @@ export class MemberBulkLoadService {
       });
 
       if (member) {
-        this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
+        this.mailchimpListService.resetUpdateStatusForMember(member);
       } else {
         memberAction = "created";
         member = {
@@ -133,7 +133,7 @@ export class MemberBulkLoadService {
           displayName: this.memberNamingService.createUniqueDisplayName(ramblersMember, members),
           expiredPassword: true
         };
-        this.mailchimpListSubscriptionService.defaultMailchimpSettings(member, true);
+        this.mailchimpListService.defaultMailchimpSettings(member, true);
         this.logger.debug("new member created:", member);
       }
 

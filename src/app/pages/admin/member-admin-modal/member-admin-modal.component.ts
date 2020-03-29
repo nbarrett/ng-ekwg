@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { omit } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -8,9 +8,11 @@ import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { DbUtilsService } from "../../../services/db-utils.service";
-import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpLinkService } from "../../../services/mailchimp/mailchimp-link.service";
+import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
+import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberNamingService } from "../../../services/member/member-naming.service";
 import { MemberUpdateAuditService } from "../../../services/member/member-update-audit.service";
@@ -52,7 +54,7 @@ export class MemberAdminModalComponent implements OnInit {
               private mailchimpLinkService: MailchimpLinkService,
               private memberLoginService: MemberLoginService,
               private profileConfirmationService: ProfileConfirmationService,
-              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+              private mailchimpListService: MailchimpListService,
               private dbUtils: DbUtilsService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
@@ -170,7 +172,7 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   preProcessMemberBeforeSave() {
-    return this.mailchimpListSubscriptionService.resetUpdateStatusForMember(this.member);
+    return this.mailchimpListService.resetUpdateStatusForMember(this.member);
   }
 
   saveAndHide() {
@@ -180,7 +182,7 @@ export class MemberAdminModalComponent implements OnInit {
 
   copyDetailsToNewMember() {
     const copiedMember = omit(this.member, "id");
-    this.mailchimpListSubscriptionService.defaultMailchimpSettings(copiedMember, true);
+    this.mailchimpListService.defaultMailchimpSettings(copiedMember, true);
     this.profileConfirmationService.unconfirmProfile(copiedMember);
     this.member = copiedMember;
     this.editMode = EditMode.COPY_EXISTING;

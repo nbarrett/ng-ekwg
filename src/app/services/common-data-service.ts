@@ -14,13 +14,13 @@ export class CommonDataService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommonDataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommonDataService, {level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.LOG});
   }
 
   public async responseFrom<T>(logger: Logger, observable: Observable<T>, notifications: Subject<T>): Promise<T> {
     const shared = observable.pipe(share());
     shared.subscribe((apiResponse: T) => {
-      logger.info("received", apiResponse);
+      this.logger.log(apiResponse);
       notifications.next(apiResponse);
     }, (httpErrorResponse: HttpErrorResponse) => {
       logger.error("http error response", httpErrorResponse);
@@ -34,7 +34,7 @@ export class CommonDataService {
     each(criteria, (value, field) => {
       const paramValue = typeof value === "object" ? JSON.stringify(value) : value;
       params = params.set(field, paramValue);
-      this.logger.debug("query setting params field:", field, "value:", paramValue);
+      this.logger.off("query setting params field:", field, "value:", paramValue);
     });
     return params;
   }

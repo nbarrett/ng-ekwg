@@ -8,11 +8,11 @@ import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeMod
 import { NgSelectModule } from "@ng-select/ng-select";
 import { Angular2CsvModule } from "angular2-csv";
 import { FileUploadModule } from "ng2-file-upload";
-import { CollapseModule } from "ngx-bootstrap/collapse";
-import { ModalModule } from "ngx-bootstrap/modal";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
+import { CollapseModule } from "ngx-bootstrap/collapse";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { ModalModule } from "ngx-bootstrap/modal";
 import { PopoverModule } from "ngx-bootstrap/popover";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
@@ -27,9 +27,6 @@ import {
   AuthenticationModalsServiceProvider,
   ClipboardServiceProvider,
   LegacyUrlService,
-  MailchimpCampaignServiceProvider,
-  MailchimpListServiceProvider,
-  MailchimpSegmentServiceProvider,
   RamblersUploadAuditProvider,
   RamblersWalksAndEventsServiceProvider,
   WalksServiceProvider
@@ -38,6 +35,7 @@ import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
+import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { LoginPanelComponent } from "./login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
@@ -91,9 +89,9 @@ import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/memb
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
-import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
+import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
@@ -146,13 +144,13 @@ import { ConfigService } from "./services/config.service";
 import { ContentMetadataService } from "./services/content-metadata.service";
 import { DateUtilsService } from "./services/date-utils.service";
 import { DbUtilsService } from "./services/db-utils.service";
-import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
 import { HttpResponseService } from "./services/http-response.service";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
-import { MailchimpErrorParserService } from "./services/mailchimp-error-parser.service";
+import { MailchimpCampaignService } from "./services/mailchimp/mailchimp-campaign.service";
+import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
+import { MailchimpSegmentService } from "./services/mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "./services/member/member-login.service";
-import { MemberNamingService } from "./services/member/member-naming.service";
 import { MemberService } from "./services/member/member.service";
 import { NotifierService } from "./services/notifier.service";
 import { NumberUtilsService } from "./services/number-utils.service";
@@ -169,7 +167,6 @@ import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
 import { SiteNavigatorComponent } from "./site-navigator/site-navigator.component";
 import { WalksAuthGuard } from "./walks-auth-guard.service";
-import { DatePickerComponent } from "./date-picker/date-picker.component";
 
 @NgModule({
   declarations: [
@@ -294,7 +291,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     CollapseModule.forRoot(),
     FileUploadModule,
     HttpClientModule,
-    LoggerModule.forRoot({serverLoggingUrl: "/api/logs", level: NgxLoggerLevel.DEBUG, serverLogLevel: NgxLoggerLevel.DEBUG}),
+    LoggerModule.forRoot({serverLoggingUrl: "api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF}),
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
     NgSelectModule,
@@ -330,9 +327,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
     HumanisePipe,
     LastConfirmedDateDisplayed,
     LoggedInGuard,
-    MailchimpCampaignServiceProvider,
     MailchimpConfigService,
-    MailchimpSegmentServiceProvider,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
     MemberIdToFullNamePipe,
@@ -427,6 +422,9 @@ export class AppModule implements DoBootstrap {
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))
       .factory("BroadcastService", downgradeInjectable(BroadcastService))
       .factory("SiteEditService", downgradeInjectable(SiteEditService))
+      .factory("MailchimpSegmentService", downgradeInjectable(MailchimpSegmentService))
+      .factory("MailchimpCampaignService", downgradeInjectable(MailchimpCampaignService))
+      .factory("MailchimpConfig", downgradeInjectable(MailchimpConfigService))
       .factory("URLService", downgradeInjectable(UrlService))
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService))

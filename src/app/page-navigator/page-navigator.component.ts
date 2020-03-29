@@ -1,9 +1,9 @@
 import { Component } from "@angular/core";
-import { UrlService } from "../services/url.service";
-import { NGXLogger } from "ngx-logger";
-import { PageService } from "../services/page.service";
+import { NgxLoggerLevel } from "ngx-logger";
 import { Page } from "../models/page.model";
-
+import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { PageService } from "../services/page.service";
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-page-navigator",
@@ -12,8 +12,10 @@ import { Page } from "../models/page.model";
 
 })
 export class PageNavigatorComponent {
+  private logger: Logger;
 
-  constructor(private pageService: PageService, private urlService: UrlService, private logger: NGXLogger) {
+  constructor(private pageService: PageService, private urlService: UrlService, loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);
   }
 
   isOnPage(page: string) {

@@ -4,13 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { chain } from "../../functions/chain";
 import { ApiResponse } from "../../models/api-response.model";
-import {
-  MailchimpBatchSubscriptionApiResponse,
-  MailchimpBatchSubscriptionResponse,
-  MailchimpListApiResponse,
-  MailchimpListResponse,
-  SubscriberIdentifiers
-} from "../../models/mailchimp.model";
+import { MailchimpBatchSubscriptionResponse, MailchimpListResponse, Subscriber, SubscriberIdentifiers } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
@@ -18,7 +12,6 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberService } from "../member/member.service";
 import { AlertInstance } from "../notifier.service";
 import { StringUtilsService } from "../string-utils.service";
-import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
 
 @Injectable({
   providedIn: "root"
@@ -33,7 +26,6 @@ export class MailchimpListService {
               private dateUtils: DateUtilsService,
               private commonDataService: CommonDataService,
               private memberService: MemberService,
-              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.DEBUG);
   }
@@ -55,7 +47,7 @@ export class MailchimpListService {
   }
 
   async resetSegment(listType: string, segmentId: string) {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentReset`, {segmentId}), this.notifications)).response;
+    return (await this.commonDataService.responseFrom(this.logger, this.http.put<ApiResponse>(`${this.BASE_URL}/${listType}/segmentReset`, {segmentId}), this.notifications)).response;
   }
 
   async renameSegment(listType: string, segmentId: string, segmentName: string) {
@@ -108,7 +100,7 @@ export class MailchimpListService {
     return () => {
       const updatedMembers = chain(subscribers)
         .map(subscriber => {
-          const member = this.mailchimpListSubscriptionService.responseToMember(listType, allMembers, subscriber);
+          const member = this.responseToMember(listType, allMembers, subscriber);
           if (member) {
             member.mailchimpLists[listType] = {subscribed: false, updated: true};
             return this.memberService.update(member);
@@ -126,12 +118,83 @@ export class MailchimpListService {
 
   filterForUnsubscribes(listResponse: MailchimpListResponse, listType: string, allMembers): SubscriberIdentifiers[] {
     return listResponse.data
-      .filter(subscriber => this.mailchimpListSubscriptionService.includeInUnsubscribe(listType, allMembers, subscriber))
+      .filter(subscriber => this.includeInUnsubscribe(listType, allMembers, subscriber))
       .map(subscriber => ({
         email: subscriber.email,
         euid: subscriber.euid,
         leid: subscriber.leid
       }));
+  }
+
+  responseToMember(listType, members: Member[], subscriber: Subscriber) {
+    return members.find(member => {
+      const matchedOnListSubscriberId = subscriber.leid && member.mailchimpLists[listType].leid && (subscriber.leid.toString() === member.mailchimpLists[listType].leid.toString());
+      const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (subscriber.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
+      const matchedOnCurrentEmail = member.email && subscriber.email.toLowerCase() === member.email.toLowerCase();
+      return (matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail);
+    });
+  }
+
+  includeMemberInUnsubscription(listType, member) {
+    if (!member || !member.groupMember) {
+      return true;
+    } else if (member.mailchimpLists) {
+      if (listType === "socialEvents") {
+        return (!member.socialMember && member.mailchimpLists[listType].subscribed);
+      } else {
+        return (!member.mailchimpLists[listType].subscribed);
+      }
+    } else {
+      return false;
+    }
+  }
+
+  includeInUnsubscribe(listType: string, members: Member[], subscriber: Subscriber) {
+    return this.includeMemberInUnsubscription(listType, this.responseToMember(listType, members, subscriber));
+  }
+
+  resetUpdateStatusForMember(member) {
+    // updated == false means not up to date with mail e.g. next list update will send this data to mailchimo
+    member.mailchimpLists.walks.updated = false;
+    member.mailchimpLists.socialEvents.updated = false;
+    member.mailchimpLists.general.updated = false;
+  }
+
+  findMemberAndMarkAsUpdated(listType: string, batchedMembers: any[], subscriber: Subscriber) {
+    const member = this.responseToMember(listType, batchedMembers, subscriber);
+    if (member) {
+      member.mailchimpLists[listType].leid = subscriber.leid;
+      member.mailchimpLists[listType].updated = true; // updated == true means up to date e.g. nothing to send to mailchimo
+      member.mailchimpLists[listType].lastUpdated = this.dateUtils.nowAsValue();
+      member.mailchimpLists[listType].email = member.email;
+    } else {
+      this.logger.debug(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(subscriber)}`);
+    }
+    return member;
+  }
+
+  includeMemberInEmailList(listType, member) {
+    if (member.email && member.mailchimpLists[listType].subscribed) {
+      if (listType === "socialEvents") {
+        return member.groupMember && member.socialMember;
+      } else {
+        return member.groupMember;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  includeMemberInSubscription(listType, member) {
+    return this.includeMemberInEmailList(listType, member) && !member.mailchimpLists[listType].updated;
+  }
+
+  defaultMailchimpSettings(member: Member, subscribedState: boolean) {
+    member.mailchimpLists = {
+      walks: {subscribed: subscribedState},
+      socialEvents: {subscribed: subscribedState},
+      general: {subscribed: subscribedState}
+    };
   }
 
 }

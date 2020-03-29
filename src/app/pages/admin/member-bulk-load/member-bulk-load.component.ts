@@ -195,7 +195,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
 
   createMemberFromAudit(memberFromAudit) {
     const member = cloneDeep(memberFromAudit);
-    this.mailchimpListSubscriptionService.defaultMailchimpSettings(member, true);
+    this.mailchimpListService.defaultMailchimpSettings(member, true);
     member.groupMember = true;
     this.modalService.show(MemberAdminModalComponent, {
       class: "modal-lg",

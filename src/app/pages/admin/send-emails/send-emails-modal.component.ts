@@ -9,9 +9,11 @@ import { DateValue } from "../../../models/date.model";
 import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
 import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -46,6 +48,7 @@ export class SendEmailsModalComponent implements OnInit {
               private modalService: BsModalService,
               private mailchimpConfigService: MailchimpConfigService,
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+              private mailchimpListService: MailchimpListService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
@@ -176,7 +179,7 @@ export class SendEmailsModalComponent implements OnInit {
   populateSelectedMembers(): void {
     const memberSelector = this.memberSelectorNamed(this.memberSelectorName);
     this.selectableMembers = this.members
-      .filter(member => this.mailchimpListSubscriptionService.includeMemberInEmailList("general", member))
+      .filter(member => this.mailchimpListService.includeMemberInEmailList("general", member))
       .map(member => memberSelector.memberMapper(member));
     this.selectedMemberIds = this.selectableMembers
       .filter(member => memberSelector.memberFilter(member.member))
@@ -258,7 +261,7 @@ export class SendEmailsModalComponent implements OnInit {
     const saveMemberPromises = [];
     map(this.selectedMembersWithEmails(), member => {
       this.memberService.setPasswordResetId(member);
-      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListService.resetUpdateStatusForMember(member);
       saveMemberPromises.push(this.memberService.createOrUpdate(member));
     });
 
@@ -269,7 +272,7 @@ export class SendEmailsModalComponent implements OnInit {
   includeInNextMailchimpListUpdate() {
 
     const saveMemberPromises = this.selectedMembersWithEmails().map(member => {
-      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListService.resetUpdateStatusForMember(member);
       return this.memberService.createOrUpdate(member);
     });
 
@@ -284,7 +287,7 @@ export class SendEmailsModalComponent implements OnInit {
     chain(this.selectedMemberIds)
       .map(memberId => find(this.members, member => this.memberService.extractMemberId(member) === memberId.id)).map(member => {
       member.groupMember = false;
-      this.mailchimpListSubscriptionService.resetUpdateStatusForMember(member);
+      this.mailchimpListService.resetUpdateStatusForMember(member);
       saveMemberPromises.push(this.memberService.createOrUpdate(member));
     });
 
