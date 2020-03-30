@@ -27,11 +27,19 @@ module.exports = function (instagramAuthentication) {
     res.redirect(authorizationUrl);
   }
 
+  function authoriseOK(req, res) {
+    debug("handleAuth called with req.query", req.query);
+    debug("handleAuth called with req.url", req.url);
+    debug("handleAuth called with req.path", req.path);
+    res.json({response: "OK"});
+  }
+
   function handleAuth(req, res) {
     debug("handleAuth called with req.query", req.query);
     debug("handleAuth called with req.url", req.url);
     debug("handleAuth called with req.path", req.path);
 
+    res.json({response: "OK"});
     debug("handleAuth:old instagramAuthentication:", instagramAuthentication, "auth code", req.query.code);
     ig.authorize_user(req.query.code, redirectUri, function (err, result) {
       if (err) res.send(err);
@@ -68,5 +76,6 @@ module.exports = function (instagramAuthentication) {
     authorise: authorise,
     handleAuth: handleAuth,
     recentMedia: recentMedia,
+    authoriseOK: authoriseOK,
   };
 };
