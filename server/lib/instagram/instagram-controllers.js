@@ -19,7 +19,6 @@ module.exports = function (instagramAuthentication) {
     access_token: config.instagram.accessToken,
   });
 
-
   function authorise(req, res) {
 
     var authorizationUrl = ig.get_authorization_url(redirectUri, {scope: ["public_content", "likes"]});
@@ -27,7 +26,7 @@ module.exports = function (instagramAuthentication) {
     res.redirect(authorizationUrl);
   }
 
-  function authoriseOK(req, res) {
+  function handleOK(req, res) {
     debug("handleAuth called with req.query", req.query);
     debug("handleAuth called with req.url", req.url);
     debug("handleAuth called with req.path", req.path);
@@ -53,22 +52,19 @@ module.exports = function (instagramAuthentication) {
   }
 
   function recentMedia(req, res) {
-    let response = {instagram: []};
     if (instagramAuthentication.result) {
-
       debug("recentMedia:accessToken:", instagramAuthentication.result.accessToken, "userId:", instagramAuthentication.result.userId);
 
-      ig.user_media_recent(instagramAuthentication.result.userId, function (err, result, pagination, remaining, limit) {
-        if (err) {
-          res.json(err);
+      ig.user_media_recent(instagramAuthentication.result.userId, function (error, response, pagination, remaining, limit) {
+        if (error) {
+          res.json({request: "recent-media", error});
         } else {
-          response.instagram = result;
-          res.json(response);
+          res.json({request: "recent-media", response});
         }
       });
     } else {
       debug("recentMedia:warning - no instagramAuthentication.result has been received yet");
-      res.json(response);
+      res.json({request: "recent-media", response: []});
     }
   }
 
@@ -76,6 +72,6 @@ module.exports = function (instagramAuthentication) {
     authorise: authorise,
     handleAuth: handleAuth,
     recentMedia: recentMedia,
-    authoriseOK: authoriseOK,
+    authoriseOK: handleOK,
   };
 };

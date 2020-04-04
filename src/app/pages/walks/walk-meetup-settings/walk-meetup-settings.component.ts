@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { range } from "lodash-es";
 import first from "lodash-es/first";
-import { TabsetComponent } from "ngx-bootstrap";
+import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ContentText } from "../../../models/content-text.model";

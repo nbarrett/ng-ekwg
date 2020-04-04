@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { isEmpty } from "lodash-es";
-import { BsModalService } from "ngx-bootstrap";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";

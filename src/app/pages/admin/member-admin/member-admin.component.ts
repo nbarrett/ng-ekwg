@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import extend from "lodash-es/extend";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
-import { BsModalService, ModalOptions } from "ngx-bootstrap";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";

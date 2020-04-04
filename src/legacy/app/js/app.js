@@ -70,9 +70,6 @@ angular.module("ekwgApp", [
       .when(mainPages.SOCIAL + "/:area?", {
         controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
-      .when(mainPages.HOME, {
-        controller: "HomeController", templateUrl: "partials/home/home.html", title: "home"
-      })
       .otherwise({template: ''});
 
     uibDatepickerConfig.startingDay = 1;

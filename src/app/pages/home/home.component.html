@@ -1,0 +1,68 @@
+<div id="home-carousel">
+  <div class="carousel-wrapper">
+    <div class="slider-container">
+      <div class="sc-inner">
+        <carousel [interval]="interval" [isAnimated]="true" (activeSlideChange)="log($event)">
+          <slide *ngFor="let slide of slides; let index = index" active="slide.active">
+            <img [src]="slide.image" style="display: block; width: 100%;">
+            <div class="carousel-caption d-none d-md-block">
+              <h4>{{slide.text}}</h4>
+              <!--              <p>{{index + 1}} of {{slides.length}}</p>-->
+            </div>
+          </slide>
+        </carousel>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wrapper">
+  <div class="no-header-padding" role="main">
+    <div class="row">
+      <div class="col-sm-12">
+        <a *ngIf="allowEdits()" href="image-editor/imagesHome" title="Edit images"
+           class="button-form button-form-right round">Edit images</a>
+        <app-markdown-editor class="event-description" name="welcome"></app-markdown-editor>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6 thumbnail social-media-thumbnail round">
+        <div class="cta-button cta-facebook-blue round">
+          <a href="https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649"
+             title="Visit Our Facebook Page"> Facebook</a>
+        </div>
+
+        <div class="body-content">
+          <iframe
+            src="https://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2FEast-Kent-Walking-Group-172849389464649%2F&amp;width=460&amp;height=584&amp;colorscheme=light&amp;show_faces=true&amp;stream=true&amp;show_border=false&amp;header=false&amp;force_wall=false"
+            scrolling="yes" frameborder="0"
+            class="facebook-frame"></iframe>
+        </div>
+      </div>
+      <div class="col-sm-6 thumbnail social-media-thumbnail round">
+        <div class="cta-button cta-instagram round">
+          <div class="row">
+            <div class="col-sm-6">
+              <a href="https://www.instagram.com/eastkentwalking/">
+                <img style="height: 27px; margin-left: 5px;"
+                     src="assets/images/local/instagram.png"></a>
+            </div>
+            <div class="col-sm-6">
+              <a style="color: #333" href="https://www.instagram.com/eastkentwalking/">eastkentwalking</a>
+            </div>
+          </div>
+        </div>
+        <div class="instagram-pics">
+          <ul>
+            <li *ngFor="let media of feeds.instagram.recentMedia">
+              <a [href]="media.link" target="_blank">
+                <img [src]="mediaUrlFor(media)" alt="{{mediaCaptionFor(media)}}"
+                     title="{{mediaCaptionFor(media)}}"></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content-footer">
+</div>

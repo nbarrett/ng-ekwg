@@ -20,7 +20,7 @@ export class CommonDataService {
   public async responseFrom<T>(logger: Logger, observable: Observable<T>, notifications: Subject<T>): Promise<T> {
     const shared = observable.pipe(share());
     shared.subscribe((apiResponse: T) => {
-      this.logger.log(apiResponse);
+      logger.log(apiResponse);
       notifications.next(apiResponse);
     }, (httpErrorResponse: HttpErrorResponse) => {
       logger.error("http error response", httpErrorResponse);

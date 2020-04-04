@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { omit } from "lodash-es";
-import { BsModalRef, BsModalService } from "ngx-bootstrap";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
@@ -8,8 +8,8 @@ import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { DbUtilsService } from "../../../services/db-utils.service";
-import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
 import { MailchimpLinkService } from "../../../services/mailchimp/mailchimp-link.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";

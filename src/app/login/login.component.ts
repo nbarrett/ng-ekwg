@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { BsModalService } from "ngx-bootstrap";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";

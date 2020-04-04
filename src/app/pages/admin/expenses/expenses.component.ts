@@ -9,7 +9,7 @@ import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
 import last from "lodash-es/last";
-import { BsModalService, ModalOptions } from "ngx-bootstrap";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";

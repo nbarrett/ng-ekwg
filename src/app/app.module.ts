@@ -8,6 +8,7 @@ import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeMod
 import { NgSelectModule } from "@ng-select/ng-select";
 import { Angular2CsvModule } from "angular2-csv";
 import { FileUploadModule } from "ng2-file-upload";
+import { CarouselModule } from "ngx-bootstrap/carousel";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { CollapseModule } from "ngx-bootstrap/collapse";
@@ -94,6 +95,7 @@ import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.c
 import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
+import { HomeComponent } from "./pages/home/home.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
@@ -212,6 +214,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
+    HomeComponent,
     HumanisePipe,
     JoinUsComponent,
     LastConfirmedDateDisplayed,
@@ -291,6 +294,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     BrowserAnimationsModule,
     BrowserModule,
     BsDatepickerModule.forRoot(),
+    CarouselModule.forRoot(),
     CollapseModule.forRoot(),
     FileUploadModule,
     HttpClientModule,

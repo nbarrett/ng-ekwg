@@ -13,10 +13,11 @@ import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
 import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
 import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
 import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
-import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
+import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
+import { HomeComponent } from "./pages/home/home.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
@@ -43,6 +44,8 @@ const routes: Routes = [
   {path: "admin/contact-details", component: ContactDetailsComponent, canActivate: [LoggedInGuard]},
   {path: "admin/member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
   {path: "admin/member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
+  {path: "home", component: HomeComponent },
+  {path: "", component: HomeComponent },
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "mailing-preferences", component: MailingPreferencesComponent},
   {path: "set-password/:password-reset-id", component: SetPasswordComponent},

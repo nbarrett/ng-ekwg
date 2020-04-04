@@ -9,7 +9,7 @@ import map from "lodash-es/map";
 import reduce from "lodash-es/reduce";
 import sortBy from "lodash-es/sortBy";
 import { FileUploader } from "ng2-file-upload";
-import { BsModalService } from "ngx-bootstrap";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";

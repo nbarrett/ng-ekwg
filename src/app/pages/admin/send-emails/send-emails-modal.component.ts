@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { find, map } from "lodash-es";
-import { BsModalRef, BsModalService, TooltipDirective } from "ngx-bootstrap";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";

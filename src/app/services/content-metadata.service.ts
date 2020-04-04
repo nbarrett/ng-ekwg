@@ -18,7 +18,7 @@ export class ContentMetadataService {
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.DEBUG);
   }
 
   baseUrl(metaDataPathSegment) {
