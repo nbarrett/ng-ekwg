@@ -24,7 +24,6 @@
         "@schematics/angular:component": {
           "lintFix": true,
           "prefix": "app",
-          "styleext": "sass",
           "style": "sass"
         },
         "@schematics/angular:directive": {
@@ -92,12 +91,6 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -223,7 +216,10 @@
   "defaultProject": "ng-ekwg",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "sass"
+      "style": "sass"
     }
+  },
+  "cli": {
+    "analytics": "2bb37b0d-21c6-47ef-b513-a7c5a141a02c"
   }
 }

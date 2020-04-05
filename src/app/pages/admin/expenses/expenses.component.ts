@@ -77,7 +77,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private authSubscription: Subscription;
   private expenseClaimSubscription: Subscription;
   public filters: ExpenseFilter[];
-  @ViewChild(ExpenseNotificationDirective, {static: false}) notificationDirective: ExpenseNotificationDirective;
+  @ViewChild(ExpenseNotificationDirective) notificationDirective: ExpenseNotificationDirective;
   expandable: boolean;
   showOrHide = "hide";
 

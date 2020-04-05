@@ -9,7 +9,7 @@ export const HOME: Page = {href: "", title: "Home"};
 })
 
 export class PageService {
-  constructor(private urlService: UrlService, private pageService: PageService) {
+  constructor(private urlService: UrlService) {
   }
 
   public pages: Page[] = [
