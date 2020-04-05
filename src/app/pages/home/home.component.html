@@ -2,12 +2,15 @@
   <div class="carousel-wrapper">
     <div class="slider-container">
       <div class="sc-inner">
-        <carousel [interval]="interval" [isAnimated]="true" (activeSlideChange)="log($event)">
-          <slide *ngFor="let slide of slides; let index = index" active="slide.active">
-            <img [src]="slide.image" style="display: block; width: 100%;">
+        <carousel [isAnimated]="true" [pauseOnFocus]=true [interval]="slideInterval" [showIndicators]="false"
+                  [startFromIndex]="0"
+                  (activeSlideChange)="activeSlideChange($event)">
+          <slide *ngFor="let slide of loadedSlides; let index = index; trackBy: slideTracker" active="slide.active">
+            <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
             <div class="carousel-caption d-none d-md-block">
               <h4>{{slide.text}}</h4>
-              <!--              <p>{{index + 1}} of {{slides.length}}</p>-->
+              <small *ngIf="slide.eventId">taken on <a
+                href="walk url">date of walk</a></small>
             </div>
           </slide>
         </carousel>
@@ -21,7 +24,7 @@
       <div class="col-sm-12">
         <a *ngIf="allowEdits()" href="image-editor/imagesHome" title="Edit images"
            class="button-form button-form-right round">Edit images</a>
-        <app-markdown-editor class="event-description" name="welcome"></app-markdown-editor>
+        <app-markdown-editor class="green-bullets-no-rule" name="welcome"></app-markdown-editor>
       </div>
     </div>
     <div class="row">

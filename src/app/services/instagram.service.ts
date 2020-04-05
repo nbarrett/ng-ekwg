@@ -18,7 +18,7 @@ export class InstagramService {
 
   constructor(private commonDataService: CommonDataService,
               private http: HttpClient, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(InstagramService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(InstagramService, NgxLoggerLevel.OFF);
   }
 
   notifications(): Observable<InstagramMediaPostApiResponse> {

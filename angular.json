@@ -56,16 +56,15 @@
               }
             ],
             "styles": [
-              "src/legacy/vendor/bootstrap/dist/css/bootstrap.min.css",
-              "src/legacy/vendor/font-awesome/css/font-awesome.min.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/legacy/vendor/angular-ui-select/dist/select.min.css",
-              "src/legacy/app/assets/css/style.css",
               "src/app/styles/bs-datepicker.css",
               "src/app/styles/ui-switch.component.scss",
+              "src/legacy/app/assets/css/style.css",
               "src/styles.sass"
             ],
             "scripts": [
-              "./node_modules/marked/lib/marked.js",
+              "node_modules/marked/lib/marked.js",
               "src/legacy/vendor/jquery/dist/jquery.slim.js",
               "node_modules/angular/angular.min.js",
               "node_modules/angular-resource/angular-resource.min.js",
@@ -83,9 +82,10 @@
               "src/legacy/vendor/xml2json/xml2json.js",
               "src/legacy/vendor/showdown/dist/showdown.min.js",
               "src/legacy/vendor/angular-markdown-directive/markdown.js",
-              "src/legacy/vendor/bootstrap/dist/js/bootstrap.min.js",
               "src/legacy/vendor/underscore/underscore-min.js",
               "src/legacy/vendor/underscore.string/dist/underscore.string.min.js",
+              "node_modules/popper.js/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "src/ekwg-legacy/app/js/ng-ekwg.js"
             ],
             "es5BrowserSupport": true
@@ -148,7 +148,7 @@
               "src/styles.sass"
             ],
             "scripts": [
-              "./node_modules/marked/lib/marked.js",
+              "node_modules/marked/lib/marked.js",
               "src/legacy/vendor/jquery/dist/jquery.slim.js",
               "node_modules/angular/angular.min.js",
               "node_modules/angular-resource/angular-resource.min.js",

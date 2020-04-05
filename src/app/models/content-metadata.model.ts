@@ -1,5 +1,10 @@
 import { ApiResponse } from "./api-response.model";
 
+export enum EventType {
+  WALK = "walk",
+  SOCIAL = "social"
+}
+
 export interface ContentMetadata {
   id: string;
   baseUrl: string;
@@ -8,6 +13,8 @@ export interface ContentMetadata {
 }
 
 export interface ContentMetadataItem {
+  eventId?: string;
+  eventType?: EventType;
   image: string;
   text: string;
 }

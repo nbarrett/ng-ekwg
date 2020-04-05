@@ -12,14 +12,15 @@ import { SiteEditService } from "../../site-edit/site-edit.service";
 @Component({
   selector: "app-home",
   templateUrl: "./home.component.html",
-  // styleUrls: ["./home.component.sass"]
+  styleUrls: ["./home.component.sass"]
 })
 export class HomeComponent implements OnInit {
   private logger: Logger;
   public feeds: { facebook: {}; instagram: { recentMedia: any[] } };
-  public slides: ContentMetadataItem[] = [];
-  public interval: number;
-  private files: ContentMetadataItem[] = [];
+  public loadedSlides: ContentMetadataItem[] = [];
+  private availableSlides: ContentMetadataItem[] = [];
+  public slideInterval = 5000;
+  private interval: number;
 
   constructor(
     private  memberLoginService: MemberLoginService,
@@ -27,7 +28,7 @@ export class HomeComponent implements OnInit {
     private  siteEditService: SiteEditService,
     private  instagramService: InstagramService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
     this.feeds = {instagram: {recentMedia: []}, facebook: {}};
   }
 
@@ -35,15 +36,26 @@ export class HomeComponent implements OnInit {
     this.logger.debug("ngOnInit");
     this.contentMetaDataService.items("imagesHome")
       .then(contentMetaData => {
-        this.interval = 5000;
-        this.files = contentMetaData.files;
-        this.slides.push(contentMetaData.files[0]);
+        this.availableSlides = take(contentMetaData.files, contentMetaData.files.length);
+        this.logger.debug("initialised with", this.availableSlides.length, "available slides");
+        this.addNewSlide();
       });
     this.instagramService.recentMedia()
       .then(recentMedia => {
         this.feeds.instagram.recentMedia = take(recentMedia, 14);
         this.logger.debug("Refreshed social media", this.feeds.instagram.recentMedia, "count =", this.feeds.instagram.recentMedia.length);
       });
+    this.interval = setInterval(() => this.addNewSlide(), this.slideInterval);
+    this.logger.debug("created interval:", this.interval);
+  }
+
+  slideTracker(index: number, item: ContentMetadataItem) {
+    return item.image;
+  }
+
+  slidesFunction() {
+    this.logger.debug("slidesFunction - length:", this.loadedSlides.length);
+    return this.loadedSlides;
   }
 
   mediaUrlFor(media) {
@@ -60,10 +72,21 @@ export class HomeComponent implements OnInit {
     return this.siteEditService.active() && this.memberLoginService.allowContentEdits();
   }
 
-  log(slide: number) {
-    this.logger.debug("slide", slide);
-    if (this.slides.length < this.files.length) {
-      this.slides.push(this.files[this.slides.length]);
+  addNewSlide() {
+    this.logger.debug("addNewSlide - slide count:", this.loadedSlides.length);
+    if (this.loadedSlides.length < this.availableSlides.length) {
+      this.logger.debug("adding slide", this.loadedSlides.length + 1);
+      this.loadedSlides.push(this.availableSlides[this.loadedSlides.length]);
+    } else {
+      this.logger.debug("no more slides to add:", this.loadedSlides.length);
+      clearInterval(this.interval);
+    }
+  }
+
+  activeSlideChange(slideNumber: number) {
+    this.logger.debug("displaying slide:", slideNumber + 1, "slide count:", this.loadedSlides.length);
+    if (this.loadedSlides.length < this.availableSlides.length && slideNumber === this.loadedSlides.length - 1) {
+      this.addNewSlide();
     }
   }
 }
