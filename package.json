@@ -7,7 +7,7 @@
   "scripts": {
     "analyze": "webpack-bundle-analyzer dist/ng-ekwg/stats-es2015.json",
     "build:stats": "ng build --prod --statsJson=true --extra-webpack-config webpack.extra.js",
-    "build": "ng build --progress --prod --extra-webpack-config webpack.extra.js",
+    "build": "ng build  --build-optimizer --progress --prod --extra-webpack-config webpack.extra.js",
     "prebuild:copy": "copyfiles -f \"./src/data/moment-timezone-data/latest.json\" \"./node_modules/moment-timezone/data/packed\"",
     "prebuild:grunt": "grunt client",
     "e2e": "ng e2e",

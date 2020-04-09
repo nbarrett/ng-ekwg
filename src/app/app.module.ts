@@ -117,25 +117,6 @@ import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-item
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
 import { ChangedItemsPipe } from "./pipes/changed-items.pipe";
 import { CreatedAuditPipe } from "./pipes/created-audit-pipe";
-import { DisplayDateAndTimePipe } from "./pipes/display-date-and-time.pipe";
-import { DisplayDatePipe } from "./pipes/display-date.pipe";
-import { DisplayDatesPipe } from "./pipes/display-dates.pipe";
-import { DisplayDayPipe } from "./pipes/display-day.pipe";
-import { EventNotePipe } from "./pipes/event-note.pipe";
-import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pipe";
-import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
-import { FullNamePipe } from "./pipes/full-name.pipe";
-import { HumanisePipe } from "./pipes/humanise.pipe";
-import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displayed.pipe";
-import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
-import { MemberIdToFirstNamePipe } from "./pipes/member-id-to-first-name.pipe";
-import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
-import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
-import { MoneyPipe } from "./pipes/money.pipe";
-import { SearchFilterPipe } from "./pipes/search-filter.pipe";
-import { SnakeCasePipe } from "./pipes/snakecase.pipe";
-import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
-import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { VenueIconPipe } from "./pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "./pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "./pipes/walk-summary.pipe";
@@ -166,6 +147,7 @@ import { UrlService } from "./services/url.service";
 import { WalkNotificationService } from "./services/walks/walk-notification.service";
 import { WalksQueryService } from "./services/walks/walks-query.service";
 import { WalksReferenceService } from "./services/walks/walks-reference-data.service";
+import { SharedModule } from "./shared-module";
 import { NonRenderingComponent } from "./shared/non-rendering.component";
 import { SiteEditComponent } from "./site-edit/site-edit.component";
 import { SiteEditService } from "./site-edit/site-edit.service";
@@ -185,12 +167,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ContactUsDirective,
     CreatedAuditPipe,
     DatePickerComponent,
-    DisplayDateAndTimePipe,
-    DisplayDatePipe,
-    DisplayDatesPipe,
-    DisplayDayPipe,
     EmailSubscriptionsComponent,
-    EventNotePipe,
     ExpenseDetailModalComponent,
     ExpenseNotificationApproverFirstApprovalComponent,
     ExpenseNotificationApproverPaidComponent,
@@ -211,13 +188,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ExpenseSubmitModalComponent,
     ForgotPasswordComponent,
     ForgotPasswordModalComponent,
-    FullNamePipe,
-    FullNameWithAliasOrMePipe,
-    FullNameWithAliasPipe,
     HomeComponent,
-    HumanisePipe,
     JoinUsComponent,
-    LastConfirmedDateDisplayed,
     LoginComponent,
     ChangePasswordComponent,
     LoginModalComponent,
@@ -226,17 +198,11 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     MailingPreferencesComponent,
     MainLogoComponent,
     MainTitleComponent,
-    MarkdownEditorComponent,
     MeetupDescriptionComponent,
-    MeetupEventSummaryPipe,
     MemberAdminComponent,
     MemberAdminModalComponent,
     MemberBulkLoadComponent,
-    MemberIdsToFullNamesPipe,
-    MemberIdToFirstNamePipe,
-    MemberIdToFullNamePipe,
     MemberLoginAuditComponent,
-    MoneyPipe,
     NonRenderingComponent,
     NotificationUrlComponent,
     PageComponent,
@@ -246,14 +212,10 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     PrivacyPolicyComponent,
     ContactDetailsComponent,
     ResetPasswordModalComponent,
-    SearchFilterPipe,
     SendEmailsModalComponent,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
-    SnakeCasePipe,
-    UpdatedAuditPipe,
-    ValueOrDefaultPipe,
     VenueIconPipe,
     WalkAddSlotsComponent,
     WalkAdminComponent,
@@ -287,6 +249,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkViewComponent,
   ],
   imports: [
+    SharedModule,
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     Angular2CsvModule,
@@ -299,7 +262,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     FileUploadModule,
     HttpClientModule,
     LoggerModule.forRoot({serverLoggingUrl: "api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF}),
-    MarkdownModule.forRoot(),
     ModalModule.forRoot(),
     NgSelectModule,
     PopoverModule.forRoot(),
@@ -307,6 +269,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     TooltipModule.forRoot(),
     UiSwitchModule,
     UpgradeModule,
+    MarkdownModule.forRoot(),
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
@@ -322,31 +285,14 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     CookieService,
     CreatedAuditPipe,
     CustomNGXLoggerService,
-    DisplayDateAndTimePipe,
-    DisplayDatePipe,
-    DisplayDatesPipe,
-    DisplayDayPipe,
     MailchimpListSubscriptionService,
-    EventNotePipe,
-    FullNamePipe,
-    FullNameWithAliasOrMePipe,
-    FullNameWithAliasPipe,
-    HumanisePipe,
-    LastConfirmedDateDisplayed,
     LoggedInGuard,
     MailchimpConfigService,
-    MeetupEventSummaryPipe,
-    MemberIdsToFullNamesPipe,
-    MemberIdToFullNamePipe,
     NotifierService,
     RamblersUploadAuditProvider,
     RamblersWalksAndEventsServiceProvider,
     RouterHistoryService,
-    SearchFilterPipe,
     SiteEditService,
-    SnakeCasePipe,
-    UpdatedAuditPipe,
-    ValueOrDefaultPipe,
     VenueIconPipe,
     WalkEventTypePipe,
     WalkNotificationService,
@@ -356,47 +302,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkValidationsListPipe,
   ],
   entryComponents: [
-    AppComponent,
-    ContactUsDirective,
-    ExpenseDetailModalComponent,
-    ExpenseNotificationApproverFirstApprovalComponent,
-    ExpenseNotificationApproverPaidComponent,
-    ExpenseNotificationApproverReturnedComponent,
-    ExpenseNotificationApproverSecondApprovalComponent,
-    ExpenseNotificationApproverSubmittedComponent,
-    ExpenseNotificationApproverSubmittedComponent,
-    ExpenseNotificationCreatorPaidComponent,
-    ExpenseNotificationCreatorReturnedComponent,
-    ExpenseNotificationCreatorSecondApprovalComponent,
-    ExpenseNotificationCreatorSubmittedComponent,
-    ExpenseNotificationDetailsComponent,
-    ExpenseNotificationTreasurerPaidComponent,
-    ExpenseNotificationTreasurerSecondApprovalComponent,
-    ExpensePaidModalComponent,
-    ExpenseReturnModalComponent,
-    ExpenseSubmitModalComponent,
-    ForgotPasswordModalComponent,
-    LoginModalComponent,
-    MarkdownEditorComponent,
-    MeetupDescriptionComponent,
-    MemberAdminModalComponent,
-    ResetPasswordModalComponent,
-    SendEmailsModalComponent,
-    WalkNotificationChangesComponent,
-    WalkNotificationCoordinatorApprovedComponent,
-    WalkNotificationCoordinatorAwaitingApprovalComponent,
-    WalkNotificationCoordinatorAwaitingWalkDetailsComponent,
-    WalkNotificationCoordinatorDeletedComponent,
-    WalkNotificationCoordinatorRequestedComponent,
-    WalkNotificationCoordinatorUpdatedComponent,
-    WalkNotificationDetailsComponent,
-    WalkNotificationFooterComponent,
-    WalkNotificationLeaderApprovedComponent,
-    WalkNotificationLeaderAwaitingApprovalComponent,
-    WalkNotificationLeaderAwaitingWalkDetailsComponent,
-    WalkNotificationLeaderDeletedComponent,
-    WalkNotificationLeaderRequestedComponent,
-    WalkNotificationLeaderUpdatedComponent,
+    AppComponent
   ],
 })
 
