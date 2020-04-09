@@ -8,9 +8,9 @@ import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeMod
 import { NgSelectModule } from "@ng-select/ng-select";
 import { Angular2CsvModule } from "angular2-csv";
 import { FileUploadModule } from "ng2-file-upload";
-import { CarouselModule } from "ngx-bootstrap/carousel";
 import { AccordionModule } from "ngx-bootstrap/accordion";
 import { AlertModule } from "ngx-bootstrap/alert";
+import { CarouselModule } from "ngx-bootstrap/carousel";
 import { CollapseModule } from "ngx-bootstrap/collapse";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { ModalModule } from "ngx-bootstrap/modal";
@@ -22,7 +22,6 @@ import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger
 import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
-import { AdminAuthGuard } from "./admin-auth-guard.service";
 import { LoggedInGuard } from "./admin-login-guard.service";
 import {
   AuthenticationModalsServiceProvider,
@@ -38,8 +37,6 @@ import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { LoginPanelComponent } from "./login-panel/login-panel.component";
-import { ForgotPasswordComponent } from "./login/forgot-password.component";
-import { LoginComponent } from "./login/login.component";
 import { MailingPreferencesComponent } from "./login/mailing-preferences.component";
 import { SetPasswordComponent } from "./login/set-password.component";
 import { LogoutComponent } from "./logout/logout.component";
@@ -47,19 +44,6 @@ import { MainLogoComponent } from "./main-logo/main-logo.component";
 import { MainTitleComponent } from "./main-title/main-title.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
-import { ExpenseNotificationDirective } from "./notifications/expenses/expense-notification.directive";
-import { ExpenseNotificationApproverFirstApprovalComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
-import { ExpenseNotificationApproverPaidComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-paid.component";
-import { ExpenseNotificationApproverReturnedComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-returned.component";
-import { ExpenseNotificationApproverSecondApprovalComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-second-approval.component";
-import { ExpenseNotificationApproverSubmittedComponent } from "./notifications/expenses/templates/approver/expense-notification-approver-submitted.component";
-import { ExpenseNotificationDetailsComponent } from "./notifications/expenses/templates/common/expense-notification-details.component";
-import { ExpenseNotificationCreatorPaidComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-paid.component";
-import { ExpenseNotificationCreatorReturnedComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-returned.component";
-import { ExpenseNotificationCreatorSecondApprovalComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-second-approval.component";
-import { ExpenseNotificationCreatorSubmittedComponent } from "./notifications/expenses/templates/creator/expense-notification-creator-submitted.component";
-import { ExpenseNotificationTreasurerPaidComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-paid.component";
-import { ExpenseNotificationTreasurerSecondApprovalComponent } from "./notifications/expenses/templates/treasurer/expense-notification-treasurer-second-approval.component";
 import { WalkNotificationChangesComponent } from "./notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "./notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationFooterComponent } from "./notifications/walks/templates/common/walk-notification-footer.component";
@@ -80,27 +64,11 @@ import { WalkNotificationDirective } from "./notifications/walks/walk-notificati
 import { PageNavigatorComponent } from "./page-navigator/page-navigator.component";
 import { PageTitleComponent } from "./page-title/page-title.component";
 import { PageComponent } from "./page/page.component";
-import { AdminComponent } from "./pages/admin/admin/admin.component";
-import { ExpensesComponent } from "./pages/admin/expenses/expenses.component";
-import { ExpenseDetailModalComponent } from "./pages/admin/expenses/modals/expense-detail-modal.component";
-import { ExpensePaidModalComponent } from "./pages/admin/expenses/modals/expense-paid-modal.component";
-import { ExpenseReturnModalComponent } from "./pages/admin/expenses/modals/expense-return-modal.component";
-import { ExpenseSubmitModalComponent } from "./pages/admin/expenses/modals/expense-submit-modal.component";
-import { MemberAdminModalComponent } from "./pages/admin/member-admin-modal/member-admin-modal.component";
-import { MemberAdminComponent } from "./pages/admin/member-admin/member-admin.component";
-import { MemberBulkLoadComponent } from "./pages/admin/member-bulk-load/member-bulk-load.component";
-import { MemberLoginAuditComponent } from "./pages/admin/member-login-audit/member-login-audit.component";
-import { ChangePasswordComponent } from "./pages/admin/profile/change-password.component";
-import { ContactDetailsComponent } from "./pages/admin/profile/contact-details.component";
-import { EmailSubscriptionsComponent } from "./pages/admin/profile/email-subscriptions.component";
-import { SendEmailsModalComponent } from "./pages/admin/send-emails/send-emails-modal.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { HomeComponent } from "./pages/home/home.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
-import { ForgotPasswordModalComponent } from "./pages/login/forgot-password-modal/forgot-password-modal.component";
 import { LoginModalComponent } from "./pages/login/login-modal/login-modal.component";
-import { ResetPasswordModalComponent } from "./pages/login/reset-password-modal/reset-password-modal.component";
 import { WalkAddSlotsComponent } from "./pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "./pages/walks/walk-admin/walk-admin.component";
 import { WalkEditFullPageComponent } from "./pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
@@ -157,7 +125,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
 @NgModule({
   declarations: [
     AccordionGroupComponent,
-    AdminComponent,
     AppComponent,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
@@ -167,31 +134,8 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     ContactUsDirective,
     CreatedAuditPipe,
     DatePickerComponent,
-    EmailSubscriptionsComponent,
-    ExpenseDetailModalComponent,
-    ExpenseNotificationApproverFirstApprovalComponent,
-    ExpenseNotificationApproverPaidComponent,
-    ExpenseNotificationApproverReturnedComponent,
-    ExpenseNotificationApproverSecondApprovalComponent,
-    ExpenseNotificationApproverSubmittedComponent,
-    ExpenseNotificationCreatorPaidComponent,
-    ExpenseNotificationCreatorReturnedComponent,
-    ExpenseNotificationCreatorSecondApprovalComponent,
-    ExpenseNotificationCreatorSubmittedComponent,
-    ExpenseNotificationDetailsComponent,
-    ExpenseNotificationDirective,
-    ExpenseNotificationTreasurerPaidComponent,
-    ExpenseNotificationTreasurerSecondApprovalComponent,
-    ExpensePaidModalComponent,
-    ExpenseReturnModalComponent,
-    ExpensesComponent,
-    ExpenseSubmitModalComponent,
-    ForgotPasswordComponent,
-    ForgotPasswordModalComponent,
     HomeComponent,
     JoinUsComponent,
-    LoginComponent,
-    ChangePasswordComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
@@ -199,10 +143,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     MainLogoComponent,
     MainTitleComponent,
     MeetupDescriptionComponent,
-    MemberAdminComponent,
-    MemberAdminModalComponent,
-    MemberBulkLoadComponent,
-    MemberLoginAuditComponent,
     NonRenderingComponent,
     NotificationUrlComponent,
     PageComponent,
@@ -210,9 +150,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     PageTitleComponent,
     PanelExpanderComponent,
     PrivacyPolicyComponent,
-    ContactDetailsComponent,
-    ResetPasswordModalComponent,
-    SendEmailsModalComponent,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
@@ -246,7 +183,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     WalkSummaryPipe,
     WalkValidationsListPipe,
     WalkVenueComponent,
-    WalkViewComponent,
+    WalkViewComponent
   ],
   imports: [
     SharedModule,
@@ -254,6 +191,7 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
     AlertModule.forRoot(),
     Angular2CsvModule,
     AppRoutingModule,
+    SharedModule,
     BrowserAnimationsModule,
     BrowserModule,
     BsDatepickerModule.forRoot(),
@@ -273,7 +211,6 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    AdminAuthGuard,
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
     AuthenticationModalsServiceProvider,
@@ -304,6 +241,10 @@ import { WalksAuthGuard } from "./walks-auth-guard.service";
   entryComponents: [
     AppComponent
   ],
+  exports: [
+    DatePickerComponent,
+    CreatedAuditPipe
+  ]
 })
 
 export class AppModule implements DoBootstrap {

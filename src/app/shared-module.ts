@@ -16,6 +16,7 @@ import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displaye
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
 import { MemberIdsToFullNamesPipe } from "./pipes/member-ids-to-full-names.pipe";
+import { MoneyPipe } from "./pipes/money.pipe";
 import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { SnakeCasePipe } from "./pipes/snakecase.pipe";
 import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
@@ -43,7 +44,7 @@ import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
     SearchFilterPipe,
     SnakeCasePipe,
     UpdatedAuditPipe,
-    ValueOrDefaultPipe,
+    ValueOrDefaultPipe, MoneyPipe,
   ],
   exports: [
     CommonModule,
@@ -64,7 +65,9 @@ import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
     SearchFilterPipe,
     SnakeCasePipe,
     UpdatedAuditPipe,
-    ValueOrDefaultPipe],
+    ValueOrDefaultPipe,
+    MoneyPipe
+  ],
   entryComponents: [],
   providers: [DisplayDateAndTimePipe,
     DisplayDatePipe,
