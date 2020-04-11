@@ -6,6 +6,7 @@ import { ExpenseNotificationComponentAndData } from "../../notifications/expense
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
 import { ExpenseNotificationApproverPaidComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-paid.component";
 import { ExpenseNotificationApproverReturnedComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-returned.component";
+import { ExpenseNotificationApproverSecondApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-second-approval.component";
 import { ExpenseNotificationApproverSubmittedComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-submitted.component";
 import { ExpenseNotificationCreatorPaidComponent } from "../../notifications/expenses/templates/creator/expense-notification-creator-paid.component";
 import { ExpenseNotificationCreatorReturnedComponent } from "../../notifications/expenses/templates/creator/expense-notification-creator-returned.component";
@@ -68,7 +69,7 @@ export class ExpenseNotificationService {
       {
         expenseEventType: this.display.eventTypes["second-approval"],
         notifyCreator: ExpenseNotificationCreatorSecondApprovalComponent,
-        notifyApprover: ExpenseNotificationApproverFirstApprovalComponent,
+        notifyApprover: ExpenseNotificationApproverSecondApprovalComponent,
         notifyTreasurer: ExpenseNotificationTreasurerSecondApprovalComponent
       },
       {

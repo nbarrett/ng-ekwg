@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
@@ -14,7 +14,7 @@ import { SiteEditService } from "../../site-edit/site-edit.service";
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.sass"]
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public feeds: { facebook: {}; instagram: { recentMedia: any[] } };
   public loadedSlides: ContentMetadataItem[] = [];
@@ -30,6 +30,10 @@ export class HomeComponent implements OnInit {
     private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
     this.feeds = {instagram: {recentMedia: []}, facebook: {}};
+  }
+
+  ngOnDestroy(): void {
+    this.clearInterval();
   }
 
   ngOnInit() {
@@ -79,8 +83,13 @@ export class HomeComponent implements OnInit {
       this.loadedSlides.push(this.availableSlides[this.loadedSlides.length]);
     } else {
       this.logger.debug("no more slides to add:", this.loadedSlides.length);
-      clearInterval(this.interval);
+      this.clearInterval();
     }
+  }
+
+  private clearInterval() {
+    this.logger.debug("clearing interval:", this.interval);
+    clearInterval(this.interval);
   }
 
   activeSlideChange(slideNumber: number) {
