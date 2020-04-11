@@ -66,7 +66,7 @@ if (app.get("env") === "dev") {
   app.use(errorHandler());
 }
 
-mongoose.connect(config.mongo.uri, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(config.mongo.uri, {useFindAndModify: false, keepAlive: 1, useNewUrlParser: true, useCreateIndex: true})
   .then((response) => {
     debug("Connected to database:", config.mongo.uri);
   })
