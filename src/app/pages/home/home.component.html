@@ -2,9 +2,8 @@
   <div class="carousel-wrapper">
     <div class="slider-container">
       <div class="sc-inner">
-        <carousel [isAnimated]="true" [pauseOnFocus]=true [interval]="slideInterval" [showIndicators]="false"
-                  [startFromIndex]="0"
-                  (activeSlideChange)="activeSlideChange($event)">
+        <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
+                  [interval]="slideDisplayInterval" [showIndicators]="false" (activeSlideChange)="activeSlideChange($event)">
           <slide *ngFor="let slide of loadedSlides; let index = index; trackBy: slideTracker" active="slide.active">
             <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
             <div class="carousel-caption d-none d-md-block">

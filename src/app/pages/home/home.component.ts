@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import clone from "lodash-es/clone";
 import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
@@ -20,7 +21,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public loadedSlides: ContentMetadataItem[] = [];
   private availableSlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
-  private interval: number;
+  public slideDisplayInterval = clone(this.slideInterval);
+  private addNewSlideInterval: number;
 
   constructor(
     private  memberLoginService: MemberLoginService,
@@ -49,8 +51,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.feeds.instagram.recentMedia = take(recentMedia, 14);
         this.logger.debug("Refreshed social media", this.feeds.instagram.recentMedia, "count =", this.feeds.instagram.recentMedia.length);
       });
-    this.interval = setInterval(() => this.addNewSlide(), this.slideInterval);
-    this.logger.debug("created interval:", this.interval);
+    this.addNewSlideInterval = setInterval(() => this.addNewSlide(), this.slideInterval);
+    this.logger.debug("created add new slide interval:", this.addNewSlideInterval);
   }
 
   slideTracker(index: number, item: ContentMetadataItem) {
@@ -76,26 +78,40 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.siteEditService.active() && this.memberLoginService.allowContentEdits();
   }
 
-  addNewSlide() {
-    this.logger.debug("addNewSlide - slide count:", this.loadedSlides.length);
-    if (this.loadedSlides.length < this.availableSlides.length) {
-      this.logger.debug("adding slide", this.loadedSlides.length + 1);
-      this.loadedSlides.push(this.availableSlides[this.loadedSlides.length]);
+  addNewSlide(force?: boolean) {
+    if (force || this.slideDisplayInterval > 0) {
+      this.logger.debug("addNewSlide - slide count:", this.loadedSlides.length);
+      if (this.loadedSlides.length < this.availableSlides.length) {
+        this.logger.debug("adding slide", this.loadedSlides.length + 1);
+        this.loadedSlides.push(this.availableSlides[this.loadedSlides.length]);
+      } else {
+        this.logger.debug("no more slides to add:", this.loadedSlides.length);
+        this.clearInterval();
+      }
     } else {
-      this.logger.debug("no more slides to add:", this.loadedSlides.length);
-      this.clearInterval();
+      this.logger.debug("paused - not adding new slide");
     }
   }
 
   private clearInterval() {
-    this.logger.debug("clearing interval:", this.interval);
-    clearInterval(this.interval);
+    this.logger.debug("clearing add new slide:", this.addNewSlideInterval);
+    clearInterval(this.addNewSlideInterval);
   }
 
   activeSlideChange(slideNumber: number) {
     this.logger.debug("displaying slide:", slideNumber + 1, "slide count:", this.loadedSlides.length);
     if (this.loadedSlides.length < this.availableSlides.length && slideNumber === this.loadedSlides.length - 1) {
-      this.addNewSlide();
+      this.addNewSlide(true);
     }
+  }
+
+  mouseEnter($event: MouseEvent) {
+    this.logger.debug("mouseEnter", $event);
+    this.slideDisplayInterval = 0;
+  }
+
+  mouseLeave($event: MouseEvent) {
+    this.logger.debug("mouseLeave", $event);
+    this.slideDisplayInterval = clone(this.slideInterval);
   }
 }
