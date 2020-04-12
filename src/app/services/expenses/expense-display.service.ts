@@ -51,7 +51,6 @@ export class ExpenseDisplayService {
 
   constructor(
     @Inject("ClipboardService") private clipboardService,
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     private contentMetadata: ContentMetadataService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,

@@ -39,7 +39,6 @@ export class ExpenseNotificationService {
   constructor(
     private mailchimpSegmentService: MailchimpSegmentService,
     private mailchimpCampaignService: MailchimpCampaignService,
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
     private mailchimpConfig: MailchimpConfigService,
     protected memberService: MemberService,
     private urlService: UrlService,
