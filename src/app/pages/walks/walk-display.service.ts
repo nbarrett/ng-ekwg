@@ -17,6 +17,7 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
 import { UrlService } from "../../services/url.service";
+import { RamblersWalksAndEventsService } from "../../services/walks/ramblers-walks-and-events.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../services/walks/walks-reference-data.service";
@@ -48,7 +49,7 @@ export class WalkDisplayService {
 
   constructor(
     @Inject("ClipboardService") private clipboardService,
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+    private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private googleMapsService: GoogleMapsService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
@@ -110,7 +111,7 @@ export class WalkDisplayService {
 
   refreshRamblersConfig() {
     this.ramblersWalksAndEventsService.walkBaseUrl().then((walkBaseUrl) => {
-      this.ramblersWalkBaseUrl = walkBaseUrl;
+      this.ramblersWalkBaseUrl = walkBaseUrl.response.toString();
     });
   }
 

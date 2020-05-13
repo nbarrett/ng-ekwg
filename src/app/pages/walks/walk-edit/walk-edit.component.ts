@@ -13,8 +13,7 @@ import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
-import { WalkValidations } from "../../../models/walk-validations.model";
-import { Walk } from "../../../models/walk.model";
+import { Walk, WalkExport } from "../../../models/walk.model";
 import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
 import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
 import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
@@ -32,6 +31,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
@@ -75,7 +75,7 @@ export class WalkEditComponent implements OnInit {
 
   constructor(
     @Inject("WalksService") protected walksService,
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+    private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private memberLoginService: MemberLoginService,
     public route: ActivatedRoute,
     private walksQueryService: WalksQueryService,
@@ -371,8 +371,8 @@ export class WalkEditComponent implements OnInit {
       && !(this.displayedWalk.walk.gridReference || this.displayedWalk.walk.postcode);
   }
 
-  validateWalk(): WalkValidations {
-    return this.ramblersWalksAndEventsService.validateWalk(this.displayedWalk.walk, this.display.members);
+  validateWalk(): WalkExport {
+    return this.ramblersWalksAndEventsService.validateWalk(this.displayedWalk.walk);
   }
 
   walkValidations() {

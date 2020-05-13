@@ -30,6 +30,7 @@ import { MailchimpSegmentService } from "../mailchimp/mailchimp-segment.service"
 import { MemberLoginService } from "../member/member-login.service";
 import { MemberService } from "../member/member.service";
 import { AlertInstance, NotifierService } from "../notifier.service";
+import { RamblersWalksAndEventsService } from "./ramblers-walks-and-events.service";
 import { WalkEventService } from "./walk-event.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
 
@@ -43,7 +44,7 @@ export class WalkNotificationService {
   constructor(
     private mailchimpSegmentService: MailchimpSegmentService,
     private mailchimpCampaignService: MailchimpCampaignService,
-    @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+    private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private mailchimpConfig: MailchimpConfigService,
     protected memberService: MemberService,
     private memberLoginService: MemberLoginService,

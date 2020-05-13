@@ -37,5 +37,5 @@ function transformListWalksResponse(jsonData) {
 }
 
 exports.walkBaseUrl = function (req, res) {
-  return res.send(ramblersConfig.url + "/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=");
+  return res.send({response: ramblersConfig.url + "/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID="});
 };

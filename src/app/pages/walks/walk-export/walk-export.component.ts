@@ -8,8 +8,9 @@ import { switchMap } from "rxjs/operators";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
+import { WalkUploadColumnHeadings, WalkUploadRow } from "../../../models/ramblers-gwem";
 import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
-import { WalkExport } from "../../../models/walk-export.model";
+import { WalkExport } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -17,6 +18,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { RamblersUploadAuditService } from "../../../services/walks/ramblers-upload-audit.service";
+import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -50,7 +52,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private exportInProgress = false;
 
   constructor(@Inject(DOCUMENT) private document: Document,
-              @Inject("RamblersWalksAndEventsService") private ramblersWalksAndEventsService,
+              private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
               @Inject("WalksService") private walksService,
               private ramblersUploadAuditService: RamblersUploadAuditService,
               private notifierService: NotifierService,
@@ -74,8 +76,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.csvOptions = {
       fieldSeparator: ",",
       quoteStrings: "\"",
-      headers: this.walksDownloadHeader(),
-      keys: this.walksDownloadHeader(),
+      headers: WalkUploadColumnHeadings,
+      keys: WalkUploadColumnHeadings,
       showTitle: false,
       useBom: false,
       removeNewLines: true
@@ -136,17 +138,17 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.urlService.navigateTo("walks");
   }
 
-  populateWalkExport(walksForExport) {
+  populateWalkExport(walksForExport: WalkExport[]) {
     this.logger.debug("populateWalkExport: found", walksForExport.length, "walks:", walksForExport);
     this.walksForExport = walksForExport;
     this.walkExportNotifier.success({
-      title: "Export status", message: `Found total of ${this.walksForExport.length} walk(s), ${this.walksDownloadFile().length} preselected for export`
+      title: "Export status", message: `Found total of ${this.walksForExport.length} walk(s), ${this.walksDownloadFileContents().length} preselected for export`
     });
     this.walkExportNotifier.clearBusy();
   }
 
-  walksDownloadFile() {
-    return this.ramblersWalksAndEventsService.exportWalks(this.exportableWalks(), this.members);
+  walksDownloadFileContents(): WalkUploadRow[] {
+    return this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks(), this.members);
   }
 
   showAllAudits() {
@@ -168,8 +170,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.walksService.query({walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, {sort: {walkDate: -1}})
       .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
-        this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks, this.members)
-          .then((walksForExport) => this.populateWalkExport(walksForExport))
+        this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks)
+          .then((walksForExport: WalkExport[]) => this.populateWalkExport(walksForExport))
           .catch(error => {
             this.logger.error("error->", error);
             this.walkExportNotifier.error({
@@ -187,7 +189,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
-        title: `You can"t export the walk for ${this.displayDate.transform(walkExport.walk.walkDate)}`,
+        title: `You can't export the walk for ${this.displayDate.transform(walkExport.walk.walkDate)}`,
         message: walkExport.validationMessages.join(", ")
       });
     }
@@ -212,10 +214,6 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   walksDownloadFileName() {
     return this.ramblersWalksAndEventsService.exportWalksFileName(true);
-  }
-
-  walksDownloadHeader() {
-    return this.ramblersWalksAndEventsService.exportColumnHeadings();
   }
 
   exportCSV() {

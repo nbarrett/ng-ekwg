@@ -43,3 +43,9 @@ export interface Walk {
   $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Walk>;
 }
 
+export interface WalkExport {
+  walk: Walk;
+  validationMessages: string[];
+  publishedOnRamblers: boolean;
+  selected: boolean;
+}

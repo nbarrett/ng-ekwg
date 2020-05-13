@@ -22,17 +22,17 @@
               </div>
               <div class="row mb-12">
                 <div class="col-sm-12">
-                  <input *ngIf="walksDownloadFile().length > 0" type="submit"
-                         value="Upload {{walksDownloadFile().length}} walk(s) directly to Ramblers"
+                  <input *ngIf="walksDownloadFileContents().length > 0" type="submit"
+                         value="Upload {{walksDownloadFileContents().length}} walk(s) directly to Ramblers"
                          (click)="uploadToRamblers()"
-                         title="Upload {{walksDownloadFile().length}} selected walk(s) directly to Ramblers Walks and Events Manager"
+                         title="Upload {{walksDownloadFileContents().length}} selected walk(s) directly to Ramblers Walks and Events Manager"
                          [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-                  <input *ngIf="walksDownloadFile().length > 0" type="submit"
+                  <input *ngIf="walksDownloadFileContents().length > 0" type="submit"
                          (click)="exportCSV()"
-                         value="Export {{walksDownloadFile().length}} walk(s) file as CSV format"
-                         title="Export {{walksDownloadFile().length}} selected walk(s) in Ramblers Walks and Events Manager upload format"
+                         value="Export {{walksDownloadFileContents().length}} walk(s) file as CSV format"
+                         title="Export {{walksDownloadFileContents().length}} selected walk(s) in Ramblers Walks and Events Manager upload format"
                          [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-                  <angular2csv id="angular-2-csv" hidden [data]="walksDownloadFile()"
+                  <angular2csv id="angular-2-csv" hidden [data]="walksDownloadFileContents()"
                                [filename]="walksDownloadFileName()"
                                [options]="csvOptions"></angular2csv>
 

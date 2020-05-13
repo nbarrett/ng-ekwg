@@ -47,7 +47,7 @@ exports.uploadWalks = (req, res) => {
   };
 
   process.env["RAMBLERS_USER"] = req.body.ramblersUser;
-  process.env["RAMBLERS_DELETE_WALKS"] = req.body.deleteWalks.join(",");
+  process.env["RAMBLERS_DELETE_WALKS"] = req.body.walkIdDeletionList.join(",");
   process.env["RAMBLERS_FILENAME"] = filePath;
   process.env["RAMBLERS_WALKCOUNT"] = req.body.rows.length;
   process.env["RAMBLERS_FEATURE"] = req.body.feature || "walks-upload.ts";
