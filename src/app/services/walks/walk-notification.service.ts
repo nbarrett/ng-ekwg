@@ -113,7 +113,7 @@ export class WalkNotificationService {
       status: displayedWalk.status,
       event: this.walkEventService.latestEvent(displayedWalk.walk),
       dataAuditDelta: this.walkEventService.walkDataAuditFor(displayedWalk.walk, displayedWalk.status),
-      validationMessages: this.ramblersWalksAndEventsService.validateWalk(displayedWalk.walk, members).validationMessages,
+      validationMessages: this.ramblersWalksAndEventsService.validateWalk(displayedWalk.walk).validationMessages,
       reason
     };
     this.logger.debug("toWalkNotification ->", data);
