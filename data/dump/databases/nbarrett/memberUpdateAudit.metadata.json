@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":1,"key":{"_id":1},"name":"_id_","ns":"nbarrett.memberUpdateAudit"},{"v":1,"key":{"memberId":1},"name":"memberId_1","ns":"nbarrett.memberUpdateAudit","background":true}],"uuid":"bb9b6dab0ce24564b3931f7df1054a6b"}
