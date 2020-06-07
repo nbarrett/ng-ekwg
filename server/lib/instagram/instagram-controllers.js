@@ -2,11 +2,9 @@
 let config = require("../config/config.js");
 let debug = require("debug")(config.logNamespace("instagram"));
 let ig = require("instagram-node").instagram();
-let https = require("https");
-let url = require("url");
 let port = config.server.listenPort;
 let redirectUri = "http://localhost:" + port + "/instagram/handleAuth";
-module.exports = function (instagramAuthentication) {
+module.exports = instagramAuthentication => {
 
   instagramAuthentication.result = {
     accessToken: config.instagram.accessToken,
@@ -51,27 +49,9 @@ module.exports = function (instagramAuthentication) {
     });
   }
 
-  function recentMedia(req, res) {
-    if (instagramAuthentication.result) {
-      debug("recentMedia:accessToken:", instagramAuthentication.result.accessToken, "userId:", instagramAuthentication.result.userId);
-
-      ig.user_media_recent(instagramAuthentication.result.userId, function (error, response, pagination, remaining, limit) {
-        if (error) {
-          res.json({request: "recent-media", error});
-        } else {
-          res.json({request: "recent-media", response});
-        }
-      });
-    } else {
-      debug("recentMedia:warning - no instagramAuthentication.result has been received yet");
-      res.json({request: "recent-media", response: []});
-    }
-  }
-
   return {
     authorise: authorise,
     handleAuth: handleAuth,
-    recentMedia: recentMedia,
     authoriseOK: handleOK,
   };
 };

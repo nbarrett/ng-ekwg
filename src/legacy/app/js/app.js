@@ -19,8 +19,7 @@ angular.module("ekwgApp", [
   "ngSanitize",
   "ui.bootstrap",
   "ui.select",
-  "angular-logger",
-  "ezfb"])
+  "angular-logger"])
   .constant("MONGOLAB_CONFIG", {
     trimErrorMessage: false,
     baseUrl: "/api/database/",

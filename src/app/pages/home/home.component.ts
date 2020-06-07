@@ -3,6 +3,7 @@ import clone from "lodash-es/clone";
 import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
+import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -17,7 +18,7 @@ import { SiteEditService } from "../../site-edit/site-edit.service";
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  public feeds: { facebook: {}; instagram: { recentMedia: any[] } };
+  public feeds: { facebook: {}; instagram: { recentMedia: InstagramMediaPost[] } };
   public loadedSlides: ContentMetadataItem[] = [];
   private availableSlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
@@ -47,8 +48,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.addNewSlide();
       });
     this.instagramService.recentMedia()
-      .then(recentMedia => {
-        this.feeds.instagram.recentMedia = take(recentMedia, 14);
+      .then((recentMedia: InstagramRecentMediaData) => {
+        this.feeds.instagram.recentMedia = take(recentMedia.data, 14);
         this.logger.debug("Refreshed social media", this.feeds.instagram.recentMedia, "count =", this.feeds.instagram.recentMedia.length);
       });
     this.addNewSlideInterval = setInterval(() => this.addNewSlide(), this.slideInterval);
@@ -62,16 +63,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   slidesFunction() {
     this.logger.debug("slidesFunction - length:", this.loadedSlides.length);
     return this.loadedSlides;
-  }
-
-  mediaUrlFor(media) {
-    this.logger.off("mediaUrlFor:media", media);
-    return (media && media.images) ? media.images.standard_resolution.url : "";
-  }
-
-  mediaCaptionFor(media) {
-    this.logger.off("mediaCaptionFor:media", media);
-    return media ? media.caption.text : "";
   }
 
   allowEdits() {

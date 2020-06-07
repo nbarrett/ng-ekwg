@@ -3,7 +3,8 @@
     <div class="slider-container">
       <div class="sc-inner">
         <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
-                  [interval]="slideDisplayInterval" [showIndicators]="false" (activeSlideChange)="activeSlideChange($event)">
+                  [interval]="slideDisplayInterval" [showIndicators]="false"
+                  (activeSlideChange)="activeSlideChange($event)">
           <slide *ngFor="let slide of loadedSlides; let index = index; trackBy: slideTracker" active="slide.active">
             <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
             <div class="carousel-caption d-none d-md-block">
@@ -35,9 +36,9 @@
 
         <div class="body-content">
           <iframe
-            src="https://www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2FEast-Kent-Walking-Group-172849389464649%2F&amp;width=460&amp;height=584&amp;colorscheme=light&amp;show_faces=true&amp;stream=true&amp;show_border=false&amp;header=false&amp;force_wall=false"
-            scrolling="yes" frameborder="0"
-            class="facebook-frame"></iframe>
+            src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Feastkentwalking%2F&tabs=timeline&width=460&height=586&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=643977439755625"
+            width="460" height="586" style="border:none;overflow:hidden" scrolling="no" frameborder="0"
+            allowTransparency="true" allow="encrypted-media"></iframe>
         </div>
       </div>
       <div class="col-sm-6 thumbnail social-media-thumbnail round">
@@ -56,9 +57,9 @@
         <div class="instagram-pics">
           <ul>
             <li *ngFor="let media of feeds.instagram.recentMedia">
-              <a [href]="media.link" target="_blank">
-                <img [src]="mediaUrlFor(media)" alt="{{mediaCaptionFor(media)}}"
-                     title="{{mediaCaptionFor(media)}}"></a>
+              <a [href]="media.media_url" target="_blank">
+                <img [src]="media?.media_url" [alt]="media?.caption"
+                     [title]="media?.caption"></a>
             </li>
           </ul>
         </div>

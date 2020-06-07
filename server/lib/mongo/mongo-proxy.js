@@ -42,6 +42,7 @@ module.exports = function() {
   return function(req, res, next) {
     try {
       const options = mapRequest(req);
+      debug("options", options);
       const dbReq = https.request(options, function(dbRes) {
         if (prohibitedCollections.includes(req.params.collection)) {
           res.statusCode = 401;
