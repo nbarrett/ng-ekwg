@@ -4,6 +4,7 @@ import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { DateValue } from "../../../models/date.model";
 import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -32,7 +33,7 @@ export class MemberAdminModalComponent implements OnInit {
   member: Member;
   editMode: EditMode;
   lastLoggedIn: number;
-  membershipExpiryDate: Date;
+  membershipExpiryDate: DateValue;
   private logger: Logger;
   members: Member[] = [];
   memberUpdateAudits: MemberUpdateAudit[] = [];
@@ -63,7 +64,8 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("constructed with member", this.member, this.members.length, "members");
+    this.membershipExpiryDate = this.dateUtils.asDateValue(this.member.membershipExpiryDate);
+    this.logger.debug("constructed with member", this.member, this.members.length, "members", "membershipExpiryDate", this.membershipExpiryDate);
     this.allowEdits = this.memberLoginService.allowMemberAdminEdits();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     const existingRecordEditEnabled = this.allowEdits && this.editMode === EditMode.EDIT;
@@ -118,26 +120,25 @@ export class MemberAdminModalComponent implements OnInit {
     this.bsModalRef.hide();
   }
 
-  onMembershipDateChange(date: Date) {
-    if (date) {
-      this.logger.debug("onDateChange:date", date);
-      this.membershipExpiryDate = date;
-      this.member.membershipExpiryDate = this.dateUtils.asValueNoTime(this.membershipExpiryDate);
+  onMembershipDateChange(dateValue: DateValue) {
+    if (dateValue) {
+      this.logger.debug("onMembershipDateChange:date", dateValue);
+      this.membershipExpiryDate = dateValue;
+      this.member.membershipExpiryDate = dateValue.value;
     }
   }
 
   saveMemberDetails() {
-    const member = this.dateUtils.convertDateFieldInObject(this.member, "membershipExpiryDate");
     this.saveInProgress = true;
 
-    if (!member.userName) {
-      member.userName = this.memberNamingService.createUniqueUserName(member, this.members);
-      this.logger.debug("creating username", member.userName);
+    if (!this.member.userName) {
+      this.member.userName = this.memberNamingService.createUniqueUserName(this.member, this.members);
+      this.logger.debug("creating username", this.member.userName);
     }
 
-    if (!member.displayName) {
-      member.displayName = this.memberNamingService.createUniqueDisplayName(member, this.members);
-      this.logger.debug("creating displayName", member.displayName);
+    if (!this.member.displayName) {
+      this.member.displayName = this.memberNamingService.createUniqueDisplayName(this.member, this.members);
+      this.logger.debug("creating displayName", this.member.displayName);
     }
 
     return Promise.resolve(this.notify.success("Saving member", true))

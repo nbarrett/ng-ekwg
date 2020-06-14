@@ -1,4 +1,4 @@
-<div class="input-group">
+<div *ngIf="dateValue" class="input-group">
   <input [ngModel]="dateValue.date"
          (ngModelChange)="onModelChange($event)"
          placeholder="enter date"

@@ -24,6 +24,7 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { MemberAdminModalComponent } from "../member-admin-modal/member-admin-modal.component";
+import { ProfileService } from "../profile/profile.service";
 import { SendEmailsModalComponent } from "../send-emails/send-emails-modal.component";
 
 @Component({
@@ -45,6 +46,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private memberFilterUploaded: any;
   filters: any;
   private subscription: Subscription;
+  private logoutSubscription: Subscription;
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
@@ -58,6 +60,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private stringUtils: StringUtilsService,
               private authService: AuthService,
               private broadcastService: BroadcastService,
+              private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
@@ -65,6 +68,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.logoutSubscription = this.profileService.subscribeToLogout(this.logger);
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
@@ -170,6 +174,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.logger.debug("unsubscribing");
     this.subscription.unsubscribe();
+    this.logoutSubscription.unsubscribe();
   }
 
   private addMembersToView(apiResponse: ApiResponse) {

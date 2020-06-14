@@ -348,21 +348,11 @@
                 <div class="form-group">
                   <label for="membership-expiry-date">Membership Expiry Date</label>
 
-                  <div class="input-group">
-                    <input [ngModel]="membershipExpiryDate"
-                           (ngModelChange)="onMembershipDateChange($event)"
-                           placeholder="enter date of walk"
-                           #dp="bsDatepicker"
-                           bsDatepicker [bsConfig]="{ isAnimated: true, dateInputFormat: 'DD-MMM-YYYY',
-                               containerClass: 'theme-ramblers'}"
-                           type="text" class="form-control input-sm"
-                           id="membership-expiry-date"/>
-                    <div class="input-group-btn">
-                      <button class="btn btn-default btn-sm"
-                              (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
-                        class="glyphicon glyphicon-calendar"></i></button>
-                    </div>
-                  </div>
+                  <app-date-picker id="membership-expiry-date" class="input-group"
+                                   [size]="'md round'"
+                                   (dateChange)="onMembershipDateChange($event)"
+                                   [dateValue]="membershipExpiryDate">
+                  </app-date-picker>
                 </div>
               </div>
               <div class="col col-sm-6">
