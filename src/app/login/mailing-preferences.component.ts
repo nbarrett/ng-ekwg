@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from "@angular/core";
 import { MemberLoginService } from "../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
   selector: "app-mailing-preferences",

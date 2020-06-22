@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { MailchimpConfig } from "../models/mailchimp.model";
+import { MailchimpConfigResponse } from "../models/mailchimp.model";
 import { ConfigService } from "./config.service";
 
 @Injectable({
@@ -10,7 +10,7 @@ export class MailchimpConfigService {
   constructor(private config: ConfigService) {
   }
 
-  getConfig(): Promise<MailchimpConfig> {
+  getConfig(): Promise<MailchimpConfigResponse> {
     return this.config.getConfig("mailchimp", {
       mailchimp: {
         interestGroups: {

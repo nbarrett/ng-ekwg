@@ -4,6 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { MailchimpConfigResponse } from "../../../models/mailchimp.model";
 import { Member } from "../../../models/member.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
@@ -95,30 +96,23 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
       });
   }
 
-  createOrSaveForgottenPasswordSegment(config) {
-    return this.mailchimpSegmentService.saveSegment("general", {segmentId: config.segments.general.forgottenPasswordSegmentId}, [{id: this.forgottenPasswordMember.id}], this.FORGOTTEN_PASSWORD_SEGMENT, [this.forgottenPasswordMember]);
+  createOrSaveForgottenPasswordSegment(config: MailchimpConfigResponse) {
+    const segmentId = config?.mailchimp?.segments?.general?.forgottenPasswordSegmentId;
+    if (!segmentId) {
+      return Promise.reject("Forgotten password email cannot be sent due to an unxpected system error");
+    }
+    return this.mailchimpSegmentService.saveSegment("general", {segmentId}, [{id: this.forgottenPasswordMember.id}], this.FORGOTTEN_PASSWORD_SEGMENT, [this.forgottenPasswordMember]);
   }
 
-  saveSegmentDataToMailchimpConfig(segmentResponse) {
-    return this.mailchimpConfigService.getConfig()
-      .then(config => {
-        config.mailchimp.segments.general.forgottenPasswordSegmentId = segmentResponse.segment.id;
-        return this.mailchimpConfigService.saveConfig(config);
-      });
-  }
-
-  sendForgottenPasswordCampaign() {
+  sendForgottenPasswordCampaign(config: MailchimpConfigResponse) {
     const member = this.forgottenPasswordMember.firstName + " " + this.forgottenPasswordMember.lastName;
-    return this.mailchimpConfigService.getConfig()
-      .then(config => {
-        this.logger.debug("config.mailchimp.campaigns.forgottenPassword.campaignId", config.mailchimp.campaigns.forgottenPassword.campaignId);
-        this.logger.debug("config.mailchimp.segments.general.forgottenPasswordSegmentId", config.mailchimp.segments.general.forgottenPasswordSegmentId);
-        return this.mailchimpCampaignService.replicateAndSendWithOptions({
-          campaignId: config.mailchimp.campaigns.forgottenPassword.campaignId,
-          campaignName: "EKWG website password reset instructions (" + member + ")",
-          segmentId: config.mailchimp.segments.general.forgottenPasswordSegmentId
-        });
-      });
+    this.logger.debug("config.mailchimp.campaigns.forgottenPassword.campaignId", config.mailchimp.campaigns.forgottenPassword.campaignId);
+    this.logger.debug("config.mailchimp.segments.general.forgottenPasswordSegmentId", config.mailchimp.segments.general.forgottenPasswordSegmentId);
+    return this.mailchimpCampaignService.replicateAndSendWithOptions({
+      campaignId: config.mailchimp.campaigns.forgottenPassword.campaignId,
+      campaignName: "EKWG website password reset instructions (" + member + ")",
+      segmentId: config.mailchimp.segments.general.forgottenPasswordSegmentId
+    });
   }
 
   updateGeneralList() {
@@ -129,13 +123,14 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     this.campaignSendInitiated = true;
     return Promise.resolve(this.notify.success("Sending forgotten password email"))
       .then(() => this.updateGeneralList())
-      .then(() => this.getMailchimpConfig())
-      .then((config) => this.createOrSaveForgottenPasswordSegment(config))
-      .then(segmentResponse => this.saveSegmentDataToMailchimpConfig(segmentResponse))
-      .then(() => this.sendForgottenPasswordCampaign())
-      .then(() => this.finalMessage())
-      .then(() => this.notify.clearBusy())
-      .catch((error) => this.handleSendError(error));
+      .then(() => this.mailchimpConfigService.getConfig()
+        .then((config) => {
+          return this.createOrSaveForgottenPasswordSegment(config)
+            .then(() => this.sendForgottenPasswordCampaign(config));
+        })
+        .then(() => this.finalMessage())
+        .then(() => this.notify.clearBusy())
+        .catch((error) => this.handleSendError(error)));
   }
 
   handleSendError(errorResponse) {

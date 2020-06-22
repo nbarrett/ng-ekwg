@@ -27,7 +27,7 @@ import { StringUtilsService } from "../../../services/string-utils.service";
   templateUrl: "./member-admin-modal.component.html",
   styleUrls: ["./member-admin-modal.component.sass"]
 })
-export class MemberAdminModalComponent implements OnInit {
+export class MemberAdminModalComponent implements OnInit{
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   member: Member;

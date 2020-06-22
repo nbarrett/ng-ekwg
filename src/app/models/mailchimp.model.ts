@@ -1,69 +1,71 @@
-export interface MailchimpConfig {
+export interface MailchimpConfigResponse {
   id: string;
-  mailchimp: {
-    apiUrl: string;
-    lists: {
-      walks: string;
-      socialEvents: string;
-      general: string
+  mailchimp: MailchimpConfig;
+}
+
+export interface MailchimpConfig {
+  apiUrl: string;
+  lists: {
+    walks: string;
+    socialEvents: string;
+    general: string
+  };
+  segments: {
+    walks: {};
+    socialEvents: {};
+    general: {
+      passwordResetSegmentId: number;
+      forgottenPasswordSegmentId: number;
+      welcomeSegmentId: number;
+      committeeSegmentId: number;
+      expiredMembersSegmentId: number;
+      expiredMembersWarningSegmentId: number
+    }
+  };
+  campaigns: {
+    walkNotification: {
+      campaignId: string;
+      name: string
     };
-    segments: {
-      walks: {};
-      socialEvents: {};
-      general: {
-        passwordResetSegmentId: number;
-        forgottenPasswordSegmentId: number;
-        welcomeSegmentId: number;
-        committeeSegmentId: number;
-        expiredMembersSegmentId: number;
-        expiredMembersWarningSegmentId: number
-      }
+    expenseNotification: {
+      campaignId: string;
+      name: string
     };
-    campaigns: {
-      walkNotification: {
-        campaignId: string;
-        name: string
-      };
-      expenseNotification: {
-        campaignId: string;
-        name: string
-      };
-      passwordReset: {
-        campaignId: string;
-        name: string;
-        monthsInPast: number
-      };
-      forgottenPassword: {
-        campaignId: string;
-        name: string
-      };
-      welcome: {
-        campaignId: string;
-        name: string;
-        monthsInPast: number
-      };
-      socialEvents: {
-        campaignId: string;
-        name: string
-      };
-      committee: {
-        campaignId: string;
-        name: string
-      };
-      expiredMembers: {
-        campaignId: string;
-        name: string;
-        monthsInPast: number
-      };
-      newsletter: {
-        campaignId: string;
-        name: string
-      };
-      expiredMembersWarning: {
-        campaignId: string;
-        name: string;
-        monthsInPast: number
-      }
+    passwordReset: {
+      campaignId: string;
+      name: string;
+      monthsInPast: number
+    };
+    forgottenPassword: {
+      campaignId: string;
+      name: string
+    };
+    welcome: {
+      campaignId: string;
+      name: string;
+      monthsInPast: number
+    };
+    socialEvents: {
+      campaignId: string;
+      name: string
+    };
+    committee: {
+      campaignId: string;
+      name: string
+    };
+    expiredMembers: {
+      campaignId: string;
+      name: string;
+      monthsInPast: number
+    };
+    newsletter: {
+      campaignId: string;
+      name: string
+    };
+    expiredMembersWarning: {
+      campaignId: string;
+      name: string;
+      monthsInPast: number
     }
   };
 }

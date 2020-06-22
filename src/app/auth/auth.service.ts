@@ -63,8 +63,7 @@ export class AuthService {
   }
 
   private async performAuthPost(url: string, body: object, postType: string, broadcastEvent?: NamedEventType): Promise<LoginResponse> {
-    const shared: Observable<AuthResponse> = this.http.post<any>(url, body);
-    shared.pipe(share());
+    const shared: Observable<AuthResponse> = this.http.post<any>(url, body).pipe(share());
     shared.subscribe((authResponse: AuthResponse) => {
       this.logger.info(postType, "- authResponse", authResponse);
       if (authResponse.tokens) {

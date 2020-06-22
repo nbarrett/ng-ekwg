@@ -5,7 +5,6 @@ const authConfig = require("../../auth/auth-config");
 const router = express.Router();
 
 router.post("", authConfig.authenticate(), member.create);
-router.get("/log", authConfig.authenticate(), member.log);
 router.get("/find-one", authConfig.authenticate(), member.findOne);
 router.get("/all", authConfig.authenticate(), member.all);
 router.put("/:id", authConfig.authenticate(), member.update);

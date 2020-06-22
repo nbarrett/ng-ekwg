@@ -110,50 +110,50 @@
           </div>
         </tab>
         <tab heading="Login">
-          <div class="thumbnail thumbnail-admin-edit">
-            <div class="row">
-              <ng-form autocomplete="false">
+          <form>
+            <div class="thumbnail thumbnail-admin-edit">
+              <div class="row">
+                <ng-form autocomplete="false">
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label for="login-user-name">Login User Name</label>
+                      <input autocomplete="nope" name="userName" [disabled]="!allowEdits"
+                             [(ngModel)]="member.userName" type="text"
+                             class="form-control input-sm" id="login-user-name"
+                             placeholder="Enter login user name here">
+                    </div>
+                  </div>
+                </ng-form>
                 <div class="col-sm-6">
                   <div class="form-group">
-                    <label for="login-user-name">Login User Name</label>
-                    <input autocomplete="nope" name="userName" [disabled]="!allowEdits"
-                           [(ngModel)]="member.userName" type="text"
-                           class="form-control input-sm" id="login-user-name"
-                           placeholder="Enter login user name here">
-                  </div>
-                </div>
-              </ng-form>
-              <div class="col-sm-6">
-                <form autocomplete="nope">
-                  <div class="form-group">
-                    <label for="password">Password</label>
-                    <input autocomplete="cc-name" name="password" [disabled]="!allowEdits"
+                    <label for="new-password">Password</label>
+                    <input autocomplete="new-password" name="new-password" [disabled]="!allowEdits"
                            [(ngModel)]="member.password"
-                           type="password" class="form-control input-sm" id="password"
+                           type="password" class="form-control input-sm" id="new-password"
                            placeholder="Enter password here">
                   </div>
-                </form>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <label for="lastLogin">Last Login</label>
-                  <input [disabled]="true" type="text"
-                         value="{{lastLoggedIn | displayDateAndTime}}"
-                         class="form-control input-sm" id="lastLogin"
-                         placeholder="Member has not logged in yet">
                 </div>
               </div>
-              <div class="col-sm-6 checkbox-group">
-                <label [ngClass]="{'ui-state-active': member.expiredPassword}"
-                       for="is-member-ex">Expired Password
-                  <input name="expiredPassword" [disabled]="!allowEdits" [(ngModel)]="member.expiredPassword"
-                         type="checkbox" id="is-member-ex">
-                </label>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <label for="lastLogin">Last Login</label>
+                    <input [disabled]="true" type="text"
+                           value="{{lastLoggedIn | displayDateAndTime}}"
+                           class="form-control input-sm" id="lastLogin"
+                           placeholder="Member has not logged in yet">
+                  </div>
+                </div>
+                <div class="col-sm-6 checkbox-group">
+                  <label [ngClass]="{'ui-state-active': member.expiredPassword}"
+                         for="is-member-ex">Expired Password
+                    <input name="expiredPassword" [disabled]="!allowEdits" [(ngModel)]="member.expiredPassword"
+                           type="checkbox" id="is-member-ex">
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
+          </form>
         </tab>
         <tab heading="Privileges">
           <div class="thumbnail thumbnail-admin-edit">

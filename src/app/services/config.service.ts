@@ -52,13 +52,13 @@ export class ConfigService {
     return apiResponse.response;
   }
 
-  getConfig(key, defaultOnEmpty?: object): Promise<any> {
+  getConfig(key: string, defaultOnEmpty?: object): Promise<any> {
     const criteria: any = {};
     criteria[key] = {$exists: true};
     return this.query({criteria})
       .then((result) => {
         if (result) {
-          this.logger.debug("getConfig:", key, "defaultOnEmpty:", defaultOnEmpty, "existing result", result);
+          this.logger.debug("getConfig:", key, "existing result", result);
           return result;
         } else {
           criteria[key] = {};

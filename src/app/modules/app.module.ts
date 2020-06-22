@@ -8,6 +8,8 @@ import { AppRoutingModule } from "../app-routing.module";
 import { AppComponent } from "../app.component";
 import { ContactUsDirective } from "../contact-us/contact-us-directive.component";
 import { LoginPanelComponent } from "../login-panel/login-panel.component";
+import { ForgotPasswordComponent } from "../login/forgot-password.component";
+import { LoginComponent } from "../login/login.component";
 import { MailingPreferencesComponent } from "../login/mailing-preferences.component";
 import { SetPasswordComponent } from "../login/set-password.component";
 import { LogoutComponent } from "../logout/logout.component";
@@ -63,8 +65,10 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
     AuditDeltaValuePipe,
     ChangedItemsPipe,
     ContactUsComponent,
+    ForgotPasswordComponent,
     HomeComponent,
     JoinUsComponent,
+    LoginComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,

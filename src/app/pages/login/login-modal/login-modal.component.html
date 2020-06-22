@@ -6,31 +6,33 @@
     <h4 class="modal-title" id="modal-title-heading">Login to <em>EKWG</em> site</h4>
   </div>
   <div class="modal-body">
-    <div class="row">
-      <div class="col col-sm-12">
-        <div class="form-group">
-          <label for="user-name">User Name</label>
-          <input [(ngModel)]="userName" type="text"
-                 class="form-control input-sm" id="user-name" placeholder="Enter username">
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input [(ngModel)]="password" type="password"
-                 class="form-control input-sm" id="password" placeholder="Enter password">
+    <form>
+      <div class="row">
+        <div class="col col-sm-12">
+          <div class="form-group">
+            <label for="user-name">User Name</label>
+            <input [(ngModel)]="userName" type="text"
+                   class="form-control input-sm" id="user-name" autocomplete="user-name" name="user-name" placeholder="Enter username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input [(ngModel)]="password" type="password"
+                   class="form-control input-sm" id="password" autocomplete="current-password" name="password" placeholder="Enter password">
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div *ngIf="notifyTarget.showAlert" class="col col-sm-12 mb-12">
-        <div class="alert {{notifyTarget.alertClass}}"><i
-          class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
-          {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
-          <span *ngIf="notifyTarget.showContactUs"> contact our <app-contact-us class="alert-link" role="membership"
-                                                                                text="Membership Administrator"></app-contact-us>.
+      <div class="row">
+        <div *ngIf="notifyTarget.showAlert" class="col col-sm-12 mb-12">
+          <div class="alert {{notifyTarget.alertClass}}"><i
+            class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            <span *ngIf="notifyTarget.showContactUs"> contact our <app-contact-us class="alert-link" role="membership"
+                                                                                  text="Membership Administrator"></app-contact-us>.
           </span>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
   <div class="modal-footer">
     <div class="row col-sm-12">

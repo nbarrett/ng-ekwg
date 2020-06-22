@@ -12,20 +12,17 @@ exports.all = crudController.all
 exports.delete = crudController.delete
 exports.findById = crudController.findById
 
-exports.log = (req, res) => {
-  authConfig.hashValue(req.body.password).then(hash => {
-    res.status(201).json({
-      userName: req.body.userName,
-      password: req.body.password,
-      passwordHash: hash,
-      message: "password hashed successfully"
+exports.update = (req, res) => {
+  const password = req.body.password;
+  if (password.length < 60) {
+    authConfig.hashValue(req.body.password).then(hash => {
+      debug("non-encrypted password found:", password, "- encrypted to:", hash)
+      req.body.password = hash;
+      crudController.update(req, res)
     })
-      .catch(err => {
-        res.status(500).json({
-          message: "Invalid authentication credentials"
-        });
-      });
-  });
+  } else {
+    crudController.update(req, res)
+  }
 }
 
 exports.updateEmailSubscription = (req, res) => {
