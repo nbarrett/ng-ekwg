@@ -71,7 +71,7 @@
     "method-override": "2.3.10",
     "mkdirpsync": "^0.1.0",
     "mocha": "7.0.1",
-    "moment": "2.18.1",
+    "moment": "2.19.3",
     "moment-timezone": "0.5.13",
     "mongoose": "5.8.9",
     "mongoose-unique-validator": "2.0.3",
