@@ -95,7 +95,7 @@
     "tslint-microsoft-contrib": "6.2.0",
     "typescript": "3.8.3",
     "underscore": "1.8.1",
-    "underscore.string": "2.3.3"
+    "underscore.string": "3.3.5"
   },
   "engines": {
     "node": "13.8.0",
