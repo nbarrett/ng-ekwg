@@ -70,7 +70,6 @@ export class WalkEditComponent implements OnInit {
   public saveInProgress = false;
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
-  private walkEventTypes: WalkEventType[];
   public meetupConfig: MeetupConfig;
 
   constructor(
@@ -109,7 +108,6 @@ export class WalkEditComponent implements OnInit {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    this.walkEventTypes = this.walksReferenceService.walkEventTypes();
     this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
     this.logDetectChanges();

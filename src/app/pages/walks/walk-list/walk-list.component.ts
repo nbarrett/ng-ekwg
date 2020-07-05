@@ -14,8 +14,8 @@ import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MemberLoginService } from "../../../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
@@ -99,7 +99,8 @@ export class WalkListComponent implements OnInit {
     this.logger.debug("applyFilterToWalks:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
     this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch)
-      .map(walk => this.display.toDisplayedWalk(walk));
+      .map(walk => this.display.toDisplayedWalk(walk))
+      .filter(walk => this.walksQueryService.activeWalk(walk.walk));
     const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
     this.notify.progress("Showing " + walksCount + " walk(s)");
     if (this.filteredWalks.length > 0 && this.display.expandedWalks.length === 0) {

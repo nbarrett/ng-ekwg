@@ -104,7 +104,8 @@
                  [ngClass]="validDate(until) ? 'button-form green-confirm' : 'disabled-button-form button-form-left'">
           <input *ngIf="confirmAction" type="submit" value="Confirm add slots" (click)="confirmAddWalkSlots()"
                  title="Confirm to add more available slots on the walks programme"
-                 class="button-form green-confirm">
+                 [disabled]="notifyTarget.busy"
+                 [ngClass]="notifyTarget.busy ? 'button-form disabled-button-form': 'button-form green-confirm'">
           <input *ngIf="confirmAction" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
                  title="Cancel this action" class="button-form amber-confirm">
         </span>
@@ -113,7 +114,9 @@
                  (click)="addWalkSlot()" title="Add new slot on the walks programme"
                  [ngClass]="validDate(singleSlot) ? 'button-form green-confirm' : 'disabled-button-form button-form-left'">
           <input *ngIf="confirmAction" type="submit" value="Confirm add slot" (click)="confirmAddWalkSlots()"
-                 title="Confirm to add new slot on the walks programme" class="button-form green-confirm">
+                 title="Confirm to add new slot on the walks programme"
+                 [disabled]="notifyTarget.busy"
+                 [ngClass]="notifyTarget.busy ? 'button-form disabled-button-form': 'button-form green-confirm'">
           <input *ngIf="confirmAction" type="submit" value="Cancel" (click)="cancelConfirmableAction()"
                  title="Cancel this action" class="button-form amber-confirm">
         </span>
