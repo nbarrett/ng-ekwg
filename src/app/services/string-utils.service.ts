@@ -5,8 +5,8 @@ import has from "lodash-es/has";
 import isNumber from "lodash-es/isNumber";
 import isObject from "lodash-es/isObject";
 import map from "lodash-es/map";
+import startCase from "lodash-es/startCase";
 import { NgxLoggerLevel } from "ngx-logger";
-import { humanize } from "underscore.string";
 import { AlertMessage } from "../models/alert-target.model";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
 import { DateUtilsService } from "./date-utils.service";
@@ -81,9 +81,9 @@ export class StringUtilsService {
     if (typeof inputValue === "object") {
       return map(inputValue, (value, key) => {
         if (isObject(value)) {
-          return `${humanize(key)} -> ${this.stringifyObject(value)}`;
+          return `${startCase(key)} -> ${this.stringifyObject(value)}`;
         } else {
-          return `${humanize(key)}: ${value}`;
+          return `${startCase(key)}: ${value}`;
         }
       }).join(", ");
     } else {

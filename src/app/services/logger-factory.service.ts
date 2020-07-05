@@ -45,7 +45,7 @@ export class LoggerFactory {
 
   createLogger<T extends InstanceType<any>>(classRef: T, loggerConfig: NgxLoggerLevel | LoggerConfig): Logger {
     const config: LoggerConfig = this.isLoggerConfig(loggerConfig) ? {...loggerConfig, ...{serverLoggingUrl: "api/logs"}} : {level: loggerConfig};
-    return new Logger(this.customLogger.create(config), classRef.name);
+    return new Logger(this.customLogger.create(config), classRef["name"]);
   }
 
   isLoggerConfig(config: NgxLoggerLevel | LoggerConfig): config is LoggerConfig {

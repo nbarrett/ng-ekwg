@@ -157,7 +157,7 @@
               "src/legacy/vendor/xml2json/xml2json.js",
               "src/legacy/vendor/showdown/dist/showdown.min.js",
               "src/legacy/vendor/angular-markdown-directive/markdown.js",
-              "src/legacy/vendor/bootstrap/dist/js/bootstrap.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "src/legacy/vendor/underscore/underscore-min.js",
               "src/legacy/vendor/underscore.string/dist/underscore.string.min.js",
               "src/ekwg-legacy/app/js/ng-ekwg.js"

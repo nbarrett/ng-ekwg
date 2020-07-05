@@ -1,6 +1,6 @@
-import { Inject, Pipe, PipeTransform } from "@angular/core";
+import { Pipe, PipeTransform } from "@angular/core";
 import map from "lodash-es/map";
-import { humanize } from "underscore.string";
+import startCase from "lodash-es/startCase";
 import { Member } from "../models/member.model";
 import { WalkEvent } from "../models/walk-event.model";
 import { AuditDeltaValuePipe } from "./audit-delta-value.pipe";
@@ -15,7 +15,7 @@ export class ChangedItemsPipe implements PipeTransform {
   }
 
   transform(event: WalkEvent, members: Member[]): string {
-    return map(event.data, (value, key) => `${humanize(key)}: ${this.auditDeltaValuePipe.transform(value, key, members)}`)
+    return map(event.data, (value, key) => `${startCase(key)}: ${this.auditDeltaValuePipe.transform(value, key, members)}`)
       .join(", ");
   }
 }

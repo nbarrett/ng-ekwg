@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
 import kebabCase from "lodash-es/kebabCase";
-import { toBoolean } from "underscore.string";
 import { CookieService } from "ngx-cookie-service";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
@@ -23,13 +22,13 @@ export class AccordionGroupComponent implements OnInit {
   }
 
   toggle(expanded: boolean) {
-    this.logger.debug(this.groupTitle, "$event ->", expanded);
+    this.logger.debug(this.groupTitle, "toggle ->", expanded);
     this.open = expanded;
     this.cookieService.set(this.cookieName(), expanded.toString());
   }
 
   ngOnInit(): void {
-    const toggledState = toBoolean(this.cookieService.get(this.cookieName()));
+    const toggledState: boolean = this.cookieService.get(this.cookieName()) === "true";
     this.open = toggledState || this.initiallyOpen === "true";
     this.logger.debug(this.groupTitle, "open -> ", toggledState);
   }
