@@ -25,8 +25,8 @@ export class WalksQueryService {
 
   nextWalkId(walks: Walk[]): string {
     const today = this.dateUtils.momentNowNoTime().valueOf();
-    const nextWalk = chain(walks).sortBy("walkDate").find((walk: Walk) => today).value();
-    return nextWalk && nextWalk.$id();
+    const nextWalk: Walk = chain(walks).sortBy("walkDate").find((walk: Walk) => walk.walkDate === today).value();
+    return nextWalk && nextWalk.id;
   }
 
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
@@ -22,6 +22,7 @@ import { UrlService } from "../../../services/url.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { WalkDisplayService } from "../walk-display.service";
 
@@ -43,7 +44,7 @@ export class WalkListComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
 
   constructor(
-    @Inject("WalksService") private walksService,
+    private walksService: WalksService,
     private memberService: MemberService,
     private authService: AuthService,
     private memberLoginService: MemberLoginService,
@@ -87,7 +88,7 @@ export class WalkListComponent implements OnInit {
   }
 
   walkTracker(index: number, walk: DisplayedWalk) {
-    return walk.walk.$id();
+    return walk.walk.id;
   }
 
   onSearchChange(searchEntry: string) {
@@ -157,9 +158,9 @@ export class WalkListComponent implements OnInit {
   walksSortObject() {
     switch (this.filterParameters.ascending) {
       case "true":
-        return {sort: {walkDate: 1}};
+        return {walkDate: 1};
       case "false":
-        return {sort: {walkDate: -1}};
+        return {walkDate: -1};
     }
   }
 
@@ -174,7 +175,7 @@ export class WalkListComponent implements OnInit {
           return [walk];
         });
     } else {
-      return this.walksService.query(this.walksCriteriaObject(), this.walksSortObject());
+      return this.walksService.all({criteria: this.walksCriteriaObject(), sort: this.walksSortObject()});
     }
   }
 
@@ -193,7 +194,7 @@ export class WalkListComponent implements OnInit {
 
   private replaceWalkInList(walk: Walk) {
     this.logger.debug("Received updated walk", walk);
-    const existingWalk: Walk = this.walks.find(listedWalk => listedWalk.$id() === walk.$id());
+    const existingWalk: Walk = this.walks.find(listedWalk => listedWalk.id === walk.id);
     if (existingWalk) {
       this.walks[(this.walks.indexOf(existingWalk))] = walk;
       this.applyFilterToWalks();

@@ -19,6 +19,7 @@ import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { WalksService } from "./walks.service";
 
 @Injectable({
   providedIn: "root"
@@ -31,6 +32,7 @@ export class RamblersWalksAndEventsService {
   private walkNotifications = new Subject<RamblersWalksApiResponse>();
 
   constructor(private http: HttpClient,
+              private walksService: WalksService,
               private dateUtils: DateUtilsService,
               private displayDate: DisplayDatePipe,
               private memberLoginService: MemberLoginService,
@@ -96,7 +98,7 @@ export class RamblersWalksAndEventsService {
         if (foundWalk && foundWalk.ramblersWalkId !== ramblersWalksResponse.ramblersWalkId) {
           this.logger.info("updating walk from", foundWalk.ramblersWalkId || "empty", "->", ramblersWalksResponse.ramblersWalkId, "on", this.displayDate.transform(foundWalk.walkDate));
           foundWalk.ramblersWalkId = ramblersWalksResponse.ramblersWalkId;
-          savePromises.push(foundWalk.$saveOrUpdate());
+          savePromises.push(this.walksService.createOrUpdate(foundWalk));
         } else {
           this.logger.info("no update required for walk", foundWalk.ramblersWalkId, foundWalk.walkDate, this.dateUtils.displayDay(foundWalk.walkDate));
         }
@@ -110,7 +112,7 @@ export class RamblersWalksAndEventsService {
         if (walk) {
           this.logger.info("removing ramblers walk", walk.ramblersWalkId, "from walk on", this.displayDate.transform(walk.walkDate));
           delete walk.ramblersWalkId;
-          savePromises.push(walk.$saveOrUpdate());
+          savePromises.push(this.walksService.createOrUpdate(walk));
         }
       });
     }

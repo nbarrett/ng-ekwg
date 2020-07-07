@@ -10,7 +10,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
 import { WalkUploadColumnHeadings, WalkUploadRow } from "../../../models/ramblers-gwem";
 import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
-import { WalkExport } from "../../../models/walk.model";
+import { Walk, WalkExport } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -20,6 +20,7 @@ import { UrlService } from "../../../services/url.service";
 import { RamblersUploadAuditService } from "../../../services/walks/ramblers-upload-audit.service";
 import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
+import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -53,7 +54,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
-              @Inject("WalksService") private walksService,
+              private walksService: WalksService,
               private ramblersUploadAuditService: RamblersUploadAuditService,
               private notifierService: NotifierService,
               private displayDateAndTime: DisplayDateAndTimePipe,
@@ -167,9 +168,9 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   showAvailableWalkExports() {
     this.walksForExport = [];
     this.walkExportNotifier.warning("Refreshing export status of future walks", false, true);
-    this.walksService.query({walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, {sort: {walkDate: -1}})
-      .then(walks => this.walksQueryService.activeWalks(walks))
-      .then(walks => {
+    this.walksService.all({criteria: {walkDate: {$gte: this.dateUtils.momentNowNoTime().valueOf()}}, sort: {walkDate: -1}})
+      .then((walks: Walk[]) => this.walksQueryService.activeWalks(walks))
+      .then((walks: Walk[]) => {
         this.ramblersWalksAndEventsService.createWalksForExportPrompt(walks)
           .then((walksForExport: WalkExport[]) => this.populateWalkExport(walksForExport))
           .catch(error => {

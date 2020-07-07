@@ -21,10 +21,7 @@ import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { LoggedInGuard } from "./admin-login-guard.service";
-import {
-  AuthenticationModalsServiceProvider,
-  ClipboardServiceProvider
-} from "./ajs-upgraded-providers";
+import { AuthenticationModalsServiceProvider, ClipboardServiceProvider } from "./ajs-upgraded-providers";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
@@ -77,7 +74,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     FileUploadModule,
     FormsModule,
     FormsModule,
-    HttpClientModule,
     LoggerModule.forRoot({serverLoggingUrl: "api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF}),
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
@@ -139,7 +135,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
-    HttpClientModule,
     HumanisePipe,
     LastConfirmedDateDisplayed,
     LoggerModule,

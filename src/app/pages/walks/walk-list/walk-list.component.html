@@ -1,4 +1,4 @@
-<app-page lastBreadcrumb="home" pageTitle="Walks">
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Walks">
   <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
     <app-walk-admin></app-walk-admin>
     <app-accordion-group (click)="toggle($event)" groupTitle="Walks Programme" initiallyOpen="true">

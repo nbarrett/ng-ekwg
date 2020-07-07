@@ -18,26 +18,6 @@ export const ClipboardServiceProvider = {
   deps: ["$injector"]
 };
 
-export function WalksService($injector) {
-  return $injector.get("WalksService");
-}
-
-export const WalksServiceProvider = {
-  provide: "WalksService",
-  useFactory: WalksService,
-  deps: ["$injector"]
-};
-
-export function RamblersWalksAndEventsService($injector) {
-  return $injector.get("RamblersWalksAndEventsService");
-}
-
-export const RamblersWalksAndEventsServiceProvider = {
-  provide: "RamblersWalksAndEventsService",
-  useFactory: RamblersWalksAndEventsService,
-  deps: ["$injector"]
-};
-
 export const LegacyUrlService = ["$timeout", "$log", "$location", ($timeout, $log, $location) => {
   const logger = $log.getInstance("LegacyUrlService");
   $log.logLevels["LegacyUrlService"] = $log.LEVEL.OFF;

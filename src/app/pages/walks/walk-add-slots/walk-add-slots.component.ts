@@ -1,11 +1,11 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import difference from "lodash-es/difference";
 import map from "lodash-es/map";
 import times from "lodash-es/times";
 import { NgxLoggerLevel } from "ngx-logger";
-import { WalksService } from "../../../ajs-upgraded-providers";
 import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
+import { Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DisplayDatesPipe } from "../../../pipes/display-dates.pipe";
@@ -14,14 +14,15 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
-import { MemberLoginService } from "src/app/services/member/member-login.service";
 
 @Component({
   selector: "app-walk-add-slots",
@@ -43,7 +44,7 @@ export class WalkAddSlotsComponent implements OnInit {
   public selectionMade: string;
 
   constructor(
-    @Inject("WalksService") private walksService,
+    private walksService: WalksService,
     private memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     private display: WalkDisplayService,
@@ -78,12 +79,13 @@ export class WalkAddSlotsComponent implements OnInit {
     return this.dateUtils.isDate(date);
   }
 
-  createSlots(requiredSlots, message: AlertMessage) {
+  createSlots(requiredSlots: number[], message: AlertMessage) {
     this.requiredWalkSlots = requiredSlots.map(date => {
-      const walk = new this.walksService({
+      const walk: Walk = {
         walkDate: date,
-        ramblersPublish: true
-      });
+        ramblersPublish: true,
+        events: []
+      };
       walk.events = [this.walkEventService.createEventIfRequired(walk,
         this.walksReferenceService.walkEventTypeMappings.awaitingLeader.eventType, "Walk slot created")];
       return walk;
@@ -106,9 +108,9 @@ export class WalkAddSlotsComponent implements OnInit {
   addWalkSlots() {
     this.notify.setBusy();
     this.notify.hide();
-    this.walksService.query({walkDate: {$gte: this.todayValue}}, {fields: {events: 1, walkDate: 1}, sort: {walkDate: 1}})
-      .then(walks => this.walksQueryService.activeWalks(walks))
-      .then(walks => {
+    this.walksService.all({criteria: {walkDate: {$gte: this.todayValue}}, select: {events: 1, walkDate: 1}, sort: {walkDate: 1}})
+      .then((walks: Walk[]) => this.walksQueryService.activeWalks(walks))
+      .then((walks: Walk[]) => {
         this.notify.clearBusy();
         const sunday = this.dateUtils.momentNowNoTime().day(7);
         const untilDate = this.dateUtils.asMoment(this.until).startOf("day");
@@ -135,8 +137,9 @@ export class WalkAddSlotsComponent implements OnInit {
   addWalkSlot() {
     this.notify.setBusy();
     this.notify.hide();
-    this.walksService.query({walkDate: {$eq: this.dateUtils.asValueNoTime(this.singleSlot)}}, {
-      fields: {events: 1, walkDate: 1},
+    this.walksService.all({
+      criteria: {walkDate: {$eq: this.dateUtils.asValueNoTime(this.singleSlot)}},
+      select: {events: 1, walkDate: 1},
       sort: {walkDate: 1}
     })
       .then(walks => this.walksQueryService.activeWalks(walks))

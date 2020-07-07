@@ -14,11 +14,11 @@ angular.module('ekwgApp')
         var events = [];
         var promises = [];
         if (groupEvents.includeWalks) promises.push(
-          WalksService.query({walkDate: {$gte: fromDate, $lte: toDate}})
+          WalksService.all({criteria: {walkDate: {$gte: fromDate, $lte: toDate}}})
             .then(function (walks) {
               return _.map(walks, function (walk) {
                 return events.push({
-                  id: walk.$id(),
+                  id: walk.id,
                   selected: true,
                   eventType: 'Walk',
                   area: 'walks',

@@ -1,3 +1,4 @@
+import { ApiResponse } from "./api-response.model";
 import { MeetupConfigParameters } from "./meetup-config.model";
 import { WalkEvent } from "./walk-event.model";
 import { WalkVenue } from "./walk-venue.model";
@@ -10,7 +11,7 @@ export interface GoogleMapsConfig {
 export interface Walk {
   contactName?: string;
   walkType?: string;
-  _id?: string;
+  id?: string;
   briefDescriptionAndStartPoint?: string;
   contactEmail?: string;
   contactId?: string;
@@ -34,13 +35,9 @@ export interface Walk {
   ramblersWalkId?: string;
   ramblersPublish?: boolean;
   startTime?: string;
-  walkDate: number;
+  walkDate?: number;
   walkLeaderMemberId?: string;
   venue?: WalkVenue;
-
-  $id?(): any;
-
-  $saveOrUpdate?(saveCallback?, updateCallback?, errorSaveCallback?, errorUpdateCallback?): Promise<Walk>;
 }
 
 export interface WalkExport {
@@ -48,4 +45,9 @@ export interface WalkExport {
   validationMessages: string[];
   publishedOnRamblers: boolean;
   selected: boolean;
+}
+
+export interface WalkApiResponse extends ApiResponse {
+  request: any;
+  response?: Walk | Walk[];
 }

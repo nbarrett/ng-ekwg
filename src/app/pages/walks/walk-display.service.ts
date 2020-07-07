@@ -72,11 +72,11 @@ export class WalkDisplayService {
   }
 
   findWalk(walk: Walk): ExpandedWalk {
-    return find(this.expandedWalks, {walkId: walk.$id()}) as ExpandedWalk;
+    return find(this.expandedWalks, {walkId: walk.id}) as ExpandedWalk;
   }
 
   walkMode(walk: Walk): WalkViewMode {
-    const expandedWalk = find(this.expandedWalks, {walkId: walk.$id()}) as ExpandedWalk;
+    const expandedWalk = find(this.expandedWalks, {walkId: walk.id}) as ExpandedWalk;
     return expandedWalk ? expandedWalk.mode : WalkViewMode.LIST;
   }
 
@@ -144,14 +144,14 @@ export class WalkDisplayService {
 
   editFullscreen(walk: Walk): Promise<ExpandedWalk> {
     this.logger.debug("editing walk fullscreen:", walk);
-    return this.router.navigate(["walks/edit/" + walk.$id()], {relativeTo: this.route}).then(() => {
+    return this.router.navigate(["walks/edit/" + walk.id], {relativeTo: this.route}).then(() => {
       this.logger.debug("area is now", this.urlService.area());
       return this.toggleExpandedViewFor(walk, WalkViewMode.EDIT_FULL_SCREEN);
     });
   }
 
   toggleExpandedViewFor(walk: Walk, toggleTo: WalkViewMode): ExpandedWalk {
-    const walkId = walk.$id();
+    const walkId = walk.id;
     const existingWalk: ExpandedWalk = this.findWalk(walk);
     if (existingWalk && toggleTo === WalkViewMode.LIST) {
       this.expandedWalks = this.expandedWalks.filter(ele => ele.walkId !== walkId);
@@ -189,10 +189,10 @@ export class WalkDisplayService {
   }
 
   walkLink(walk: Walk): string {
-    return walk && walk.$id() ? this.urlService.notificationHref({
+    return walk && walk.id ? this.urlService.notificationHref({
       type: "walk",
       area: "walks",
-      id: walk.$id()
+      id: walk.id
     }) : undefined;
   }
 
@@ -233,7 +233,7 @@ export class WalkDisplayService {
   }
 
   isNextWalk(walk: Walk): boolean {
-    return walk && walk.$id() === this.nextWalkId;
+    return walk && walk.id === this.nextWalkId;
   }
 
   setNextWalkId(walks: Walk[]) {

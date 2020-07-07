@@ -1,7 +1,4 @@
 angular.module('ekwgApp')
-  .factory('WalksService', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('walks')
-  })
   .factory('FileUtils', function ($log, DateUtils, URLService, ContentMetadataService) {
     var logger = $log.getInstance('FileUtils');
     $log.logLevels['FileUtils'] = $log.LEVEL.OFF;

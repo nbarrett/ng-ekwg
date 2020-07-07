@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
@@ -9,6 +9,7 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -22,7 +23,7 @@ export class WalkEditFullPageComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   private notify: AlertInstance;
 
-  constructor(@Inject("WalksService") private walksService,
+  constructor(private walksService: WalksService,
               private route: ActivatedRoute, private dateUtils: DateUtilsService,
               private display: WalkDisplayService,
               private notifierService: NotifierService,
@@ -37,11 +38,11 @@ export class WalkEditFullPageComponent implements OnInit {
       if (paramMap.has("add")) {
         this.displayedWalk = {
           walkAccessMode: WalksReferenceService.walkAccessModes.add,
-          walk: this.walksService({
-            status: EventType.AWAITING_LEADER,
+          walk: {
             walkType: this.display.walkTypes[0],
-            walkDate: this.dateUtils.momentNowNoTime().valueOf()
-          }),
+            walkDate: this.dateUtils.momentNowNoTime().valueOf(),
+            events: []
+          },
           status: EventType.AWAITING_LEADER
         };
       } else {

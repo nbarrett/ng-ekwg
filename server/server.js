@@ -29,6 +29,7 @@ const ramblersUploadAudit = require("./lib/mongo/routes/ramblers-upload-audit");
 const contentMetadata = require("./lib/mongo/routes/content-metadata");
 const expenseClaim = require("./lib/mongo/routes/expense-claim");
 const configRoutes = require("./lib/mongo/routes/config");
+const walkRoutes = require("./lib/mongo/routes/walk");
 const debug = require("debug")(config.logNamespace("server"));
 const app = express();
 app.use(compression())
@@ -59,6 +60,7 @@ app.use("/api/database/member-auth-audit", memberAuthAuditRoutes);
 app.use("/api/database/member-update-audit", memberUpdateAuditRoutes);
 app.use("/api/database/ramblers-upload-audit", ramblersUploadAudit);
 app.use("/api/database/config", configRoutes);
+app.use("/api/database/walks", walkRoutes);
 app.use("/api/logs", logs);
 app.use("/", express.static(config.server.distFolder));
 app.use((req, res, next) => {

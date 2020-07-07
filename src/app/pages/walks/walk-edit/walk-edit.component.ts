@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
 import cloneDeep from "lodash-es/cloneDeep";
@@ -14,8 +14,8 @@ import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
 import { Walk, WalkExport } from "../../../models/walk.model";
-import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
 import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
+import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
 import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -36,6 +36,7 @@ import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { WalkDisplayService, WalkViewMode } from "../walk-display.service";
 
@@ -73,7 +74,7 @@ export class WalkEditComponent implements OnInit {
   public meetupConfig: MeetupConfig;
 
   constructor(
-    @Inject("WalksService") protected walksService,
+    private walksService: WalksService,
     private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private memberLoginService: MemberLoginService,
     public route: ActivatedRoute,
@@ -267,11 +268,11 @@ export class WalkEditComponent implements OnInit {
       this.displayedWalk = {
         walkAccessMode: WalksReferenceService.walkAccessModes.add,
         latestEventType: null,
-        walk: new this.walksService({
-          status: EventType.AWAITING_LEADER,
+        walk: {
           walkType: this.display.walkTypes[0],
-          walkDate: this.dateUtils.momentNowNoTime().valueOf()
-        }),
+          walkDate: this.dateUtils.momentNowNoTime().valueOf(),
+          events: []
+        },
         status: EventType.AWAITING_LEADER,
       };
     }
@@ -313,7 +314,7 @@ export class WalkEditComponent implements OnInit {
     const walkTemplate = cloneDeep(this.copyFrom.walkTemplate) as Walk;
     if (walkTemplate) {
       const templateDate = this.displayDate.transform(walkTemplate.walkDate);
-      delete walkTemplate._id;
+      delete walkTemplate.id;
       delete walkTemplate.events;
       delete walkTemplate.walkLeaderMemberId;
       delete walkTemplate.ramblersWalkId;
@@ -464,7 +465,7 @@ export class WalkEditComponent implements OnInit {
 
   private async saveAndCloseIfNotSent(notificationSent: boolean): Promise<boolean> {
     this.logger.debug("saveAndCloseIfNotSent:saving walk:notificationSent", notificationSent);
-    const savedWalk: Walk = await this.displayedWalk.walk.$saveOrUpdate();
+    const savedWalk: Walk = await this.walksService.createOrUpdate(this.displayedWalk.walk);
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.WALK_SAVED, savedWalk));
     this.afterSaveWith(notificationSent);
     return notificationSent;
@@ -545,7 +546,7 @@ export class WalkEditComponent implements OnInit {
       switch (eventType.eventType) {
         case EventType.AWAITING_LEADER: {
           const walkDate = this.displayedWalk.walk.walkDate;
-          this.displayedWalk.walk = new this.walksService(pick(this.displayedWalk.walk, ["$id()", "events", "walkDate"]));
+          this.displayedWalk.walk = pick(this.displayedWalk.walk, ["id", "events", "walkDate"]);
           return this.notify.success({
             title: "Walk details reset for " + this.displayDate.transform(walkDate),
             message: "Status is now " + this.walksReferenceService.toWalkEventType(EventType.AWAITING_LEADER).description
@@ -649,7 +650,7 @@ export class WalkEditComponent implements OnInit {
       }
     }
     this.logger.debug("selecting walks", this.copySource, criteria);
-    this.walksService.query(criteria, {sort: {walkDate: -1}})
+    this.walksService.all({criteria, sort: {walkDate: -1}})
       .then(walks => this.walksQueryService.activeWalks(walks))
       .then(walks => {
         this.copyFrom.walkTemplates = walks;

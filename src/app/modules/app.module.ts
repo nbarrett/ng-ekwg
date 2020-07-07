@@ -1,3 +1,4 @@
+import { HttpClientModule } from "@angular/common/http";
 import { ApplicationRef, DoBootstrap, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { setUpLocationSync } from "@angular/router/upgrade";
@@ -51,6 +52,7 @@ import { StringUtilsService } from "../services/string-utils.service";
 import { UrlService } from "../services/url.service";
 import { WalksQueryService } from "../services/walks/walks-query.service";
 import { WalksReferenceService } from "../services/walks/walks-reference-data.service";
+import { WalksService } from "../services/walks/walks.service";
 import { SharedModule } from "../shared-module";
 import { NonRenderingComponent } from "../shared/non-rendering.component";
 import { SiteEditComponent } from "../site-edit/site-edit.component";
@@ -60,9 +62,6 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
 @NgModule({
   declarations: [
     AppComponent,
-    AuditDeltaChangedItemsPipePipe,
-    AuditDeltaValuePipe,
-    AuditDeltaValuePipe,
     ChangedItemsPipe,
     ContactUsComponent,
     ForgotPasswordComponent,
@@ -87,6 +86,7 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
   imports: [
     BrowserAnimationsModule,
     SharedModule.forRoot(),
+    HttpClientModule,
     UpgradeModule,
     AppRoutingModule
   ],
@@ -131,7 +131,8 @@ export class AppModule implements DoBootstrap {
       .factory("URLService", downgradeInjectable(UrlService))
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
-      .factory("Notifier", downgradeInjectable(NotifierService));
+      .factory("Notifier", downgradeInjectable(NotifierService))
+      .factory("WalksService", downgradeInjectable(WalksService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade, "path");
     appRef.bootstrap(AppComponent);

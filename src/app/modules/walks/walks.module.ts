@@ -1,5 +1,4 @@
 import { NgModule } from "@angular/core";
-import { RamblersWalksAndEventsServiceProvider, WalksServiceProvider } from "../../ajs-upgraded-providers";
 import { WalkNotificationChangesComponent } from "../../notifications/walks/templates/common/walk-notification-changes.component";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationFooterComponent } from "../../notifications/walks/templates/common/walk-notification-footer.component";
@@ -28,16 +27,21 @@ import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-setti
 import { WalkMeetupComponent } from "../../pages/walks/walk-meetup/walk-meetup.component";
 import { WalkVenueComponent } from "../../pages/walks/walk-venue/walk-venue.component";
 import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view.component";
+import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
+import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { VenueIconPipe } from "../../pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "../../pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "../../pipes/walk-summary.pipe";
 import { WalkValidationsListPipe } from "../../pipes/walk-validations.pipe";
 import { WalkNotificationService } from "../../services/walks/walk-notification.service";
+import { WalksService } from "../../services/walks/walks.service";
 import { SharedModule } from "../../shared-module";
 import { WalksAuthGuard } from "../../walks-auth-guard.service";
 
 @NgModule({
   declarations: [
+    AuditDeltaChangedItemsPipePipe,
+    AuditDeltaValuePipe,
     VenueIconPipe,
     WalkAddSlotsComponent,
     WalkAdminComponent,
@@ -74,13 +78,14 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     SharedModule
   ],
   providers: [
-    RamblersWalksAndEventsServiceProvider,
+    AuditDeltaChangedItemsPipePipe,
+    AuditDeltaValuePipe,
     VenueIconPipe,
+    WalkDisplayService,
     WalkEventTypePipe,
     WalkNotificationService,
     WalksAuthGuard,
-    WalkDisplayService,
-    WalksServiceProvider,
+    WalksService,
     WalkSummaryPipe,
     WalkValidationsListPipe
   ]
