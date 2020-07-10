@@ -39,11 +39,6 @@ export class DbUtilsService {
     return document;
   }
 
-  auditedSaveOrUpdate(resource, updateCallback, errorCallback) {
-    resource = this.performAudit(resource);
-    return resource.$saveOrUpdate(updateCallback, updateCallback, errorCallback || updateCallback, errorCallback || updateCallback);
-  }
-
   duplicateErrorFields(mongoErrorMessage: string) {
     const regex = new RegExp("\{(.*)\}", "g").exec(mongoErrorMessage);
     return regex ? regex[1].split(":").map(item => item.replace(",", "").trim())

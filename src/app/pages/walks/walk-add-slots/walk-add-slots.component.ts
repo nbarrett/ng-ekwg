@@ -33,7 +33,7 @@ export class WalkAddSlotsComponent implements OnInit {
   private confirmAction = false;
   private logger: Logger;
   private notify: AlertInstance;
-  private requiredWalkSlots: any[];
+  private requiredWalkSlots: Walk[] = [];
   private singleDate: Date;
   private singleSlot: number;
   private todayValue: number;
@@ -189,8 +189,8 @@ export class WalkAddSlotsComponent implements OnInit {
       title: "Add walk slots - ", message: "now creating " + this.requiredWalkSlots.length
         + " empty walk slots up to " + this.displayDate.transform(this.until)
     });
-    Promise.all(this.requiredWalkSlots.map((slot) => {
-      return slot.$saveOrUpdate();
+    Promise.all(this.requiredWalkSlots.map((slot: Walk) => {
+      return this.walksService.createOrUpdate(slot);
     })).then(() => {
       this.notify.success({title: "Done!", message: "Choose Back to walks to see your newly created slots"});
       delete this.confirmAction;
