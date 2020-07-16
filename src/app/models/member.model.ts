@@ -8,8 +8,11 @@ export enum ProfileUpdateType {
 }
 
 export interface MemberFilterSelection {
-  member: Member;
-  memberInformation: string;
+  id?: string;
+  order?: number;
+  member?: Member;
+  memberInformation?: string;
+  text?: string;
   memberGrouping: string;
 }
 

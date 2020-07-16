@@ -337,22 +337,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }));
   }
 
-  ekwgFileUpload() {
-    return {onFileSelect: (...anything) => Promise.resolve(this.defaultExpenseClaim())};
-  }
-
-  onFileSelect(file, receipt) {
-    if (file) {
-      this.uploadedFile = file;
-      this.ekwgFileUpload().onFileSelect(file, this.notify, "expenseClaims")
-        .then(fileNameData => {
-          const expenseItem = this.selected.expenseClaim;
-          // const oldTitle = (expenseItem.receipt && expenseItem.receipt.title) ? receipt.title : undefined;
-          // expenseItem.receipt = {fileNameData, title: oldTitle};
-        });
-    }
-  }
-
   addExpenseItem() {
     this.removeConfirm();
     const newExpenseItem = this.display.defaultExpenseItem();

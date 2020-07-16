@@ -195,31 +195,32 @@ export interface MailchimpCampaignListRequest {
 export interface MailchimpCampaignListResponse {
   total: number;
   errors: any[];
-  data: [
-    {
-      id: string;
-      web_id: number;
-      list_id: string;
-      template_id: number;
-      title: string;
-      subject: string;
-      saved_segment: {
-        id: number;
-        type: string;
-        name: string;
-      },
-      status: string;
-      from_name: string;
-      archive_url_long: string;
-      create_time: number;
-    }];
+  data: MailchimpCampaign[];
+}
+
+export interface MailchimpCampaign {
+  id: string;
+  web_id: number;
+  list_id: string;
+  template_id: number;
+  title: string;
+  subject: string;
+  saved_segment: {
+    id: number;
+    type: string;
+    name: string;
+  },
+  status: string;
+  from_name: string;
+  archive_url_long: string;
+  create_time: number;
 }
 
 export interface MailchimpCampaignSendRequest {
   dontSend?: boolean;
   campaignId: string;
   campaignName: string;
-  segmentId: number;
+  segmentId?: number;
   contentSections?: MailchimpExpenseOtherContent | MailchimpGenericOtherContent;
   otherSegmentOptions?: any;
 }

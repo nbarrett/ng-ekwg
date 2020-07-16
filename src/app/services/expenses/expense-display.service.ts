@@ -24,7 +24,6 @@ import { ExpenseClaimService } from "./expense-claim.service";
 
 export class ExpenseDisplayService {
   public members: Member [] = [];
-  loggedIn: boolean;
   private logger: Logger;
 
   public expenseTypes: ExpenseType[] = [

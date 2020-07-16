@@ -1,5 +1,7 @@
 <div *ngIf="dateValue" class="input-group">
+  <label *ngIf="label" [for]="id">{{label}}:</label>
   <input [ngModel]="dateValue.date"
+         [id]="id"
          (ngModelChange)="onModelChange($event)"
          placeholder="enter date"
          #dp="bsDatepicker"

@@ -3,10 +3,10 @@ import get from "lodash-es/get";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
+import { CommitteeMember } from "../../models/committee.model";
 import { CommitteeConfigService } from "../commitee-config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { FileType } from "./committee-file-type.model";
-import { CommitteeMember } from "./committee-member.model";
 
 @Injectable({
   providedIn: "root"

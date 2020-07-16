@@ -23,12 +23,20 @@ export class MailchimpLinkService {
     });
   }
 
+  public campaigns() {
+    return `${this.mailchimpApiUrl}/campaign`;
+  }
+
   public campaignPreview(webId: string) {
     return `${this.mailchimpApiUrl}/campaigns/preview-content-html?id=${webId}`;
   }
 
-  public campaignEdit(webId: string) {
-    return `${this.mailchimpApiUrl}/campaigns/preview-content-html?id=${webId}`;
+  public completeInMailchimp(webId: number) {
+    return `${this.mailchimpApiUrl}/campaigns/campaigns/wizard/neapolitan?id=${webId}`;
+  }
+
+  public campaignEdit(webId: number) {
+    return `${this.mailchimpApiUrl}/campaigns/edit?id=${webId}`;
   }
 
   public listView(leid: string) {

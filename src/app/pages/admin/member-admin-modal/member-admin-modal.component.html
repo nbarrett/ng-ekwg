@@ -346,9 +346,7 @@
               </div>
               <div class="col col-sm-6">
                 <div class="form-group">
-                  <label for="membership-expiry-date">Membership Expiry Date</label>
-
-                  <app-date-picker id="membership-expiry-date" class="input-group"
+                  <app-date-picker [label]="'Membership Expiry Date'" class="input-group"
                                    [size]="'md round'"
                                    (dateChange)="onMembershipDateChange($event)"
                                    [dateValue]="membershipExpiryDate">

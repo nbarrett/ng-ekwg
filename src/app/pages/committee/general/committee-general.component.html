@@ -1,0 +1,29 @@
+<app-accordion-group *ngIf="allowSend()" (click)="toggle($event)" groupTitle="Walks Programme" initiallyOpen="true">
+  <accordion-group is-open="true">
+    <accordion-heading>
+      <div class="accordion-title">
+        <img src="assets/images/ramblers/icon-members.png" alt="members area"> <span
+        [textContent]="'General'"></span>
+        <i class="pull-right fa fa-lg darkred"
+           [ngClass]="{'fa fa-minus-circle': general.expanded, 'fa fa-plus-circle': !general.expanded }"></i>
+      </div>
+    </accordion-heading>
+
+    <div class="col-sm-12">
+      <div class="row">
+        <p class="general-description">This section allows you to access functions that are not
+          linked to any specific committee files or events.</p>
+        <input type="submit" value="Send Email"
+               (click)="sendNotification()"
+               title="Send Email" class="button-form yellow-confirm">
+        <input type="submit" value="Open Mailchimp"
+               (click)="openMailchimp()"
+               title="Mailchimp" class="button-form blue-confirm">
+        <input type="submit" value="Campaign Settings"
+               (click)="openSettings()"
+               title="Mailchimp" class="button-form green-confirm">
+      </div>
+    </div>
+  </accordion-group>
+  <div ng-repeat-end></div>
+</app-accordion-group>

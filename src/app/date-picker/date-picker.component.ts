@@ -1,6 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { kebabCase } from "lodash-es";
 import { DateValue } from "../models/date.model";
 import { DateUtilsService } from "../services/date-utils.service";
+
+let id = 0;
 
 @Component({
   selector: "app-date-picker",
@@ -11,9 +14,13 @@ export class DatePickerComponent implements OnInit {
 
   @Input() dateValue: DateValue;
   @Input() size: string;
+  @Input() label: string;
   @Output() dateChange: EventEmitter<DateValue> = new EventEmitter();
+  public id: string;
 
-  constructor(private dateUtils: DateUtilsService) {
+  constructor(
+    private dateUtils: DateUtilsService) {
+    this.id = `${kebabCase(this.label)}-${id++}`;
   }
 
   ngOnInit() {

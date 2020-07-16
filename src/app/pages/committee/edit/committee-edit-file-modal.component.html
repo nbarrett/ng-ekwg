@@ -1,0 +1,97 @@
+<div [ngClass]="{'busy': busy}" class="modal" id="file-detail-dialog" tabindex="-1" role="dialog" data-backdrop="true"
+     aria-labelledby="modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit <em>Committee</em> File</h4>
+      </div>
+      <div class="modal-body">
+        <div class="thumbnail">
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="event-date">File or Event Date</label>
+
+                <div class="input-group">
+                  <input [(ngModel)]="selected.committeeFile.eventDate" type="text" class="form-control input-sm"
+                         value="{{selected.committeeFile.eventDate}}"
+                         (click)="eventDateCalendar.open($event)"
+                         datepicker-popup is-open="eventDateCalendar.opened"
+                         [required]="true" close-text="Close" id="event-date"/>
+                  <span class="input-group-btn"><button class="btn btn-default btn-sm"
+                                                        (click)="eventDateCalendar.open($event)">
+                                        <i class="glyphicon glyphicon-calendar"></i></button></span>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="fileType">File Type</label>
+                <select [(ngModel)]="selected.committeeFile.fileType" id="fileType" class="form-control input-sm"
+                <option *ngFor="fileType.description as fileType.description for fileType of fileTypes">
+                  </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div *ngIf="uploadedFile || selected.committeeFile.fileNameData" class="form-group">
+                <label for="file">Description for: </label>
+                <a target="_blank" id="file" [href]="{{fileUrl(selected.committeeFile)}}">attached file</a>
+                <input [(ngModel)]="selected.committeeFile.fileNameData.title" type="text" value=""
+                       class="form-control input-sm" id="fileTitle"
+                       placeholder="Enter a title for this file">
+              </div>
+
+            </div>
+            <div class="col-sm-3">
+
+              <span class="hidden-input"><input id="hidden-input" type="file" [disabled]="userEdits.saveInProgress"
+                                                value="Replace File" ngf-select="onFileSelect($file)"
+                                                title="Replace this file"></span>
+
+              <input type="submit" [disabled]="userEdits.saveInProgress" value="{{attachmentTitle()}}"
+                     title="Attach new file"
+                     [ngClass]="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
+                     (click)="attachFile()">
+            </div>
+            <div class="col-sm-9">
+
+              <div *ngIf="uploadedFile" class="form-group">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar"
+                       style="width:{{uploadedFile.progress}}%;">{{uploadedFile.progress}}% uploaded
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="showAlertMessage()" class="row">
+          <div class="col-sm-12 mb-10">
+            <div class="alert {{alert.class}}"><i
+              class="glyphicon {{alert.icon}}"> </i><strong *ngIf="alertTitle">
+              {{alertTitle}}: </strong> {{alertMessage}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Save File" [disabled]="userEdits.saveInProgress" (click)="saveCommitteeFile()"
+               title="Save File"
+               [ngClass]="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+        <input *ngIf="!allowConfirmDelete && allowDeleteCommitteeFile()" type="submit" value="Delete File"
+               [disabled]="userEdits.saveInProgress" (click)="deleteCommitteeFile()" title="Delete File"
+               [ngClass]="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+        <input *ngIf="allowConfirmDelete" type="submit" value="Confirm Delete of File"
+               [disabled]="userEdits.saveInProgress" (click)="confirmDeleteCommitteeFile()"
+               title="Confirm delete of this File"
+               [ngClass]="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left button-confirm'">
+        <input type="submit" value="Cancel Change" [disabled]="userEdits.saveInProgress" (click)="cancelFileChange()"
+               title="Cancel File changes and close this dialog"
+               [ngClass]="userEdits.saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+      </div>
+    </div>
+  </div>
+</div>

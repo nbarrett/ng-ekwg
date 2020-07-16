@@ -45,20 +45,16 @@ exports.migrateTemplate = (req, res) => {
     ["ng-href", "[href]"],
     ["ng-options", "<option *ngFor"],
     ["uib-", ""],
-    [" in ", " of "],
-    ["contact-us", "app-contact-us"]
+    [" in ", " of "]
   ];
 
   try {
     const requestPath = req.path;
-    const fileName = `../${req.query.file}`;
     const sourceDir = path.normalize(`../${req.query.in}`);
-    const migratedFileName = stringUtils.replaceAll("html", "ts", fileName);
-    debug("input file", fileName);
     const response = {response: requestPath, in: sourceDir, out: req.query.out};
     if (req.query.in) {
       walkDir(sourceDir, (file) => file.endsWith(".html")).then(files => {
-        debug("files", files);
+        debug("processing input files", files);
         response.output = files.map(inputFile => {
           const parsedPath = path.parse(inputFile);
           const inputDirectory = parsedPath.dir;
@@ -66,10 +62,10 @@ exports.migrateTemplate = (req, res) => {
           const output = path.join(outputDirectory, parsedPath.name + ".component" + parsedPath.ext);
           const outputFile = path.resolve(output);
           if (!fs.existsSync(outputDirectory)) {
-            debug("creating:", outputDirectory)
+            debug("creating outputDirectory:", outputDirectory)
             mkdirpsync(outputDirectory);
           } else {
-            debug("already exists:", outputDirectory)
+            debug("outputDirectory already exists:", outputDirectory)
           }
           convert(inputFile, outputFile);
           return {
@@ -92,6 +88,7 @@ exports.migrateTemplate = (req, res) => {
   }
 
   function convert(inputFile, outputFile) {
+    debug("converting", inputFile, "->", outputFile)
     if (fs.existsSync(inputFile)) {
       const outputDir = path.dirname(outputFile);
       const fileContents = fs.readFileSync(inputFile).toString();
@@ -104,7 +101,7 @@ exports.migrateTemplate = (req, res) => {
       fs.writeFileSync(outputFile, outputContents);
       debug("outputContents", outputFile, "created")
     } else {
-      debug("input", inputFile, "does not exist")
+      debug("ERROR input", inputFile, "does not exist")
     }
   }
 

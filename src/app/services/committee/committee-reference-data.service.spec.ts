@@ -1,7 +1,7 @@
 import { async, TestBed } from "@angular/core/testing";
 import { LoggerTestingModule } from "ngx-logger/testing";
+import { CommitteeMember } from "../../models/committee.model";
 import { CommitteeConfigService } from "../commitee-config.service";
-import { CommitteeMember } from "./committee-member.model";
 import { CommitteeReferenceDataService } from "./committee-reference-data.service";
 
 const NIC = {
