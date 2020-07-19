@@ -1,8 +1,7 @@
-import { ApiResponse } from "./api-response.model";
+import { ApiResponse, Identifiable } from "./api-response.model";
 
-export interface SocialEvent {
-  notification: any; /// really?
-  id?: string;
+export interface SocialEvent extends Identifiable {
+  notification: any;
   eventDate: number;
   eventTimeStart?: string;
   postcode?: string;

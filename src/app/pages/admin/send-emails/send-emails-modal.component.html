@@ -1,9 +1,8 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}" *ngIf="emailTypes.length>0 && emailType">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal"
-              (click)="this.bsModalRef.hide()" aria-hidden="true"> &times;
-      </button>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+        <span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title">Send <em>Emails</em> to Members</h4>
     </div>
     <div class="modal-body">
@@ -66,7 +65,7 @@
                     <label for="expired-members" class="form-inline">
                       {{emailType.monthsInPast}} months past expiry date:
                       <app-date-picker *ngIf="memberSelectorName==='expired-members'"
-                                       class="input-group calendar-in-label"
+                                       class="calendar-in-label"
                                        (dateChange)="onMemberFilterDateChange($event)"
                                        [dateValue]="memberFilterDate">
                       </app-date-picker>

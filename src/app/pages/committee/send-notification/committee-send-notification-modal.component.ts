@@ -84,7 +84,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
       destinationType: "committee",
       includeSignoffText: true,
       addresseeType: "Hi *|FNAME|*,",
-      addingNewFile: false,
       selectedRecipients: [],
       recipients: [],
       groupEvents() {
@@ -108,7 +107,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     };
 
     if (this.committeeFile) {
-      this.notification.title = this.committeeFile.fileType.description;
+      this.notification.title = this.committeeFile.fileType;
       this.notification.editable.text = "This is just a quick note to let you know in case you are interested, that I\"ve uploaded a new file to the EKWG website. The file information is as follows:";
     }
 

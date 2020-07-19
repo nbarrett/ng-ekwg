@@ -16,6 +16,7 @@ import { NonRenderingComponent } from "./shared/non-rendering.component";
 const routes: Routes = [
   {path: "", component: HomeComponent},
   {path: "admin", loadChildren: () => import("./modules/admin/admin-routing.module").then(module => module.AdminRoutingModule)},
+  {path: "committee", loadChildren: () => import("./modules/committee/committee-routing.module").then(module => module.CommitteeRoutingModule)},
   {path: "contact-us", component: ContactUsComponent},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "home", component: HomeComponent},

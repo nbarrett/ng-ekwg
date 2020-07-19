@@ -8,10 +8,10 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ApiResponse } from "../../../models/api-response.model";
 import { Member } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, SELECT_ALL, TableFilter } from "../../../models/table-filtering.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
+import { ApiResponseProcessProcessor } from "../../../services/api-response-process-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -50,6 +50,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
+              private apiResponseProcessing: ApiResponseProcessProcessor,
               private searchFilterPipe: SearchFilterPipe,
               private modalService: BsModalService,
               private notifierService: NotifierService,
@@ -63,7 +64,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.DEBUG);
     this.searchChangeObservable = new Subject<string>();
   }
 
@@ -165,7 +166,8 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
-        this.addMembersToView(apiResponse);
+        this.apiResponseProcessing.processResponse(this.logger, this.members, apiResponse);
+        this.applyFilterToMembers();
       }
     });
     this.refreshMembers();
@@ -175,31 +177,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.logger.debug("unsubscribing");
     this.subscription.unsubscribe();
     this.logoutSubscription.unsubscribe();
-  }
-
-  private addMembersToView(apiResponse: ApiResponse) {
-    const members: Member[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
-    this.logger.info("Received", members.length, "member", apiResponse.action, "notification(s)");
-    if (apiResponse.action === "query") {
-      this.members = members;
-    } else {
-      members.forEach(notifiedMember => {
-        const existingMember: Member = this.members.find(member => member.id === notifiedMember.id);
-        if (existingMember) {
-          if (apiResponse.action === "delete") {
-            this.logger.info("deleting", notifiedMember);
-            this.members = this.members.filter(member => member.id !== notifiedMember.id);
-          } else {
-            this.logger.info("replacing", notifiedMember);
-            this.members[(this.members.indexOf(existingMember))] = notifiedMember;
-          }
-        } else {
-          this.logger.info("adding", notifiedMember);
-          this.members.push(notifiedMember);
-        }
-      });
-    }
-    this.applyFilterToMembers();
   }
 
   onSearchChange(searchEntry: string) {

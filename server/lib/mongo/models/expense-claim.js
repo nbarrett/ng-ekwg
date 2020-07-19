@@ -46,7 +46,6 @@ const expenseEvent = {
 };
 
 const expenseClaimSchema = mongoose.Schema({
-  id: {type: String},
   expenseEvents: [expenseEvent],
   expenseItems: [expenseItem],
   cost: {type: Number},

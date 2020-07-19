@@ -46,12 +46,6 @@ angular.module("ekwgApp", [
     uiSelectConfig.closeOnSelect = false;
 
     $routeProvider
-      .when(mainPages.COMMITTEE + "/committeeFileId/:committeeFileId", {
-        controller: "CommitteeController", templateUrl: "partials/committee/committee.html", title: "AGM and committee"
-      })
-      .when(mainPages.COMMITTEE, {
-        controller: "CommitteeController", templateUrl: "partials/committee/committee.html", title: "AGM and committee"
-      })
       .when(mainPages.HOW_TO, {
         controller: "HowToController",
         templateUrl: "partials/howTo/how-to.html",

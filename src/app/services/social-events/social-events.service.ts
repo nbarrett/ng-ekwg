@@ -12,7 +12,7 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 })
 export class SocialEventsService {
 
-  private BASE_URL = "/api/database/social-events";
+  private BASE_URL = "/api/database/social-event";
   private logger: Logger;
   private socialEventNotifications = new Subject<SocialEventApiResponse>();
 

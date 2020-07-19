@@ -18,14 +18,14 @@
           <div class="form-group">
             <label for="filter-audit" class="form-inline ml-12 mr-12">
               Filter logins since:</label>
-            <app-date-picker id="filter-audit" class="input-group"
-                             [size]="'md round'"
+            <app-date-picker id="filter-audit" [size]="'md round'"
                              (dateChange)="onFilterDateChange($event)"
                              [dateValue]="filterDateValue">
             </app-date-picker>
           </div>
           <div class="form-group">
-            <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy" value="Back to admin" (click)="backToAdmin()"
+            <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy" value="Back to admin"
+                   (click)="backToAdmin()"
                    class="button-form ml-6 mr-6"
                    [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
             <input type="submit" *ngIf="confirm.noneOutstanding()"

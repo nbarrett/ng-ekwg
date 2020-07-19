@@ -3,6 +3,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeFile, NotificationConfig, UserEdits } from "../../../models/committee.model";
 import { ExpenseClaim } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
+import { CommitteeDisplayService } from "../../../pages/committee/committee-display.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 
 @Component({
@@ -19,6 +20,7 @@ export class CommitteeNotificationDetailsComponent implements OnInit, AfterViewI
   public members: Member[];
 
   constructor(
+    public display: CommitteeDisplayService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }

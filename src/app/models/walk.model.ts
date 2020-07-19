@@ -1,5 +1,6 @@
 import { ApiResponse } from "./api-response.model";
 import { MeetupConfigParameters } from "./meetup-config.model";
+import { Identifiable } from "./member.model";
 import { WalkEvent } from "./walk-event.model";
 import { WalkVenue } from "./walk-venue.model";
 
@@ -8,10 +9,9 @@ export interface GoogleMapsConfig {
   zoomLevel: number;
 }
 
-export interface Walk {
+export interface Walk extends Identifiable {
   contactName?: string;
   walkType?: string;
-  id?: string;
   briefDescriptionAndStartPoint?: string;
   contactEmail?: string;
   contactId?: string;

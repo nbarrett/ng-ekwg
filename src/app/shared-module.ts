@@ -43,6 +43,7 @@ import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
 import { HumanisePipe } from "./pipes/humanise.pipe";
 import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displayed.pipe";
+import { LineFeedsToBreaksPipe } from "./pipes/line-feeds-to-breaks.pipe";
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
 import { MemberIdToFirstNamePipe } from "./pipes/member-id-to-first-name.pipe";
 import { MemberIdToFullNamePipe } from "./pipes/member-id-to-full-name.pipe";
@@ -93,6 +94,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
+    LineFeedsToBreaksPipe,
     DisplayDayPipe,
     EventNotePipe,
     FullNamePipe,
@@ -138,6 +140,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     HumanisePipe,
     LastConfirmedDateDisplayed,
     LoggerModule,
+    LineFeedsToBreaksPipe,
     MarkdownEditorComponent,
     MarkdownModule,
     MeetupEventSummaryPipe,
@@ -179,6 +182,7 @@ export class SharedModule {
         DisplayDateAndTimePipe,
         DisplayDatePipe,
         DisplayDatesPipe,
+        LineFeedsToBreaksPipe,
         DisplayDayPipe,
         EventNotePipe,
         FullNamePipe,

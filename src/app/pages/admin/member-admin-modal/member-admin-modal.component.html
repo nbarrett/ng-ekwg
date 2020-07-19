@@ -109,7 +109,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Login">
+        <tab [heading]="'Login'">
           <form>
             <div class="thumbnail thumbnail-admin-edit">
               <div class="row">
@@ -155,7 +155,7 @@
             </div>
           </form>
         </tab>
-        <tab heading="Privileges">
+        <tab [heading]="'Privileges'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
@@ -235,7 +235,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Preferences">
+        <tab [heading]="'Preferences'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="checkbox-group">
               <div class="row">
@@ -336,7 +336,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Membership">
+        <tab [heading]="'Membership'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col col-sm-12">
@@ -346,7 +346,7 @@
               </div>
               <div class="col col-sm-6">
                 <div class="form-group">
-                  <app-date-picker [label]="'Membership Expiry Date'" class="input-group"
+                  <app-date-picker [label]="'Membership Expiry Date'"
                                    [size]="'md round'"
                                    (dateChange)="onMembershipDateChange($event)"
                                    [dateValue]="membershipExpiryDate">
@@ -364,7 +364,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Audit">
+        <tab [heading]="'Audit'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
@@ -422,7 +422,7 @@
             </div>
           </div>
         </tab>
-        <tab heading="Member Raw Data">
+        <tab [heading]="'Member Raw Data'">
           <pre>{{member | json}}</pre>
         </tab>
       </tabset>

@@ -1,7 +1,8 @@
 <app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Walks">
   <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
     <app-walk-admin></app-walk-admin>
-    <app-accordion-group (click)="toggle($event)" groupTitle="Walks Programme" initiallyOpen="true">
+    <app-accordion-group [icon]="'assets/images/ramblers/icon-gowalking.png'" (click)="toggle($event)"
+                         groupTitle="Walks Programme" initiallyOpen="true">
       <div>
         <form *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
           <div class="form-group">
@@ -124,7 +125,8 @@
         </div>
       </div>
     </app-accordion-group>
-    <app-accordion-group (click)="toggle($event)" groupTitle="Walks Information" initiallyOpen="true">
+    <app-accordion-group [icon]="'assets/images/ramblers/icon-gowalking.png'" (click)="toggle($event)"
+                         groupTitle="Walks Information" initiallyOpen="true">
       <div class="body-content">
         <div class="row">
           <div class="col-sm-12">
@@ -144,7 +146,7 @@
         </div>
       </div>
     </app-accordion-group>
-    <app-accordion-group (click)="toggle($event)" *ngIf="false"
+    <app-accordion-group [icon]="'assets/images/ramblers/icon-gowalking.png'" (click)="toggle($event)" *ngIf="false"
                          groupTitle="View our past and planned walks on Google Maps!">
       <p>If you are planning where to lead a walk and you want to make sure that you choose an area that
         hasn't been walked too much before,

@@ -1,5 +1,5 @@
-<div *ngIf="dateValue" class="input-group">
-  <label *ngIf="label" [for]="id">{{label}}:</label>
+<label *ngIf="label" [for]="id">{{label}}:</label>
+<div *ngIf="dateValue" [ngClass]="size ? 'input-group input-group-' + size: 'input-group input-group-sm'">
   <input [ngModel]="dateValue.date"
          [id]="id"
          (ngModelChange)="onModelChange($event)"

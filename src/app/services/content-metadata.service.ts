@@ -21,7 +21,7 @@ export class ContentMetadataService {
     this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.OFF);
   }
 
-  baseUrl(metaDataPathSegment) {
+  baseUrl(metaDataPathSegment: string) {
     return `${this.S3_BASE_URL}/${metaDataPathSegment}`;
   }
 

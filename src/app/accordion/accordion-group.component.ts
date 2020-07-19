@@ -11,6 +11,7 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 })
 export class AccordionGroupComponent implements OnInit {
 
+  @Input() icon: string;
   @Input() groupTitle: string;
   @Input() initiallyOpen: string;
 

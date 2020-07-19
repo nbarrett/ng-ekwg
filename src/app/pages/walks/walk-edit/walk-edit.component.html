@@ -6,7 +6,7 @@
     <ng-template app-walk-notification-template></ng-template>
   </div>
   <tabset *ngIf="displayedWalk.walk">
-    <tab heading="Main details">
+    <tab [heading]="'Main details'">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-6">
@@ -79,7 +79,7 @@
         </div>
       </div>
     </tab>
-    <tab heading="Related links">
+    <tab [heading]="'Related links'">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-12">
@@ -203,7 +203,7 @@
         </div>
       </div>
     </tab>
-    <tab heading="Walk leader">
+    <tab [heading]="'Walk leader'">
       <div class="thumbnail thumbnail-admin-edit">
         <div *ngIf="allowAdminEdits()" class="row">
           <div class="col-sm-12">
@@ -303,7 +303,7 @@
         </div>
       </div>
     </tab>
-    <tab heading="Walk details">
+    <tab [heading]="'Walk details'">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-6">
@@ -418,7 +418,7 @@
         </div>
       </div>
     </tab>
-    <tab heading="Copy from previous walk">
+    <tab [heading]="'Copy from previous walk'">
       <div class="thumbnail thumbnail-admin-edit"
            *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
         <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>

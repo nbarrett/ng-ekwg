@@ -8,3 +8,7 @@ export interface ApiResponse {
   error?: any;
   apiStatusCode?: number;
 }
+
+export interface Identifiable {
+  id?: string;
+}

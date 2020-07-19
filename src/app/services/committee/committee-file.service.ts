@@ -33,11 +33,11 @@ export class CommitteeFileService {
     return apiResponse.response as CommitteeFile[];
   }
 
-  async createOrUpdate(socialEvent: CommitteeFile): Promise<CommitteeFile> {
-    if (socialEvent.id) {
-      return this.update(socialEvent);
+  async createOrUpdate(committeeFile: CommitteeFile): Promise<CommitteeFile> {
+    if (committeeFile.id) {
+      return this.update(committeeFile);
     } else {
-      return this.create(socialEvent);
+      return this.create(committeeFile);
     }
   }
 
@@ -47,24 +47,24 @@ export class CommitteeFileService {
     return apiResponse.response as CommitteeFile;
   }
 
-  async update(socialEvent: CommitteeFile): Promise<CommitteeFile> {
-    this.logger.debug("updating", socialEvent);
-    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.put<CommitteeFileApiResponse>(this.BASE_URL + "/" + socialEvent.id, socialEvent), this.committeeFileNotifications);
-    this.logger.debug("updated", socialEvent, "- received", apiResponse);
+  async update(committeeFile: CommitteeFile): Promise<CommitteeFile> {
+    this.logger.debug("updating", committeeFile);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.put<CommitteeFileApiResponse>(this.BASE_URL + "/" + committeeFile.id, committeeFile), this.committeeFileNotifications);
+    this.logger.debug("updated", committeeFile, "- received", apiResponse);
     return apiResponse.response as CommitteeFile;
   }
 
-  async create(socialEvent: CommitteeFile): Promise<CommitteeFile> {
-    this.logger.debug("creating", socialEvent);
-    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<CommitteeFileApiResponse>(this.BASE_URL, socialEvent), this.committeeFileNotifications);
-    this.logger.debug("created", socialEvent, "- received", apiResponse);
+  async create(committeeFile: CommitteeFile): Promise<CommitteeFile> {
+    this.logger.debug("creating", committeeFile);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<CommitteeFileApiResponse>(this.BASE_URL, committeeFile), this.committeeFileNotifications);
+    this.logger.debug("created", committeeFile, "- received", apiResponse);
     return apiResponse.response as CommitteeFile;
   }
 
-  async delete(socialEvent: CommitteeFile): Promise<CommitteeFile> {
-    this.logger.debug("deleting", socialEvent);
-    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.delete<CommitteeFileApiResponse>(this.BASE_URL + "/" + socialEvent.id), this.committeeFileNotifications);
-    this.logger.debug("deleted", socialEvent, "- received", apiResponse);
+  async delete(committeeFile: CommitteeFile): Promise<CommitteeFile> {
+    this.logger.debug("deleting", committeeFile);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.delete<CommitteeFileApiResponse>(this.BASE_URL + "/" + committeeFile.id), this.committeeFileNotifications);
+    this.logger.debug("deleted", committeeFile, "- received", apiResponse);
     return apiResponse.response as CommitteeFile;
   }
 

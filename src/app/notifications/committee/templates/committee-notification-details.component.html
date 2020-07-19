@@ -4,9 +4,10 @@
   <div *ngIf="notification.includeDownloadInformation">
     <p>
       <b>File type:</b> <span [textContent]="committeeFile.fileType"></span><br>
-      <b>Description:</b> <span [textContent]="fileTitle()"></span>
+      <b>Description:</b> <span [textContent]="display.fileTitle(committeeFile)"></span>
     </p>
-    <p>If you want to download this attachment you can click <a [href]="{{ fileUrl() }}">here</a>, alternatively
+    <p>If you want to download this attachment you can click <a [href]="display.fileUrl(committeeFile)">here</a>,
+      alternatively
       you can view or download it from our EKWG
       <a href="committee">Committee page</a>.
     </p>
@@ -29,11 +30,11 @@
                     </p>
                     <div style="font-size: 14px;font-weight: bold">
                     <span *ngIf="userEdits.groupEvents.includeContact && event.contactName">Contact: <a
-                      [href]="mailto:{{event.contactEmail}}">
+                      [href]="'mailto:' + event.contactEmail">
                             <span [textContent]="event.contactName || event.contactEmail"></span></a>
                             <span *ngIf="event.contactPhone"> ({{event.contactPhone}})</span></span>
                         <span *ngIf="userEdits.groupEvents.includeLocation && event.postcode"> • Location: <a
-                          [href]="http://maps.google.co.uk/maps?q={{event.postcode}}"
+                          [href]="'http://maps.google.co.uk/maps?q=' + event.postcode"
                           target="_blank"><span
                           [textContent]="event.postcode"></span></a></span>
                     </div>
@@ -43,7 +44,7 @@
       </div>
     </div>
   </div>
-  <p *ngIf="notification.includeSignoffText" [textContent]-html="notification.signoffText()"></p>
+  <p *ngIf="notification.includeSignoffText" [textContent]="notification.signoffText()"></p>
   <app-contact-us *ngIf="notification.signoffAs.value" format="list"
-              role="{{notification.signoffAs.value}}"></app-contact-us>
+                  [role]="notification.signoffAs.value"></app-contact-us>
 </div>

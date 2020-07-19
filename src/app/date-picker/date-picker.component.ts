@@ -20,10 +20,10 @@ export class DatePickerComponent implements OnInit {
 
   constructor(
     private dateUtils: DateUtilsService) {
-    this.id = `${kebabCase(this.label)}-${id++}`;
   }
 
   ngOnInit() {
+    this.id = `${kebabCase(this.label || "date-picker")}-${id++}`;
   }
 
   onModelChange(date: Date) {

@@ -1,4 +1,4 @@
-<app-accordion-group *ngIf="allowAdminEdits" groupTitle="Walk Admin Tasks" initiallyOpen="false">
+<app-accordion-group [icon]="'assets/images/ramblers/icon-gowalking.png'" *ngIf="allowAdminEdits" groupTitle="Walk Admin Tasks" initiallyOpen="false">
   <div class="row">
     <div class="col-sm-4 item-panel">
       <div (click)="selectWalksForExport()" class="item-icon">

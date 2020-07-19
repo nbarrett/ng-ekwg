@@ -1,4 +1,4 @@
-import { ApiResponse } from "./api-response.model";
+import { ApiResponse, Identifiable } from "./api-response.model";
 import { MailchimpSubscription } from "./mailchimp.model";
 
 export enum ProfileUpdateType {
@@ -63,8 +63,7 @@ export interface SessionStatus {
   status?: string;
 }
 
-export interface Member extends Auditable {
-  id?: string;
+export interface Member extends Auditable, Identifiable {
   hideSurname?: boolean;
   expiredPassword?: boolean;
   groupMember?: boolean;
@@ -159,7 +158,6 @@ export interface MemberAuthAudit {
 }
 
 export interface Auditable {
-  id?: string;
   createdDate?: number;
   createdBy?: string;
   updatedDate?: number;

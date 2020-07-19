@@ -1,10 +1,8 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRoute, ParamMap } from "@angular/router";
 import { first } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { share } from "rxjs/operators";
 import { chain } from "../../functions/chain";
-import { GroupEvent } from "../../models/committee.model";
+import { CommitteeFile, CommitteeYear, GroupEvent } from "../../models/committee.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { sortBy } from "../arrays";
 import { CommitteeConfigService } from "../commitee-config.service";
@@ -26,7 +24,6 @@ export class CommitteeQueryService {
   private logger: Logger;
 
   constructor(
-    private route: ActivatedRoute,
     private dateUtils: DateUtilsService,
     private walksService: WalksService,
     private committeeReferenceData: CommitteeReferenceDataService,
@@ -36,7 +33,7 @@ export class CommitteeQueryService {
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
     private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.DEBUG);
   }
 
   groupEvents(groupEvents): Promise<GroupEvent[]> {
@@ -127,20 +124,20 @@ export class CommitteeQueryService {
     });
   }
 
-  extractYear(committeeFile) {
+  extractYear(committeeFile: CommitteeFile) {
     return parseInt(this.dateUtils.asString(committeeFile.eventDate, undefined, "YYYY"), 10);
   }
 
-  addLatestYearFlag(committeeFileYear, latestYearValue) {
+  addLatestYearFlag(committeeFileYear, latestYearValue): CommitteeYear {
     return {year: committeeFileYear, latestYear: latestYearValue === committeeFileYear};
   }
 
-  committeeFileYears(committeeFiles) {
+  committeeFileYears(committeeFiles): CommitteeYear[] {
 
     const latestYearValue = this.latestYear(committeeFiles);
 
     const years = chain(committeeFiles)
-      .map(this.extractYear)
+      .map(file => this.extractYear(file))
       .unique()
       .sortBy()
       .map(item => this.addLatestYearFlag(item, latestYearValue))
@@ -148,38 +145,6 @@ export class CommitteeQueryService {
       .reverse();
     this.logger.debug("committeeFileYears", years);
     return years.length === 0 ? [{year: this.latestYear(committeeFiles), latestYear: true}] : years;
-  }
-
-  queryCommitteeFiles(notify) {
-    const shared = this.route.paramMap.pipe(share());
-    return shared.toPromise().then((paramMap: ParamMap) => {
-      const committeeFileId = paramMap.get("committeeFileId");
-      this.logger.debug("committeeFileId from route params:", committeeFileId);
-      if (committeeFileId) {
-        return this.committeeFileService.getById(committeeFileId)
-          .then(committeeFile => {
-            if (!committeeFile) {
-              notify.error("Committee file could not be found. Try opening again from the link in the notification email");
-            }
-            return [committeeFile];
-          });
-      } else {
-        return this.committeeFileService.all().then(files => this.filterCommitteeFiles(files));
-      }
-    });
-  }
-
-  committeeFiles(notify: AlertInstance) {
-    notify.progress("Refreshing Committee files...");
-
-    return this.queryCommitteeFiles(notify);
-  }
-
-  filterCommitteeFiles(files: any[]) {
-    this.logger.info("filterCommitteeFiles files ->", files);
-    const filteredFiles = files.filter(file => this.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin());
-    this.logger.debug("filterCommitteeFiles in ->", files && files.length, "out ->", filteredFiles.length, "fileTypes", this.committeeReferenceData.fileTypes());
-    return filteredFiles;
   }
 
 }

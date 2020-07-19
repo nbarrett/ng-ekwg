@@ -1,25 +1,24 @@
-import { ApiResponse } from "./api-response.model";
+import { ApiResponse, Identifiable } from "./api-response.model";
 import { DateValue } from "./date.model";
 import { MemberFilterSelection } from "./member.model";
 
-export interface CommitteeFile {
-  id?: string;
+export interface CommitteeFile extends Identifiable {
   eventDate?: number;
   postcode?: string;
-  fileType: CommitteeFileType;
-  fileNameData: {
+  fileType: string;
+  fileNameData?: {
+    originalFileName?: string;
     awsFileName?: string;
-    title?: string
+    title?: string;
   };
 }
 
 export interface CommitteeFileApiResponse extends ApiResponse {
   request: any;
-  response?: CommitteeFile[];
+  response?: CommitteeFile[] | CommitteeFile;
 }
 
-export interface GroupEvent {
-  id: string;
+export interface GroupEvent extends Identifiable {
   selected: boolean;
   eventType: string;
   area: string;
@@ -32,6 +31,7 @@ export interface GroupEvent {
   contactName: string;
   contactPhone: string;
   contactEmail: string;
+  distance?: string;
 }
 
 export interface CommitteeMember {
@@ -69,7 +69,6 @@ export interface NotificationConfig {
   includeDownloadInformation: CommitteeFile;
   signoffText: () => any;
   addresseeType: string;
-  addingNewFile: boolean;
   recipients: MemberFilterSelection[];
   selectedRecipients: string[];
   signoffAs: { include: boolean; value: string };
@@ -83,7 +82,7 @@ export interface UserEdits {
   sendInProgress: boolean;
   cancelled: boolean;
   groupEvents: {
-    events: any[];
+    events: GroupEvent[];
     fromDate: DateValue;
     toDate: DateValue;
     includeContact: boolean;
@@ -93,4 +92,9 @@ export interface UserEdits {
     includeSocialEvents: boolean;
     includeCommitteeEvents: boolean;
   };
+}
+
+export interface CommitteeYear {
+  year: string;
+  latestYear: boolean;
 }

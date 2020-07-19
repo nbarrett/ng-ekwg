@@ -1,0 +1,121 @@
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { last } from "lodash-es";
+import clone from "lodash-es/clone";
+import extend from "lodash-es/extend";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
+import { NgxLoggerLevel } from "ngx-logger";
+import { CommitteeFile } from "../../models/committee.model";
+import { CommitteeFileService } from "../../services/committee/committee-file.service";
+import { CommitteeQueryService } from "../../services/committee/committee-query.service";
+import { CommitteeReferenceDataService } from "../../services/committee/committee-reference-data.service";
+import { ContentMetadataService } from "../../services/content-metadata.service";
+import { DateUtilsService } from "../../services/date-utils.service";
+import { Logger, LoggerFactory } from "../../services/logger-factory.service";
+import { MemberLoginService } from "../../services/member/member-login.service";
+import { MemberService } from "../../services/member/member.service";
+import { AlertInstance } from "../../services/notifier.service";
+import { UrlService } from "../../services/url.service";
+import { CommitteeSendNotificationModalComponent } from "./send-notification/committee-send-notification-modal.component";
+
+@Injectable({
+  providedIn: "root"
+})
+
+export class CommitteeDisplayService {
+  private logger: Logger;
+  public committeeFileBaseUrl = this.contentMetadataService.baseUrl("committeeFiles");
+
+  constructor(
+    private memberService: MemberService,
+    private modalService: BsModalService,
+    private memberLoginService: MemberLoginService,
+    private router: Router,
+    private urlService: UrlService,
+    private dateUtils: DateUtilsService,
+    private committeeQueryService: CommitteeQueryService,
+    private committeeReferenceData: CommitteeReferenceDataService,
+    private committeeFileService: CommitteeFileService,
+    private contentMetadataService: ContentMetadataService,
+    loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(CommitteeDisplayService, NgxLoggerLevel.OFF);
+    this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
+  }
+
+  defaultCommitteeFile(): CommitteeFile {
+    return clone({
+      createdDate: this.dateUtils.nowAsValue(),
+      fileType: this.fileTypes()[0]?.description
+    });
+  }
+
+  createModalOptions(initialState?: any): ModalOptions {
+    return {
+      class: "modal-lg",
+      animated: false,
+      backdrop: "static",
+      ignoreBackdropClick: false,
+      keyboard: true,
+      focus: true,
+      show: true,
+      initialState: extend({}, initialState)
+    };
+  }
+
+  sendNotification(committeeFile?: CommitteeFile) {
+    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile}));
+  }
+
+  fileTypes() {
+    return this.committeeReferenceData.fileTypes();
+  }
+
+  allowSend() {
+    return this.memberLoginService.allowFileAdmin();
+  }
+
+  allowAddCommitteeFile() {
+    return this.fileTypes && this.memberLoginService.allowFileAdmin();
+  }
+
+  allowEditCommitteeFile(committeeFile: CommitteeFile) {
+    return this.allowAddCommitteeFile() && committeeFile?.id;
+  }
+
+  allowDeleteCommitteeFile(committeeFile: CommitteeFile) {
+    return this.allowEditCommitteeFile(committeeFile);
+  }
+
+  confirmDeleteCommitteeFile(notify: AlertInstance, committeeFile: CommitteeFile) {
+    this.committeeFileService.delete(committeeFile);
+  }
+
+  fileUrl(committeeFile: CommitteeFile) {
+    return committeeFile && committeeFile.fileNameData ? this.urlService.baseUrl() + "/" + this.committeeFileBaseUrl + "/" + committeeFile.fileNameData.awsFileName : "";
+  }
+
+  fileTitle(committeeFile: CommitteeFile) {
+    return committeeFile ? this.dateUtils.asString(committeeFile?.eventDate, undefined, this.dateUtils.formats.displayDateTh) + " - " + committeeFile?.fileNameData?.title : "";
+  }
+
+  fileExtensionIs(fileName, extensions: string[]) {
+    return extensions.includes(this.fileExtension(fileName));
+  }
+
+  fileExtension(fileName: string) {
+    return fileName ? last(fileName.split(".")).toLowerCase() : "";
+  }
+
+  iconFile(committeeFile: CommitteeFile): string {
+    if (!committeeFile?.fileNameData) {
+      return undefined;
+    }
+
+    if (this.fileExtensionIs(committeeFile.fileNameData.awsFileName, ["doc", "docx", "jpg", "pdf", "ppt", "png", "txt", "xls", "xlsx"])) {
+      return "icon-" + this.fileExtension(committeeFile.fileNameData.awsFileName).substring(0, 3) + ".jpg";
+    } else {
+      return "icon-default.jpg";
+    }
+  }
+
+}
