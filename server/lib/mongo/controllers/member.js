@@ -14,7 +14,7 @@ exports.findById = crudController.findById
 
 exports.update = (req, res) => {
   const password = req.body.password;
-  if (password.length < 60) {
+  if (password && password.length < 60) {
     authConfig.hashValue(req.body.password).then(hash => {
       debug("non-encrypted password found:", password, "- encrypted to:", hash)
       req.body.password = hash;

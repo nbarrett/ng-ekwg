@@ -1,4 +1,5 @@
 import { NgModule } from "@angular/core";
+import { CommitteeNotificationDirective } from "../../notifications/committee/committee-notification.directive";
 import { CommitteeNotificationDetailsComponent } from "../../notifications/committee/templates/committee-notification-details.component";
 import { CommitteeEditFileModalComponent } from "../../pages/committee/edit/committee-edit-file-modal.component";
 import { CommitteeGeneralComponent } from "../../pages/committee/general/committee-general.component";
@@ -21,6 +22,7 @@ import { CommitteeAuthGuardService } from "./committee-auth-guard.service";
     CommitteeEditFileModalComponent,
     CommitteeGeneralComponent,
     CommitteeHomeComponent,
+    CommitteeNotificationDirective,
   ],
   imports: [
     SharedModule

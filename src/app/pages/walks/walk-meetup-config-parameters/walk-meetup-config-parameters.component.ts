@@ -28,7 +28,7 @@ export class WalkMeetupConfigParametersComponent implements OnInit {
   public selectedContentTextItem: ContentText;
   private logger: Logger;
   public publishStatuses: string[] = [];
-  private guestLimits: number[];
+  public guestLimits: number[];
 
   constructor(private urlService: UrlService,
               private configService: ConfigService,

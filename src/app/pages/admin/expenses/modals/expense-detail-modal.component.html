@@ -28,7 +28,6 @@
                     class="glyphicon glyphicon-calendar"></i></button>
                 </div>
               </div>
-
             </div>
           </div>
           <div class="col-sm-6">
@@ -124,16 +123,15 @@
         <div *ngIf="!expenseItem.expenseType.travel">
           <input type="submit" [disabled]="notifyTarget.busy || !editable"
                  value="Browse for receipt"
-                 (click)="browseToReceipt()"
+                 (click)="browseToReceipt(expenseFileUpload)"
                  class="button-form mb-10 w-100"
                  [ngClass]="{'disabled-button-form': notifyTarget.busy || !editable  }">
           <input *ngIf="expenseItem.receipt" [disabled]="notifyTarget.busy || !editable" type="submit"
                  value="Remove receipt" (click)="removeReceipt()" title="Remove Receipt"
                  [ngClass]="notifyTarget.busy || !editable ? 'disabled-button-form': 'button-form'">
-          <span class="hidden-input">
-            <input id="browse-to-file" name="receipt"
-                   type="file" value="Upload"
-                   ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader"></span>
+          <input #expenseFileUpload id="browse-to-file" class="hidden-input" name="receipt"
+                 type="file" value="Upload"
+                 ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader">
           <div ng2FileDrop [ngClass]="{'file-over': hasFileOver && editable}"
                (fileOver)="fileOver($event)"
                (onFileDrop)="fileDropped($event)"
@@ -177,7 +175,7 @@
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
       <input *ngIf="confirm.noneOutstanding() && display.allowDeleteExpenseItem(expenseClaim)"
              [disabled]="notifyTarget.busy" type="submit"
-             value="Delete Expense Item" (click)="confirm.toggleDelete()" title="Delete expense Item"
+             value="Delete Expense Item" (click)="confirm.toggleOnDeleteConfirm()" title="Delete expense Item"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
       <input *ngIf="confirm.deleteConfirmOutstanding() && display.allowDeleteExpenseItem(expenseClaim)"
              [disabled]="notifyTarget.busy"

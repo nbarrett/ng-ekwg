@@ -13,7 +13,7 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 export class WalksService {
 
   private BASE_URL = "/api/database/walks";
-  private logger: Logger;
+  private readonly logger: Logger;
   private walkNotifications = new Subject<WalkApiResponse>();
 
   constructor(private http: HttpClient,

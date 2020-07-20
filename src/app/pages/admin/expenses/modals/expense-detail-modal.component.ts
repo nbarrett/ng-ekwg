@@ -2,7 +2,6 @@ import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnInit } from "@angular/core";
 import first from "lodash-es/first";
-import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../../auth/auth.service";
@@ -12,6 +11,7 @@ import { Confirm, EditMode } from "../../../../models/ui-actions";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
 import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
+import { FileUploadService } from "../../../../services/file-upload.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../../services/notifier.service";
 import { NumberUtilsService } from "../../../../services/number-utils.service";
@@ -36,16 +36,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   expenseDate: Date;
   public expenseItemIndex: number;
   public hasFileOver = false;
-  public uploader: FileUploader = new FileUploader({
-    url: "/api/aws/s3/file-upload",
-    disableMultipart: false,
-    autoUpload: true,
-    parametersBeforeFiles: true,
-    additionalParameter: {},
-    authTokenHeader: "Authorization",
-    authToken: `Bearer ${this.authService.authToken()}`,
-    formatDataFunctionIsAsync: false,
-  });
+  public uploader;
 
   public fileOver(e: any): void {
     this.hasFileOver = e;
@@ -60,6 +51,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   constructor(@Inject(DOCUMENT) private document: Document,
+              private fileUploadService: FileUploadService,
               public bsModalRef: BsModalRef,
               private authService: AuthService,
               private notifierService: NotifierService,
@@ -74,6 +66,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.uploader = this.fileUploadService.createUploaderFor("expenseClaims");
     if (!this.editable) {
       this.uploader.options.allowedMimeType = [];
     }
@@ -100,10 +93,8 @@ export class ExpenseDetailModalComponent implements OnInit {
     );
   }
 
-  browseToReceipt() {
-    const elementById: HTMLElement = this.document.getElementById("browse-to-file");
-    this.logger.info("browseToReceipt:elementById", elementById);
-    elementById.click();
+  browseToReceipt(expenseFileUpload: HTMLInputElement) {
+    expenseFileUpload.click();
   }
 
   cancelExpenseChange() {

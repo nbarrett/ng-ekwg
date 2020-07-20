@@ -137,7 +137,7 @@
                                [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                         <input type="submit" *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
                                [disabled]="notifyTarget.busy"
-                               value="Delete Item" (click)="confirm.toggleDelete()"
+                               value="Delete Item" (click)="confirm.toggleOnDeleteConfirm()"
                                title="Delete item"
                                [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
                         <input type="submit" *ngIf="allowSubmitExpenseClaim(selected.expenseClaim)"
@@ -168,7 +168,7 @@
                       </span>
                       <input type="submit"
                              *ngIf="!confirmOutstanding() && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
-                             value="Delete Expense Claim" (click)="confirm.toggleDelete()"
+                             value="Delete Expense Claim" (click)="confirm.toggleOnDeleteConfirm()"
                              title="Delete Expense Claim"
                              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
 

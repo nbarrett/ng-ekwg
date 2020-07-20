@@ -1,6 +1,5 @@
-import { ApiResponse } from "./api-response.model";
+import { ApiResponse, Identifiable } from "./api-response.model";
 import { MeetupConfigParameters } from "./meetup-config.model";
-import { Identifiable } from "./member.model";
 import { WalkEvent } from "./walk-event.model";
 import { WalkVenue } from "./walk-venue.model";
 

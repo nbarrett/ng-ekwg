@@ -1,7 +1,7 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="cancelSendNotification()">
         <span aria-hidden="true">&times;</span>
       </button>
       <h4 class="modal-title">Send <em>Committee</em> Notification</h4>
@@ -13,81 +13,85 @@
             <div class="row">
               <div class="col-sm-7"><label>Send to:</label>
                 <div class="form-group">
-                  <input (click)="clearRecipientsForCampaignOfType('committee')"
-                         id="send-to-committee"
-                         [disabled]="allCommitteeList().length===0"
-                         type="radio"
-                         [(ngModel)]="notification.destinationType"
-                         value="committee"/>
-                  <label for="send-to-committee">{{allCommitteeList().length}}
-                    Committee
-                    Members
+                  <div class="radio">
+                    <input (click)="clearRecipientsForCampaignOfType('committee')"
+                           id="send-to-committee"
+                           [disabled]="allCommitteeList().length===0"
+                           type="radio"
+                           [(ngModel)]="notification.destinationType"
+                           value="committee"/>
+                    <label for="send-to-committee">{{allCommitteeList().length}}
+                      Committee
+                      Members
+                    </label>
                     <a *ngIf="allCommitteeList().length>0"
                        (click)="editCommitteeRecipients()"
                        [href]=""> (edit)</a>
-                  </label>
-
-                  <input (click)="clearRecipientsForCampaignOfType('general')"
-                         id="send-to-general"
-                         [disabled]="allGeneralSubscribedList().length===0"
-                         type="radio"
-                         [(ngModel)]="notification.destinationType"
-                         value="general"/>
-                  <label for="send-to-general">{{allGeneralSubscribedList().length}}
-                    General List Members
-                    <a *ngIf="allGeneralSubscribedList().length>0"
-                       (click)="editAllEKWGRecipients()"
-                       [href]=""> (edit)</a>
-                  </label>
-
-                  <input (click)="clearRecipientsForCampaignOfType('walks')"
-                         id="send-to-walks"
-                         [disabled]="allWalksSubscribedList().length===0"
-                         type="radio"
-                         [(ngModel)]="notification.destinationType"
-                         value="walks"/>
-                  <label for="send-to-walks">{{allWalksSubscribedList().length}} Walks List Members
+                  </div>
+                  <div class="radio">
+                    <input (click)="clearRecipientsForCampaignOfType('general')" id="send-to-general"
+                           [disabled]="allGeneralSubscribedList().length===0"
+                           type="radio"
+                           [(ngModel)]="notification.destinationType"
+                           value="general"/>
+                    <label for="send-to-general">{{allGeneralSubscribedList().length}} General List
+                      Members </label>
+                    <a [href]="" *ngIf="allGeneralSubscribedList().length>0"
+                       (click)="editAllEKWGRecipients()"> (edit)</a>
+                  </div>
+                  <div class="radio">
+                    <input (click)="clearRecipientsForCampaignOfType('walks')"
+                           id="send-to-walks"
+                           [disabled]="allWalksSubscribedList().length===0"
+                           type="radio"
+                           [(ngModel)]="notification.destinationType"
+                           value="walks"/>
+                    <label for="send-to-walks">{{allWalksSubscribedList().length}} Walks List
+                      Members
+                    </label>
                     <a *ngIf="allWalksSubscribedList().length>0"
                        (click)="editAllWalksRecipients()"
                        [href]=""> (edit)</a>
-                  </label>
-
-                  <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
-                         id="send-to-social"
-                         [disabled]="allSocialSubscribedList().length===0"
-                         type="radio"
-                         [(ngModel)]="notification.destinationType"
-                         value="socialEvents"/>
-                  <label for="send-to-social">{{allSocialSubscribedList().length}}
-                    Social List Members
+                  </div>
+                  <div class="radio">
+                    <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
+                           id="send-to-social"
+                           [disabled]="allSocialSubscribedList().length===0"
+                           type="radio"
+                           [(ngModel)]="notification.destinationType"
+                           value="socialEvents"/>
+                    <label for="send-to-social">{{allSocialSubscribedList().length}}
+                      Social List Members
+                    </label>
                     <a *ngIf="allSocialSubscribedList().length>0"
-                       (click)="editAllSocialRecipients()"
-                       [href]=""> (edit)</a>
-                  </label>
-
-                  <input id="custom"
-                         type="radio"
-                         [(ngModel)]="notification.destinationType"
-                         value="custom"/>
-                  <label for="custom">
-                    <span
-                      *ngIf="notification.recipients.length===0">Choose individual recipients
-                    </span>
-                    <span
-                      *ngIf="notification.recipients.length>0">{{notification.recipients.length}} recipient(s) chosen<a
-                      (click)="clearRecipientsForCampaignOfType()"
-                      [href]=""> (clear)</a></span>
-                  </label>
+                       (click)="editAllSocialRecipients()"> (edit)</a>
+                  </div>
+                  <div class="radio">
+                    <input id="custom" type="radio"
+                           [(ngModel)]="notification.destinationType"
+                           value="custom"/>
+                    <label for="custom">
+                      <span *ngIf="notification.recipients.length===0">Choose individual recipients</span>
+                      <span *ngIf="notification.recipients.length>0">{{notification.recipients.length}}
+                        recipient(s) chosen </span>
+                    </label>
+                    <a (click)="clearRecipientsForCampaignOfType()"> (clear)</a>
+                  </div>
                 </div>
+
               </div>
               <div class="col col-sm-5"><label>Address as:</label>
                 <div class="form-group">
-                  <input id="addressee-first-name" type="radio"
-                         [(ngModel)]="notification.addresseeType" value="Hi *|FNAME|*,"/>
-                  <label for="addressee-first-name">Hi <i>first name</i></label>
-                  <input id="addressee-all" type="radio" [(ngModel)]="notification.addresseeType"
-                         value="Hi all,"/>
-                  <label for="addressee-all">Hi all</label>
+                  <div class="radio">
+                    <input id="addressee-first-name" type="radio"
+                           [(ngModel)]="notification.addresseeType" value="Hi *|FNAME|*,"/>
+                    <label for="addressee-first-name">Hi <i>first name</i> </label>
+                  </div>
+                  <div class="radio">
+                    <input id="addressee-all" type="radio" [(ngModel)]="notification.addresseeType"
+                           value="Hi all,"/>
+                    <label for="addressee-all">Hi all</label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -95,10 +99,9 @@
               <div class="col-sm-12">
                 <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
                      [tooltip]="helpMembers()">
-                  <label>{{multiSelectLabel()}}</label>
-                  <ng-select #select [items]="notification.recipients"
+                  <ng-select #select [items]="selectableRecipients"
                              bindLabel="memberInformation"
-                             bindValue="member.id"
+                             bindValue="id"
                              placeholder="Select one or more members"
                              [disabled]="notifyTarget.busy"
                              [dropdownPosition]="'bottom'"
@@ -106,9 +109,9 @@
                              [groupValue]="groupValue"
                              [multiple]="true"
                              (click)="selectClick(select)"
-                             [closeOnSelect]="false"
-                             (change)="onChange($event)"
-                             [(ngModel)]="notification.selectedRecipients">
+                             [closeOnSelect]="true"
+                             (change)="onChange()"
+                             [(ngModel)]="notification.selectedMemberIds">
                     <ng-template ng-optgroup-tmp let-item="item">
                       <span class="group-header">{{item.name}} members</span>
                       <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
@@ -335,7 +338,10 @@
           <div class="thumbnail thumbnail-admin-edit">
             <div class="form-horizontal">
               <div id="preview" class="print-preview">
-                <pre>add in preview of email here</pre>
+                <div class="xhidden">
+                  <ng-template app-committee-notification-template></ng-template>
+                </div>
+
               </div>
             </div>
           </div>

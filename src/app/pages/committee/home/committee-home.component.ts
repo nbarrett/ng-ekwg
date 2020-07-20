@@ -6,6 +6,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile } from "../../../models/committee.model";
 import { LoginResponse, Member } from "../../../models/member.model";
+import { Confirm } from "../../../models/ui-actions";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
@@ -25,13 +26,11 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  public loggedIn: boolean;
   public allowAdminEdits: boolean;
-  private emailingInProgress: boolean;
   private destinationType: string;
   private members: Member[];
   private selected: { committeeFile?: CommitteeFile, committeeFiles: CommitteeFile[] };
-  private userEdits: { saveInProgress: boolean };
+  public confirm = new Confirm();
 
   constructor(private memberLoginService: MemberLoginService,
               private memberService: MemberService,
@@ -54,10 +53,6 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
-    this.userEdits = {
-      saveInProgress: false
-    };
-    this.emailingInProgress = false;
     this.destinationType = "";
     this.selected = {
       committeeFiles: []
@@ -67,8 +62,6 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
 
   private setPrivileges(loginResponse?: LoginResponse) {
     this.allowAdminEdits = this.memberLoginService.allowMemberAdminEdits();
-    this.loggedIn = this.memberLoginService.memberLoggedIn();
-    this.logger.info(loginResponse, "setPrivileges:allowAdminEdits", this.allowAdminEdits, "this.loggedIn", this.loggedIn);
     this.refreshAll();
   }
 
@@ -76,15 +69,10 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
     return this.notify.success("File was deleted successfully");
   }
 
-  assignMembersToScope(members: Member[]) {
-    this.members = members;
-    return this.members;
-  }
-
   refreshMembers() {
     if (this.memberLoginService.allowFileAdmin()) {
       return this.memberService.all()
-        .then(members => this.assignMembersToScope(members));
+        .then(members => this.members = members);
 
     }
   }

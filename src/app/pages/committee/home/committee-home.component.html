@@ -1,4 +1,4 @@
-<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="committee" pageTitle="Committee">
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Committee">
   <div class="row">
     <div class="col-sm-8">
       <div *ngIf="showAlertMessage()" class="row">
@@ -10,8 +10,8 @@
         </div>
       </div>
       <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-        <app-committee-general></app-committee-general>
-        <app-committee-history></app-committee-history>
+        <app-committee-general [confirm]="confirm"></app-committee-general>
+        <app-committee-history [confirm]="confirm"></app-committee-history>
       </accordion>
     </div>
     <div class="col-sm-4 auto-fit-column">

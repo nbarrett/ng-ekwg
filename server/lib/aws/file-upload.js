@@ -9,12 +9,12 @@ exports.uploadFile = (req, res) => {
   const bulkUploadResponse = {files: {}, auditLog: []};
   const bulkUploadError = {error: undefined};
 
-  debugAndInfo("Received file request with keys:", keys(req));
-  const rootFolder = req.params["root-folder"] || "expenseClaims";
+  debugAndInfo("Received file request with keys:", keys(req), "req.query", req.query);
+  const rootFolder = req.query["root-folder"];
   const uploadedFile = uploadedFileInfo();
   const fileNameData = generateFileNameData(uploadedFile.originalname);
 
-  debugAndInfo("Received file", uploadedFile.originalname, "to", uploadedFile.path, "containing", uploadedFile.size, "bytes", "renaming to", fileNameData.awsFileName);
+  debugAndInfo("Received file", "rootFolder", rootFolder, uploadedFile.originalname, "to", uploadedFile.path, "containing", uploadedFile.size, "bytes", "renaming to", fileNameData.awsFileName);
   aws.putObjectDirect(rootFolder, fileNameData.awsFileName, uploadedFile.path).then(response => {
     if (response.error) {
       return res.status(500).send(response);

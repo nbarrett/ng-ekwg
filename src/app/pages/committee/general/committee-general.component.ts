@@ -1,19 +1,18 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member/member-login.service";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
+import { Confirm } from "../../../models/ui-actions";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpLinkService } from "../../../services/mailchimp/mailchimp-link.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 import { CommitteeNotificationSettingsModalComponent } from "../notification-settings/committee-notification-settings-modal.component";
-import { CommitteeSendNotificationModalComponent } from "../send-notification/committee-send-notification-modal.component";
 
 @Component({
   selector: "app-committee-general",
@@ -25,10 +24,11 @@ export class CommitteeGeneralComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-
+  @Input()
+  public confirm: Confirm;
   constructor(private memberLoginService: MemberLoginService,
               private mailchimpLinkService: MailchimpLinkService,
-              private display: CommitteeDisplayService,
+              public display: CommitteeDisplayService,
               private notifierService: NotifierService,
               private authService: AuthService,
               private modalService: BsModalService,

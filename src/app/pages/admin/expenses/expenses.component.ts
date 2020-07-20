@@ -58,17 +58,16 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private expenseId: string;
   private dataError: boolean;
-  private members: Member[];
-  private expenseClaims: ExpenseClaim[];
+  public members: Member[];
+  public expenseClaims: ExpenseClaim[];
   private unfilteredExpenseClaims: ExpenseClaim[];
-
-  private selected: {
+  public selected: {
     expenseClaim: ExpenseClaim,
     expenseItem: ExpenseItem,
     filter: ExpenseFilter,
     showOnlyMine: boolean,
   };
-  private notify: AlertInstance;
+  public notify: AlertInstance;
   private notifyConfirm: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notifyConfirmTarget: AlertTarget = {};

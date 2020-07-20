@@ -1,6 +1,5 @@
-import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { isEmpty } from "lodash-es";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
@@ -10,7 +9,8 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, NotificationConfig, UserEdits } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
-import { MailchimpCampaignListResponse, MailchimpConfigResponse } from "../../../models/mailchimp.model";
+import { MailchimpCampaignListResponse } from "../../../models/mailchimp.model";
+import { ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -18,6 +18,7 @@ import { CommitteeQueryService } from "../../../services/committee/committee-que
 import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { FileUploadService } from "../../../services/file-upload.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
@@ -41,27 +42,18 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public notification: NotificationConfig;
   public userEdits: UserEdits;
   private logger: Logger;
-  private committeeFile: CommitteeFile;
+  public committeeFile: CommitteeFile;
   private campaigns: MailchimpCampaignListResponse;
   private campaignSearchTerm: string;
-  private config: MailchimpConfigResponse;
-  private allowConfirmDelete = false;
   public hasFileOver = false;
-  private eventDate: DateValue;
+  public eventDate: DateValue;
+  private onClose: () => void;
   private existingTitle: string;
-  public uploader: FileUploader = new FileUploader({
-    url: "/api/aws/s3/file-upload",
-    disableMultipart: false,
-    autoUpload: true,
-    parametersBeforeFiles: true,
-    additionalParameter: {},
-    authTokenHeader: "Authorization",
-    authToken: `Bearer ${this.authService.authToken()}`,
-    formatDataFunctionIsAsync: false,
-  });
+  public uploader: FileUploader;
+  private confirmType: ConfirmType = ConfirmType.NONE;
 
-  constructor(@Inject(DOCUMENT) private document: Document,
-              private contentMetaDataService: ContentMetadataService,
+  constructor(private contentMetaDataService: ContentMetadataService,
+              private fileUploadService: FileUploadService,
               private authService: AuthService,
               private mailchimpSegmentService: MailchimpSegmentService,
               public display: CommitteeDisplayService,
@@ -92,7 +84,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
     this.existingTitle = this.committeeFile?.fileNameData?.title;
     this.campaignSearchTerm = "Master";
     this.notify.hide();
-
+    this.uploader = this.fileUploadService.createUploaderFor("committeeFiles");
     this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
@@ -121,19 +113,20 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   cancelFileChange() {
-    this.hideCommitteeFileDialog();
+    this.close();
   }
 
   saveCommitteeFile() {
     this.notify.setBusy();
     this.logger.debug("saveCommitteeFile ->", this.committeeFile);
     return this.committeeFileService.createOrUpdate(this.committeeFile)
-      .then(() => this.hideCommitteeFileDialog())
+      .then(() => this.close())
       .then(() => this.notify.clearBusy())
       .catch((error) => this.handleError(error));
   }
 
   handleError(errorResponse) {
+    this.logger.error("errorResponse:", errorResponse);
     this.notify.error({
       title: "Your changes could not be saved",
       message: (errorResponse && errorResponse.error ? (". Error was: " + JSON.stringify(errorResponse.error)) : "")
@@ -141,22 +134,8 @@ export class CommitteeEditFileModalComponent implements OnInit {
     this.notify.clearBusy();
   }
 
-  removeDeleteOrAddOrInProgressFlags() {
-    this.allowConfirmDelete = false;
-    this.notify.clearBusy();
-  }
-
   deleteCommitteeFile() {
-    this.allowConfirmDelete = true;
-  }
-
-  cancelDeleteCommitteeFile() {
-    this.removeDeleteOrAddOrInProgressFlags();
-  }
-
-  hideCommitteeFileDialog() {
-    this.removeDeleteOrAddOrInProgressFlags();
-    this.bsModalRef.hide();
+    this.confirmType = ConfirmType.DELETE;
   }
 
   notReady() {
@@ -167,16 +146,16 @@ export class CommitteeEditFileModalComponent implements OnInit {
     return (this.committeeFile && isEmpty(this.committeeFile.fileNameData) ? "Attach" : "Replace") + " File";
   }
 
-  cancel() {
-    this.bsModalRef.hide();
-  }
-
-  attachFile() {
-
-  }
-
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
+  }
+
+  pendingCompletion(): boolean {
+    return this.notifyTarget.busy || this.confirmType !== ConfirmType.NONE;
+  }
+
+  pendingDeletion(): boolean {
+    return this.confirmType === ConfirmType.DELETE;
   }
 
   eventDateChanged(dateValue: DateValue) {
@@ -198,5 +177,18 @@ export class CommitteeEditFileModalComponent implements OnInit {
   onFileSelect($file: File[]) {
     this.notify.setBusy();
     this.notify.progress({title: "Attachment upload", message: `uploading ${first($file).name} - please wait...`});
+  }
+
+  close() {
+    this.onClose();
+    this.bsModalRef.hide();
+  }
+
+  confirmDeleteCommitteeFile() {
+    this.display.confirmDeleteCommitteeFile(this.notify, this.committeeFile).then(() => this.close());
+  }
+
+  cancelDeleteCommitteeFile() {
+    this.confirmType = ConfirmType.NONE;
   }
 }

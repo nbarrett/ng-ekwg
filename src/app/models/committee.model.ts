@@ -4,6 +4,7 @@ import { MemberFilterSelection } from "./member.model";
 
 export interface CommitteeFile extends Identifiable {
   eventDate?: number;
+  createdDate?: number;
   postcode?: string;
   fileType: string;
   fileNameData?: {
@@ -70,7 +71,7 @@ export interface NotificationConfig {
   signoffText: () => any;
   addresseeType: string;
   recipients: MemberFilterSelection[];
-  selectedRecipients: string[];
+  selectedMemberIds: string[];
   signoffAs: { include: boolean; value: string };
   destinationType: string;
   text: () => any;

@@ -1,14 +1,14 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close pull-right" aria-label="Close" (click)="bsModalRef.hide()">
+      <button type="button" class="close pull-right" aria-label="Close" (click)="close()">
         <span aria-hidden="true">&times;</span></button>
       <h4 class="modal-title">Edit <em>Committee</em> File</h4>
     </div>
     <div class="modal-body">
       <div class="thumbnail">
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-md-6">
             <div class="form-group">
               <app-date-picker [label]="'File or Event Date'"
                                [size]="'md'"
@@ -17,10 +17,10 @@
               </app-date-picker>
             </div>
           </div>
-          <div class="col-sm-6">
+          <div class="col-md-6">
             <div class="form-group">
               <label for="fileType">File Type</label>
-              <select [(ngModel)]="committeeFile.fileType" id="fileType" class="form-control input-sm">
+              <select [(ngModel)]="committeeFile.fileType" id="fileType" class="form-control input-md">
                 <option *ngFor=" let fileType of display.fileTypes()"
                         [ngValue]="fileType.description"
                         [textContent]="fileType.description">
@@ -29,43 +29,48 @@
           </div>
         </div>
         <div class="row">
-          <input type="submit" [disabled]="notifyTarget.busy"
-                 value="Browse for attachment"
-                 (click)="browseToFile(fileElement)"
-                 class="button-form mb-10 w-100"
-                 [ngClass]="{'disabled-button-form': notifyTarget.busy}">
-          <input [disabled]="notifyTarget.busy" type="submit"
-                 value="Remove attachment" (click)="removeAttachment()" title="Remove attachment"
-                 [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
-          <input #fileElement id="browse-to-file" name="attachment" class="hidden-input"
-                 type="file" value="Upload"
-                 ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader">
-          <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-               (fileOver)="fileOver($event)"
-               (onFileDrop)="fileDropped($event)"
-               [uploader]="uploader"
-               class="well drop-zone">
-            Or drop file here
-          </div>
-          <div class="progress" *ngIf="notifyTarget.busy">
-            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
-              uploading {{uploader.progress}}%
+          <div class="col-md-12">
+            <input type="submit" [disabled]="notifyTarget.busy"
+                   value="Browse for attachment"
+                   (click)="browseToFile(fileElement)"
+                   class="button-form mb-10 w-100"
+                   [ngClass]="{'disabled-button-form': notifyTarget.busy}">
+            <input [disabled]="notifyTarget.busy" type="submit"
+                   value="Remove attachment" (click)="removeAttachment()" title="Remove attachment"
+                   [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
+            <input #fileElement id="browse-to-file" name="attachment" class="hidden-input"
+                   type="file" value="Upload"
+                   ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader">
+            <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
+                 (fileOver)="fileOver($event)"
+                 (onFileDrop)="fileDropped($event)"
+                 [uploader]="uploader"
+                 class="well drop-zone">Or drop file here
             </div>
-          </div>
-          <div *ngIf="committeeFile?.fileNameData" class="form-group">
-            <label for="attachment">Description for attachment with original name
-              {{committeeFile.fileNameData.originalFileName}}: <a target="_blank" id="attachment"
-                                                                  [href]="display.fileUrl(committeeFile)">{{display.fileTitle(committeeFile)}}</a></label>
-            <input *ngIf="display.allowAddCommitteeFile()" [(ngModel)]="committeeFile.fileNameData.title"
-                   [disabled]="notifyTarget.busy"
-                   type="text"
-                   class="form-control input-sm" id="receiptTitle"
-                   placeholder="Enter a title for this receipt">
+            <div class="progress" *ngIf="notifyTarget.busy">
+              <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
+                uploading {{uploader.progress}}%
+              </div>
+            </div>
+            <div *ngIf="committeeFile?.fileNameData" class="form-group">
+              <label for="attachment">Title for original name
+                {{committeeFile.fileNameData.originalFileName}}</label>
+              <input *ngIf="display.allowAddCommitteeFile()" [(ngModel)]="committeeFile.fileNameData.title"
+                     [disabled]="notifyTarget.busy"
+                     type="text"
+                     id="attachment"
+                     class="form-control input-md"
+                     placeholder="Enter a title for this receipt">
+            </div>
+            <label for="attachment">Display: <a target="_blank"
+                                                [href]="display.fileUrl(committeeFile)">
+              {{display.fileTitle(committeeFile)}}</a></label>
+
           </div>
         </div>
       </div>
       <div *ngIf="showAlertMessage()" class="row">
-        <div class="col-sm-12 mb-10">
+        <div class="col-md-12 mb-10">
           <div class="alert {{notifyTarget.alert.class}}"><i
             class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
             {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
@@ -74,18 +79,22 @@
       </div>
     </div>
     <div class="modal-footer">
-      <input type="submit" value="Save File" [disabled]="notifyTarget.busy" (click)="saveCommitteeFile()"
+      <input type="submit" value="Save File" [disabled]="pendingCompletion()" (click)="saveCommitteeFile()"
              title="Save File"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-      <input *ngIf="!allowConfirmDelete && display.allowDeleteCommitteeFile(committeeFile)" type="submit"
+             [ngClass]="pendingCompletion() ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+      <input *ngIf="!pendingDeletion() && display.allowDeleteCommitteeFile(committeeFile)" type="submit"
              value="Delete File"
-             [disabled]="notifyTarget.busy" (click)="deleteCommitteeFile()" title="Delete File"
+             [disabled]="pendingCompletion()" (click)="deleteCommitteeFile()" title="Delete File"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-      <input *ngIf="allowConfirmDelete" type="submit" value="Confirm Delete of File"
-             [disabled]="notifyTarget.busy" (click)="display.confirmDeleteCommitteeFile(notify, committeeFile)"
+      <input *ngIf="pendingDeletion()" type="submit" value="Confirm Delete of File"
+             [disabled]="notifyTarget.busy" (click)="confirmDeleteCommitteeFile()"
              title="Confirm delete of this File"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left button-confirm'">
-      <input type="submit" value="Cancel Change" [disabled]="notifyTarget.busy" (click)="cancelFileChange()"
+      <input *ngIf="pendingDeletion()" type="submit" value="Cancel Delete of File"
+             [disabled]="notifyTarget.busy" (click)="cancelDeleteCommitteeFile()"
+             title="Confirm delete of this File"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left amber-confirm'">
+      <input type="submit" value="Cancel Change" [disabled]="notifyTarget.busy" (click)="close()"
              title="Cancel File changes and close this dialog"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
     </div>

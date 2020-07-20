@@ -1,8 +1,12 @@
-import {get} from "lodash";
+import { get } from "lodash";
 
 export const range = (start: number, end: number) => {
   return Array.from({length: end - start + 1}, (v, k) => k + start);
 };
+
+export const descending = () => (a, b) => b - a;
+
+export const ascending = () => (a, b) => a - b;
 
 export const uniq = (values: any[]) => {
   return [...new Set(values)].sort();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -8,6 +8,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeFileApiResponse, CommitteeYear } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ApiResponseProcessProcessor } from "../../../services/api-response-process-processor.service";
 import { sortBy } from "../../../services/arrays";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -32,8 +33,8 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   public committeeFileYears: CommitteeYear[] = [];
   public committeeFiles: CommitteeFile[] = [];
   public committeeFile: CommitteeFile;
-  private allowConfirmDelete: boolean;
-  private addingNewFile: boolean;
+  @Input()
+  public confirm: Confirm;
 
   constructor(private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
@@ -64,12 +65,15 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
       this.logger.info("received notification:", apiResponse);
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
+      } else if (this.confirm.notificationsOutstanding()) {
+        this.logger.debug("Not processing subscription response due to confirm:", this.confirm.type);
       } else {
         const filteredFiles = this.apiResponseProcessor.processResponse(this.logger, this.committeeFiles, apiResponse)
           .filter(file => this.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
           .sort(sortBy("-fileDate"));
         this.notify.progress(`Found ${filteredFiles.length} committee file(s)`);
         this.notify.setReady();
+        this.cancelConfirmations();
         this.committeeFiles = filteredFiles;
         this.committeeFileYears = this.committeeQueryService.committeeFileYears(this.committeeFiles);
       }
@@ -92,7 +96,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile, committeeFiles: CommitteeFile[]) {
-    if (!this.addingNewFile) {
+    if (this.confirm.noneOutstanding()) {
       this.committeeFile = committeeFile;
       this.committeeFiles = committeeFiles;
     }
@@ -102,35 +106,31 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     return committeeFile === this.committeeFile;
   }
 
-  addCommitteeFile($event) {
-    this.addingNewFile = true;
-    const committeeFile = this.display.defaultCommitteeFile();
-    this.committeeFiles.push(committeeFile);
-    this.committeeFile = committeeFile;
-    this.logger.debug("addCommitteeFile:", committeeFile, "of", this.committeeFiles.length, "files");
-    this.editCommitteeFile(committeeFile);
+  addCommitteeFile() {
+    this.confirm.type = ConfirmType.CREATE_NEW;
+    this.committeeFile = this.display.defaultCommitteeFile();
+    this.logger.debug("addCommitteeFile:", this.committeeFile, "of", this.committeeFiles.length, "files");
+    this.editCommitteeFile(this.committeeFile);
   }
 
   editCommitteeFile(committeeFile: CommitteeFile) {
-    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({committeeFile}));
+    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({onClose: this.cancelConfirmations, committeeFile}));
   }
 
-  latestYear(): string {
+  latestYear(): number {
     return this.committeeQueryService.latestYear(this.committeeFiles);
   }
 
-  committeeFilesForYear(year) {
+  committeeFilesForYear(year): CommitteeFile[] {
     return this.committeeQueryService.committeeFilesForYear(year, this.committeeFiles);
   }
 
-  cancelDeleteCommitteeFile() {
-    this.allowConfirmDelete = false;
-    this.addingNewFile = false;
-    this.notify.clearBusy();
+  cancelConfirmations() {
+    this.confirm.type = ConfirmType.NONE;
   }
 
   deleteCommitteeFile() {
-    this.allowConfirmDelete = true;
+    this.confirm.type = ConfirmType.DELETE;
   }
 
 }

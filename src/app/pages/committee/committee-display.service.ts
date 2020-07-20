@@ -6,6 +6,8 @@ import extend from "lodash-es/extend";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeFile } from "../../models/committee.model";
+import { Confirm } from "../../models/ui-actions";
+import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { CommitteeFileService } from "../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../services/committee/committee-query.service";
 import { CommitteeReferenceDataService } from "../../services/committee/committee-reference-data.service";
@@ -32,6 +34,7 @@ export class CommitteeDisplayService {
     private memberLoginService: MemberLoginService,
     private router: Router,
     private urlService: UrlService,
+    private valueOrDefault: ValueOrDefaultPipe,
     private dateUtils: DateUtilsService,
     private committeeQueryService: CommitteeQueryService,
     private committeeReferenceData: CommitteeReferenceDataService,
@@ -44,7 +47,8 @@ export class CommitteeDisplayService {
 
   defaultCommitteeFile(): CommitteeFile {
     return clone({
-      createdDate: this.dateUtils.nowAsValue(),
+      createdDate: this.dateUtils.momentNow().valueOf(),
+      eventDate: this.dateUtils.momentNowNoTime().valueOf(),
       fileType: this.fileTypes()[0]?.description
     });
   }
@@ -62,8 +66,8 @@ export class CommitteeDisplayService {
     };
   }
 
-  sendNotification(committeeFile?: CommitteeFile) {
-    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile}));
+  sendNotification(confirm: Confirm, committeeFile?: CommitteeFile) {
+    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
   }
 
   fileTypes() {
@@ -86,8 +90,8 @@ export class CommitteeDisplayService {
     return this.allowEditCommitteeFile(committeeFile);
   }
 
-  confirmDeleteCommitteeFile(notify: AlertInstance, committeeFile: CommitteeFile) {
-    this.committeeFileService.delete(committeeFile);
+  confirmDeleteCommitteeFile(notify: AlertInstance, committeeFile: CommitteeFile): Promise<CommitteeFile> {
+    return this.committeeFileService.delete(committeeFile);
   }
 
   fileUrl(committeeFile: CommitteeFile) {
@@ -95,7 +99,9 @@ export class CommitteeDisplayService {
   }
 
   fileTitle(committeeFile: CommitteeFile) {
-    return committeeFile ? this.dateUtils.asString(committeeFile?.eventDate, undefined, this.dateUtils.formats.displayDateTh) + " - " + committeeFile?.fileNameData?.title : "";
+    const title = this.valueOrDefault.transform(committeeFile?.fileNameData?.title, committeeFile?.fileNameData?.originalFileName, "");
+    const delimiter = title ? ` - ` : "";
+    return committeeFile ? `${this.dateUtils.asString(committeeFile?.eventDate, undefined, this.dateUtils.formats.displayDateTh)}${delimiter}${title}` : "";
   }
 
   fileExtensionIs(fileName, extensions: string[]) {
@@ -107,12 +113,8 @@ export class CommitteeDisplayService {
   }
 
   iconFile(committeeFile: CommitteeFile): string {
-    if (!committeeFile?.fileNameData) {
-      return undefined;
-    }
-
-    if (this.fileExtensionIs(committeeFile.fileNameData.awsFileName, ["doc", "docx", "jpg", "pdf", "ppt", "png", "txt", "xls", "xlsx"])) {
-      return "icon-" + this.fileExtension(committeeFile.fileNameData.awsFileName).substring(0, 3) + ".jpg";
+    if (this.fileExtensionIs(committeeFile?.fileNameData?.awsFileName, ["doc", "docx", "jpg", "pdf", "ppt", "png", "txt", "xls", "xlsx"])) {
+      return "icon-" + this.fileExtension(committeeFile?.fileNameData?.awsFileName).substring(0, 3) + ".jpg";
     } else {
       return "icon-default.jpg";
     }
