@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from "@angular/core";
-import { BsModalService } from "ngx-bootstrap/modal";
+import extend from "lodash-es/extend";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member/member-login.service";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { CommitteeFile } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
 import { Confirm } from "../../../models/ui-actions";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -13,6 +15,7 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 import { CommitteeNotificationSettingsModalComponent } from "../notification-settings/committee-notification-settings-modal.component";
+import { CommitteeSendNotificationModalComponent } from "../send-notification/committee-send-notification-modal.component";
 
 @Component({
   selector: "app-committee-general",
@@ -40,6 +43,23 @@ export class CommitteeGeneralComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });
+  }
+
+  createModalOptions(initialState?: any): ModalOptions {
+    return {
+      class: "modal-lg",
+      animated: false,
+      backdrop: "static",
+      ignoreBackdropClick: false,
+      keyboard: true,
+      focus: true,
+      show: true,
+      initialState: extend({}, initialState)
+    };
+  }
+
+  sendNotification(confirm: Confirm, committeeFile?: CommitteeFile) {
+    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
   }
 
   openMailchimp() {

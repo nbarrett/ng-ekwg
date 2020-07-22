@@ -65,7 +65,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this.initialised) {
       this.logger.debug("changes were", changes);
-      const textChange = get(changes, ["text", "currentValue"]);
+      const textChange = changes?.text?.currentValue;
       if (textChange) {
         this.content.text = textChange;
         this.text = textChange;

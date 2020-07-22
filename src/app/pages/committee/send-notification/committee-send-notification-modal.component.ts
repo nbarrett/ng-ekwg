@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { extend } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
@@ -10,6 +10,8 @@ import { DateValue } from "../../../models/date.model";
 import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpConfigResponse } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { CommitteeNotificationComponentAndData, CommitteeNotificationDirective } from "../../../notifications/committee/committee-notification.directive";
+import { CommitteeNotificationDetailsComponent } from "../../../notifications/committee/templates/committee-notification-details.component";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { sortBy } from "../../../services/arrays";
@@ -28,13 +30,15 @@ import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
+import { CommitteeDisplayService } from "../committee-display.service";
 
 @Component({
   selector: "app-committee-send-notification-modal",
   templateUrl: "./committee-send-notification-modal.component.html",
   styleUrls: ["./committee-send-notification-modal.component.sass"]
 })
-export class CommitteeSendNotificationModalComponent implements OnInit {
+export class CommitteeSendNotificationModalComponent implements OnInit, AfterViewInit {
+  @ViewChild(CommitteeNotificationDirective) notificationDirective: CommitteeNotificationDirective;
   public confirm: Confirm;
   public committeeFile: CommitteeFile;
   public members: Member[] = [];
@@ -51,12 +55,14 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
   public campaigns: MailchimpCampaignListResponse;
 
   constructor(private contentMetaDataService: ContentMetadataService,
+              private componentFactoryResolver: ComponentFactoryResolver,
               private mailchimpSegmentService: MailchimpSegmentService,
               private committeeQueryService: CommitteeQueryService,
               private committeeReferenceData: CommitteeReferenceDataService,
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
+              private display: CommitteeDisplayService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
               private fullNameWithAlias: FullNameWithAliasPipe,
@@ -72,6 +78,10 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
   }
 
+  ngAfterViewInit(): void {
+
+  }
+
   ngOnInit() {
     this.logger.debug("constructed with member", this.members.length, "members");
     this.confirm.type = ConfirmType.SEND_NOTIFICATION;
@@ -79,35 +89,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notify.setBusy();
     this.roles = {signoff: this.committeeReferenceData.committeeMembers(), replyTo: []};
     this.committeeFileBaseUrl = this.contentMetaDataService.baseUrl("committeeFiles");
-    this.notification = {
-      editable: {
-        text: "",
-        signoffText: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,",
-      },
-      destinationType: "committee",
-      includeSignoffText: true,
-      addresseeType: "Hi *|FNAME|*,",
-      selectedMemberIds: [],
-      recipients: [],
-      groupEvents() {
-        return this.userEdits.groupEvents.events.filter((groupEvent) => {
-          this.logger.debug("notification.groupEvents ->", groupEvent);
-          return groupEvent.selected;
-        });
-      },
-      signoffAs: {
-        include: true,
-        value: this.loggedOnRole().type || "secretary"
-      },
-      includeDownloadInformation: this.committeeFile,
-      title: "Committee Notification",
-      text() {
-        return this.lineFeedsToBreaks(this.notification.editable.text);
-      },
-      signoffText() {
-        return this.lineFeedsToBreaks.transform(this.notification.editable.signoffText);
-      }
-    };
 
     if (this.committeeFile) {
       this.notification.title = this.committeeFile.fileType;
@@ -116,7 +97,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
 
     this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
     this.logger.debug("initialised on open: notification ->", this.notification);
-
     this.userEdits = {
       sendInProgress: false,
       cancelled: false,
@@ -131,6 +111,37 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
         includeSocialEvents: true,
         includeCommitteeEvents: true
       },
+    };
+    this.notification = {
+      editable: {
+        text: "",
+        signoffText: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,",
+      },
+      destinationType: "committee",
+      includeSignoffText: true,
+      addresseeType: "Hi *|FNAME|*,",
+      selectedMemberIds: [],
+      recipients: [],
+      groupEvents() {
+        return this.userEdits?.groupEvents?.events?.filter((groupEvent) => {
+          this.logger.debug("notification.groupEvents ->", groupEvent);
+          return groupEvent.selected;
+        });
+      },
+      signoffAs: {
+        include: true,
+        value: this.loggedOnRole().type || "secretary"
+      },
+      includeDownloadInformation: this.committeeFile,
+      title: "Committee Notification",
+      text() {
+        return this.notification?.editable?.text;
+        // return this.lineFeedsToBreaks.transform(this.notification.editable.text);
+      },
+      signoffText() {
+        return this.notification?.editable?.signoffText;
+        // return this.lineFeedsToBreaks.transform(this.notification.editable.signoffText);
+      }
     };
     const promises: any[] = [
       this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
@@ -478,16 +489,27 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.userEdits.sendInProgress = true;
     const campaignName = this.notification.title;
     this.notify.setBusy();
-    return Promise.resolve("partials/committee/committee-notification.html")
-      .then(() => this.renderTemplateContent())
+    return Promise.resolve(this.generateNotificationHTML(this.notificationDirective, this.committeeFile, this.notification, this.members, this.userEdits))
       .then((notificationText) => this.populateContentSections(notificationText))
       .then((notificationText) => this.sendEmailCampaign(notificationText, campaignName, dontSend))
       .then(() => this.notifyEmailSendComplete(campaignName))
       .catch(() => this.handleNotificationError);
   }
 
-  renderTemplateContent(): Promise<string> {
-    return Promise.resolve("");
+  generateNotificationHTML(notificationDirective: CommitteeNotificationDirective, committeeFile: CommitteeFile, notification: NotificationConfig, members: Member[], userEdits: UserEdits): string {
+    const componentAndData = new CommitteeNotificationComponentAndData(CommitteeNotificationDetailsComponent);
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentAndData.component);
+    const viewContainerRef = notificationDirective.viewContainerRef;
+    viewContainerRef.clear();
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    componentRef.instance.committeeFile = committeeFile;
+    componentRef.instance.notification = notification;
+    componentRef.instance.members = members;
+    componentRef.instance.userEdits = userEdits;
+    componentRef.changeDetectorRef.detectChanges();
+    const html = componentRef.location.nativeElement.innerHTML;
+    this.logger.debug("notification html ->", html);
+    return html;
   }
 
   completeInMailchimp() {

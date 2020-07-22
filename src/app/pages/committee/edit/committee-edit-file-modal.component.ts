@@ -7,10 +7,10 @@ import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile, NotificationConfig, UserEdits } from "../../../models/committee.model";
+import { CommitteeFile, NotificationConfig} from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpCampaignListResponse } from "../../../models/mailchimp.model";
-import { ConfirmType } from "../../../models/ui-actions";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -37,17 +37,16 @@ import { CommitteeDisplayService } from "../committee-display.service";
   templateUrl: "./committee-edit-file-modal.component.html",
 })
 export class CommitteeEditFileModalComponent implements OnInit {
+  public confirm: Confirm;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: NotificationConfig;
-  public userEdits: UserEdits;
   private logger: Logger;
   public committeeFile: CommitteeFile;
   private campaigns: MailchimpCampaignListResponse;
   private campaignSearchTerm: string;
   public hasFileOver = false;
   public eventDate: DateValue;
-  private onClose: () => void;
   private existingTitle: string;
   public uploader: FileUploader;
   private confirmType: ConfirmType = ConfirmType.NONE;
@@ -180,7 +179,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   close() {
-    this.onClose();
+    this.confirm.clear()
     this.bsModalRef.hide();
   }
 

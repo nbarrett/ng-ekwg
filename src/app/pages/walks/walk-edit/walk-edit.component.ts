@@ -13,6 +13,7 @@ import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
 import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
+import { WalkNotification } from "../../../models/walk-notification.model";
 import { Walk, WalkExport } from "../../../models/walk.model";
 import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
 import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
@@ -498,7 +499,7 @@ export class WalkEditComponent implements OnInit {
     Promise.resolve().then(() => {
       this.notify.setBusy();
       this.saveInProgress = true;
-      const walkNotification = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
+      const walkNotification: WalkNotification = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
       return this.walkNotificationService.generateNotificationHTML(walkNotification, this.notificationDirective, MeetupDescriptionComponent);
     }).then((meetupDescription: string) => this.meetupService.synchroniseWalkWithEvent(this.notify, this.displayedWalk, meetupDescription))
       .then(() => this.sendNotificationsSaveAndCloseIfNotSent())

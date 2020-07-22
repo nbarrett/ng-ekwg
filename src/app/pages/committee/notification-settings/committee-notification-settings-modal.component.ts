@@ -1,8 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { NotificationConfig, UserEdits } from "../../../models/committee.model";
+import { NotificationConfig } from "../../../models/committee.model";
 import { MailchimpCampaignListResponse, MailchimpConfigResponse } from "../../../models/mailchimp.model";
 import { Member } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
@@ -31,12 +31,11 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: NotificationConfig;
-  public userEdits: UserEdits;
   private logger: Logger;
   members: Member[] = [];
-  private campaigns: MailchimpCampaignListResponse;
-  private campaignSearchTerm: string;
-  private config: MailchimpConfigResponse;
+  public campaigns: MailchimpCampaignListResponse;
+  public campaignSearchTerm: string;
+  public config: MailchimpConfigResponse;
 
   constructor(private contentMetaDataService: ContentMetadataService,
               private mailchimpSegmentService: MailchimpSegmentService,

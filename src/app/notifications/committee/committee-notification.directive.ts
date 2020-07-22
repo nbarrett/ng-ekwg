@@ -1,5 +1,4 @@
 import { Directive, Type, ViewContainerRef } from "@angular/core";
-import { CommitteeFile } from "../../models/committee.model";
 import { CommitteeNotificationDetailsComponent } from "./templates/committee-notification-details.component";
 
 @Directive({
@@ -11,8 +10,7 @@ export class CommitteeNotificationDirective {
 }
 
 export class CommitteeNotificationComponentAndData {
-  constructor(public component: Type<CommitteeNotificationDetailsComponent>,
-              public data: CommitteeFile) {
+  constructor(public component: Type<CommitteeNotificationDetailsComponent>) {
   }
 }
 

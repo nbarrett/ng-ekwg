@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { BsModalService } from "ngx-bootstrap/modal";
+import extend from "lodash-es/extend";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member/member-login.service";
@@ -19,6 +20,7 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 import { CommitteeEditFileModalComponent } from "../edit/committee-edit-file-modal.component";
+import { CommitteeSendNotificationModalComponent } from "../send-notification/committee-send-notification-modal.component";
 
 @Component({
   selector: "app-committee-history",
@@ -114,7 +116,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   }
 
   editCommitteeFile(committeeFile: CommitteeFile) {
-    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({onClose: this.cancelConfirmations, committeeFile}));
+    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({confirm: this.confirm, committeeFile}));
   }
 
   latestYear(): number {
@@ -126,11 +128,28 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   }
 
   cancelConfirmations() {
-    this.confirm.type = ConfirmType.NONE;
+    this.confirm.clear();
   }
 
   deleteCommitteeFile() {
     this.confirm.type = ConfirmType.DELETE;
+  }
+
+  createModalOptions(initialState?: any): ModalOptions {
+    return {
+      class: "modal-lg",
+      animated: false,
+      backdrop: "static",
+      ignoreBackdropClick: false,
+      keyboard: true,
+      focus: true,
+      show: true,
+      initialState: extend({}, initialState)
+    };
+  }
+
+  sendNotification(confirm: Confirm, committeeFile?: CommitteeFile) {
+    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
   }
 
 }

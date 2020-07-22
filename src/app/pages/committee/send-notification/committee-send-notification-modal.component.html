@@ -141,7 +141,6 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
-
                   <label for="notification-title">Email title:</label>
                   <input [(ngModel)]="notification.title" type="text" class="form-control input-sm"
                          id="notification-title"
@@ -154,138 +153,142 @@
                             id="free-text"
                             placeholder="Enter free text to be included of the notification here"></textarea>
 
-                  <div class="row" *ngIf="committeeFile">
-                    <div class="col col-sm-12"><label>Include download information for:</label>
-                      <div class="checkbox-group">
-                        <label
-                          [ngClass]="{'ui-state-active': notification.includeDownloadInformation}"
-                          for="include-download-information">{{committeeFile.fileType}} -
-                          {{fileTitle()}}
-                          <input [(ngModel)]="notification.includeDownloadInformation"
-                                 type="checkbox" id="include-download-information">
-                        </label>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-sm-4">
-                        <div class="form-group">
-                          <label for="from-date">Include Events From:</label>
-                          <app-date-picker id="from-date"
-                                           [size]="'md round'"
-                                           (dateChange)="onFromDateChange($event)"
-                                           [dateValue]="this.userEdits.groupEvents.fromDate">
-                          </app-date-picker>
-                        </div>
-                        <div class="form-group">
-                          <label for="to-date">Include Events To:</label>
-                          <app-date-picker id="to-date"
-                                           [size]="'md round'"
-                                           (dateChange)="onToDateChange($event)"
-                                           [dateValue]="this.userEdits.groupEvents.fromDate">
-                          </app-date-picker>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-4">
-                      <label>Include Information:</label>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeDescription}"
-                        for="user-events-show-description">Description:
-                        <input [(ngModel)]="userEdits.groupEvents.includeDescription"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-show-description">
-                      </label>
-                      </div>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeLocation}"
-                        for="user-events-show-location">Location:
-                        <input [(ngModel)]="userEdits.groupEvents.includeLocation"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-show-location">
-                      </label>
-                      </div>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeContact}"
-                        for="user-events-show-contact">Contact:
-                        <input [(ngModel)]="userEdits.groupEvents.includeContact"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-show-contact">
-                      </label>
-                      </div>
-                    </div>
-                    <div class="col-sm-4">
-                      <label>Include Events:</label>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeWalks}"
-                        for="user-events-include-walks">Walks:
-                        <input [(ngModel)]="userEdits.groupEvents.includeWalks"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-include-walks">
-                      </label>
-                      </div>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeSocialEvents}"
-                        for="user-events-include-social-events">Social Events:
-                        <input [(ngModel)]="userEdits.groupEvents.includeSocialEvents"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-include-social-events">
-                      </label>
-                      </div>
-                      <div class="checkbox-group"><label
-                        [ngClass]="{'ui-state-active': userEdits.groupEvents.includeCommitteeEvents}"
-                        for="user-events-include-committee-events">Committee Events:
-                        <input [(ngModel)]="userEdits.groupEvents.includeCommitteeEvents"
-                               (ngModelChange)="populateGroupEvents()"
-                               type="checkbox" id="user-events-include-committee-events"/>
-                      </label>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col col-sm-12">
-                        <ul class="group-events-ul">
-                          <li [ngClass]="event.selected ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
-                              *ngFor="let event of userEdits.groupEvents.events"
-                              (click)="changeGroupEventSelection(event)">
-                            <p style="font-size: 14px;font-weight: bold">
-                              <span [textContent]="event.eventDate | displayDate"></span>
-                              <span *ngIf="event.eventTime"> •
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="committeeFile">
+              <div class="col col-sm-12"><label>Include download information for:</label>
+                <div class="checkbox-group">
+                  <label
+                    [ngClass]="{'ui-state-active': notification.includeDownloadInformation}"
+                    for="include-download-information">{{committeeFile.fileType}} -
+                    {{fileTitle()}}
+                    <input [(ngModel)]="notification.includeDownloadInformation"
+                           type="checkbox" id="include-download-information">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab [heading]="'Events'">
+          <div class="thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-sm-4">
+                <div class="form-group">
+                  <label for="from-date">Include Events From:</label>
+                  <app-date-picker id="from-date"
+                                   [size]="'md round'"
+                                   (dateChange)="onFromDateChange($event)"
+                                   [dateValue]="this.userEdits.groupEvents.fromDate">
+                  </app-date-picker>
+                </div>
+                <div class="form-group">
+                  <label for="to-date">Include Events To:</label>
+                  <app-date-picker id="to-date"
+                                   [size]="'md round'"
+                                   (dateChange)="onToDateChange($event)"
+                                   [dateValue]="this.userEdits.groupEvents.toDate">
+                  </app-date-picker>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <label>Include Information:</label>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeDescription}"
+                  for="user-events-show-description">Description:
+                  <input [(ngModel)]="userEdits.groupEvents.includeDescription"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-show-description">
+                </label>
+                </div>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeLocation}"
+                  for="user-events-show-location">Location:
+                  <input [(ngModel)]="userEdits.groupEvents.includeLocation"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-show-location">
+                </label>
+                </div>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeContact}"
+                  for="user-events-show-contact">Contact:
+                  <input [(ngModel)]="userEdits.groupEvents.includeContact"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-show-contact">
+                </label>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <label>Include Events:</label>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeWalks}"
+                  for="user-events-include-walks">Walks:
+                  <input [(ngModel)]="userEdits.groupEvents.includeWalks"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-include-walks">
+                </label>
+                </div>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeSocialEvents}"
+                  for="user-events-include-social-events">Social Events:
+                  <input [(ngModel)]="userEdits.groupEvents.includeSocialEvents"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-include-social-events">
+                </label>
+                </div>
+                <div class="checkbox-group"><label
+                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeCommitteeEvents}"
+                  for="user-events-include-committee-events">Committee Events:
+                  <input [(ngModel)]="userEdits.groupEvents.includeCommitteeEvents"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" id="user-events-include-committee-events"/>
+                </label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-sm-12">
+                <ul class="group-events-ul">
+                  <li [ngClass]="event.selected ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
+                      *ngFor="let event of userEdits.groupEvents.events"
+                      (click)="changeGroupEventSelection(event)">
+                    <p style="font-size: 14px;font-weight: bold">
+                      <span [textContent]="event.eventDate | displayDate"></span>
+                      <span *ngIf="event.eventTime"> •
                               <span [textContent]="event.eventTime"></span>
                             </span>
-                              •
-                              <span [textContent]="event.eventType"></span>
-                              •
-                              <app-notification-url [area]="event?.area"
-                                                    [type]="event?.type"
-                                                    [id]="event?.id"
-                                                    [text]="event?.title"
-                                                    target="_blank"></app-notification-url>
-                              <span *ngIf="event.distance"> •
+                      •
+                      <span [textContent]="event.eventType"></span>
+                      •
+                      <app-notification-url [area]="event?.area"
+                                            [type]="event?.type"
+                                            [id]="event?.id"
+                                            [text]="event?.title"
+                                            target="_blank"></app-notification-url>
+                      <span *ngIf="event.distance"> •
                               <span [textContent]="event.distance"></span>
                             </span>
-                            </p>
-                            <div style="font-size: 14px;font-weight: bold">
+                    </p>
+                    <div style="font-size: 14px;font-weight: bold">
                             <span *ngIf="userEdits.groupEvents.includeContact && event.contactName">Contact:
                               <a [href]="'mailto:' + event.contactEmail"
                                  [textContent]="event.contactName || event.contactEmail">
                             </a>
                               <span *ngIf="event.contactPhone"> ({{event.contactPhone}})</span>
                             </span>
-                              <span *ngIf="userEdits.groupEvents.includeLocation && event.postcode"> • Location: <a
-                                [href]="'http://maps.google.co.uk/maps?q=' + event.postcode"
-                                target="_blank">
+                      <span *ngIf="userEdits.groupEvents.includeLocation && event.postcode"> • Location: <a
+                        [href]="'http://maps.google.co.uk/maps?q=' + event.postcode"
+                        target="_blank">
                               <span [textContent]="event.postcode"></span>
                             </a></span>
-                            </div>
-
-                            <p markdown="event.description" style="padding: 8px 0px 0px 0px"
-                               *ngIf="userEdits.groupEvents.includeDescription">
-                            </p>
-                          </li>
-                        </ul>
-                      </div>
                     </div>
-                  </div>
-                </div>
+
+                    <p markdown [data]="event.description" style="padding: 8px 0px 0px 0px"
+                       *ngIf="userEdits.groupEvents.includeDescription">
+                    </p>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -296,13 +299,14 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <div class="checkbox-group">
-                    <label for="signoff-text" [ngClass]="{'ui-state-active': notification.includeSignoffText}">
+                    <label for="include-signoff-text" [ngClass]="{'ui-state-active': notification.includeSignoffText}">
                       Include Signoff text:
                       <input [(ngModel)]="notification.includeSignoffText" type="checkbox"
                              id="include-signoff-text">
                     </label>
                   </div>
-                  <textarea [(ngModel)]="notification.editable.signoffText" type="text"
+                  <textarea [disabled]="!notification.includeSignoffText"
+                            [(ngModel)]="notification.editable.signoffText" type="text"
                             class="form-control input-sm" rows="3"
                             id="signoff-text"
                             placeholder="Enter any signoff text to be included of the notification here"></textarea>
@@ -341,7 +345,10 @@
                 <div class="xhidden">
                   <ng-template app-committee-notification-template></ng-template>
                 </div>
-
+                <app-committee-notification-details
+                  [committeeFile]="committeeFile" [members]="members" [notification]="notification"
+                  [userEdits]="userEdits">
+                </app-committee-notification-details>
               </div>
             </div>
           </div>

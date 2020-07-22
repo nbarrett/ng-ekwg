@@ -137,7 +137,6 @@ export interface MemberBulkLoadAudit extends Auditable {
 }
 
 export interface MemberUpdateAudit extends Auditable {
-  id?: string;
   uploadSessionId: string;
   updateTime: number;
   memberAction: string;
@@ -157,7 +156,7 @@ export interface MemberAuthAudit {
   member: MemberCookie;
 }
 
-export interface Auditable {
+export interface Auditable extends Identifiable {
   createdDate?: number;
   createdBy?: string;
   updatedDate?: number;

@@ -33,7 +33,7 @@
                          class="button-form green-confirm">
                   <input *ngIf="display.allowEditCommitteeFile(committeeFile)"
                          type="submit" value="Send Email"
-                         (click)="display.sendNotification(committeeFile)"
+                         (click)="sendNotification(confirm)"
                          title="Send Email" class="button-form yellow-confirm">
                   <input *ngIf="display.allowDeleteCommitteeFile(committeeFile)"
                          type="submit" value="Delete File"

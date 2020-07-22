@@ -66,10 +66,6 @@ export class CommitteeDisplayService {
     };
   }
 
-  sendNotification(confirm: Confirm, committeeFile?: CommitteeFile) {
-    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
-  }
-
   fileTypes() {
     return this.committeeReferenceData.fileTypes();
   }
