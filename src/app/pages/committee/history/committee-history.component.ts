@@ -148,7 +148,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     };
   }
 
-  sendNotification(confirm: Confirm, committeeFile?: CommitteeFile) {
+  sendNotification(confirm: Confirm, committeeFile: CommitteeFile) {
     this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
   }
 

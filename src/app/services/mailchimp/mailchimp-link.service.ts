@@ -32,7 +32,7 @@ export class MailchimpLinkService {
   }
 
   public completeInMailchimp(webId: number) {
-    return `${this.mailchimpApiUrl}/campaigns/campaigns/wizard/neapolitan?id=${webId}`;
+    return `${this.mailchimpApiUrl}/campaigns/wizard/neapolitan?id=${webId}`;
   }
 
   public campaignEdit(webId: number) {

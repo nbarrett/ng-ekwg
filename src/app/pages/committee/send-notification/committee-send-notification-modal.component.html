@@ -14,15 +14,16 @@
               <div class="col-sm-7"><label>Send to:</label>
                 <div class="form-group">
                   <div class="radio">
-                    <input (click)="clearRecipientsForCampaignOfType('committee')"
-                           id="send-to-committee"
-                           [disabled]="allCommitteeList().length===0"
-                           type="radio"
-                           [(ngModel)]="notification.destinationType"
-                           value="committee"/>
+                    <input
+                      (click)="clearRecipientsForCampaignOfType('committee')"
+                      name="send-to"
+                      id="send-to-committee"
+                      [disabled]="allCommitteeList().length===0"
+                      type="radio"
+                      [ngModel]="notification.content.destinationType"
+                      value="committee"/>
                     <label for="send-to-committee">{{allCommitteeList().length}}
-                      Committee
-                      Members
+                      Committee Members
                     </label>
                     <a *ngIf="allCommitteeList().length>0"
                        (click)="editCommitteeRecipients()"
@@ -31,8 +32,9 @@
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('general')" id="send-to-general"
                            [disabled]="allGeneralSubscribedList().length===0"
+                           name="send-to"
                            type="radio"
-                           [(ngModel)]="notification.destinationType"
+                           [ngModel]="notification.content.destinationType"
                            value="general"/>
                     <label for="send-to-general">{{allGeneralSubscribedList().length}} General List
                       Members </label>
@@ -41,10 +43,11 @@
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('walks')"
+                           name="send-to"
                            id="send-to-walks"
                            [disabled]="allWalksSubscribedList().length===0"
                            type="radio"
-                           [(ngModel)]="notification.destinationType"
+                           [ngModel]="notification.content.destinationType"
                            value="walks"/>
                     <label for="send-to-walks">{{allWalksSubscribedList().length}} Walks List
                       Members
@@ -55,10 +58,11 @@
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
+                           name="send-to"
                            id="send-to-social"
                            [disabled]="allSocialSubscribedList().length===0"
                            type="radio"
-                           [(ngModel)]="notification.destinationType"
+                           [ngModel]="notification.content.destinationType"
                            value="socialEvents"/>
                     <label for="send-to-social">{{allSocialSubscribedList().length}}
                       Social List Members
@@ -68,39 +72,44 @@
                   </div>
                   <div class="radio">
                     <input id="custom" type="radio"
-                           [(ngModel)]="notification.destinationType"
+                           name="send-to"
+                           [ngModel]="notification.content.destinationType"
                            value="custom"/>
                     <label for="custom">
-                      <span *ngIf="notification.recipients.length===0">Choose individual recipients</span>
-                      <span *ngIf="notification.recipients.length>0">{{notification.recipients.length}}
+                      <span *ngIf="notification.content.recipients.length===0">Choose individual recipients</span>
+                      <span
+                        *ngIf="notification.content.recipients.length>0">{{notification.content.recipients.length}}
                         recipient(s) chosen </span>
                     </label>
                     <a (click)="clearRecipientsForCampaignOfType()"> (clear)</a>
                   </div>
                 </div>
-
               </div>
               <div class="col col-sm-5"><label>Address as:</label>
                 <div class="form-group">
                   <div class="radio">
                     <input id="addressee-first-name" type="radio"
-                           [(ngModel)]="notification.addresseeType" value="Hi *|FNAME|*,"/>
+                           name="address-as"
+                           [(ngModel)]="notification.content.addresseeType" value="Hi *|FNAME|*,"/>
                     <label for="addressee-first-name">Hi <i>first name</i> </label>
                   </div>
                   <div class="radio">
-                    <input id="addressee-all" type="radio" [(ngModel)]="notification.addresseeType"
+                    <input id="addressee-all" type="radio"
+                           name="address-as"
+                           [(ngModel)]="notification.content.addresseeType"
                            value="Hi all,"/>
                     <label for="addressee-all">Hi all</label>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="notification.destinationType==='custom'">
+            <div class="row" *ngIf="notification.content.destinationType==='custom'">
               <div class="col-sm-12">
                 <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
                      [tooltip]="helpMembers()">
                   <ng-select #select [items]="selectableRecipients"
                              bindLabel="memberInformation"
+                             name="member-selector"
                              bindValue="id"
                              placeholder="Select one or more members"
                              [disabled]="notifyTarget.busy"
@@ -108,10 +117,9 @@
                              [groupBy]="groupBy"
                              [groupValue]="groupValue"
                              [multiple]="true"
-                             (click)="selectClick(select)"
                              [closeOnSelect]="true"
                              (change)="onChange()"
-                             [(ngModel)]="notification.selectedMemberIds">
+                             [(ngModel)]="notification.content.selectedMemberIds">
                     <ng-template ng-optgroup-tmp let-item="item">
                       <span class="group-header">{{item.name}} members</span>
                       <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
@@ -128,7 +136,7 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="campaign">Replicate Based On:</label>
-                  <select *ngIf="campaigns" [(ngModel)]="notification.campaignId"
+                  <select *ngIf="campaigns" [(ngModel)]="notification.content.campaignId"
                           id="campaign"
                           class="form-control input-sm"
                           (ngModelChange)="campaignIdChanged()">
@@ -142,17 +150,22 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="notification-title">Email title:</label>
-                  <input [(ngModel)]="notification.title" type="text" class="form-control input-sm"
+                  <input [(ngModel)]="notification.content.title" type="text" class="form-control input-sm"
                          id="notification-title"
                          placeholder="This will appear as the email title to the recipient">
-                  <label for="free-text">Email text: <small>(no need to prefix 'Hi ...' as it's done
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="content-text">Email text: <small>(no need to prefix 'Hi ...' as it's done
                     automatically)</small>
                   </label>
-                  <textarea markdown [(ngModel)]="notification.editable.text" type="text"
+                  <textarea markdown [(ngModel)]="notification.content.text.value" type="text"
                             class="form-control input-sm" rows="5"
-                            id="free-text"
+                            id="content-text"
                             placeholder="Enter free text to be included of the notification here"></textarea>
-
                 </div>
               </div>
             </div>
@@ -160,10 +173,10 @@
               <div class="col col-sm-12"><label>Include download information for:</label>
                 <div class="checkbox-group">
                   <label
-                    [ngClass]="{'ui-state-active': notification.includeDownloadInformation}"
+                    [ngClass]="{'ui-state-active': notification.content.includeDownloadInformation}"
                     for="include-download-information">{{committeeFile.fileType}} -
                     {{fileTitle()}}
-                    <input [(ngModel)]="notification.includeDownloadInformation"
+                    <input [(ngModel)]="notification.content.includeDownloadInformation"
                            type="checkbox" id="include-download-information">
                   </label>
                 </div>
@@ -171,7 +184,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Events'">
+        <tab [heading]="'Auto-Include Events'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-4">
@@ -180,7 +193,7 @@
                   <app-date-picker id="from-date"
                                    [size]="'md round'"
                                    (dateChange)="onFromDateChange($event)"
-                                   [dateValue]="this.userEdits.groupEvents.fromDate">
+                                   [dateValue]="this.notification.groupEventsFilter.fromDate">
                   </app-date-picker>
                 </div>
                 <div class="form-group">
@@ -188,70 +201,76 @@
                   <app-date-picker id="to-date"
                                    [size]="'md round'"
                                    (dateChange)="onToDateChange($event)"
-                                   [dateValue]="this.userEdits.groupEvents.toDate">
+                                   [dateValue]="this.notification.groupEventsFilter.toDate">
                   </app-date-picker>
                 </div>
               </div>
               <div class="col-sm-4">
                 <label>Include Information:</label>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeDescription}"
-                  for="user-events-show-description">Description:
-                  <input [(ngModel)]="userEdits.groupEvents.includeDescription"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-show-description">
-                </label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeDescription}"
+                         for="user-events-show-description">Description:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeDescription"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-show-description">
+                  </label>
                 </div>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeLocation}"
-                  for="user-events-show-location">Location:
-                  <input [(ngModel)]="userEdits.groupEvents.includeLocation"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-show-location">
-                </label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeLocation}"
+                         for="user-events-show-location">Location:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeLocation"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-show-location">
+                  </label>
                 </div>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeContact}"
-                  for="user-events-show-contact">Contact:
-                  <input [(ngModel)]="userEdits.groupEvents.includeContact"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-show-contact">
-                </label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeContact}"
+                         for="user-events-show-contact">Contact:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeContact"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-show-contact">
+                  </label>
                 </div>
               </div>
               <div class="col-sm-4">
-                <label>Include Events:</label>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeWalks}"
-                  for="user-events-include-walks">Walks:
-                  <input [(ngModel)]="userEdits.groupEvents.includeWalks"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-include-walks">
-                </label>
+                <label>Include Event Types:</label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeWalks}"
+                         for="user-events-include-walks">Walks:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeWalks"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-include-walks">
+                  </label>
                 </div>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeSocialEvents}"
-                  for="user-events-include-social-events">Social Events:
-                  <input [(ngModel)]="userEdits.groupEvents.includeSocialEvents"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-include-social-events">
-                </label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeSocialEvents}"
+                         for="user-events-include-social-events">Social Events:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeSocialEvents"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-include-social-events">
+                  </label>
                 </div>
-                <div class="checkbox-group"><label
-                  [ngClass]="{'ui-state-active': userEdits.groupEvents.includeCommitteeEvents}"
-                  for="user-events-include-committee-events">Committee Events:
-                  <input [(ngModel)]="userEdits.groupEvents.includeCommitteeEvents"
-                         (ngModelChange)="populateGroupEvents()"
-                         type="checkbox" id="user-events-include-committee-events"/>
-                </label>
+                <div class="checkbox-group">
+                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeCommitteeEvents}"
+                         for="user-events-include-committee-events">Committee Events:
+                    <input [(ngModel)]="notification.groupEventsFilter.includeCommitteeEvents"
+                           (ngModelChange)="populateGroupEvents()"
+                           type="checkbox" id="user-events-include-committee-events"/>
+                  </label>
                 </div>
               </div>
             </div>
             <div class="row">
               <div class="col col-sm-12">
                 <ul class="group-events-ul">
+                  <li class="mb-12" *ngIf="notification.groupEvents.length>0"
+                      [ngClass]="notification.groupEventsFilter.selectAll ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
+                      (click)="selectAllGroupEvents()">
+                    <strong>Select/Deselect All</strong> here, or use the individual checkboxes below to include/exclude any
+                    of the following {{notification.groupEvents.length}} events:
+                  </li>
                   <li [ngClass]="event.selected ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
-                      *ngFor="let event of userEdits.groupEvents.events"
+                      *ngFor="let event of notification.groupEvents"
                       (click)="changeGroupEventSelection(event)">
                     <p style="font-size: 14px;font-weight: bold">
                       <span [textContent]="event.eventDate | displayDate"></span>
@@ -271,13 +290,13 @@
                             </span>
                     </p>
                     <div style="font-size: 14px;font-weight: bold">
-                            <span *ngIf="userEdits.groupEvents.includeContact && event.contactName">Contact:
+                            <span *ngIf="notification.groupEventsFilter.includeContact && event.contactName">Contact:
                               <a [href]="'mailto:' + event.contactEmail"
                                  [textContent]="event.contactName || event.contactEmail">
                             </a>
                               <span *ngIf="event.contactPhone"> ({{event.contactPhone}})</span>
                             </span>
-                      <span *ngIf="userEdits.groupEvents.includeLocation && event.postcode"> • Location: <a
+                      <span *ngIf="notification.groupEventsFilter.includeLocation && event.postcode"> • Location: <a
                         [href]="'http://maps.google.co.uk/maps?q=' + event.postcode"
                         target="_blank">
                               <span [textContent]="event.postcode"></span>
@@ -285,7 +304,7 @@
                     </div>
 
                     <p markdown [data]="event.description" style="padding: 8px 0px 0px 0px"
-                       *ngIf="userEdits.groupEvents.includeDescription">
+                       *ngIf="notification.groupEventsFilter.includeDescription">
                     </p>
                   </li>
                 </ul>
@@ -299,40 +318,40 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <div class="checkbox-group">
-                    <label for="include-signoff-text" [ngClass]="{'ui-state-active': notification.includeSignoffText}">
+                    <label for="include-signoff-text"
+                           [ngClass]="{'ui-state-active': notification.content.signoffText.include}">
                       Include Signoff text:
-                      <input [(ngModel)]="notification.includeSignoffText" type="checkbox"
+                      <input [(ngModel)]="notification.content.signoffText.include" type="checkbox"
                              id="include-signoff-text">
                     </label>
                   </div>
-                  <textarea [disabled]="!notification.includeSignoffText"
-                            [(ngModel)]="notification.editable.signoffText" type="text"
+                  <textarea [disabled]="!notification.content.signoffText.include"
+                            [(ngModel)]="notification.content.signoffText.value" type="text"
                             class="form-control input-sm" rows="3"
                             id="signoff-text"
                             placeholder="Enter any signoff text to be included of the notification here"></textarea>
-                  <div class="row">
-                    <div class="col col-sm-12"><label>Signoff as:</label>
-
-                      <div class="form-group">
-                        <div class="checkbox-group">
-                          <label [ngClass]="{'ui-state-active': notification.signoffAs.include}"
-                                 for="include-signoff-as">Signoff as:
-                            <input [(ngModel)]="notification.signoffAs.include"
-                                   type="checkbox"
-                                   id="include-signoff-as">
-                          </label>
-                        </div>
-                        <select [(ngModel)]="notification.signoffAs.value"
-                                id="signoff-as"
-                                [disabled]="!notification.signoffAs.include"
-                                class="form-control input-sm">
-                          <option *ngFor="let role of roles.signoff"
-                                  [ngValue]="role.type"
-                                  [textContent]="role.nameAndDescription"></option>
-                        </select>
-                      </div>
-                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label [ngClass]="{'ui-state-active': notification.content.signoffAs.include}"
+                           for="include-signoff-as">Signoff as:
+                      <input [(ngModel)]="notification.content.signoffAs.include"
+                             type="checkbox"
+                             id="include-signoff-as">
+                    </label>
                   </div>
+                  <select [(ngModel)]="notification.content.signoffAs.value"
+                          id="signoff-as"
+                          [disabled]="!notification.content.signoffAs.include"
+                          class="form-control input-sm">
+                    <option *ngFor="let role of roles.signoff"
+                            [ngValue]="role.type"
+                            [textContent]="role.nameAndDescription"></option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -342,12 +361,10 @@
           <div class="thumbnail thumbnail-admin-edit">
             <div class="form-horizontal">
               <div id="preview" class="print-preview">
-                <div class="xhidden">
-                  <ng-template app-committee-notification-template></ng-template>
-                </div>
-                <app-committee-notification-details
-                  [committeeFile]="committeeFile" [members]="members" [notification]="notification"
-                  [userEdits]="userEdits">
+                <ng-template app-committee-notification-template></ng-template>
+                <h2 class="mb-3">{{notification.content.title}}</h2>
+                <app-committee-notification-details [committeeFile]="committeeFile" [members]="members"
+                                                    [notification]="notification">
                 </app-committee-notification-details>
               </div>
             </div>
@@ -368,7 +385,7 @@
              [disabled]="notifyTarget.busy"
              title="Confirm sending of notification email"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm green-confirm button-form-left'">
-      <input type="submit" value="Complete of Mailchimp" (click)="completeInMailchimp()"
+      <input type="submit" value="Complete in Mailchimp" (click)="completeInMailchimp()"
              [disabled]="notifyTarget.busy"
              title="Complete editing and sending of Mailchimp"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">

@@ -33,7 +33,7 @@ describe("MailchimpLinkService", () => {
   it("should return complete in mailchimp url", async(() => {
     const service: MailchimpLinkService = TestBed.get(MailchimpLinkService);
     setTimeout(() => {
-      expect(service.completeInMailchimp(123466)).toEqual("https://us3.admin.mailchimp.com/campaigns/campaigns/wizard/neapolitan?id=123466");
+      expect(service.completeInMailchimp(123466)).toEqual("https://us3.admin.mailchimp.com/campaigns/wizard/neapolitan?id=123466");
     }, 0);
   }));
 });

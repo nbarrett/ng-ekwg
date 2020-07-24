@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { first } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
-import { CommitteeFile, CommitteeYear, GroupEvent } from "../../models/committee.model";
+import { CommitteeFile, CommitteeYear, GroupEvent, GroupEventsFilter } from "../../models/committee.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { descending, sortBy } from "../arrays";
 import { CommitteeConfigService } from "../commitee-config.service";
@@ -14,7 +14,6 @@ import { UrlService } from "../url.service";
 import { WalksService } from "../walks/walks.service";
 import { CommitteeFileService } from "./committee-file.service";
 import { CommitteeReferenceDataService } from "./committee-reference-data.service";
-
 
 @Injectable({
   providedIn: "root"
@@ -36,14 +35,14 @@ export class CommitteeQueryService {
     this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.INFO);
   }
 
-  groupEvents(groupEvents): Promise<GroupEvent[]> {
-    this.logger.debug("groupEvents", groupEvents);
-    const fromDate = this.dateUtils.convertDateField(groupEvents.fromDate);
-    const toDate = this.dateUtils.convertDateField(groupEvents.toDate);
-    this.logger.debug("groupEvents:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
+  groupEvents(groupEventsFilter: GroupEventsFilter): Promise<GroupEvent[]> {
+    this.logger.debug("groupEventsFilter", groupEventsFilter);
+    const fromDate = groupEventsFilter.fromDate.value;
+    const toDate = groupEventsFilter.toDate.value;
+    this.logger.info("groupEventsFilter:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
     const events = [];
     const promises = [];
-    if (groupEvents.includeWalks) {
+    if (groupEventsFilter.includeWalks) {
       promises.push(
         this.walksService.all({criteria: {walkDate: {$gte: fromDate, $lte: toDate}}})
           .then(walks => walks.forEach(walk => events.push({
@@ -63,7 +62,7 @@ export class CommitteeQueryService {
             contactEmail: walk.contactEmail
           }))));
     }
-    if (groupEvents.includeCommitteeEvents) {
+    if (groupEventsFilter.includeCommitteeEvents) {
       promises.push(
         this.committeeFileService.all({criteria: {eventDate: {$gte: fromDate, $lte: toDate}}})
           .then(committeeFiles => committeeFiles.forEach(committeeFile => events.push({
@@ -78,7 +77,7 @@ export class CommitteeQueryService {
             title: committeeFile.fileNameData.title
           }))));
     }
-    if (groupEvents.includeSocialEvents) {
+    if (groupEventsFilter.includeSocialEvents) {
       promises.push(
         this.socialEventsService.all({criteria: {eventDate: {$gte: fromDate, $lte: toDate}}})
           .then(socialEvents => socialEvents.forEach(socialEvent => events.push({
@@ -99,10 +98,8 @@ export class CommitteeQueryService {
     }
 
     return Promise.all(promises).then(() => {
-      this.logger.debug("performed total of", promises.length, "events of length", events.length);
-      return chain(events)
-        .sortBy("eventDate")
-        .value();
+      this.logger.info("performed total of", promises.length, "events types containing total of", events.length, "events:", events);
+      return events.sort(sortBy("eventDate"));
     });
   }
 

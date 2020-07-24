@@ -7,7 +7,7 @@ import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile, NotificationConfig} from "../../../models/committee.model";
+import { CommitteeFile, Notification} from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpCampaignListResponse } from "../../../models/mailchimp.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
@@ -40,7 +40,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public confirm: Confirm;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  public notification: NotificationConfig;
+  public notification: Notification;
   private logger: Logger;
   public committeeFile: CommitteeFile;
   private campaigns: MailchimpCampaignListResponse;

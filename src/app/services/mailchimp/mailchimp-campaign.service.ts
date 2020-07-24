@@ -37,8 +37,8 @@ export class MailchimpCampaignService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.OFF);
-    this.allowSendCampaign = false;
+    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.DEBUG);
+    this.allowSendCampaign = true;
   }
 
   async addCampaign(campaignId, campaignName) {
@@ -58,19 +58,6 @@ export class MailchimpCampaignService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
   }
 
-  async setContent(campaignId, contentSections): Promise<MailchimpCampaignUpdateResponse> {
-    return contentSections ? (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/update`, {
-      updates: {
-        name: "content",
-        value: contentSections
-      }
-    }), this.campaignNotifications)).response : Promise.resolve({
-      result: "success",
-      campaignId,
-      message: "setContent skipped as no content provided"
-    });
-  }
-
   setOrClearSegment(replicatedCampaignId: string, segmentId?: number): Promise<MailchimpCampaignUpdateResponse> {
     if (segmentId) {
       return this.setSegmentId(replicatedCampaignId, segmentId);
@@ -87,17 +74,26 @@ export class MailchimpCampaignService {
     return this.setSegmentOpts(campaignId, {});
   }
 
+  async setContent(campaignId, contentSections): Promise<MailchimpCampaignUpdateResponse> {
+    return await this.updateCampaign(campaignId, {
+      updates: {
+        name: "content",
+        value: contentSections
+      }
+    });
+  }
+
   async setSegmentOpts(campaignId: string, value?: any): Promise<MailchimpCampaignUpdateResponse> {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/update`, {
+    return await this.updateCampaign(campaignId, {
       updates: {
         name: "segment_opts",
         value
       }
-    }), this.campaignNotifications)).response;
+    });
   }
 
   async setCampaignOptions(campaignId, campaignName, otherOptions): Promise<MailchimpCampaignUpdateResponse> {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/update`, {
+    return await this.updateCampaign(campaignId, {
       updates: {
         name: "options",
         value: {
@@ -108,7 +104,12 @@ export class MailchimpCampaignService {
           ...otherOptions
         }
       }
-    }), this.campaignNotifications)).response;
+    });
+  }
+
+  private async updateCampaign(campaignId, body: { updates: { name: string; value: any } }) {
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/update`, body), this.campaignNotifications);
+    return apiResponse.error ? Promise.reject("campaign update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse.response;
   }
 
   async replicateCampaign(campaignId): Promise<MailchimpCampaignReplicateResponse> {
@@ -117,7 +118,9 @@ export class MailchimpCampaignService {
 
   async sendCampaign(campaignId: string): Promise<MailchimpCampaignSendResponse> {
     if (!this.allowSendCampaign) {
-      return Promise.reject("You cannot send campaigns as sending has been disabled in this release of the application");
+      const reason = "You cannot send campaigns as sending has been disabled in this release of the application";
+      this.logger.error(reason);
+      return Promise.reject(reason);
     }
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/send`, {}), this.campaignNotifications)).response;
   }

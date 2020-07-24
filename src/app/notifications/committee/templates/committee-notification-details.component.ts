@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { CommitteeFile, NotificationConfig, UserEdits } from "../../../models/committee.model";
+import { CommitteeFile, GroupEvent, Notification } from "../../../models/committee.model";
 import { Member } from "../../../models/member.model";
 import { CommitteeDisplayService } from "../../../pages/committee/committee-display.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -9,16 +9,15 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
   selector: "app-committee-notification-details",
   templateUrl: "./committee-notification-details.component.html"
 })
-export class CommitteeNotificationDetailsComponent implements OnInit, OnChanges {
+export class CommitteeNotificationDetailsComponent implements OnInit {
 
+  @Input()
+  public members: Member[];
   @Input()
   public committeeFile: CommitteeFile;
   @Input()
-  public notification: NotificationConfig;
-  @Input()
-  public userEdits: UserEdits;
-  @Input()
-  public members: Member[];
+  public notification: Notification;
+
   protected logger: Logger;
 
   constructor(
@@ -28,18 +27,12 @@ export class CommitteeNotificationDetailsComponent implements OnInit, OnChanges 
     this.logger = loggerFactory.createLogger(CommitteeNotificationDetailsComponent, NgxLoggerLevel.DEBUG);
   }
 
-  ngOnInit() {
-    this.logger.debug("ngOnInit:data ->", this.notification);
+  selectedGroupEvents(): GroupEvent[] {
+    return this.notification.groupEvents.filter(item => item.selected);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    this.logger.debug("changes were", changes);
-    const textChange = changes?.text?.currentValue;
-    if (textChange) {
-      // this.content.text = textChange;
-      // this.text = textChange;
-      // this.logger.debug("text is now", this.text);
-      this.changeDetectorRef.detectChanges();
-    }
+  ngOnInit() {
+    this.logger.debug("ngOnInit:notification ->", this.notification, "committeeFile ->", this.committeeFile);
   }
+
 }

@@ -63,6 +63,14 @@ export interface SessionStatus {
   status?: string;
 }
 
+export interface MailchimpSegmentIds {
+  directMail: number;
+  expenseApprover: number;
+  expenseTreasurer: number;
+  walkLeader: number;
+  walkCoordinator: number;
+}
+
 export interface Member extends Auditable, Identifiable {
   hideSurname?: boolean;
   expiredPassword?: boolean;
@@ -93,13 +101,7 @@ export interface Member extends Auditable, Identifiable {
   contentAdmin?: boolean;
   passwordResetId?: string;
   financeAdmin?: boolean;
-  mailchimpSegmentIds?: {
-    directMail: number;
-    expenseApprover: number;
-    expenseTreasurer: number;
-    walkLeader: number;
-    walkCoordinator: number;
-  };
+  mailchimpSegmentIds?: MailchimpSegmentIds;
   treasuryAdmin?: boolean;
   fileAdmin?: boolean;
   committee?: boolean;

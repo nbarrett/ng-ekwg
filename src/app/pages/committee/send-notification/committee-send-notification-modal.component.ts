@@ -1,11 +1,10 @@
 import { AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
-import { NgSelectComponent } from "@ng-select/ng-select";
 import { extend } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile, CommitteeMember, GroupEvent, NotificationConfig, UserEdits } from "../../../models/committee.model";
+import { CommitteeFile, CommitteeMember, GroupEvent, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpConfigResponse } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
@@ -44,8 +43,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   public members: Member[] = [];
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  public notification: NotificationConfig;
-  public userEdits: UserEdits;
+  public notification: Notification;
   private logger: Logger;
 
   public roles: { replyTo: any[]; signoff: CommitteeMember[] };
@@ -83,27 +81,37 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   ngOnInit() {
-    this.logger.debug("constructed with member", this.members.length, "members");
+    this.logger.debug("constructed with", this.members.length, "members");
     this.confirm.type = ConfirmType.SEND_NOTIFICATION;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.roles = {signoff: this.committeeReferenceData.committeeMembers(), replyTo: []};
     this.committeeFileBaseUrl = this.contentMetaDataService.baseUrl("committeeFiles");
 
-    if (this.committeeFile) {
-      this.notification.title = this.committeeFile.fileType;
-      this.notification.editable.text = "This is just a quick note to let you know in case you are interested, that I\"ve uploaded a new file to the EKWG website. The file information is as follows:";
-    }
-
     this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
     this.logger.debug("initialised on open: notification ->", this.notification);
-    this.userEdits = {
-      sendInProgress: false,
+
+    this.notification = {
       cancelled: false,
-      groupEvents: {
-        events: [],
-        fromDate: this.dateUtils.momentNowNoTime().valueOf(),
-        toDate: this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf(),
+      content: {
+        text: {value: "", include: true},
+        signoffText: {value: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,", include: true},
+        includeDownloadInformation: !!this.committeeFile,
+        destinationType: "committee",
+        addresseeType: "Hi *|FNAME|*,",
+        selectedMemberIds: [],
+        recipients: [],
+        signoffAs: {
+          include: true,
+          value: this.loggedOnRole().type || "secretary"
+        },
+        title: "Committee Notification"
+      },
+      groupEvents: [],
+      groupEventsFilter: {
+        selectAll: true,
+        fromDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf()),
+        toDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf()),
         includeContact: true,
         includeDescription: true,
         includeLocation: true,
@@ -112,37 +120,12 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
         includeCommitteeEvents: true
       },
     };
-    this.notification = {
-      editable: {
-        text: "",
-        signoffText: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,",
-      },
-      destinationType: "committee",
-      includeSignoffText: true,
-      addresseeType: "Hi *|FNAME|*,",
-      selectedMemberIds: [],
-      recipients: [],
-      groupEvents() {
-        return this.userEdits?.groupEvents?.events?.filter((groupEvent) => {
-          this.logger.debug("notification.groupEvents ->", groupEvent);
-          return groupEvent.selected;
-        });
-      },
-      signoffAs: {
-        include: true,
-        value: this.loggedOnRole().type || "secretary"
-      },
-      includeDownloadInformation: this.committeeFile,
-      title: "Committee Notification",
-      text() {
-        return this.notification?.editable?.text;
-        // return this.lineFeedsToBreaks.transform(this.notification.editable.text);
-      },
-      signoffText() {
-        return this.notification?.editable?.signoffText;
-        // return this.lineFeedsToBreaks.transform(this.notification.editable.signoffText);
-      }
-    };
+
+    if (this.committeeFile) {
+      this.notification.content.title = this.committeeFile.fileType;
+      this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I\"ve uploaded a new file to the EKWG website. The file information is as follows:";
+    }
+
     const promises: any[] = [
       this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
         this.members = members;
@@ -187,9 +170,9 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   populateGroupEvents(): Promise<GroupEvent[]> {
-    return this.committeeQueryService.groupEvents(this.userEdits.groupEvents)
+    return this.committeeQueryService.groupEvents(this.notification.groupEventsFilter)
       .then(events => {
-        this.userEdits.groupEvents.events = events;
+        this.notification.groupEvents = events;
         this.logger.debug("groupEvents", events);
         return events;
       });
@@ -224,7 +207,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   notReady() {
-    return this.members.length === 0 || this.userEdits.sendInProgress || (this.notification.recipients.length === 0 && this.notification.destinationType === "custom");
+    return this.members.length === 0 || this.notifyTarget.busy || (this.notification.content.recipients.length === 0 && this.notification.content.destinationType === "custom");
   }
 
   toSelectGeneralMember(member: Member): MemberFilterSelection {
@@ -300,52 +283,53 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   editAllEKWGRecipients() {
-    this.notification.destinationType = "custom";
-    this.notification.campaignId = this.campaignIdFor("general");
-    this.notification.list = "general";
-    this.notification.recipients = this.allGeneralSubscribedList();
+    this.notification.content.destinationType = "custom";
+    this.notification.content.campaignId = this.campaignIdFor("general");
+    this.notification.content.list = "general";
+    this.notification.content.recipients = this.allGeneralSubscribedList();
     this.showSelectedMemberIds();
 
   }
 
   private showSelectedMemberIds() {
-    this.notification.selectedMemberIds = this.notification.recipients.map(item => item.id);
+    this.notification.content.selectedMemberIds = this.notification.content.recipients.map(item => item.id);
     this.onChange();
     this.campaignIdChanged();
+    this.logger.debug("notification.content.destinationType", this.notification.content.destinationType, "notification.content.addresseeType", this.notification.content.addresseeType);
   }
 
   editAllWalksRecipients() {
     this.logger.debug("editAllWalksRecipients");
-    this.notification.destinationType = "custom";
-    this.notification.campaignId = this.campaignIdFor("walks");
-    this.notification.list = "walks";
-    this.notification.recipients = this.allWalksSubscribedList();
+    this.notification.content.destinationType = "custom";
+    this.notification.content.campaignId = this.campaignIdFor("walks");
+    this.notification.content.list = "walks";
+    this.notification.content.recipients = this.allWalksSubscribedList();
     this.showSelectedMemberIds();
   }
 
   editAllSocialRecipients() {
     this.logger.debug("editAllSocialRecipients");
-    this.notification.destinationType = "custom";
-    this.notification.campaignId = this.campaignIdFor("socialEvents");
-    this.notification.list = "socialEvents";
-    this.notification.recipients = this.allSocialSubscribedList();
+    this.notification.content.destinationType = "custom";
+    this.notification.content.campaignId = this.campaignIdFor("socialEvents");
+    this.notification.content.list = "socialEvents";
+    this.notification.content.recipients = this.allSocialSubscribedList();
     this.showSelectedMemberIds();
   }
 
   editCommitteeRecipients() {
     this.logger.debug("editCommitteeRecipients");
-    this.notification.destinationType = "custom";
-    this.notification.campaignId = this.campaignIdFor("committee");
-    this.notification.list = "general";
-    this.notification.recipients = this.allCommitteeList();
+    this.notification.content.destinationType = "custom";
+    this.notification.content.campaignId = this.campaignIdFor("committee");
+    this.notification.content.list = "general";
+    this.notification.content.recipients = this.allCommitteeList();
     this.showSelectedMemberIds();
   }
 
   clearRecipientsForCampaignOfType(campaignType?: string) {
-    this.notification.customCampaignType = campaignType;
-    this.notification.campaignId = this.campaignIdFor(campaignType);
-    this.notification.list = "general";
-    this.notification.recipients = [];
+    this.notification.content.customCampaignType = campaignType;
+    this.notification.content.campaignId = this.campaignIdFor(campaignType);
+    this.notification.content.list = "general";
+    this.notification.content.recipients = [];
     this.showSelectedMemberIds();
   }
 
@@ -357,7 +341,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     return this.committeeFile ? this.dateUtils.asString(this.committeeFile.eventDate, undefined, this.dateUtils.formats.displayDateTh) + " - " + this.committeeFile.fileNameData.title : "";
   }
 
-  campaignIdFor(campaignType) {
+  campaignIdFor(campaignType: string): string {
     switch (campaignType) {
       case "committee":
         return this.config.mailchimp.campaigns.committee.campaignId;
@@ -383,15 +367,15 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   campaignIdChanged() {
-    const infoForCampaign = this.campaignInfoForCampaign(this.notification.campaignId);
-    this.logger.debug("for campaignId", this.notification.campaignId, "infoForCampaign", infoForCampaign);
+    const infoForCampaign = this.campaignInfoForCampaign(this.notification.content.campaignId);
+    this.logger.debug("for campaignId", this.notification.content.campaignId, "infoForCampaign", infoForCampaign);
     if (infoForCampaign) {
-      this.notification.title = infoForCampaign.name;
+      this.notification.content.title = infoForCampaign.name;
     }
   }
 
   handleNotificationError(errorResponse) {
-    this.userEdits.sendInProgress = false;
+    this.logger.error("handleNotificationError", errorResponse);
     this.notify.clearBusy();
     this.notify.error({
       title: "Your notification could not be sent",
@@ -408,26 +392,43 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     };
   }
 
-  sendEmailCampaign(contentSections, campaignName: string, dontSend: boolean) {
+  sendEmailCampaign(notificationText: string, campaignName: string, dontSend: boolean) {
+    const contentSections = this.populateContentSections(notificationText);
     this.notify.progress(dontSend ? ("Preparing to complete " + campaignName + " in Mailchimp") : ("Sending " + campaignName));
+
+    const validateExistenceOf = (list: string, fieldName: string) => {
+      return Promise.reject("Cannot send email from " + list + " list as there is no mailchimp " + fieldName + " configured. Check Committee Notification settings and make sure all fields are complete.");
+      this.logger.debug("all good with fieldName", fieldName);
+    };
+
     return this.mailchimpConfig.getConfig()
       .then((config) => {
-        const replyToRole = this.notification.signoffAs.value || "secretary";
+        const replyToRole = this.notification.content.signoffAs.value || "secretary";
         this.logger.debug("replyToRole", replyToRole);
 
-        let members;
-        const list = this.notification.list;
+        let members: MemberFilterSelection[];
+        const list = this.notification.content.list;
         const otherOptions = {
           from_name: this.committeeReferenceData.contactUsField(replyToRole, "fullName"),
           from_email: this.committeeReferenceData.contactUsField(replyToRole, "email"),
           list_id: config.mailchimp.lists[list]
         };
-        this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions);
-        const segmentId = config.mailchimp.segments[list].committeeSegmentId;
-        const campaignId = this.notification.campaignId;
-        switch (this.notification.destinationType) {
+        this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions, "config", config);
+        const segmentId = config?.mailchimp?.segments?.general?.committeeSegmentId;
+        const campaignId = this.notification.content?.campaignId;
+
+        if (!campaignId) {
+          return validateExistenceOf(list, "campaign id");
+        }
+        if (!segmentId) {
+          return validateExistenceOf(list, "segment id");
+        }
+
+        this.logger.debug("Sending Sending" + campaignId, "segmentId", segmentId);
+
+        switch (this.notification.content.destinationType) {
           case "custom":
-            members = this.notification.recipients;
+            members = this.notification.content.recipients.filter(item => this.notification.content.selectedMemberIds.includes(item.id));
             break;
           case "committee":
             members = this.allCommitteeList();
@@ -449,10 +450,10 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
             dontSend
           }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
         } else {
-          const segmentName = this.mailchimpSegmentService.formatSegmentName("Committee Notification Recipients");
-          return this.mailchimpSegmentService.saveSegment(list, {segmentId}, members, segmentName, this.members)
+          const segmentPrefix = "Committee Notification Recipients";
+          return this.mailchimpSegmentService.saveSegment(list, {segmentId}, members, segmentPrefix, this.members)
             .then(segmentResponse => {
-              this.logger.debug("segmentResponse following save segment of segmentName:", segmentName, "->", segmentResponse);
+              this.logger.debug("segmentResponse following save segment of segmentPrefix:", segmentPrefix, "->", segmentResponse);
               this.logger.debug("about to replicateAndSendWithOptions to committee with campaignName", campaignName, "campaign Id", campaignId, "segmentId", segmentResponse.segment.id);
               return this.mailchimpCampaignService.replicateAndSendWithOptions({
                 campaignId,
@@ -477,26 +478,24 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   notifyEmailSendComplete(campaignName: string) {
-    if (!this.userEdits.cancelled) {
-      this.notify.success("Sending of " + campaignName + " was successful.", false);
-      this.userEdits.sendInProgress = false;
-      this.cancelSendNotification();
-    }
     this.notify.clearBusy();
+    if (!this.notification.cancelled) {
+      this.notify.success("Sending of " + campaignName + " was successful.", false);
+      this.confirm.clear();
+      this.bsModalRef.hide();
+    }
   }
 
   confirmSendNotification(dontSend?: boolean) {
-    this.userEdits.sendInProgress = true;
-    const campaignName = this.notification.title;
+    const campaignName = this.notification.content.title;
     this.notify.setBusy();
-    return Promise.resolve(this.generateNotificationHTML(this.notificationDirective, this.committeeFile, this.notification, this.members, this.userEdits))
-      .then((notificationText) => this.populateContentSections(notificationText))
-      .then((notificationText) => this.sendEmailCampaign(notificationText, campaignName, dontSend))
+    return Promise.resolve(this.generateNotificationHTML(this.notificationDirective, this.committeeFile, this.notification, this.members))
+      .then(notificationText => this.sendEmailCampaign(notificationText, campaignName, dontSend))
       .then(() => this.notifyEmailSendComplete(campaignName))
-      .catch(() => this.handleNotificationError);
+      .catch((error) => this.handleNotificationError(error));
   }
 
-  generateNotificationHTML(notificationDirective: CommitteeNotificationDirective, committeeFile: CommitteeFile, notification: NotificationConfig, members: Member[], userEdits: UserEdits): string {
+  generateNotificationHTML(notificationDirective: CommitteeNotificationDirective, committeeFile: CommitteeFile, notification: Notification, members: Member[]): string {
     const componentAndData = new CommitteeNotificationComponentAndData(CommitteeNotificationDetailsComponent);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentAndData.component);
     const viewContainerRef = notificationDirective.viewContainerRef;
@@ -505,7 +504,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     componentRef.instance.committeeFile = committeeFile;
     componentRef.instance.notification = notification;
     componentRef.instance.members = members;
-    componentRef.instance.userEdits = userEdits;
+    componentRef.instance.notification = notification;
     componentRef.changeDetectorRef.detectChanges();
     const html = componentRef.location.nativeElement.innerHTML;
     this.logger.debug("notification html ->", html);
@@ -521,9 +520,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   cancelSendNotification() {
-    if (this.userEdits.sendInProgress) {
-      this.userEdits.sendInProgress = false;
-      this.userEdits.cancelled = true;
+    if (this.notifyTarget.busy) {
+      this.notification.cancelled = true;
       this.notify.error({
         title: "Cancelling during send",
         message: "Because notification sending was already in progress when you cancelled, campaign may have already been sent - check in Mailchimp if in doubt."
@@ -536,11 +534,13 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   onFromDateChange(dateValue: DateValue) {
-    this.userEdits.groupEvents.fromDate = dateValue;
+    this.notification.groupEventsFilter.fromDate = dateValue;
+    this.populateGroupEvents();
   }
 
   onToDateChange(dateValue: DateValue) {
-    this.userEdits.groupEvents.toDate = dateValue;
+    this.notification.groupEventsFilter.toDate = dateValue;
+    this.populateGroupEvents();
   }
 
   helpMembers() {
@@ -552,10 +552,10 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   onChange() {
-    if (this.notification.selectedMemberIds.length > 0) {
+    if (this.notification.content.selectedMemberIds.length > 0) {
       this.notify.warning({
         title: "Member selection",
-        message: `${this.notification.selectedMemberIds.length} members manually selected`
+        message: `${this.notification.content.selectedMemberIds.length} members manually selected`
       });
     } else {
       this.notify.hide();
@@ -570,8 +570,9 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     return ({name: children[0].memberGrouping, total: children.length});
   }
 
-  selectClick(select: NgSelectComponent) {
-    this.logger.info("selectClick:select.isOpen", select.isOpen);
+  selectAllGroupEvents() {
+    this.notification.groupEventsFilter.selectAll = !this.notification.groupEventsFilter.selectAll;
+    this.logger.debug("select all=", this.notification.groupEventsFilter.selectAll);
+    this.notification.groupEvents.forEach(event => event.selected = this.notification.groupEventsFilter.selectAll);
   }
-
 }

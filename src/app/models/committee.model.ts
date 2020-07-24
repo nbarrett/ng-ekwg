@@ -61,38 +61,38 @@ export interface CommitteeConfig {
   fileTypes: CommitteeFileType [];
 }
 
-export interface NotificationConfig {
+export interface GroupEventsFilter {
+  selectAll: boolean;
+  fromDate: DateValue;
+  toDate: DateValue;
+  includeContact: boolean;
+  includeDescription: boolean;
+  includeLocation: boolean;
+  includeWalks: boolean;
+  includeSocialEvents: boolean;
+  includeCommitteeEvents: boolean;
+}
+
+export interface NotificationContent {
+  title: string;
   list?: string;
   customCampaignType?: string;
   campaignId?: string;
-  editable: { signoffText: string; text: string };
-  includeSignoffText: boolean;
-  includeDownloadInformation: CommitteeFile;
-  signoffText: () => any;
+  includeDownloadInformation: boolean;
   addresseeType: string;
   recipients: MemberFilterSelection[];
   selectedMemberIds: string[];
-  signoffAs: { include: boolean; value: string };
+  signoffAs: { include: boolean; value: string; };
+  text: { include: boolean; value: string; };
+  signoffText: { include: boolean; value: string; };
   destinationType: string;
-  text: () => any;
-  groupEvents: () => any[];
-  title: string;
 }
 
-export interface UserEdits {
-  sendInProgress: boolean;
+export interface Notification {
   cancelled: boolean;
-  groupEvents: {
-    events: GroupEvent[];
-    fromDate: DateValue;
-    toDate: DateValue;
-    includeContact: boolean;
-    includeDescription: boolean;
-    includeLocation: boolean;
-    includeWalks: boolean;
-    includeSocialEvents: boolean;
-    includeCommitteeEvents: boolean;
-  };
+  content: NotificationContent;
+  groupEventsFilter: GroupEventsFilter;
+  groupEvents: GroupEvent[];
 }
 
 export interface CommitteeYear {
