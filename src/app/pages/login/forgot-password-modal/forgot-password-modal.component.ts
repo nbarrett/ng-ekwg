@@ -134,7 +134,6 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   }
 
   handleSendError(errorResponse) {
-    this.logger.error("handleSendError:", errorResponse);
     this.campaignSendInitiated = false;
     this.notify.error({
       continue: true,

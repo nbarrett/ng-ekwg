@@ -37,7 +37,7 @@ export class MailchimpCampaignService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.OFF);
     this.allowSendCampaign = true;
   }
 
@@ -119,7 +119,6 @@ export class MailchimpCampaignService {
   async sendCampaign(campaignId: string): Promise<MailchimpCampaignSendResponse> {
     if (!this.allowSendCampaign) {
       const reason = "You cannot send campaigns as sending has been disabled in this release of the application";
-      this.logger.error(reason);
       return Promise.reject(reason);
     }
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/send`, {}), this.campaignNotifications)).response;

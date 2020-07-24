@@ -367,8 +367,6 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
 
   resetSendFlagsAndNotifyError(error) {
     this.notify.clearBusy();
-    this.logger.error(error);
-    this.notify.error(error);
   }
 
   bulkUploadRamblersResponse(memberBulkLoadServerResponse) {

@@ -73,7 +73,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngAfterViewInit(): void {
@@ -333,14 +333,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     this.showSelectedMemberIds();
   }
 
-  fileUrl() {
-    return this.committeeFile && this.committeeFile.fileNameData ? this.urlService.baseUrl() + this.committeeFileBaseUrl + "/" + this.committeeFile.fileNameData.awsFileName : "";
-  }
-
-  fileTitle() {
-    return this.committeeFile ? this.dateUtils.asString(this.committeeFile.eventDate, undefined, this.dateUtils.formats.displayDateTh) + " - " + this.committeeFile.fileNameData.title : "";
-  }
-
   campaignIdFor(campaignType: string): string {
     switch (campaignType) {
       case "committee":
@@ -375,7 +367,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   }
 
   handleNotificationError(errorResponse) {
-    this.logger.error("handleNotificationError", errorResponse);
     this.notify.clearBusy();
     this.notify.error({
       title: "Your notification could not be sent",

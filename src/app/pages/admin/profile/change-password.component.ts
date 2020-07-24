@@ -161,9 +161,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
     this.notify.hide();
     this.validateUserNameExistence()
       .then(() => this.resetPassword())
-      // .then(() => this.validateUserName())
       .catch(response => {
-        this.logger.error(response);
         this.notify.error({title: "Profile", message: response});
       });
   }

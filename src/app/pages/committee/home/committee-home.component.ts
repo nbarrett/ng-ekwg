@@ -28,7 +28,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   public notifyTarget: AlertTarget = {};
   public allowAdminEdits: boolean;
   private destinationType: string;
-  private members: Member[];
+  public members: Member[];
   private selected: { committeeFile?: CommitteeFile, committeeFiles: CommitteeFile[] };
   public confirm = new Confirm();
 
@@ -43,6 +43,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
               private committeeQueryService: CommitteeQueryService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeHomeComponent, NgxLoggerLevel.OFF);
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
   }
 
   ngOnDestroy(): void {
@@ -51,7 +52,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.logger.debug("ngOnInit");
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
     this.destinationType = "";
     this.selected = {

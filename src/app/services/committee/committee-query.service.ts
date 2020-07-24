@@ -32,7 +32,7 @@ export class CommitteeQueryService {
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
     private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
   }
 
   groupEvents(groupEventsFilter: GroupEventsFilter): Promise<GroupEvent[]> {

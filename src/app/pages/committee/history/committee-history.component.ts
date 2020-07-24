@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import extend from "lodash-es/extend";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
@@ -6,7 +6,6 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member/member-login.service";
 import { AuthService } from "../../../auth/auth.service";
-import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeFileApiResponse, CommitteeYear } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
@@ -25,32 +24,34 @@ import { CommitteeSendNotificationModalComponent } from "../send-notification/co
 @Component({
   selector: "app-committee-history",
   templateUrl: "./committee-history.component.html",
-  changeDetection: ChangeDetectionStrategy.Default
 })
 export class CommitteeHistoryComponent implements OnInit, OnDestroy {
+
+  @Input()
+  public confirm: Confirm;
+  @Input()
+  public notify: AlertInstance;
+
   private logger: Logger;
   private subscription: Subscription;
-  public notify: AlertInstance;
-  public notifyTarget: AlertTarget = {};
   public committeeFileYears: CommitteeYear[] = [];
   public committeeFiles: CommitteeFile[] = [];
   public committeeFile: CommitteeFile;
-  @Input()
-  public confirm: Confirm;
 
-  constructor(private memberLoginService: MemberLoginService,
-              private notifierService: NotifierService,
-              private apiResponseProcessor: ApiResponseProcessProcessor,
-              private committeeReferenceData: CommitteeReferenceDataService,
-              public display: CommitteeDisplayService,
-              private route: ActivatedRoute,
-              private authService: AuthService,
-              private modalService: BsModalService,
-              private committeeQueryService: CommitteeQueryService,
-              private committeeFileService: CommitteeFileService,
-              private urlService: UrlService,
-              loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.DEBUG);
+  constructor(
+    private memberLoginService: MemberLoginService,
+    private notifierService: NotifierService,
+    private apiResponseProcessor: ApiResponseProcessProcessor,
+    private committeeReferenceData: CommitteeReferenceDataService,
+    public display: CommitteeDisplayService,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private modalService: BsModalService,
+    private committeeQueryService: CommitteeQueryService,
+    private committeeFileService: CommitteeFileService,
+    private urlService: UrlService,
+    loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {
@@ -62,37 +63,38 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     this.logger.info("ngOnInit");
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      const committeeFileId = paramMap.get("committee-file-id");
+      this.logger.debug("committeeFileId from route params:", paramMap, committeeFileId);
+      if (committeeFileId) {
+        return this.committeeFileService.getById(committeeFileId);
+      } else {
+        return this.committeeFileService.all();
+      }
+    });
     this.subscription = this.committeeFileService.notifications().subscribe((apiResponse: CommitteeFileApiResponse) => {
-      this.logger.info("received notification:", apiResponse);
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
+        this.notify.error({
+          title: "Problem viewing Committee file",
+          message: "The file in the link could not be found. Click the Committee tab above to clear this message."
+        });
       } else if (this.confirm.notificationsOutstanding()) {
         this.logger.debug("Not processing subscription response due to confirm:", this.confirm.type);
       } else {
         const filteredFiles = this.apiResponseProcessor.processResponse(this.logger, this.committeeFiles, apiResponse)
           .filter(file => this.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
           .sort(sortBy("-fileDate"));
-        this.notify.progress(`Found ${filteredFiles.length} committee file(s)`);
+        if (apiResponse.action === "query" && filteredFiles.length === 1) {
+          this.notify.warning({
+            title: "Single Committee File being viewed",
+            message: "Click the Committee tab above to restore normal view."
+          });
+        }
         this.notify.setReady();
         this.cancelConfirmations();
         this.committeeFiles = filteredFiles;
         this.committeeFileYears = this.committeeQueryService.committeeFileYears(this.committeeFiles);
-      }
-    });
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const committeeFileId = paramMap.get("committeeFileId");
-      this.logger.debug("committeeFileId from route params:", committeeFileId);
-      if (committeeFileId) {
-        return this.committeeFileService.getById(committeeFileId);
-        // .then(committeeFile => {
-        //   if (!committeeFile) {
-        //     this.notify.error("Committee file could not be found. Try opening again from the link in the notification email");
-        //   }
-        //   this.committeeFiles = [committeeFile];
-        // });
-      } else {
-        return this.committeeFileService.all();
       }
     });
   }

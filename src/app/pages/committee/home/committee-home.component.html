@@ -9,9 +9,9 @@
           </div>
         </div>
       </div>
-      <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-        <app-committee-general [confirm]="confirm"></app-committee-general>
-        <app-committee-history [confirm]="confirm"></app-committee-history>
+      <accordion  [isAnimated]="true" class="accordion-style" [closeOthers]="false">
+        <app-committee-general [notify]="notify" [confirm]="confirm"></app-committee-general>
+        <app-committee-history [notify]="notify" [confirm]="confirm"></app-committee-history>
       </accordion>
     </div>
     <div class="col-sm-4 auto-fit-column">

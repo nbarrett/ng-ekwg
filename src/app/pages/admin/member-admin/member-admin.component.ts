@@ -64,7 +64,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 

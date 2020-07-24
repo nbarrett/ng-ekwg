@@ -5,8 +5,8 @@ import { CommitteeModule } from "./committee.module";
 
 @NgModule({
   imports: [CommitteeModule, RouterModule.forChild([
-    {path: "", component: CommitteeHomeComponent},
-    {path: "committee", component: CommitteeHomeComponent}
+    {path: ":committee-file-id", component: CommitteeHomeComponent},
+    {path: "**", component: CommitteeHomeComponent}
   ])]
 })
 export class CommitteeRoutingModule {

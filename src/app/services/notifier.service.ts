@@ -13,7 +13,7 @@ export class AlertInstance {
   private logger: Logger;
 
   constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
-    this.logger = loggerFactory.createLogger(AlertInstance, level || NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(AlertInstance, level || NgxLoggerLevel.ERROR);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;
     this.alertTarget.alert = ALERT_SUCCESS;
   }

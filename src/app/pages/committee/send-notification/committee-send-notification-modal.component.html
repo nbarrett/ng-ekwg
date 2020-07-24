@@ -175,7 +175,7 @@
                   <label
                     [ngClass]="{'ui-state-active': notification.content.includeDownloadInformation}"
                     for="include-download-information">{{committeeFile.fileType}} -
-                    {{fileTitle()}}
+                    {{display.fileTitle(committeeFile)}}
                     <input [(ngModel)]="notification.content.includeDownloadInformation"
                            type="checkbox" id="include-download-information">
                   </label>

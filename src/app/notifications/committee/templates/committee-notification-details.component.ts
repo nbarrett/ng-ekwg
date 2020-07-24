@@ -24,7 +24,7 @@ export class CommitteeNotificationDetailsComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     public display: CommitteeDisplayService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeNotificationDetailsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   selectedGroupEvents(): GroupEvent[] {

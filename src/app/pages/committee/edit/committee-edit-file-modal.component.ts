@@ -73,7 +73,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeEditFileModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeEditFileModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -125,7 +125,6 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   handleError(errorResponse) {
-    this.logger.error("errorResponse:", errorResponse);
     this.notify.error({
       title: "Your changes could not be saved",
       message: (errorResponse && errorResponse.error ? (". Error was: " + JSON.stringify(errorResponse.error)) : "")

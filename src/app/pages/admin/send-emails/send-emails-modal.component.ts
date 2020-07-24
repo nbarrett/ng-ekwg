@@ -364,7 +364,6 @@ export class SendEmailsModalComponent implements OnInit {
 
   handleSendError(errorResponse) {
     this.notify.clearBusy();
-    this.logger.error(errorResponse);
     this.notify.error({
       title: "Your notification could not be sent",
       message: `${errorResponse.message || errorResponse}${errorResponse.error ? (`. Error was: ${this.stringUtils.stringify(errorResponse.error)}`) : ""}`

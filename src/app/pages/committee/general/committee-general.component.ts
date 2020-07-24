@@ -23,12 +23,14 @@ import { CommitteeSendNotificationModalComponent } from "../send-notification/co
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class CommitteeGeneralComponent implements OnInit, OnDestroy {
-  private logger: Logger;
-  private subscription: Subscription;
-  public notify: AlertInstance;
-  public notifyTarget: AlertTarget = {};
   @Input()
   public confirm: Confirm;
+  @Input()
+  public notify: AlertInstance;
+
+  private logger: Logger;
+  private subscription: Subscription;
+  public notifyTarget: AlertTarget = {};
   constructor(private memberLoginService: MemberLoginService,
               private mailchimpLinkService: MailchimpLinkService,
               public display: CommitteeDisplayService,

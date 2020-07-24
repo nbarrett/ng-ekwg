@@ -56,7 +56,7 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

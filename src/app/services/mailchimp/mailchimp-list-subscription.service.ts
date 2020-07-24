@@ -108,9 +108,7 @@ export class MailchimpListSubscriptionService {
           }
         }).catch(response => {
           const data = response.error;
-          this.logger.error(response);
           const errorMessage = `Sending of ${listType} member data to Mailchimp was not successful due to response: ${data}`;
-          this.logger.error(errorMessage);
           return Promise.reject(errorMessage);
         });
     } else {

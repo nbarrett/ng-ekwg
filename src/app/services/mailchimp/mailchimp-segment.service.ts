@@ -21,7 +21,7 @@ export class MailchimpSegmentService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.OFF);
   }
 
   renameSegment(listType: string, segmentId: number, segmentPrefix: string) {

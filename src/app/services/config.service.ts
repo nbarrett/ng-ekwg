@@ -18,7 +18,7 @@ export class ConfigService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               private stringUtilsService: StringUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ConfigService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ConfigService, NgxLoggerLevel.OFF);
   }
 
   async create(config: any): Promise<any> {

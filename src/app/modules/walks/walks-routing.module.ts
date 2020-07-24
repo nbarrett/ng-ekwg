@@ -11,14 +11,13 @@ import { WalksModule } from "./walks.module";
 
 @NgModule({
   imports: [WalksModule, RouterModule.forChild([
-    {path: "", component: WalkListComponent},
-    {path: "walks", component: WalkListComponent},
     {path: "add", component: WalkEditComponent, canActivate: [WalksAuthGuard]},
     {path: "add-walk-slots", component: WalkAddSlotsComponent, canActivate: [WalksAuthGuard]},
     {path: "edit/:walk-id", component: WalkEditFullPageComponent},
     {path: "export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
     {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
     {path: "walkId/:walk-id", component: WalkListComponent},
+    {path: "**", component: WalkListComponent},
   ])]
 })
 export class WalksRoutingModule {
