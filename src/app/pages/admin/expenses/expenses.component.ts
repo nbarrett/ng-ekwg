@@ -15,7 +15,7 @@ import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ApiResponse } from "../../../models/api-response.model";
+import { ApiAction, ApiResponse } from "../../../models/api-response.model";
 import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem, ExpenseNotificationRequest } from "../../../models/expense.model";
 import { Member } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
@@ -174,13 +174,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   private applyExpensesToView(apiResponse: ApiResponse) {
     const expenseClaims: ExpenseClaim[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
     this.logger.info("Received", expenseClaims.length, "expense", apiResponse.action, "notification(s)");
-    if (apiResponse.action === "query") {
+    if (apiResponse.action === ApiAction.QUERY) {
       this.unfilteredExpenseClaims = expenseClaims;
     } else {
       this.logger.debug("unfilteredExpenseClaims size before", this.unfilteredExpenseClaims.length);
       expenseClaims.forEach(notifiedClaim => {
         this.unfilteredExpenseClaims = this.unfilteredExpenseClaims.filter(claim => claim.id !== notifiedClaim.id);
-        if (apiResponse.action !== "delete") {
+        if (apiResponse.action !== ApiAction.DELETE) {
           this.logger.debug("adding/replacing item", notifiedClaim);
           this.unfilteredExpenseClaims.push(notifiedClaim);
         } else {

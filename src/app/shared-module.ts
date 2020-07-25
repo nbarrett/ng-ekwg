@@ -38,6 +38,7 @@ import { DisplayDatePipe } from "./pipes/display-date.pipe";
 import { DisplayDatesPipe } from "./pipes/display-dates.pipe";
 import { DisplayDayPipe } from "./pipes/display-day.pipe";
 import { EventNotePipe } from "./pipes/event-note.pipe";
+import { FormatAuditPipe } from "./pipes/format-audit-pipe";
 import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pipe";
 import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
@@ -90,6 +91,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     AccordionGroupComponent,
     ContactUsDirective,
     CreatedAuditPipe,
+    FormatAuditPipe,
     DatePickerComponent,
     DisplayDateAndTimePipe,
     DisplayDatePipe,

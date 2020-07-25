@@ -57,10 +57,7 @@ angular.module("ekwgApp", [
       .when("/letterhead/:firstPart?/:secondPart", {
         templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
-      .when(mainPages.SOCIAL + "/socialEventId/:socialEventId", {
-        controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
-      })
-      .when(mainPages.SOCIAL + "/:area?", {
+      .when(mainPages.SOCIAL + "/:socialEventId?", {
         controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
       .otherwise({template: ''});

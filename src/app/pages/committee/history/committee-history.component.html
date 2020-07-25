@@ -5,23 +5,20 @@
     <input *ngIf="display.allowAddCommitteeFile() && committeeFilesForYear(committeeFileYear.year)?.length===0"
            type="submit" value="Add File" (click)="addCommitteeFile()" title="Add new File"
            class="button-form">
-
-    <div *ngFor="let committeeFile of committeeFilesForYear(committeeFileYear.year)">
-
-      <div class="file-item"
-           (mouseover)="selectCommitteeFile(committeeFile, committeeFiles)">
-        <div class="file-download" *ngIf="committeeFile.fileNameData">
-          <img class="icon" [src]="'assets/images/ramblers/' + display.iconFile(committeeFile)"
-               [alt]="display.iconFile(committeeFile)"/>
-          <a class="morelink" target='_blank' [title]="display.fileTitle(committeeFile)"
-             [href]="display.fileUrl(committeeFile)">Download</a>
-        </div>
-        <div class="file-detail">
-          <h3 [textContent]="committeeFile.fileType"></h3>
-          <p [textContent]="display.fileTitle(committeeFile)"></p>
-          <div *ngIf="isActive(committeeFile)" class="row">
-            <div class="col-sm-12">
-              <div class="action-button-group">
+    <div class="file-item" *ngFor="let committeeFile of committeeFilesForYear(committeeFileYear.year)"
+         (mouseover)="selectCommitteeFile(committeeFile, committeeFiles)">
+      <div class="file-download" *ngIf="committeeFile.fileNameData">
+        <img class="icon" [src]="'assets/images/ramblers/' + display.iconFile(committeeFile)"
+             [alt]="display.iconFile(committeeFile)"/>
+        <a class="morelink" target='_blank' [title]="display.fileTitle(committeeFile)"
+           [href]="display.fileUrl(committeeFile)">Download</a>
+      </div>
+      <div class="file-detail">
+        <h3 [textContent]="committeeFile.fileType"></h3>
+        <p [textContent]="display.fileTitle(committeeFile)"></p>
+        <div *ngIf="memberLoginService.allowCommittee() &&  isActive(committeeFile)" class="row">
+          <div class="col-sm-12">
+            <div class="action-button-group">
                 <span *ngIf="!confirm.deleteConfirmOutstanding()">
                   <input *ngIf="display.allowAddCommitteeFile()" type="submit"
                          value="Add File" (click)="addCommitteeFile()"
@@ -40,7 +37,7 @@
                          (click)="deleteCommitteeFile()" title="Delete File"
                          class="button-form button-confirm">
                 </span>
-                <span *ngIf="confirm.deleteConfirmOutstanding()">
+              <span *ngIf="confirm.deleteConfirmOutstanding()">
                   <input type="submit" value="Confirm Delete of File"
                          (click)="display.confirmDeleteCommitteeFile(notify, committeeFile)"
                          title="Delete File" class="button-form button-confirm">
@@ -49,7 +46,6 @@
                          title="Cancel delete of File"
                          class="button-form green-confirm">
                 </span>
-              </div>
             </div>
           </div>
         </div>

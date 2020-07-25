@@ -17,7 +17,6 @@ import { AdminModule } from "./admin.module";
     {path: "", component: AdminComponent},
     {path: "expenses", component: ExpensesComponent, canActivate: [LoggedInGuard]},
     {path: "expenses/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
-    {path: "expenses/expenseId/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
     {path: "member-login-audit", component: MemberLoginAuditComponent, canActivate: [AdminAuthGuard]},
     {path: "member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
     {path: "profile", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},

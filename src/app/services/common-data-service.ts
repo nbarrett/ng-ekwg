@@ -4,7 +4,9 @@ import { each } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { share } from "rxjs/operators";
+import { ApiResponse } from "../models/api-response.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { StringUtilsService } from "./string-utils.service";
 
 @Injectable({
   providedIn: "root"
@@ -13,11 +15,11 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 export class CommonDataService {
   private logger: Logger;
 
-  constructor(loggerFactory: LoggerFactory) {
+  constructor(loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
     this.logger = loggerFactory.createLogger(CommonDataService, {level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF});
   }
 
-  public async responseFrom<T>(logger: Logger, observable: Observable<T>, notifications: Subject<T>): Promise<T> {
+  public async responseFrom<T extends ApiResponse>(logger: Logger, observable: Observable<T>, notifications: Subject<T>, rejectOnError?: boolean): Promise<T> {
     const shared = observable.pipe(share());
     shared.subscribe((apiResponse: T) => {
       logger.log(apiResponse);
@@ -26,7 +28,8 @@ export class CommonDataService {
       logger.error("http error response", httpErrorResponse);
       notifications.next(httpErrorResponse.error);
     });
-    return await shared.toPromise();
+    const apiResponse = await shared.toPromise();
+    return rejectOnError && apiResponse.error ? Promise.reject("campaign update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse;
   }
 
   public toHttpParams(criteria: object): HttpParams {

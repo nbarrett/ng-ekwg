@@ -3,6 +3,7 @@ import { TestBed } from "@angular/core/testing";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
+import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { UrlService } from "./url.service";
 
 describe("UrlService", () => {
@@ -60,15 +61,35 @@ describe("UrlService", () => {
 
   describe("notificationHref", () => {
 
-    const object = {
-      type: "walk",
-      area: "walks",
-      id: "1234-567"
-    };
+    it("should return the url of a walk on the site", () => {
+      const object: NotificationUrlConfig = {
+        area: "walks",
+        id: "1234-567"
+      };
 
-    it("should return the url of an event on the site", () => {
       const service: UrlService = TestBed.get(UrlService);
-      expect(service.notificationHref(object)).toBe("https://www.ekwg.co.uk/walks/walkId/1234-567");
+      expect(service.notificationHref(object)).toBe("https://www.ekwg.co.uk/walks/1234-567");
+    });
+
+    it("should return the url of an expense in the sub-area of admin", () => {
+      const object: NotificationUrlConfig = {
+        subArea: "expenses",
+        area: "admin",
+        id: "1234-567"
+      };
+
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.notificationHref(object)).toBe("https://www.ekwg.co.uk/admin/expenses/1234-567");
+    });
+
+    it("should return the aws url if name supplied", () => {
+
+      const object: NotificationAWSUrlConfig = {
+        name: "expenses/file.12346.pdf",
+      };
+
+      const service: UrlService = TestBed.get(UrlService);
+      expect(service.notificationHref(object)).toBe("https://www.ekwg.co.uk/api/aws/s3/expenses/file.12346.pdf");
     });
 
   });
@@ -148,11 +169,6 @@ describe("UrlService", () => {
   it("absUrl should return full current url ", () => {
     const service: UrlService = TestBed.get(UrlService);
     expect(service.absUrl()).toBe(URL_PATH);
-  });
-
-  it("should return resourceUrl as area type and id joined by slashes", () => {
-    const service: UrlService = TestBed.get(UrlService);
-    expect(service.resourceUrl("admin", "expenses", "12345")).toBe("https://www.ekwg.co.uk/admin/expensesId/12345");
   });
 
 });

@@ -82,15 +82,4 @@ export class MemberLoginService {
     return this.loggedInMember().socialMember;
   }
 
-  refreshLoggedInMemberToken(member: MemberCookie): Promise<void> {
-    const existingCookie = this.cookieParserService.cookieValueFor("loggedInMember");
-    const notCurrentMember = existingCookie.memberId !== member.memberId;
-    if (!isEmpty(existingCookie) && notCurrentMember) {
-      return Promise.reject(`Invalid attempt to set logged-on member from ${this.fullNamePipe.transform(existingCookie)} to ${this.fullNamePipe.transform(member)}`);
-    } else {
-      // TODO: need to refresh token in server
-      return Promise.resolve();
-    }
-  }
-
 }

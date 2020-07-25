@@ -10,8 +10,8 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -32,31 +32,31 @@ const pleaseTryAgain = " - please try again";
 export class ChangePasswordComponent implements OnInit, OnDestroy {
   public member: Member;
   private subscription: Subscription;
-
-  constructor(private memberService: MemberService,
-              private contentMetadata: ContentMetadataService,
-              private searchFilterPipe: SearchFilterPipe,
-              private modalService: BsModalService,
-              private notifierService: NotifierService,
-              private dateUtils: DateUtilsService,
-              private urlService: UrlService,
-              private profileConfirmationService: ProfileConfirmationService,
-              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
-              private mailchimpListUpdaterService: MailchimpListUpdaterService,
-              private stringUtils: StringUtilsService,
-              private profileService: ProfileService,
-              private authService: AuthService,
-              private broadcastService: BroadcastService,
-              private routerHistoryService: RouterHistoryService,
-              private memberLoginService: MemberLoginService,
-              loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ChangePasswordComponent, NgxLoggerLevel.OFF);
-  }
-
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
   public enteredMemberCredentials: EnteredMemberCredentials = {};
+
+  constructor(
+    private authService: AuthService,
+    private broadcastService: BroadcastService,
+    private contentMetadata: ContentMetadataService,
+    private dateUtils: DateUtilsService,
+    private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
+    private mailchimpListUpdaterService: MailchimpListUpdaterService,
+    private memberLoginService: MemberLoginService,
+    private memberService: MemberService,
+    private modalService: BsModalService,
+    private notifierService: NotifierService,
+    private profileConfirmationService: ProfileConfirmationService,
+    private routerHistoryService: RouterHistoryService,
+    private searchFilterPipe: SearchFilterPipe,
+    private stringUtils: StringUtilsService,
+    private urlService: UrlService,
+    public profileService: ProfileService,
+    loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(ChangePasswordComponent, NgxLoggerLevel.OFF);
+  }
 
   ngOnDestroy(): void {
     this.logger.debug("unsubscribing");

@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
-import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
-import { MailchimpSubscription } from "../../models/mailchimp.model";
+import { MailchimpSubscription, MergeVariablesRequest, SubscriptionRequest } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -49,13 +48,13 @@ export class MailchimpListSubscriptionService {
     }
   }
 
-  addMailchimpIdentifiersToRequest(member, listType, request?: any) {
+  addMailchimpIdentifiersToRequest(member: Member, listType, mergeVariablesRequest?: MergeVariablesRequest): SubscriptionRequest {
     const mailchimpIdentifiers: MailchimpSubscription = {email: {email: member.email}};
     if (member.mailchimpLists[listType].leid) {
       mailchimpIdentifiers.email.leid = member.mailchimpLists[listType].leid;
     }
-    if (request) {
-      return extend({}, request, mailchimpIdentifiers);
+    if (mergeVariablesRequest) {
+      return {...mergeVariablesRequest, ...mailchimpIdentifiers};
     } else {
       return mailchimpIdentifiers.email;
     }
@@ -64,11 +63,11 @@ export class MailchimpListSubscriptionService {
   createBatchSubscriptionForList(listType, members): Promise<Member[]> {
     this.logger.debug(`Sending ${listType} member data to Mailchimp`);
     const batchedMembers = [];
-    const subscriptionEntries = chain(members)
+    const subscriptionRequests: SubscriptionRequest[] = chain(members)
       .filter(member => this.mailchimpListService.includeMemberInSubscription(listType, member))
       .map(member => {
         batchedMembers.push(member);
-        const request = {
+        const request: MergeVariablesRequest = {
           merge_vars: {
             FNAME: member.firstName,
             LNAME: member.lastName,
@@ -80,10 +79,10 @@ export class MailchimpListSubscriptionService {
         };
         return this.addMailchimpIdentifiersToRequest(member, listType, request);
       }).value();
-    this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionEntries.length, "members");
-    if (subscriptionEntries.length > 0) {
-      this.logger.info("sending", subscriptionEntries.length, listType, "subscriptions to mailchimp", subscriptionEntries);
-      return this.mailchimpListService.batchSubscribe(listType, subscriptionEntries)
+    this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
+    if (subscriptionRequests.length > 0) {
+      this.logger.info("sending", subscriptionRequests.length, listType, "subscriptions to mailchimp", subscriptionRequests);
+      return this.mailchimpListService.batchSubscribe(listType, subscriptionRequests)
         .then(response => {
           this.logger.info("createBatchSubscriptionForList response", response);
           const errorResponse = this.mailchimpErrorParserService.extractError(response);
@@ -95,13 +94,13 @@ export class MailchimpListSubscriptionService {
             });
           } else {
             const totalResponseCount = response.updates.concat(response.adds).concat(response.errors).length;
-            this.logger.debug(`Send of ${subscriptionEntries.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
+            this.logger.debug(`Send of ${subscriptionRequests.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
             const savePromises = [];
             this.processValidResponses(listType, response.updates.concat(response.adds), batchedMembers, savePromises);
             this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
             return Promise.all(savePromises).then(() => {
               return this.refreshMembersIfAdmin().then(refreshedMembers => {
-                this.logger.debug(`Send of ${subscriptionEntries.length} members to ${listType} list completed with ${response.add_count} member(s) added, ${response.update_count} updated and ${response.error_count} error(s)`);
+                this.logger.debug(`Send of ${subscriptionRequests.length} members to ${listType} list completed with ${response.add_count} member(s) added, ${response.update_count} updated and ${response.error_count} error(s)`);
                 return refreshedMembers;
               });
             });

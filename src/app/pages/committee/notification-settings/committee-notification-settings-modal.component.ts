@@ -91,7 +91,7 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
   }
 
   notReady() {
-    return this.campaigns.data.length === 0;
+    return this.campaigns?.data?.length === 0;
   }
 
   editCampaign(campaignId) {

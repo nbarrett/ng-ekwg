@@ -70,6 +70,20 @@ export interface MailchimpConfig {
   };
 }
 
+export interface MergeVariables {
+  EMAIL?: string;
+  FNAME: string;
+  LNAME: string;
+  MEMBER_NUM: string;
+  USERNAME: string;
+  PW_RESET: string;
+  MEMBER_EXP: string;
+}
+
+export interface MergeVariablesRequest {
+  merge_vars: MergeVariables;
+}
+
 export interface MailchimpSubscriber {
   email: string;
   id: string;
@@ -86,15 +100,7 @@ export interface MailchimpSubscriber {
   language: string;
   list_id: string;
   list_name: string;
-  merges: {
-    EMAIL: string;
-    FNAME: string;
-    LNAME: string;
-    MEMBER_NUM: string;
-    USERNAME: string;
-    PW_RESET: string;
-    MEMBER_EXP: string;
-  };
+  merges: MergeVariables;
   status: string;
   timestamp: string;
   is_gmonkey: false;
@@ -135,14 +141,16 @@ export interface MailchimpSubscription {
   updated?: boolean;
   leid?: string;
   lastUpdated?: number;
-  email?: { email: string, leid?: string };
+  email?: SubscriberIdentifiers;
 }
 
 export interface SubscriberIdentifiers {
   email: string;
-  euid: string;
-  leid: number;
+  euid?: string;
+  leid?: number;
 }
+
+export type SubscriptionRequest = SubscriberIdentifiers | MergeVariablesRequest & MailchimpSubscription;
 
 export interface MailchimpBatchSubscriptionResponse {
   error_count: number;
@@ -165,6 +173,10 @@ export interface MailchimpListSegmentResetResponse {
 
 export interface MailchimpListSegmentAddResponse {
   id: number;
+  status: string;
+  code: number;
+  name: string;
+  error: string;
 }
 
 export interface MailchimpListDeleteSegmentMembersResponse {
@@ -198,6 +210,10 @@ export interface MailchimpCampaignListResponse {
   data: MailchimpCampaign[];
 }
 
+export interface SaveSegmentResponse {
+  segment: { id: number };
+}
+
 export interface MailchimpCampaign {
   id: string;
   web_id: number;
@@ -209,7 +225,7 @@ export interface MailchimpCampaign {
     id: number;
     type: string;
     name: string;
-  },
+  };
   status: string;
   from_name: string;
   archive_url_long: string;

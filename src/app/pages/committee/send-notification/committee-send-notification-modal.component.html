@@ -20,25 +20,24 @@
                       id="send-to-committee"
                       [disabled]="allCommitteeList().length===0"
                       type="radio"
-                      [ngModel]="notification.content.destinationType"
+                      [(ngModel)]="notification.content.destinationType"
                       value="committee"/>
                     <label for="send-to-committee">{{allCommitteeList().length}}
                       Committee Members
                     </label>
                     <a *ngIf="allCommitteeList().length>0"
-                       (click)="editCommitteeRecipients()"
-                       [href]=""> (edit)</a>
+                       (click)="editCommitteeRecipients()"> (edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('general')" id="send-to-general"
                            [disabled]="allGeneralSubscribedList().length===0"
                            name="send-to"
                            type="radio"
-                           [ngModel]="notification.content.destinationType"
+                           [(ngModel)]="notification.content.destinationType"
                            value="general"/>
                     <label for="send-to-general">{{allGeneralSubscribedList().length}} General List
                       Members </label>
-                    <a [href]="" *ngIf="allGeneralSubscribedList().length>0"
+                    <a *ngIf="allGeneralSubscribedList().length>0"
                        (click)="editAllEKWGRecipients()"> (edit)</a>
                   </div>
                   <div class="radio">
@@ -47,14 +46,14 @@
                            id="send-to-walks"
                            [disabled]="allWalksSubscribedList().length===0"
                            type="radio"
-                           [ngModel]="notification.content.destinationType"
+                           [(ngModel)]="notification.content.destinationType"
                            value="walks"/>
                     <label for="send-to-walks">{{allWalksSubscribedList().length}} Walks List
                       Members
                     </label>
                     <a *ngIf="allWalksSubscribedList().length>0"
                        (click)="editAllWalksRecipients()"
-                       [href]=""> (edit)</a>
+                    > (edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
@@ -62,7 +61,7 @@
                            id="send-to-social"
                            [disabled]="allSocialSubscribedList().length===0"
                            type="radio"
-                           [ngModel]="notification.content.destinationType"
+                           [(ngModel)]="notification.content.destinationType"
                            value="socialEvents"/>
                     <label for="send-to-social">{{allSocialSubscribedList().length}}
                       Social List Members
@@ -73,13 +72,13 @@
                   <div class="radio">
                     <input id="custom" type="radio"
                            name="send-to"
-                           [ngModel]="notification.content.destinationType"
+                           [(ngModel)]="notification.content.destinationType"
                            value="custom"/>
                     <label for="custom">
                       <span *ngIf="notification.content.recipients.length===0">Choose individual recipients</span>
                       <span
-                        *ngIf="notification.content.recipients.length>0">{{notification.content.recipients.length}}
-                        recipient(s) chosen </span>
+                        *ngIf="notification.content.recipients.length>0">{{this.notification.content.selectedMemberIds.length}}
+                        recipient(s) chosen from {{this.notification.content.list}} list</span>
                     </label>
                     <a (click)="clearRecipientsForCampaignOfType()"> (clear)</a>
                   </div>
@@ -266,7 +265,7 @@
                   <li class="mb-12" *ngIf="notification.groupEvents.length>0"
                       [ngClass]="notification.groupEventsFilter.selectAll ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
                       (click)="selectAllGroupEvents()">
-                    <strong>Select/Deselect All</strong> here, or use the individual checkboxes below to include/exclude any
+                    <strong>Select/Deselect All</strong>, or use the individual checkboxes below to include/exclude any
                     of the following {{notification.groupEvents.length}} events:
                   </li>
                   <li [ngClass]="event.selected ? 'group-events-checkbox-on' : 'group-events-checkbox-off'"
@@ -281,7 +280,6 @@
                       <span [textContent]="event.eventType"></span>
                       •
                       <app-notification-url [area]="event?.area"
-                                            [type]="event?.type"
                                             [id]="event?.id"
                                             [text]="event?.title"
                                             target="_blank"></app-notification-url>
@@ -382,13 +380,13 @@
     </div>
     <div class="modal-footer">
       <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
-             [disabled]="notifyTarget.busy"
+             [disabled]="notReady()"
              title="Confirm sending of notification email"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm green-confirm button-form-left'">
+             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm green-confirm button-form-left'">
       <input type="submit" value="Complete in Mailchimp" (click)="completeInMailchimp()"
-             [disabled]="notifyTarget.busy"
+             [disabled]="notReady()"
              title="Complete editing and sending of Mailchimp"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
       <input type="submit" value="Cancel Send" (click)="cancelSendNotification()"
              title="Cancel sending of notification email"
              class="button-form button-confirm button-form-left">

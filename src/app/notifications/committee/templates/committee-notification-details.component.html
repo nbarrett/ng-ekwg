@@ -24,7 +24,6 @@
       • <span [textContent]="event.eventType"></span>
       •
       <app-notification-url area="{{event.area}}"
-                            type="{{event.type}}"
                             id="{{event.id}}"
                             text="{{event.title}}"
                             target="_blank"></app-notification-url>
@@ -50,5 +49,5 @@
   </div>
 </div>
 <p *ngIf="notification.content.signoffText.include" [textContent]="notification?.content.signoffText.value"></p>
-<app-contact-us *ngIf="notification?.content.signoffAs.value" format="list"
+<app-contact-us *ngIf="notification?.content.signoffAs.include" format="list"
                 [role]="notification?.content.signoffAs.value"></app-contact-us>

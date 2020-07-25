@@ -1,15 +1,12 @@
 import { Injectable } from "@angular/core";
-import { Router } from "@angular/router";
-import { last } from "lodash-es";
 import clone from "lodash-es/clone";
-import extend from "lodash-es/extend";
+import cloneDeep from "lodash-es/cloneDeep";
+import last from "lodash-es/last";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeFile } from "../../models/committee.model";
-import { Confirm } from "../../models/ui-actions";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { CommitteeFileService } from "../../services/committee/committee-file.service";
-import { CommitteeQueryService } from "../../services/committee/committee-query.service";
 import { CommitteeReferenceDataService } from "../../services/committee/committee-reference-data.service";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { DateUtilsService } from "../../services/date-utils.service";
@@ -18,7 +15,6 @@ import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
 import { AlertInstance } from "../../services/notifier.service";
 import { UrlService } from "../../services/url.service";
-import { CommitteeSendNotificationModalComponent } from "./send-notification/committee-send-notification-modal.component";
 
 @Injectable({
   providedIn: "root"
@@ -32,11 +28,9 @@ export class CommitteeDisplayService {
     private memberService: MemberService,
     private modalService: BsModalService,
     private memberLoginService: MemberLoginService,
-    private router: Router,
     private urlService: UrlService,
     private valueOrDefault: ValueOrDefaultPipe,
     private dateUtils: DateUtilsService,
-    private committeeQueryService: CommitteeQueryService,
     private committeeReferenceData: CommitteeReferenceDataService,
     private committeeFileService: CommitteeFileService,
     private contentMetadataService: ContentMetadataService,
@@ -62,7 +56,7 @@ export class CommitteeDisplayService {
       keyboard: true,
       focus: true,
       show: true,
-      initialState: extend({}, initialState)
+      initialState: cloneDeep(initialState)
     };
   }
 
@@ -91,7 +85,7 @@ export class CommitteeDisplayService {
   }
 
   fileUrl(committeeFile: CommitteeFile) {
-    return committeeFile && committeeFile.fileNameData ? this.urlService.baseUrl() + "/" + this.committeeFileBaseUrl + "/" + committeeFile.fileNameData.awsFileName : "";
+    return committeeFile ? this.urlService.baseUrl() + "/" + this.committeeFileBaseUrl + "/" + committeeFile?.fileNameData?.awsFileName : "";
   }
 
   fileTitle(committeeFile: CommitteeFile) {

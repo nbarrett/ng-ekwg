@@ -124,8 +124,8 @@ export class MemberService {
     }
   }
 
-  extractMemberId(memberIdOrObject) {
-    return (memberIdOrObject && memberIdOrObject.id) ? memberIdOrObject.id : memberIdOrObject;
+  extractMemberId(memberIdOrObject: any): string {
+    return memberIdOrObject?.id ?? memberIdOrObject;
   }
 
   allLimitedFields(filterFunction?: (value?: any) => boolean) {
@@ -153,19 +153,19 @@ export class MemberService {
       .sortBy(member => member.firstName + member.lastName).value());
   }
 
-  toMember(memberIdOrObject, members): Member {
+  toMember(memberIdOrObject: any, members: Member[]): Member {
     const memberId = this.extractMemberId(memberIdOrObject);
     return members.find(member => this.extractMemberId(member) === memberId);
   }
 
-  allMemberMembersWithPrivilege(privilege, members) {
+  allMemberMembersWithPrivilege(privilege, members: Member[]) {
     const filteredMembers = members.filter(member => member.groupMember && member[privilege]);
     this.logger.debug("allMemberMembersWithPrivilege:privilege", privilege, "filtered from", members.length, "->", filteredMembers.length, "members ->", filteredMembers);
     return filteredMembers;
   }
 
-  allMemberIdsWithPrivilege(privilege, members) {
-    return this.allMemberMembersWithPrivilege(privilege, members).map(this.extractMemberId);
+  allMemberIdsWithPrivilege(privilege, members: Member[]) {
+    return this.allMemberMembersWithPrivilege(privilege, members).map(member => member.id);
   }
 
 }

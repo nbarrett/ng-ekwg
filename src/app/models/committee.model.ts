@@ -23,16 +23,15 @@ export interface GroupEvent extends Identifiable {
   selected: boolean;
   eventType: string;
   area: string;
-  type: string;
   eventDate: number;
-  eventTime: string;
+  eventTime?: string;
+  distance?: string;
   postcode: string;
   title: string;
   description: string;
   contactName: string;
-  contactPhone: string;
+  contactPhone?: string;
   contactEmail: string;
-  distance?: string;
 }
 
 export interface CommitteeMember {

@@ -35,16 +35,17 @@ export interface ExpenseItem {
   expenseType: ExpenseType;
   expenseDate: number;
   travel?: {
-    costPerMile: number,
+    costPerMile: number;
     miles: number;
     from?: string;
-    to?: string,
+    to?: string;
     returnJourney: boolean
   };
   receipt?: {
     awsFileName?: string;
     originalFileName?: string;
-    title: string, fileNameData: any
+    title: string;
+    fileNameData: any;
   };
 }
 

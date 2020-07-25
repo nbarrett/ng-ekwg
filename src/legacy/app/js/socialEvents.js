@@ -1,7 +1,4 @@
 angular.module('ekwgApp')
-  .factory('SocialEventsService', function ($mongolabResourceHttp) {
-    return $mongolabResourceHttp('socialEvents');
-  })
   .controller('SocialEventsController', function ($routeParams, $log, $q, $scope, $filter, LegacyUrlService, URLService, Upload,
                                                   SocialEventsService, SiteEditService, BroadcastService,
                                                   MemberLoginService, MemberService,
@@ -15,10 +12,9 @@ angular.module('ekwgApp')
       copyToClipboard: ClipboardService.copyToClipboard,
       longerDescriptionPreview: true,
       socialEventLink: function (socialEvent) {
-        return socialEvent && socialEvent.$id() ? URLService.notificationHref({
-          type: "socialEvent",
+        return socialEvent && socialEvent.id ? URLService.notificationHref({
           area: "social",
-          id: socialEvent.$id()
+          id: socialEvent.id
         }) : undefined;
       }
     };
@@ -99,7 +95,7 @@ angular.module('ekwgApp')
     }
 
     function saveSocialEvent() {
-      return $scope.currentSocialEvent.$saveOrUpdate(hideSocialEventDialogAndRefreshSocialEvents, hideSocialEventDialogAndRefreshSocialEvents);
+      return SocialEventsService.createOrUpdate($scope.currentSocialEvent).then(hideSocialEventDialogAndRefreshSocialEvents);
     }
 
     $scope.confirmDeleteSocialEventDetails = function () {
@@ -117,7 +113,7 @@ angular.module('ekwgApp')
     };
 
     var removeSocialEventHideSocialEventDialogAndRefreshSocialEvents = function () {
-      $scope.currentSocialEvent.$remove(hideSocialEventDialogAndRefreshSocialEvents)
+      SocialEventsService.delete($scope.currentSocialEvent).then(hideSocialEventDialogAndRefreshSocialEvents)
     };
 
     $scope.copyDetailsToNewSocialEvent = function () {

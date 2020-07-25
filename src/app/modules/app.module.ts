@@ -48,6 +48,7 @@ import { NumberUtilsService } from "../services/number-utils.service";
 import { PageService } from "../services/page.service";
 import { ProfileConfirmationService } from "../services/profile-confirmation.service";
 import { RouterHistoryService } from "../services/router-history.service";
+import { SocialEventsService } from "../services/social-events/social-events.service";
 import { StringUtilsService } from "../services/string-utils.service";
 import { UrlService } from "../services/url.service";
 import { WalksQueryService } from "../services/walks/walks-query.service";
@@ -132,7 +133,8 @@ export class AppModule implements DoBootstrap {
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService))
-      .factory("WalksService", downgradeInjectable(WalksService));
+      .factory("WalksService", downgradeInjectable(WalksService))
+      .factory("SocialEventsService", downgradeInjectable(SocialEventsService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade, "path");
     appRef.bootstrap(AppComponent);

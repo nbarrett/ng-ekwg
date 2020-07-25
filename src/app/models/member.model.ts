@@ -16,7 +16,9 @@ export interface MemberFilterSelection {
   memberGrouping: string;
 }
 
-export interface MemberEmailType {
+export type IdentifiableOrId = Identifiable | string ;
+
+export interface MemberEmailType extends MailchimpSegmentId {
   name: string;
   label?: string;
   monthsInPast: number;
@@ -25,6 +27,9 @@ export interface MemberEmailType {
   memberSelectorName: string;
   campaignId: string;
   postSend?: () => Promise<void>;
+}
+
+export interface MailchimpSegmentId {
   segmentId: number;
 }
 
@@ -64,11 +69,14 @@ export interface SessionStatus {
 }
 
 export interface MailchimpSegmentIds {
-  directMail: number;
-  expenseApprover: number;
-  expenseTreasurer: number;
-  walkLeader: number;
-  walkCoordinator: number;
+  walks?: number;
+  socialEvents?: number;
+  general?: number;
+  directMail?: number;
+  expenseApprover?: number;
+  expenseTreasurer?: number;
+  walkLeader?: number;
+  walkCoordinator?: number;
 }
 
 export interface Member extends Auditable, Identifiable {

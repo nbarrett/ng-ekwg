@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { find, map } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
@@ -7,13 +7,14 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
+import { SaveSegmentResponse } from "../../../models/mailchimp.model";
 import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
-import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
+import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -332,11 +333,11 @@ export class SendEmailsModalComponent implements OnInit {
     });
   }
 
-  createOrSaveMailchimpSegment() {
+  createOrSaveMailchimpSegment(): Promise<SaveSegmentResponse> {
     return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.emailType.segmentId}, this.selectedMemberIds, this.emailType.name, this.members);
   }
 
-  saveSegmentDataToMailchimpConfig(segmentResponse) {
+  saveSegmentDataToMailchimpConfig(segmentResponse: SaveSegmentResponse) {
     this.logger.debug("saveSegmentDataToMailchimpConfig:segmentResponse", segmentResponse);
     return this.mailchimpConfig.getConfig()
       .then(config => {

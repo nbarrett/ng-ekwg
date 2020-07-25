@@ -1,7 +1,7 @@
-import { ComponentFactoryResolver, Inject, Injectable } from "@angular/core";
+import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../models/expense.model";
-import { MailchimpExpenseOtherContent } from "../../models/mailchimp.model";
+import { MailchimpExpenseOtherContent, SaveSegmentResponse } from "../../models/mailchimp.model";
 import { ExpenseNotificationComponentAndData } from "../../notifications/expenses/expense-notification.directive";
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
 import { ExpenseNotificationApproverPaidComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-paid.component";
@@ -135,12 +135,14 @@ export class ExpenseNotificationService {
     return Promise.resolve(false);
   }
 
-  createOrSaveMailchimpSegment(request: ExpenseNotificationRequest) {
-    return this.mailchimpSegmentService.saveSegment("general", {segmentId: this.mailchimpSegmentService.getMemberSegmentId(request.member, request.segmentType)}, request.memberIds, request.segmentName, request.members);
+  createOrSaveMailchimpSegment(request: ExpenseNotificationRequest): Promise<SaveSegmentResponse> {
+    return this.mailchimpSegmentService.saveSegment("general",
+      {segmentId: this.mailchimpSegmentService.getMemberSegmentId(request.member, request.segmentType)},
+      request.memberIds, request.segmentName, request.members);
   }
 
-  saveSegmentDataToMember(segmentResponse, request: ExpenseNotificationRequest) {
-    this.mailchimpSegmentService.setMemberSegmentId(request.member, request.segmentType, segmentResponse.segment.id);
+  saveSegmentDataToMember(saveSegmentResponse: SaveSegmentResponse, request: ExpenseNotificationRequest) {
+    this.mailchimpSegmentService.setMemberSegmentId(request.member, request.segmentType, saveSegmentResponse.segment.id);
     return this.memberService.update(request.member);
   }
 
@@ -167,11 +169,11 @@ export class ExpenseNotificationService {
     this.display.showExpenseSuccessAlert(notify, `Sending of ${campaignName} was successful. Check your inbox for progress.`);
   }
 
-  sendNotification(request: ExpenseNotificationRequest, contentSections: MailchimpExpenseOtherContent) {
-    return this.createOrSaveMailchimpSegment(request)
-      .then((segmentResponse) => this.saveSegmentDataToMember(segmentResponse, request))
-      .then(() => this.sendEmailCampaign(request, contentSections))
-      .then(() => this.notifyEmailSendComplete(request.notify, request.campaignName));
+  sendNotification(expenseNotificationRequest: ExpenseNotificationRequest, contentSections: MailchimpExpenseOtherContent) {
+    return this.createOrSaveMailchimpSegment(expenseNotificationRequest)
+      .then((segmentResponse: SaveSegmentResponse) => this.saveSegmentDataToMember(segmentResponse, expenseNotificationRequest))
+      .then(() => this.sendEmailCampaign(expenseNotificationRequest, contentSections))
+      .then(() => this.notifyEmailSendComplete(expenseNotificationRequest.notify, expenseNotificationRequest.campaignName));
 
   }
 
@@ -181,7 +183,7 @@ export class ExpenseNotificationService {
     request.campaignNameAndMember = `${request.campaignName} (${request.memberFullName})`;
     request.segmentName = `Expense notification ${request.segmentNameSuffix}(${request.memberFullName})`;
     if (request.memberIds.length === 0) {
-     return Promise.reject(`No members have been configured as ${request.destination} therefore notifications for this step will fail!!`);
+      return Promise.reject(`No members have been configured as ${request.destination} therefore notifications for this step will fail!!`);
     }
     return this.sendNotification(request, {
       sections: {

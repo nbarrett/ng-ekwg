@@ -1,13 +1,13 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { StringUtilsService } from "../services/string-utils.service";
+import { FormatAuditPipe } from "./format-audit-pipe";
 
 @Pipe({name: "createdAudit"})
 export class CreatedAuditPipe implements PipeTransform {
 
-  constructor(private stringUtils: StringUtilsService) {
+  constructor(private formatAuditPipe: FormatAuditPipe) {
   }
 
   transform(resource, members) {
-    return this.stringUtils.formatAudit(resource.createdBy, resource.createdDate, members);
+    return this.formatAuditPipe.transform(resource.createdBy, resource.createdDate, members);
   }
 }

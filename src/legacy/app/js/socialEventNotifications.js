@@ -1,7 +1,7 @@
 angular.module('ekwgApp')
   .controller('SocialEventNotificationsController', function (MAILCHIMP_APP_CONSTANTS, $window, $log, $sce, $timeout, $templateRequest, $compile, $q, $rootScope, $scope, $filter, $routeParams,
                                                               $location, URLService, DateUtils, NumberUtils, MemberLoginService, MemberService,
-                                                              ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, MailchimpCampaignService,
+                                                              ContentMetaDataService, CommitteeFileService, MailchimpSegmentService, SocialEventsService, MailchimpCampaignService,
                                                               MailchimpConfig, Notifier, CommitteeReferenceData, socialEvent, close) {
       var logger = $log.getInstance('SocialEventNotificationsController');
       $log.logLevels['SocialEventNotificationsController'] = $log.LEVEL.OFF;
@@ -346,7 +346,7 @@ angular.module('ekwgApp')
         }
 
         function saveSocialEvent() {
-          return $scope.socialEvent.$saveOrUpdate();
+          return this.SocialEventsService.createOrUpdate($scope.socialEvent);
         }
 
         function notifyEmailSendComplete() {

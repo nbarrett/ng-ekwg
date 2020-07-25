@@ -3685,13 +3685,6 @@ ul.sbOptions li.last a {
   margin: 10px 0;
 }
 
-.hidden-input input {
-  display: block;
-  visibility: hidden;
-  width: 0;
-  height: 0;
-}
-
 .radio-but-large {
   width: 100%;
 }
@@ -3932,11 +3925,15 @@ ul.sbOptions li.last a {
 }
 
 .file-item {
-  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") bottom left repeat-x;
-  padding: 15px 0;
+  background: top left repeat-x;
+  padding: 15px 0 6px;
   float: left;
   width: 100%;
   font-size: 14px;
+}
+
+.file-item:not(:first-child) {
+  background: url("../../../../legacy/app/assets/images/ramblers/dot-darkgrey-hor.png") top left repeat-x;
 }
 
 .file-item .file-download {

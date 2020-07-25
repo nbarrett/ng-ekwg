@@ -2,15 +2,19 @@ export interface MeetupErrorResponse {
   status: number;
   response: {
     req: {
-      method: string,
-      url: string,
+      method: string;
+      url: string;
       headers: {
-        "user-agent": string,
+        "user-agent": string;
         accept: string
-      },
-    },
-    header: object,
-    status: number,
-    text?: { details: string; code: string; problem: string }
+      };
+    };
+    header: object;
+    status: number;
+    text?: {
+      details: string;
+      code: string;
+      problem: string;
+    };
   };
 }

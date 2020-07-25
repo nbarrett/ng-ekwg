@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Member } from "src/app/models/member.model";
-import { MailchimpListSegmentAddResponse } from "../../models/mailchimp.model";
+import { IdentifiableOrId, MailchimpSegmentId, Member } from "src/app/models/member.model";
+import { MailchimpListSegmentAddResponse, MailchimpListSegmentRenameResponse, SaveSegmentResponse, SubscriptionRequest } from "../../models/mailchimp.model";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberService } from "../member/member.service";
@@ -24,65 +24,60 @@ export class MailchimpSegmentService {
     this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.OFF);
   }
 
-  renameSegment(listType: string, segmentId: number, segmentPrefix: string) {
-    const segmentName = this.formatSegmentName(segmentPrefix);
-    return this.mailchimpListService.renameSegment(listType, segmentId, segmentName);
-  }
-
-  buildSegmentMemberData(listType: string, memberIds: string[], members: Member[]) {
-    const segmentMembers = memberIds
+  createSubscriptionRequests(listType: string, memberIds: IdentifiableOrId[], members: Member[]): SubscriptionRequest[] {
+    const subscriptionRequests: SubscriptionRequest[] = memberIds
       .map(memberId => this.memberService.toMember(memberId, members))
-      .filter(member => member && member.email)
+      .filter(member => member?.email)
       .map(member => this.mailchimpListSubscriptionService.addMailchimpIdentifiersToRequest(member, listType));
-    if (!segmentMembers || segmentMembers.length === 0) {
+    if (!subscriptionRequests || subscriptionRequests.length === 0) {
       throw new Error(`No members were added to the ${listType} email segment from the ${memberIds.length} supplied members. Please check that they have a valid email address and are subscribed to ${listType}`);
     }
-    return segmentMembers;
+    this.logger.debug("subscriptionRequests", subscriptionRequests);
+    return subscriptionRequests;
   }
 
-  saveSegment(listType, mailchimpConfig, memberIds, segmentPrefix, members) {
-    const segmentMembers = this.buildSegmentMemberData(listType, memberIds, members);
-    this.logger.debug("saveSegment:buildSegmentMemberData:", listType, memberIds, segmentMembers);
-    if (mailchimpConfig && mailchimpConfig.segmentId) {
-      const segmentId = mailchimpConfig.segmentId;
-      this.logger.debug("saveSegment:segmentId", mailchimpConfig);
+  saveSegment(listType: string, mailchimpSegmentId: MailchimpSegmentId, memberIdentities: IdentifiableOrId[], segmentPrefix: string, members: Member[]): Promise<SaveSegmentResponse> {
+    const subscriptionRequests: SubscriptionRequest[] = this.createSubscriptionRequests(listType, memberIdentities, members);
+    this.logger.debug("saveSegment:buildSegmentMemberData:list:", listType, "member identities:", memberIdentities, "subscription requests:", subscriptionRequests);
+    if (mailchimpSegmentId?.segmentId) {
+      const segmentId: number = mailchimpSegmentId.segmentId;
+      this.logger.debug("saveSegment:segmentId", segmentId);
       return this.mailchimpListService.resetSegment(listType, segmentId)
-        .then(() => this.renameSegment(listType, segmentId, segmentPrefix))
-        .then((renameSegmentResponse) => this.addSegmentMembersDuringUpdate(listType, segmentId, segmentMembers, renameSegmentResponse))
-        .then((addSegmentMembersResponse) => {
-          return ({members: addSegmentMembersResponse.members, segment: {id: segmentId}});
-        });
+        .then(() => this.mailchimpListService.renameSegment(listType, segmentId, this.formatSegmentName(segmentPrefix)))
+        .then((renameSegmentResponse: MailchimpListSegmentRenameResponse) => this.addSegmentMembersDuringUpdate(listType, segmentId, subscriptionRequests, renameSegmentResponse))
+        .then(() => ({segment: {id: segmentId}}));
     } else {
-      return this.mailchimpListService.addSegment(listType, segmentPrefix)
-        .then((addSegmentResponse) => this.addSegmentMembersDuringAdd(listType, segmentMembers, addSegmentResponse));
+      this.logger.debug("saveSegment:no segment exists", mailchimpSegmentId, "for list:", listType, " - adding new");
+      return this.mailchimpListService.addSegment(listType, this.formatSegmentName(segmentPrefix))
+        .then((addSegmentResponse: MailchimpListSegmentAddResponse) => this.addSegmentMembersDuringAdd(listType, subscriptionRequests, addSegmentResponse));
     }
   }
 
-  addSegmentMembersDuringUpdate(listType, segmentId, segmentMembers, renameSegmentResponse) {
+  addSegmentMembersDuringUpdate(listType: string, segmentId: number, segmentMembers: SubscriptionRequest[], renameSegmentResponse) {
+    this.logger.debug("addSegmentMembersDuringUpdate, segmentMembers.length", segmentMembers.length, "->", renameSegmentResponse);
     if (segmentMembers.length > 0) {
       return this.mailchimpListService.addSegmentMembers(listType, segmentId, segmentMembers)
-        .then(addMemberResponse => ({segment: renameSegmentResponse, members: addMemberResponse}));
+        .then(() => ({segment: renameSegmentResponse}));
     } else {
-      return Promise.resolve({segment: renameSegmentResponse.id, members: {}});
+      return Promise.resolve({segment: renameSegmentResponse.id});
     }
   }
 
   addSegmentMembersDuringAdd(listType, segmentMembers, addSegmentResponse: MailchimpListSegmentAddResponse) {
+    this.logger.debug("addSegmentMembersDuringAdd, listType", listType, "->", segmentMembers, addSegmentResponse);
     if (segmentMembers.length > 0) {
       return this.mailchimpListService.addSegmentMembers(listType, addSegmentResponse.id, segmentMembers)
-        .then(addMemberResponse => ({segment: addSegmentResponse, members: addMemberResponse}));
+        .then(addMemberResponse => ({segment: addSegmentResponse}));
     } else {
-      return Promise.resolve({segment: addSegmentResponse, members: {}});
+      return Promise.resolve({segment: addSegmentResponse});
     }
   }
 
-  getMemberSegmentId(member, segmentType) {
-    if (member.mailchimpSegmentIds) {
-      return member.mailchimpSegmentIds[segmentType];
-    }
+  getMemberSegmentId(member: Member, segmentType: string): number {
+    return member?.mailchimpSegmentIds[segmentType];
   }
 
-  setMemberSegmentId(member, segmentType, segmentId) {
+  setMemberSegmentId(member: Member, segmentType: string, segmentId: number): void {
     if (!member.mailchimpSegmentIds) {
       member.mailchimpSegmentIds = {};
     }

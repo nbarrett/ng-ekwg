@@ -1,15 +1,16 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import extend from "lodash-es/extend";
+import cloneDeep from "lodash-es/cloneDeep";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { MemberLoginService } from "src/app/services/member/member-login.service";
 import { AuthService } from "../../../auth/auth.service";
+import { ApiAction } from "../../../models/api-response.model";
 import { CommitteeFile, CommitteeFileApiResponse, CommitteeYear } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
-import { ApiResponseProcessProcessor } from "../../../services/api-response-process-processor.service";
+import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { sortBy } from "../../../services/arrays";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
@@ -24,6 +25,7 @@ import { CommitteeSendNotificationModalComponent } from "../send-notification/co
 @Component({
   selector: "app-committee-history",
   templateUrl: "./committee-history.component.html",
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class CommitteeHistoryComponent implements OnInit, OnDestroy {
 
@@ -39,9 +41,9 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   public committeeFile: CommitteeFile;
 
   constructor(
-    private memberLoginService: MemberLoginService,
+    public memberLoginService: MemberLoginService,
     private notifierService: NotifierService,
-    private apiResponseProcessor: ApiResponseProcessProcessor,
+    private apiResponseProcessor: ApiResponseProcessor,
     private committeeReferenceData: CommitteeReferenceDataService,
     public display: CommitteeDisplayService,
     private route: ActivatedRoute,
@@ -50,6 +52,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     private committeeQueryService: CommitteeQueryService,
     private committeeFileService: CommitteeFileService,
     private urlService: UrlService,
+    private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.OFF);
   }
@@ -85,7 +88,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
         const filteredFiles = this.apiResponseProcessor.processResponse(this.logger, this.committeeFiles, apiResponse)
           .filter(file => this.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
           .sort(sortBy("-fileDate"));
-        if (apiResponse.action === "query" && filteredFiles.length === 1) {
+        if (apiResponse.action === ApiAction.QUERY && filteredFiles.length === 1) {
           this.notify.warning({
             title: "Single Committee File being viewed",
             message: "Click the Committee tab above to restore normal view."
@@ -146,7 +149,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
       keyboard: true,
       focus: true,
       show: true,
-      initialState: extend({}, initialState)
+      initialState: cloneDeep(initialState)
     };
   }
 

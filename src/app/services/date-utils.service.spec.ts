@@ -1,5 +1,5 @@
 import { TestBed } from "@angular/core/testing";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { DateUtilsService } from "./date-utils.service";
 
@@ -104,15 +104,6 @@ describe("DateUtilsService", () => {
 
   });
 
-  describe("momentNow", () => {
-
-    it("should create a moment as of now when passed a string and a date format", () => {
-      const dateUtils: DateUtilsService = TestBed.get(DateUtilsService);
-      const testMoment = moment();
-      expect(dateUtils.momentNow() - testMoment).toBeLessThan(2);
-    });
-
-  });
 
   describe("durationForDistance", () => {
 

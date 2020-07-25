@@ -10,7 +10,7 @@ module.exports = function () {
   const dbUrlBasePath = config.mongo.dbUrl;
   const database = config.mongo.database;
   const apiKey = config.mongo.apiKey;
-  const prohibitedCollections = ["members", "contentMetaData", "contentText", "config", "memberUpdateAudit", "expenseClaims", "ramblersUploadAudit", "walks"];
+  const prohibitedCollections = ["members", "contentMetaData", "contentText", "config", "memberUpdateAudit", "expenseClaims", "ramblersUploadAudit", "walks", "socialEvents"];
   debug("Proxying MongoLab at", dbUrlBasePath, "with database", database, "with APIKey", apiKey);
 
   const dbUrl = url.parse(dbUrlBasePath);

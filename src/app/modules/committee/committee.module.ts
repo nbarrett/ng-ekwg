@@ -8,9 +8,7 @@ import { CommitteeHomeComponent } from "../../pages/committee/home/committee-hom
 import { CommitteeNotificationSettingsModalComponent } from "../../pages/committee/notification-settings/committee-notification-settings-modal.component";
 import { CommitteeRightColumnComponent } from "../../pages/committee/right-column/committee-right-column.component";
 import { CommitteeSendNotificationModalComponent } from "../../pages/committee/send-notification/committee-send-notification-modal.component";
-import { LineFeedsToBreaksPipe } from "../../pipes/line-feeds-to-breaks.pipe";
 import { SharedModule } from "../../shared-module";
-import { CommitteeAuthGuardService } from "./committee-auth-guard.service";
 
 @NgModule({
   declarations: [
@@ -28,8 +26,6 @@ import { CommitteeAuthGuardService } from "./committee-auth-guard.service";
     SharedModule
   ],
   providers: [
-    CommitteeAuthGuardService,
-    LineFeedsToBreaksPipe,
   ]
 })
 export class CommitteeModule {

@@ -8,7 +8,6 @@ import map from "lodash-es/map";
 import startCase from "lodash-es/startCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage } from "../models/alert-target.model";
-import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
@@ -18,8 +17,7 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 export class StringUtilsService {
   private logger: Logger;
 
-  constructor(private memberIdToFullNamePipe: MemberIdToFullNamePipe,
-              private dateUtils: DateUtilsService,
+  constructor(private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.OFF);
   }
@@ -102,11 +100,6 @@ export class StringUtilsService {
 
   left(str, chars) {
     return str.substr(0, chars);
-  }
-
-  formatAudit(who, when, members) {
-    const by = who ? "by " + this.memberIdToFullNamePipe.transform(who, members) : "";
-    return (who || when) ? by + (who && when ? " on " : "") + this.dateUtils.displayDateAndTime(when) : "(not audited)";
   }
 
 }

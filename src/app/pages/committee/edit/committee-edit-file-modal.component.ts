@@ -1,13 +1,12 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
-import { isEmpty } from "lodash-es";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile, Notification} from "../../../models/committee.model";
+import { CommitteeFile, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpCampaignListResponse } from "../../../models/mailchimp.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
@@ -136,14 +135,6 @@ export class CommitteeEditFileModalComponent implements OnInit {
     this.confirmType = ConfirmType.DELETE;
   }
 
-  notReady() {
-    return this.campaigns.data.length === 0;
-  }
-
-  attachmentTitle() {
-    return (this.committeeFile && isEmpty(this.committeeFile.fileNameData) ? "Attach" : "Replace") + " File";
-  }
-
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
   }
@@ -178,7 +169,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   close() {
-    this.confirm.clear()
+    this.confirm.clear();
     this.bsModalRef.hide();
   }
 

@@ -7,6 +7,7 @@ import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
+import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
@@ -55,8 +56,8 @@ export class UrlService {
     return last((optionalUrl || this.absUrl()).split("/"));
   }
 
-  resourceUrl(area: string, type: string, id: string): string {
-    return this.baseUrl() + "/" + area + "/" + type + "Id/" + id;
+  resourceUrl(area: string, subArea: string, id: string): string {
+    return [this.baseUrl(), area, subArea, id].filter(item => !!item).join("/");
   }
 
   area(optionalUrl?: string): string {
@@ -67,10 +68,16 @@ export class UrlService {
     location.reload(true);
   }
 
-  notificationHref(ctrl): string {
-    const href = (ctrl.name) ? this.resourceUrlForAWSFileName(ctrl.name) : this.resourceUrl(ctrl.area, ctrl.type, ctrl.id);
-    this.logger.debug("href:", href);
-    return href;
+  notificationHref(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): string {
+    if (this.isNotificationUrlConfig(linkConfig)) {
+      return this.resourceUrl(linkConfig.area, linkConfig.subArea, linkConfig.id);
+    } else {
+      return this.resourceUrlForAWSFileName(linkConfig.name);
+    }
+  }
+
+  isNotificationUrlConfig(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): linkConfig is NotificationUrlConfig {
+    return (linkConfig as NotificationUrlConfig).area !== undefined;
   }
 
   resourceUrlForAWSFileName(fileName): string {

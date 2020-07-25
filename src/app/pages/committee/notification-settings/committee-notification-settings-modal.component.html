@@ -6,7 +6,7 @@
       <h4 class="modal-title">Notification <em>Campaign</em> Settings</h4>
     </div>
     <div class="modal-body">
-      <tabset>
+      <tabset *ngIf="config">
         <tab [heading]="'Walks'">
           <div class="thumbnail thumbnail-admin-edit">
 

@@ -11,7 +11,7 @@ export class NotificationUrlComponent implements OnInit {
 
   @Input() name: string;
   @Input() text: string;
-  @Input() type: string;
+  @Input() subArea: string;
   @Input() id: string;
   @Input() area: string;
   @Input() target: string;
@@ -24,7 +24,7 @@ export class NotificationUrlComponent implements OnInit {
 
   ngOnInit() {
     this.target = this.target || "_blank";
-    this.href = this.uRLService.notificationHref({name: this.name, area: this.area, type: this.type, id: this.id});
+    this.href = this.uRLService.notificationHref({name: this.name, area: this.area, subArea: this.subArea, id: this.id});
     this.text = !this.text && this.name ? this.fileUtils.basename(this.name) : this.text || this.href;
   }
 

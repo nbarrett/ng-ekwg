@@ -7,7 +7,7 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ApiResponse } from "../../../models/api-response.model";
+import { ApiAction, ApiResponse } from "../../../models/api-response.model";
 import { DateValue } from "../../../models/date.model";
 import { Member, MemberAuthAudit } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, TableFilter } from "../../../models/table-filtering.model";
@@ -123,13 +123,13 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   private addAuditItemsToView(apiResponse: ApiResponse) {
     const authAudits: MemberAuthAudit[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
     this.logger.info("Received", authAudits.length, "member auth audit", apiResponse.action, "notification(s)");
-    if (apiResponse.action === "query") {
+    if (apiResponse.action === ApiAction.QUERY) {
       this.memberAudits = authAudits;
     } else {
       authAudits.forEach(notifiedMemberAuthAudit => {
         const existingMemberAuthAudit: MemberAuthAudit = this.memberAudits.find(member => member.id === notifiedMemberAuthAudit.id);
         if (existingMemberAuthAudit) {
-          if (apiResponse.action === "delete") {
+          if (apiResponse.action === ApiAction.DELETE) {
             this.logger.info("deleting", notifiedMemberAuthAudit);
             this.memberAudits = this.memberAudits.filter(member => member.id !== notifiedMemberAuthAudit.id);
           } else {

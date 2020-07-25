@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { first } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
-import { CommitteeFile, CommitteeYear, GroupEvent, GroupEventsFilter } from "../../models/committee.model";
+import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsFilter } from "../../models/committee.model";
+import { CommitteeDisplayService } from "../../pages/committee/committee-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { descending, sortBy } from "../arrays";
 import { CommitteeConfigService } from "../commitee-config.service";
@@ -11,6 +12,7 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { SocialEventsService } from "../social-events/social-events.service";
 import { UrlService } from "../url.service";
+import { WalksQueryService } from "../walks/walks-query.service";
 import { WalksService } from "../walks/walks.service";
 import { CommitteeFileService } from "./committee-file.service";
 import { CommitteeReferenceDataService } from "./committee-reference-data.service";
@@ -25,8 +27,10 @@ export class CommitteeQueryService {
   constructor(
     private dateUtils: DateUtilsService,
     private walksService: WalksService,
+    private walksQueryService: WalksQueryService,
     private committeeReferenceData: CommitteeReferenceDataService,
     private committeeFileService: CommitteeFileService,
+    private committeeDisplayService: CommitteeDisplayService,
     private socialEventsService: SocialEventsService,
     private memberLoginService: MemberLoginService,
     private displayDatePipe: DisplayDatePipe,
@@ -40,17 +44,18 @@ export class CommitteeQueryService {
     const fromDate = groupEventsFilter.fromDate.value;
     const toDate = groupEventsFilter.toDate.value;
     this.logger.info("groupEventsFilter:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
-    const events = [];
+    const events: GroupEvent[] = [];
     const promises = [];
+    const committeeContactDetails: CommitteeMember = this.committeeReferenceData.committeeMembersForRole("secretary")[0];
     if (groupEventsFilter.includeWalks) {
       promises.push(
         this.walksService.all({criteria: {walkDate: {$gte: fromDate, $lte: toDate}}})
+          .then(walks => this.walksQueryService.activeWalks(walks))
           .then(walks => walks.forEach(walk => events.push({
             id: walk.id,
             selected: true,
             eventType: "Walk",
             area: "walks",
-            type: "walk",
             eventDate: walk.walkDate,
             eventTime: walk.startTime,
             distance: walk.distance,
@@ -70,11 +75,12 @@ export class CommitteeQueryService {
             selected: true,
             eventType: "AGM & Committee",
             area: "committee",
-            type: "committeeFile",
             eventDate: committeeFile.eventDate,
             postcode: committeeFile.postcode,
             description: committeeFile.fileType,
-            title: committeeFile.fileNameData.title
+            title: this.committeeDisplayService.fileTitle(committeeFile),
+            contactName: committeeContactDetails.fullName,
+            contactEmail: committeeContactDetails.email
           }))));
     }
     if (groupEventsFilter.includeSocialEvents) {
@@ -85,7 +91,6 @@ export class CommitteeQueryService {
             selected: true,
             eventType: "Social Event",
             area: "social",
-            type: "socialEvent",
             eventDate: socialEvent.eventDate,
             eventTime: socialEvent.eventTimeStart,
             postcode: socialEvent.postcode,

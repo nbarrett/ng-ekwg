@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
+import { Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
 import { extend } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -6,7 +6,7 @@ import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeMember, GroupEvent, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
-import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpConfigResponse } from "../../../models/mailchimp.model";
+import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpConfigResponse, SaveSegmentResponse } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { CommitteeNotificationComponentAndData, CommitteeNotificationDirective } from "../../../notifications/committee/committee-notification.directive";
@@ -31,12 +31,14 @@ import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 
+const SORT_BY_NAME = sortBy("order", "member.lastName", "member.firstName");
+
 @Component({
   selector: "app-committee-send-notification-modal",
   templateUrl: "./committee-send-notification-modal.component.html",
   styleUrls: ["./committee-send-notification-modal.component.sass"]
 })
-export class CommitteeSendNotificationModalComponent implements OnInit, AfterViewInit {
+export class CommitteeSendNotificationModalComponent implements OnInit {
   @ViewChild(CommitteeNotificationDirective) notificationDirective: CommitteeNotificationDirective;
   public confirm: Confirm;
   public committeeFile: CommitteeFile;
@@ -60,7 +62,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
-              private display: CommitteeDisplayService,
+              public display: CommitteeDisplayService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
               private fullNameWithAlias: FullNameWithAliasPipe,
@@ -71,13 +73,9 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
               private mailchimpListService: MailchimpListService,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
-              public bsModalRef: BsModalRef,
+              private bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.OFF);
-  }
-
-  ngAfterViewInit(): void {
-
   }
 
   ngOnInit() {
@@ -132,7 +130,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
         this.logger.debug("refreshMembers -> populated ->", this.members.length, "members");
         this.selectableRecipients = members
           .map(member => this.toSelectGeneralMember(member))
-          .sort(sortBy("order", "text"));
+          .sort(SORT_BY_NAME);
         this.logger.debug("refreshMembers -> populated ->", this.selectableRecipients.length, "selectableRecipients:", this.selectableRecipients);
       }),
       this.mailchimpConfig.getConfig()
@@ -185,29 +183,33 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
   allGeneralSubscribedList(): MemberFilterSelection[] {
     return this.members
       .filter(this.memberService.filterFor.GENERAL_MEMBERS_SUBSCRIBED)
-      .map(member => this.toSelectGeneralMember(member));
+      .map(member => this.toSelectGeneralMember(member))
+      .sort(SORT_BY_NAME);
   }
 
   allWalksSubscribedList(): MemberFilterSelection[] {
     return this.members
       .filter(this.memberService.filterFor.WALKS_MEMBERS_SUBSCRIBED)
-      .map(member => this.toSelectWalksMember(member));
+      .map(member => this.toSelectWalksMember(member))
+      .sort(SORT_BY_NAME);
   }
 
   allSocialSubscribedList(): MemberFilterSelection[] {
     return this.members
       .filter(this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED)
-      .map(member => this.toSelectSocialMember(member));
+      .map(member => this.toSelectSocialMember(member))
+      .sort(SORT_BY_NAME);
   }
 
   allCommitteeList(): MemberFilterSelection[] {
     return this.members
       .filter(this.memberService.filterFor.COMMITTEE_MEMBERS)
-      .map(member => this.toSelectGeneralMember(member));
+      .map(member => this.toSelectGeneralMember(member))
+      .sort(SORT_BY_NAME);
   }
 
   notReady() {
-    return this.members.length === 0 || this.notifyTarget.busy || (this.notification.content.recipients.length === 0 && this.notification.content.destinationType === "custom");
+    return this.members.length === 0 || this.notifyTarget.busy || (this.notification.content.selectedMemberIds.length === 0 && this.notification.content.destinationType === "custom");
   }
 
   toSelectGeneralMember(member: Member): MemberFilterSelection {
@@ -230,6 +232,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
       id: this.memberService.extractMemberId(member),
       order,
       memberGrouping,
+      member,
       memberInformation: this.fullNameWithAlias.transform(member)
     };
   }
@@ -254,7 +257,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
       id: this.memberService.extractMemberId(member),
       order,
       memberGrouping,
-      text: this.fullNameWithAlias.transform(member)
+      member,
+      memberInformation: this.fullNameWithAlias.transform(member)
     };
   }
 
@@ -278,8 +282,16 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
       id: this.memberService.extractMemberId(member),
       order,
       memberGrouping,
-      text: this.fullNameWithAlias.transform(member)
+      member,
+      memberInformation: this.fullNameWithAlias.transform(member)
     };
+  }
+
+  private showSelectedMemberIds() {
+    this.notification.content.selectedMemberIds = this.notification.content.recipients.map(item => item.id);
+    this.onChange();
+    this.campaignIdChanged();
+    this.logger.debug("notification.content.destinationType", this.notification.content.destinationType, "notification.content.addresseeType", this.notification.content.addresseeType);
   }
 
   editAllEKWGRecipients() {
@@ -289,13 +301,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     this.notification.content.recipients = this.allGeneralSubscribedList();
     this.showSelectedMemberIds();
 
-  }
-
-  private showSelectedMemberIds() {
-    this.notification.content.selectedMemberIds = this.notification.content.recipients.map(item => item.id);
-    this.onChange();
-    this.campaignIdChanged();
-    this.logger.debug("notification.content.destinationType", this.notification.content.destinationType, "notification.content.addresseeType", this.notification.content.addresseeType);
   }
 
   editAllWalksRecipients() {
@@ -383,6 +388,12 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
     };
   }
 
+  saveSegmentDataToMember(saveSegmentResponse: SaveSegmentResponse, member: Member, segmentType: string): Promise<SaveSegmentResponse> {
+    this.mailchimpSegmentService.setMemberSegmentId(member, segmentType, saveSegmentResponse.segment.id);
+    return this.memberService.update(member)
+      .then(() => saveSegmentResponse);
+  }
+
   sendEmailCampaign(notificationText: string, campaignName: string, dontSend: boolean) {
     const contentSections = this.populateContentSections(notificationText);
     this.notify.progress(dontSend ? ("Preparing to complete " + campaignName + " in Mailchimp") : ("Sending " + campaignName));
@@ -391,71 +402,71 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
       return Promise.reject("Cannot send email from " + list + " list as there is no mailchimp " + fieldName + " configured. Check Committee Notification settings and make sure all fields are complete.");
       this.logger.debug("all good with fieldName", fieldName);
     };
+    return this.memberService.getById(this.memberLoginService.loggedInMember().memberId)
+      .then(currentMember => {
+        return this.mailchimpConfig.getConfig()
+          .then((config) => {
+            const replyToRole = this.notification.content.signoffAs.value || "secretary";
+            this.logger.debug("replyToRole", replyToRole);
 
-    return this.mailchimpConfig.getConfig()
-      .then((config) => {
-        const replyToRole = this.notification.content.signoffAs.value || "secretary";
-        this.logger.debug("replyToRole", replyToRole);
+            let members: MemberFilterSelection[];
+            const list = this.notification.content.list;
+            const otherOptions = {
+              from_name: this.committeeReferenceData.contactUsField(replyToRole, "fullName"),
+              from_email: this.committeeReferenceData.contactUsField(replyToRole, "email"),
+              list_id: config.mailchimp.lists[list]
+            };
+            this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions, "config", config);
+            const segmentId = this.mailchimpSegmentService.getMemberSegmentId(currentMember, list);
+            const campaignId = this.notification.content?.campaignId;
 
-        let members: MemberFilterSelection[];
-        const list = this.notification.content.list;
-        const otherOptions = {
-          from_name: this.committeeReferenceData.contactUsField(replyToRole, "fullName"),
-          from_email: this.committeeReferenceData.contactUsField(replyToRole, "email"),
-          list_id: config.mailchimp.lists[list]
-        };
-        this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions, "config", config);
-        const segmentId = config?.mailchimp?.segments?.general?.committeeSegmentId;
-        const campaignId = this.notification.content?.campaignId;
+            if (!campaignId) {
+              return validateExistenceOf(list, "campaign id");
+            }
 
-        if (!campaignId) {
-          return validateExistenceOf(list, "campaign id");
-        }
-        if (!segmentId) {
-          return validateExistenceOf(list, "segment id");
-        }
+            this.logger.debug("Sending Sending" + campaignId, "segmentId", segmentId, "for currentMember", currentMember);
 
-        this.logger.debug("Sending Sending" + campaignId, "segmentId", segmentId);
+            switch (this.notification.content.destinationType) {
+              case "custom":
+                members = this.notification.content.recipients.filter(item => this.notification.content.selectedMemberIds.includes(item.id));
+                break;
+              case "committee":
+                members = this.allCommitteeList();
+                break;
+              default:
+                members = [];
+                break;
+            }
 
-        switch (this.notification.content.destinationType) {
-          case "custom":
-            members = this.notification.content.recipients.filter(item => this.notification.content.selectedMemberIds.includes(item.id));
-            break;
-          case "committee":
-            members = this.allCommitteeList();
-            break;
-          default:
-            members = [];
-            break;
-        }
+            this.logger.debug("sendCommitteeNotification:notification->", this.notification);
 
-        this.logger.debug("sendCommitteeNotification:notification->", this.notification);
-
-        if (members.length === 0) {
-          this.logger.debug("about to replicateAndSendWithOptions to", list, "list with campaignName", campaignName, "campaign Id", campaignId, "dontSend", dontSend);
-          return this.mailchimpCampaignService.replicateAndSendWithOptions({
-            campaignId,
-            campaignName,
-            contentSections,
-            otherSegmentOptions: otherOptions,
-            dontSend
-          }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
-        } else {
-          const segmentPrefix = "Committee Notification Recipients";
-          return this.mailchimpSegmentService.saveSegment(list, {segmentId}, members, segmentPrefix, this.members)
-            .then(segmentResponse => {
-              this.logger.debug("segmentResponse following save segment of segmentPrefix:", segmentPrefix, "->", segmentResponse);
-              this.logger.debug("about to replicateAndSendWithOptions to committee with campaignName", campaignName, "campaign Id", campaignId, "segmentId", segmentResponse.segment.id);
+            if (members.length === 0) {
+              this.logger.debug("about to replicateAndSendWithOptions to", list, "list with campaignName", campaignName, "campaign Id", campaignId, "dontSend", dontSend);
               return this.mailchimpCampaignService.replicateAndSendWithOptions({
                 campaignId,
                 campaignName,
                 contentSections,
-                segmentId: segmentResponse.segment.id,
                 otherSegmentOptions: otherOptions,
                 dontSend
               }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
-            });
-        }
+            } else {
+              const segmentPrefix = "Committee Notification Recipients";
+              return this.mailchimpSegmentService.saveSegment(list, {segmentId}, members, segmentPrefix, this.members)
+                .then((segmentResponse: SaveSegmentResponse) => this.saveSegmentDataToMember(segmentResponse, currentMember, list))
+                .then((segmentResponse: SaveSegmentResponse) => {
+                  this.logger.debug("segmentResponse following save segment of segmentPrefix:", segmentPrefix, "->", segmentResponse);
+                  this.logger.debug("about to replicateAndSendWithOptions to committee with campaignName", campaignName, "campaign Id", campaignId, "segmentId", segmentResponse.segment.id);
+                  return this.mailchimpCampaignService.replicateAndSendWithOptions({
+                    campaignId,
+                    campaignName,
+                    contentSections,
+                    segmentId: segmentResponse.segment.id,
+                    otherSegmentOptions: otherOptions,
+                    dontSend
+                  }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
+                });
+            }
+          });
       });
   }
 
@@ -536,10 +547,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit, AfterVie
 
   helpMembers() {
     return `Click below and select`;
-  }
-
-  multiSelectLabel() {
-    return `TBD?`;
   }
 
   onChange() {

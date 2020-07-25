@@ -11,7 +11,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, SELECT_ALL, TableFilter } from "../../../models/table-filtering.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { ApiResponseProcessProcessor } from "../../../services/api-response-process-processor.service";
+import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -50,7 +50,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
-              private apiResponseProcessing: ApiResponseProcessProcessor,
+              private apiResponseProcessing: ApiResponseProcessor,
               private searchFilterPipe: SearchFilterPipe,
               private modalService: BsModalService,
               private notifierService: NotifierService,
