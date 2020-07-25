@@ -1,6 +1,6 @@
 import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DateValue } from "../models/date.model";
 import { Walk } from "../models/walk.model";
