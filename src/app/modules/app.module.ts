@@ -30,6 +30,7 @@ import { AuditDeltaValuePipe } from "../pipes/audit-delta-value.pipe";
 import { ChangedItemsPipe } from "../pipes/changed-items.pipe";
 import { BroadcastService } from "../services/broadcast-service";
 import { CommitteeConfigService } from "../services/commitee-config.service";
+import { CommitteeFileService } from "../services/committee/committee-file.service";
 import { CommitteeReferenceDataService } from "../services/committee/committee-reference-data.service";
 import { ConfigService } from "../services/config.service";
 import { ContentMetadataService } from "../services/content-metadata.service";
@@ -134,7 +135,8 @@ export class AppModule implements DoBootstrap {
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService))
       .factory("WalksService", downgradeInjectable(WalksService))
-      .factory("SocialEventsService", downgradeInjectable(SocialEventsService));
+      .factory("SocialEventsService", downgradeInjectable(SocialEventsService))
+      .factory("CommitteeFileService", downgradeInjectable(CommitteeFileService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade, "path");
     appRef.bootstrap(AppComponent);

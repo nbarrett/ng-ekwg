@@ -59,6 +59,9 @@ angular.module('ekwgApp')
         }
 
         function forEveryNotification() {
+          if (!$scope.socialEvent.notification.items) {
+            $scope.socialEvent.notification.items = {};
+          }
           $scope.socialEvent.notification.items.signoffAs = {
             include: true,
             value: loggedOnRole().type || 'social'
@@ -346,7 +349,7 @@ angular.module('ekwgApp')
         }
 
         function saveSocialEvent() {
-          return this.SocialEventsService.createOrUpdate($scope.socialEvent);
+          return SocialEventsService.createOrUpdate($scope.socialEvent);
         }
 
         function notifyEmailSendComplete() {

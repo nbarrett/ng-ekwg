@@ -62,7 +62,7 @@ angular.module('ekwgApp')
     });
 
     $scope.addSocialEvent = function () {
-      showSocialEventDialog(new SocialEventsService({eventDate: $scope.todayValue, attendees: []}), 'Add New');
+      showSocialEventDialog({eventDate: $scope.todayValue, attendees: []}, 'Add New');
     };
 
     $scope.viewSocialEvent = function (socialEvent) {
@@ -117,7 +117,7 @@ angular.module('ekwgApp')
     };
 
     $scope.copyDetailsToNewSocialEvent = function () {
-      var copiedSocialEvent = new SocialEventsService($scope.currentSocialEvent);
+      var copiedSocialEvent = _.cloneDeep($scope.currentSocialEvent);
       delete copiedSocialEvent._id;
       delete copiedSocialEvent.mailchimp;
       DateUtils.convertDateFieldInObject(copiedSocialEvent, 'eventDate');
