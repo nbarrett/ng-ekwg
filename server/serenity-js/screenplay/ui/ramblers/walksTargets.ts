@@ -31,7 +31,7 @@ export class WalksTargets {
     .located(by.css(walksViewParent + "_lstPageSize"));
 
   public static showAllWalks = Target.the("show all walks")
-    .located(by.css(walksViewParent + "_lstPageSize-menu > li.ui-corner-bottom > a"));
+    .located(by.css(walksViewParent + "_lstPageSize-button > span.ui-selectmenu-status"));
 
   public static walks = Target.all("ramblers walks")
     .located(by.css("[id^=layout_0_content_2_innerleft_2_tabWalks_rptResults_ctl].lbs-search-row"));
