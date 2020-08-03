@@ -29,6 +29,7 @@ import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-sub
 import { SendEmailsModalComponent } from "../../pages/admin/send-emails/send-emails-modal.component";
 import { ForgotPasswordModalComponent } from "../../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../../pages/login/reset-password-modal/reset-password-modal.component";
+import { FormatAuditPipe } from "../../pipes/format-audit-pipe";
 import { SharedModule } from "../../shared-module";
 
 @NgModule({
@@ -67,7 +68,8 @@ import { SharedModule } from "../../shared-module";
     SharedModule
   ],
   providers: [
-    AdminAuthGuard
+    AdminAuthGuard,
+    FormatAuditPipe
   ]
 })
 export class AdminModule {
