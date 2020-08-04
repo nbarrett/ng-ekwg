@@ -1,4 +1,4 @@
-import { Member, MemberUpdateAudit } from "./member.model";
+import { Member, MemberAuthAudit, MemberUpdateAudit } from "./member.model";
 
 export const DESCENDING = "▼";
 export const ASCENDING = "▲";
@@ -31,4 +31,15 @@ export interface MemberUpdateAuditTableFilter {
   availableFilters?: TableFilterItem[];
   selectedFilter?: TableFilterItem;
   results: MemberUpdateAudit[];
+}
+
+export interface MemberAuthAuditTableFilter {
+  sortField?: string;
+  query?: any;
+  sortFunction?: any;
+  reverseSort?: boolean;
+  sortDirection?: string;
+  availableFilters?: TableFilterItem[];
+  selectedFilter?: TableFilterItem;
+  results: MemberAuthAudit[];
 }
