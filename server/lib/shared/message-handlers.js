@@ -6,7 +6,7 @@ const querystring = require("querystring");
 
 exports.httpRequest = (options) => new Promise((resolve, reject) => {
   const requestAudit = createRequestAudit(options);
-  options.debug("sending request using API request options", requestAudit)
+  options.debug("sending request using API request options", options.apiRequest)
   const request = https.request(options.apiRequest, response => {
     var data = [];
     options.res.httpVersion = response.httpVersion;

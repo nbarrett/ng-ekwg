@@ -16,7 +16,7 @@ exports.recentMedia = (req, res) => {
             "Content-Type": "application/json; charset=utf-8"
           },
           method: "get",
-          path: `https://graph.instagram.com/${config.instagram.userId}/media?access_token=${config.instagram.accessToken}&fields=id,media_type,media_url,username,timestamp,caption`
+          path: `https://graph.instagram.com/${config.instagram.userId}/media?access_token=${config.instagram.accessToken}&fields=id,media_type,media_url,permalink,username,timestamp,caption`
         },
         debug: debug,
         res: res,

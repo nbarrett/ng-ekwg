@@ -57,7 +57,7 @@
         <div class="instagram-pics">
           <ul>
             <li *ngFor="let media of feeds.instagram.recentMedia">
-              <a [href]="media.media_url" target="_blank">
+              <a [href]="media.permalink" target="_blank">
                 <img [src]="media?.media_url" [alt]="media?.caption"
                      [title]="media?.caption"></a>
             </li>
