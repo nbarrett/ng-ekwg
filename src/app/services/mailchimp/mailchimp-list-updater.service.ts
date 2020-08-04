@@ -29,15 +29,9 @@ export class MailchimpListUpdaterService {
         .then(() => this.unsubscribeWalksList(members, notify))
         .then(() => this.unsubscribeSocialEventsList(members, notify))
         .then(() => this.unsubscribeGeneralList(members, notify))
-        .then(() => this.notifyUpdatesComplete(members, notify))
-        .then(() => resolve(this.resetSendFlags()))
+        .then(() => this.notifyUpdatesComplete(notify))
         .catch((error) => reject(this.mailchimpError(error, notify)));
     });
-  }
-
-  private resetSendFlags() {
-    this.logger.debug("resetSendFlags");
-    return true;
   }
 
   private unsubscribeWalksList(members, notify: AlertInstance) {
@@ -53,7 +47,7 @@ export class MailchimpListUpdaterService {
   }
 
   private mailchimpError(errorResponse, notify: AlertInstance) {
-    this.resetSendFlags();
+    this.logger.error(errorResponse);
     notify.error({
       title: "Mailchimp updates failed",
       message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + this.stringUtils.stringify(errorResponse.error)) : "")
@@ -78,7 +72,7 @@ export class MailchimpListUpdaterService {
     return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("general", members);
   }
 
-  private notifyUpdatesComplete(members, notify: AlertInstance) {
+  private notifyUpdatesComplete(notify: AlertInstance) {
     notify.success({title: "Mailchimp updates", message: "Mailchimp lists were updated successfully"});
     notify.clearBusy();
     return true;

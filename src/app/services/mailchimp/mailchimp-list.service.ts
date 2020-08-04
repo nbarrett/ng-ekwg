@@ -15,7 +15,8 @@ import {
   MailchimpListSegmentRenameResponse,
   MailchimpListSegmentResetResponse,
   MailchimpSubscriber,
-  SubscriberIdentifiers, SubscriptionRequest
+  SubscriberIdentifiers,
+  SubscriptionRequest
 } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
@@ -140,10 +141,13 @@ export class MailchimpListService {
 
   subscriberToMember(listType, members: Member[], subscriber: MailchimpSubscriber): Member {
     return members.find(member => {
+      this.logger.debug("subscriberToMember:member", member);
       const matchedOnListSubscriberId = subscriber.leid && member.mailchimpLists[listType].leid && (subscriber.leid.toString() === member.mailchimpLists[listType].leid.toString());
       const matchedOnLastReturnedEmail = member.mailchimpLists[listType].email && (subscriber.email.toLowerCase() === member.mailchimpLists[listType].email.toLowerCase());
       const matchedOnCurrentEmail = member.email && subscriber.email.toLowerCase() === member.email.toLowerCase();
-      return (matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail);
+      const matched = matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail;
+      this.logger.debug("subscriberToMember:member:matched", matched);
+      return matched;
     });
   }
 

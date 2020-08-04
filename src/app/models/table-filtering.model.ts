@@ -1,3 +1,5 @@
+import { Member, MemberUpdateAudit } from "./member.model";
+
 export const DESCENDING = "▼";
 export const ASCENDING = "▲";
 export const SELECT_ALL = () => true;
@@ -9,7 +11,7 @@ export interface TableFilterItem {
   filter: any;
 }
 
-export interface TableFilter {
+export interface MemberTableFilter {
   sortField?: string;
   query?: any;
   sortFunction?: any;
@@ -17,5 +19,16 @@ export interface TableFilter {
   sortDirection?: string;
   availableFilters?: TableFilterItem[];
   selectedFilter?: TableFilterItem;
-  results: any[];
+  results: Member[];
+}
+
+export interface MemberUpdateAuditTableFilter {
+  sortField?: string;
+  query?: any;
+  sortFunction?: any;
+  reverseSort?: boolean;
+  sortDirection?: string;
+  availableFilters?: TableFilterItem[];
+  selectedFilter?: TableFilterItem;
+  results: MemberUpdateAudit[];
 }

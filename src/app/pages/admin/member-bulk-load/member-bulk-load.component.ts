@@ -16,7 +16,7 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, TableFilter } from "../../../models/table-filtering.model";
+import { ASCENDING, DESCENDING, MemberUpdateAuditTableFilter, MemberTableFilter } from "../../../models/table-filtering.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
@@ -46,11 +46,11 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private memberAdminBaseUrl: string;
   private searchChangeObservable: Subject<string>;
-  private uploadSessionStatuses: SessionStatus[];
+  public uploadSessionStatuses: SessionStatus[];
   public uploadSession: MemberBulkLoadAudit;
   public filters: {
-    membersUploaded: TableFilter;
-    memberUpdateAudit: TableFilter;
+    membersUploaded: MemberTableFilter;
+    memberUpdateAudit: MemberUpdateAuditTableFilter;
   };
   public fileUploader: FileUploader = new FileUploader({
     url: "api/ramblers/monthly-reports/upload",
@@ -252,7 +252,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
     }
   }
 
-  applySortTo(field, filterSource: TableFilter, unfilteredList: any[]) {
+  applySortTo(field, filterSource: MemberTableFilter, unfilteredList: any[]) {
     this.logger.debug("sorting by field", field, "current value of filterSource", filterSource);
     filterSource.sortField = field;
     filterSource.sortFunction = field;
@@ -262,7 +262,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
     this.applyFilterToList(filterSource, unfilteredList);
   }
 
-  applyFilterToList(filter: TableFilter, unfilteredList: any[]) {
+  applyFilterToList(filter: MemberTableFilter, unfilteredList: any[]) {
     this.notify.setBusy();
     const filteredResults = sortBy(this.searchFilterPipe.transform(unfilteredList, this.quickSearch), filter.sortField);
     filter.results = filter.reverseSort ? filteredResults.reverse() : filteredResults;

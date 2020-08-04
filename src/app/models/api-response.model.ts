@@ -14,8 +14,8 @@ export interface Identifiable {
 }
 
 export enum ApiAction {
-  UPDATE = "update",
   CREATE = "create",
   DELETE = "delete",
-  QUERY = "delete"
+  QUERY = "query",
+  UPDATE = "update"
 }

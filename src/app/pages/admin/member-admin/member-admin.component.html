@@ -118,9 +118,9 @@
           <td [ngClass]="member.receivedInLastBulkLoad ? 'checkbox-on' : 'checkbox-off'"></td>
           <td [ngClass]="member.groupMember ? 'checkbox-on' : 'checkbox-off'"></td>
           <td [ngClass]="member.socialMember ? 'checkbox-on' : 'checkbox-off'"></td>
-          <td [ngClass]="member.mailchimpLists.walks.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
-          <td [ngClass]="member.mailchimpLists.socialEvents.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
-          <td [ngClass]="member.mailchimpLists.general.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+          <td [ngClass]="member.mailchimpLists?.walks?.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+          <td [ngClass]="member.mailchimpLists?.socialEvents?.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
+          <td [ngClass]="member.mailchimpLists?.general?.subscribed ? 'checkbox-on' : 'checkbox-off'"></td>
         </tr>
         </tbody>
       </table>

@@ -253,7 +253,7 @@
                   </label>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" *ngIf="member.mailchimpLists">
                 <div class="col-sm-12">
                   <p>Please select how {{member | fullNameWithAlias}} wants to be <b>emailed</b>
                     by using the subscription checkboxes below. To see the member entry in a
@@ -262,18 +262,18 @@
                   <div class="row">
                     <div class="col-sm-5">
                       <label
-                        [ngClass]="{'ui-state-active': member.mailchimpLists.walks.subscribed}"
+                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.walks?.subscribed}"
                         for="subscribe-walks-emails">Walks emails
                         <input [(ngModel)]="member.mailchimpLists.walks.subscribed"
                                type="checkbox" id="subscribe-walks-emails">
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member.mailchimpLists.walks.leid"
-                              (click)="viewMailchimpListEntry(member.mailchimpLists.walks.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.walks?.leid"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.leid)"
                               title="View walks list entry In Mailchimp">
                         <img
-                          [ngClass]="member.mailchimpLists.walks.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.walks?.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View walks list entry In Mailchimp"></button>
                     </div>
@@ -281,7 +281,7 @@
                   <div class="row">
                     <div class="col-sm-5">
                       <label
-                        [ngClass]="{'ui-state-active': member.mailchimpLists.socialEvents.subscribed}"
+                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.socialEvents?.subscribed}"
                         for="subscribe-social-events-emails">Social events emails
                         <input
                           [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
@@ -289,11 +289,11 @@
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member.mailchimpLists.socialEvents.leid"
-                              (click)="viewMailchimpListEntry(member.mailchimpLists.socialEvents.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.socialEvents.leid"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.leid)"
                               title="View social list entry In Mailchimp">
                         <img
-                          [ngClass]="member.mailchimpLists.socialEvents.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.socialEvents?.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View social list entry In Mailchimp"></button>
                     </div>
@@ -301,7 +301,7 @@
                   <div class="row">
                     <div class="col-sm-5">
                       <label
-                        [ngClass]="{'ui-state-active': member.mailchimpLists.general.subscribed}"
+                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.general.subscribed}"
                         for="subscribe-general-emails">General emails
                         <input
                           [(ngModel)]="member.mailchimpLists.general.subscribed"
@@ -309,11 +309,11 @@
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member.mailchimpLists.general.leid"
-                              (click)="viewMailchimpListEntry(member.mailchimpLists.general.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.general.leid"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.general.leid)"
                               title="View general list entry In Mailchimp">
                         <img
-                          [ngClass]="member.mailchimpLists.general.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.general.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View general list entry In Mailchimp"></button>
                     </div>

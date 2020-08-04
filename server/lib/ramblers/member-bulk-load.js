@@ -4,13 +4,14 @@ const aws = require("../aws/aws-controllers");
 const debug = require("debug")(config.logNamespace("ramblers:memberBulkLoad"));
 const path = require("path");
 const fs = require("fs");
+const xlsx = require("xlsx");
 const moment = require("moment-timezone");
-const _ = require("underscore");
-const _str = require("underscore.string");
+const {find, first, chain, isEmpty, isObject, map, get} = require("lodash");
 const csv = require("csv");
 const childProcess = require("child_process");
 const BULK_LOAD_SUFFIX = "MemberList.csv";
 const NEW_MEMBER_SUFFIX = "new.csv";
+const EXCEL_SUFFIX = ".xls";
 
 exports.uploadRamblersData = (req, res) => {
   var momentInstance = moment().tz("Europe/London");
@@ -25,9 +26,11 @@ exports.uploadRamblersData = (req, res) => {
     extractZipFile(uploadedFile.path, uploadedFile.originalname, res);
   } else if (fileExtensionIs(".csv") && filenameValid()) {
     extractCsvToJson(uploadedFile.path, uploadedFile.originalname, res);
+  } else if (isExcel()) {
+    extractExcelDataToJson(uploadedFile.path, uploadedFile.originalname, res);
   } else {
     fs.unlink(uploadedFile.originalname, () => {
-      debugAndError(`Only zip files or files that end with "${BULK_LOAD_SUFFIX}" or "${NEW_MEMBER_SUFFIX}" are allowed, but you supplied ${uploadedFile.originalname}`)
+      debugAndError(`Only zip files or files that end with "${BULK_LOAD_SUFFIX}", ${EXCEL_SUFFIX} or "${NEW_MEMBER_SUFFIX}" are allowed, but you supplied ${uploadedFile.originalname}`)
       returnResponse();
     });
   }
@@ -41,7 +44,7 @@ exports.uploadRamblersData = (req, res) => {
   }
 
   function logWithStatus(status, argumentsData) {
-    var debugData = _.map(argumentsData, item => _.isObject(item) ? JSON.stringify(item) : item).join(" ");
+    var debugData = map(argumentsData, item => isObject(item) ? JSON.stringify(item) : item).join(" ");
     debug(debugData);
     bulkUploadResponse.auditLog.push({status: status, message: debugData});
     if (status === "error") {
@@ -61,13 +64,16 @@ exports.uploadRamblersData = (req, res) => {
     logWithStatus("error", arguments);
   }
 
+  function isExcel() {
+    return uploadedFile.originalname.includes(EXCEL_SUFFIX);
+  }
 
   function filenameValid() {
-    return uploadedFile.originalname.endsWith(BULK_LOAD_SUFFIX) || uploadedFile.originalname.endsWith(NEW_MEMBER_SUFFIX);
+    return uploadedFile.originalname.endsWith(BULK_LOAD_SUFFIX) || uploadedFile.originalname.endsWith(NEW_MEMBER_SUFFIX) || isExcel();
   }
 
   function uploadedFileInfo() {
-    return _.first(req.files);
+    return first(req.files);
   }
 
   function fileExtensionIs(extension) {
@@ -94,7 +100,7 @@ exports.uploadRamblersData = (req, res) => {
           };
 
           zip.stdout.on("data", data => {
-            const logOutput = data.toString().trim().split("\n").filter(item => !_.isEmpty(item));
+            const logOutput = data.toString().trim().split("\n").filter(item => !isEmpty(item));
             if (logOutput.length > 0) {
               debugAndInfo("Unzip output [" + logOutput + "]");
               zipOutputLines = zipOutputLines.concat(logOutput);
@@ -110,8 +116,8 @@ exports.uploadRamblersData = (req, res) => {
               debugAndError(`Unzip of ${userZipFileName} ended unsuccessfully. Unzip process terminated with: ${zipErrorLines.join(", ")}`);
               returnResponse();
             } else {
-              const extractedFiles = _.chain(zipOutputLines)
-                .filter(file => _str.include(file, inflateToken))
+              const extractedFiles = chain(zipOutputLines)
+                .filter(file => file.includes(inflateToken))
                 .map(file => file.replace(inflateToken, "").trim())
                 .value();
               debugAndInfo("Unzip process completed successfully after processing", receivedZipFileName, "and extracted", extractedFiles.length, "file(s):", extractedFiles.join(", "));
@@ -140,8 +146,27 @@ exports.uploadRamblersData = (req, res) => {
     );
   }
 
+  function extractExcelDataToJson(uploadedWorkbook, userFileName, res) {
+    debug('Reading members from ' + uploadedWorkbook);
+    var workbook = xlsx.readFile(uploadedWorkbook);
+    var ramblersSheet = chain(workbook.SheetNames)
+      .filter(function (sheet) {
+        debug("sheet", sheet);
+        return sheet.includes("Full List");
+      }).first().value();
+    debug('Importing data from workbook sheet', ramblersSheet);
+    var json = xlsx.utils.sheet_to_json(workbook.Sheets[ramblersSheet]);
+    if (json.length > 0) {
+      extractMemberDataFromArray(json, userFileName, res)
+      return returnResponse();
+    } else {
+      debugAndError('Excel workbook ' + userFileName + ' did not contain a sheet called [' + ramblersSheet + '] or no data rows were found in it');
+      returnResponse();
+    }
+  }
+
   function extractFromFile(unzipPath, extractedFiles, fileNameSuffix, res) {
-    const memberDataFileName = _.find(extractedFiles, file => _str.endsWith(file, fileNameSuffix));
+    const memberDataFileName = find(extractedFiles, file => file.endsWith(fileNameSuffix));
     if (memberDataFileName) {
       debugAndInfo(memberDataFileName, "matched", fileNameSuffix);
       return aws.putObjectDirect(uploadSessionFolder, memberDataFileName, memberDataFileName)
@@ -163,7 +188,7 @@ exports.uploadRamblersData = (req, res) => {
   function extractMemberDataFromArray(json, userFileName, res) {
     let currentDataRow;
     try {
-      const memberDataRows = _.chain(json)
+      const memberDataRows = chain(json)
         .map(dataRow => {
           currentDataRow = dataRow;
           if (dataRow["[Expiry Date]"]) {
@@ -185,11 +210,21 @@ exports.uploadRamblersData = (req, res) => {
               lastName: dataRow["Surname"].trim(),
               postcode: dataRow["PostCode"].trim()
             }
+          } else if (dataRow["Mem No."]) {
+            return {
+              membershipExpiryDate: dataRow["Expiry date"].trim(),
+              membershipNumber: dataRow["Mem No."],
+              mobileNumber: dataRow["Mobile Telephone"].trim(),
+              email: dataRow["Email Address"].trim(),
+              firstName: dataRow["Forenames"] || dataRow["Initials"].trim(),
+              lastName: dataRow["Surname"].trim(),
+              postcode: dataRow["Postcode"].trim()
+            }
           } else {
             return debugAndError("Loading of data from " + userFileName + " failed processing data row " + JSON.stringify(currentDataRow) + " due to membership record type not being recognised");
           }
         })
-        .filter(dataRow => dataRow.membershipNumber).value();
+        .filter(dataRow => dataRow && dataRow.membershipNumber).value();
       bulkUploadResponse.members = memberDataRows;
       debugAndComplete(`${memberDataRows.length} member(s) were extracted from ${userFileName}`);
     } catch (error) {

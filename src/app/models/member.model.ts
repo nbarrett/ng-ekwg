@@ -146,6 +146,12 @@ export interface MemberBulkLoadAudit extends Auditable {
   members: RamblersMember[];
 }
 
+export interface AuditField {
+  fieldName: string;
+  writeDataIf: string;
+  type: string;
+}
+
 export interface MemberUpdateAudit extends Auditable {
   uploadSessionId: string;
   updateTime: number;

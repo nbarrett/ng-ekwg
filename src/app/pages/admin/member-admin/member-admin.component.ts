@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import extend from "lodash-es/extend";
-import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -9,7 +8,7 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, MEMBER_SORT, SELECT_ALL, TableFilter } from "../../../models/table-filtering.model";
+import { ASCENDING, DESCENDING, MEMBER_SORT, SELECT_ALL, MemberTableFilter } from "../../../models/table-filtering.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -41,7 +40,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private members: Member[] = [];
   public quickSearch = "";
   private searchChangeObservable: Subject<string>;
-  public memberFilter: TableFilter;
+  public memberFilter: MemberTableFilter;
 
   private memberFilterUploaded: any;
   filters: any;
@@ -50,7 +49,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
-              private apiResponseProcessing: ApiResponseProcessor,
+              private apiResponseProcessor: ApiResponseProcessor,
               private searchFilterPipe: SearchFilterPipe,
               private modalService: BsModalService,
               private notifierService: NotifierService,
@@ -64,7 +63,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.ERROR);
     this.searchChangeObservable = new Subject<string>();
   }
 
@@ -166,7 +165,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
-        this.apiResponseProcessing.processResponse(this.logger, this.members, apiResponse);
+        this.members = this.apiResponseProcessor.processResponse(this.logger, this.members, apiResponse);
         this.applyFilterToMembers();
       }
     });

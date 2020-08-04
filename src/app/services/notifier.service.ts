@@ -59,11 +59,10 @@ export class AlertInstance {
     if (alertType === ALERT_ERROR) {
       this.clearBusy();
       if (this.stringUtils.isAlertMessage(message) && !message.continue) {
-        this.logger.error("notifyAlertMessage:", "class =", alertType, "messageText =", messageText, "append =", append);
+        this.logger.error("notifyAlertMessage:", "alertType:", alertType, "messageText:", messageText, "message:", message);
         throw message;
       } else {
-        return this.logger.debug("notifyAlertMessage:", "class =", alertType, "messageText =",
-          messageText, "alertMessages", this.alertTarget.alertMessages, "append =", append, "showAlert =", this.alertTarget.showAlert);
+        return this.logger.debug("notifyAlertMessage:", "alertType:", alertType, "messageText:", messageText, "message:", message, "alertMessages:", this.alertTarget.alertMessages, "showAlert:", this.alertTarget.showAlert);
       }
     }
   }

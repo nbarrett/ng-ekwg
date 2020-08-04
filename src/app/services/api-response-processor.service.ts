@@ -12,8 +12,9 @@ export class ApiResponseProcessor {
   processResponse<T extends Identifiable>(logger: Logger, existingItems: T[], apiResponse: ApiResponse): T[] {
     let tempItems: T[] = cloneDeep(existingItems);
     const responseItems: T[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
-    logger.info("Received", responseItems.length, "item", apiResponse.action, "notification(s)");
+    logger.info("Received", responseItems.length, "item", apiResponse.action, "notification(s) - applying response to", tempItems.length, "existing items");
     if (apiResponse.action === ApiAction.QUERY) {
+      logger.info("replacing ", tempItems.length, "items with", responseItems.length, apiResponse.action, "items");
       tempItems = responseItems;
     } else {
       responseItems.forEach(notifiedItem => {
@@ -24,15 +25,16 @@ export class ApiResponseProcessor {
             tempItems = tempItems.filter(member => member.id !== notifiedItem.id);
           } else {
             const index = tempItems.indexOf(tempItems.find(item => item.id === existingItem.id));
-            logger.info("replacing", notifiedItem, "at index position", index );
+            logger.info("replacing", notifiedItem, "at index position", index);
             tempItems[index] = notifiedItem;
           }
         } else {
-          logger.info("adding", notifiedItem);
+          logger.info("adding", notifiedItem, "following", apiResponse.action);
           tempItems.push(notifiedItem);
         }
       });
     }
+    logger.info("Returning", tempItems.length, "items following response processing");
     return tempItems;
   }
 

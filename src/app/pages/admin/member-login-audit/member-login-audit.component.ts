@@ -10,7 +10,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { ApiAction, ApiResponse } from "../../../models/api-response.model";
 import { DateValue } from "../../../models/date.model";
 import { Member, MemberAuthAudit } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, MEMBER_SORT, TableFilter } from "../../../models/table-filtering.model";
+import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter } from "../../../models/table-filtering.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
@@ -35,7 +35,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   private members: Member[] = [];
   public quickSearch = "";
   private searchChangeObservable: Subject<string>;
-  public auditFilter: TableFilter;
+  public auditFilter: MemberTableFilter;
   private memberFilterUploaded: any;
   private subscription: Subscription;
   private memberAudits: MemberAuthAudit[] = [];

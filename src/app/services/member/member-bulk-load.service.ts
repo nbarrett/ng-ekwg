@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
 import omit from "lodash-es/omit";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
+import { AuditField, Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -99,7 +99,7 @@ export class MemberBulkLoadService {
         });
     };
 
-    const convertMembershipExpiryDate = (ramblersMember) => {
+    const convertMembershipExpiryDate = (ramblersMember): number => {
       const dataValue = ramblersMember.membershipExpiryDate ? this.dateUtils.asValueNoTime(ramblersMember.membershipExpiryDate, "DD/MM/YYYY") : ramblersMember.membershipExpiryDate;
       this.logger.debug("ramblersMember", ramblersMember, "membershipExpiryDate", ramblersMember.membershipExpiryDate, "->", this.dateUtils.displayDate(dataValue));
       return dataValue;
@@ -112,7 +112,7 @@ export class MemberBulkLoadService {
       ramblersMember.groupMember = !ramblersMember.membershipExpiryDate || ramblersMember.membershipExpiryDate >= today;
       let member: Member = members.find(member => {
         const existingUserName = this.memberNamingService.createUserName(ramblersMember);
-        let match: boolean = member.membershipNumber && member.membershipNumber.toString() === ramblersMember.membershipNumber;
+        let match: boolean = member.membershipNumber && member.membershipNumber.toString() === ramblersMember.membershipNumber.toString();
         if (!match && member.userName) {
           match = member.userName === existingUserName;
         }
@@ -155,7 +155,7 @@ export class MemberBulkLoadService {
 
     };
 
-    const changeAndAuditMemberField = (updateAudit, member, ramblersMember, field) => {
+    const changeAndAuditMemberField = (updateAudit, member, ramblersMember, auditField: AuditField) => {
 
       const auditValueForType = (field, source) => {
         const dataValue = source[field.fieldName];
@@ -169,33 +169,34 @@ export class MemberBulkLoadService {
         }
       };
 
-      const fieldName = field.fieldName;
+      const fieldName = auditField.fieldName;
       let performMemberUpdate = false;
       let auditQualifier = " not overwritten with ";
       let auditMessage;
-      const oldValue = auditValueForType(field, member);
-      const newValue = auditValueForType(field, ramblersMember);
-      if (field.writeDataIf === "changed") {
-        performMemberUpdate = (oldValue !== newValue) && ramblersMember[fieldName];
-      } else if (field.writeDataIf === "empty") {
+      const oldValue = auditValueForType(auditField, member);
+      const newValue = auditValueForType(auditField, ramblersMember);
+      const dataDifferent: boolean = oldValue.toString() !== newValue.toString();
+      if (auditField.writeDataIf === "changed") {
+        performMemberUpdate = dataDifferent && ramblersMember[fieldName];
+      } else if (auditField.writeDataIf === "empty") {
         performMemberUpdate = !member[fieldName];
-      } else if (field.writeDataIf === "not-revoked") {
-        performMemberUpdate = newValue && (oldValue !== newValue) && !member.revoked;
-      } else if (field.writeDataIf) {
-        performMemberUpdate = newValue;
+      } else if (auditField.writeDataIf === "not-revoked") {
+        performMemberUpdate = newValue && dataDifferent && !member.revoked;
+      } else if (auditField.writeDataIf) {
+        performMemberUpdate = !!newValue;
       }
       if (performMemberUpdate) {
         auditQualifier = " updated to ";
         member[fieldName] = ramblersMember[fieldName];
         updateAudit.fieldsChanged++;
       }
-      if (oldValue !== newValue) {
+      if (dataDifferent) {
         if (!performMemberUpdate) {
           updateAudit.fieldsSkipped++;
         }
         auditMessage = fieldName + ": " + oldValue + auditQualifier + newValue;
       }
-      if ((performMemberUpdate || (oldValue !== newValue)) && auditMessage) {
+      if ((performMemberUpdate || dataDifferent) && auditMessage) {
         updateAudit.auditMessages.push(auditMessage);
       }
     };
