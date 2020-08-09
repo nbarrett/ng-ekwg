@@ -10,7 +10,9 @@ import {
   MailchimpCampaignReplicateResponse,
   MailchimpCampaignSendRequest,
   MailchimpCampaignSendResponse,
-  MailchimpCampaignUpdateResponse
+  MailchimpCampaignUpdateResponse,
+  MailchimpExpenseOtherContent,
+  MailchimpGenericOtherContent
 } from "../../models/mailchimp.model";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
@@ -37,7 +39,7 @@ export class MailchimpCampaignService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.ERROR);
     this.allowSendCampaign = true;
   }
 
@@ -74,13 +76,18 @@ export class MailchimpCampaignService {
     return this.setSegmentOpts(campaignId, {});
   }
 
-  async setContent(campaignId, contentSections): Promise<MailchimpCampaignUpdateResponse> {
-    return await this.updateCampaign(campaignId, {
-      updates: {
-        name: "content",
-        value: contentSections
-      }
-    });
+  async setContent(campaignId: string, contentSections: MailchimpExpenseOtherContent | MailchimpGenericOtherContent): Promise<MailchimpCampaignUpdateResponse | void> {
+    this.logger.debug("setContent:contentSections", contentSections);
+    if (contentSections) {
+      return await this.updateCampaign(campaignId, {
+        updates: {
+          name: "content",
+          value: contentSections
+        }
+      });
+    } else {
+      return Promise.resolve();
+    }
   }
 
   async setSegmentOpts(campaignId: string, value?: any): Promise<MailchimpCampaignUpdateResponse> {
@@ -92,7 +99,7 @@ export class MailchimpCampaignService {
     });
   }
 
-  async setCampaignOptions(campaignId, campaignName, otherOptions): Promise<MailchimpCampaignUpdateResponse> {
+  async setCampaignOptions(campaignId: string, campaignName: string, otherOptions): Promise<MailchimpCampaignUpdateResponse> {
     return await this.updateCampaign(campaignId, {
       updates: {
         name: "options",
