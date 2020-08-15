@@ -16,7 +16,7 @@ import { WalksModule } from "./walks.module";
     {path: "edit/:walk-id", component: WalkEditFullPageComponent},
     {path: "export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
     {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
-    {path: "walkId/:walk-id", component: WalkListComponent},
+    {path: ":walk-id", component: WalkListComponent},
     {path: "**", component: WalkListComponent},
   ])]
 })

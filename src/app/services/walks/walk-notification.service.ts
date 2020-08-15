@@ -1,4 +1,4 @@
-import { ComponentFactoryResolver, Inject, Injectable } from "@angular/core";
+import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { MailchimpGenericOtherContent } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
@@ -19,6 +19,7 @@ import { WalkNotificationLeaderAwaitingWalkDetailsComponent } from "../../notifi
 import { WalkNotificationLeaderRequestedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-requested.component";
 import { WalkNotificationLeaderUpdatedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-updated.component";
 import { WalkNotificationComponentAndData, WalkNotificationDirective } from "../../notifications/walks/walk-notification.directive";
+import { WalkDisplayService } from "../../pages/walks/walk-display.service";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
@@ -33,6 +34,7 @@ import { AlertInstance, NotifierService } from "../notifier.service";
 import { RamblersWalksAndEventsService } from "./ramblers-walks-and-events.service";
 import { WalkEventService } from "./walk-event.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
+import { WalksService } from "./walks.service";
 
 @Injectable({
   providedIn: "root"
@@ -48,9 +50,11 @@ export class WalkNotificationService {
     private mailchimpConfig: MailchimpConfigService,
     protected memberService: MemberService,
     private memberLoginService: MemberLoginService,
+    private display: WalkDisplayService,
     private walkEventService: WalkEventService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private walksReferenceService: WalksReferenceService,
+    private walksService: WalksService,
     private notifierService: NotifierService,
     private fullNameWithAliasPipe: FullNameWithAliasPipe,
     private auditDeltaValuePipe: AuditDeltaValuePipe,
@@ -66,8 +70,10 @@ export class WalkNotificationService {
     if (event && sendNotification) {
       const walkEventType = this.walksReferenceService.toWalkEventType(event.eventType);
       this.logger.debug("walkEventType", walkEventType, "from event:", event);
-      await this.sendNotificationsToAllRoles(members, notificationDirective, displayedWalk, walkEventType, notify);
       this.walkEventService.writeEventIfRequired(displayedWalk.walk, event);
+      displayedWalk.walk = await this.walksService.createOrUpdate(displayedWalk.walk);
+      this.display.refreshDisplayedWalk(displayedWalk);
+      await this.sendNotificationsToAllRoles(members, notificationDirective, displayedWalk, walkEventType, notify);
       return true;
     } else {
       this.logger.debug("Not sending notification sendNotification:", sendNotification, "event:", event);
