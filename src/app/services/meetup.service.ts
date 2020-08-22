@@ -156,8 +156,8 @@ export class MeetupService {
         this.logger.debug("delete event API response", apiResponse);
       }
       walk.meetupPublish = false;
-      delete walk.meetupEventUrl;
-      delete walk.meetupEventTitle;
+      walk.meetupEventUrl = "";
+      walk.meetupEventTitle = "";
       return eventDeletable;
     } catch (error) {
       return Promise.reject(`Event deletion failed: '${this.extractErrorsFrom(error)}'.`);

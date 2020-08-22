@@ -111,7 +111,7 @@ export class RamblersWalksAndEventsService {
         const walk = findWhere(walks, {ramblersWalkId});
         if (walk) {
           this.logger.info("removing ramblers walk", walk.ramblersWalkId, "from walk on", this.displayDate.transform(walk.walkDate));
-          delete walk.ramblersWalkId;
+          walk.ramblersWalkId = "";
           savePromises.push(this.walksService.createOrUpdate(walk));
         }
       });
