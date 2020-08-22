@@ -7,8 +7,12 @@ export interface WalkNotification {
   walk: Walk;
   status: EventType;
   event: WalkEvent;
-  dataAuditDelta: WalkDataAudit;
+  walkDataAudit: WalkDataAudit;
   validationMessages: string[];
   reason?: string;
 }
 
+export interface CurrentPreviousData {
+  currentData: object;
+  previousData?: object;
+}

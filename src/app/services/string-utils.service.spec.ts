@@ -34,6 +34,20 @@ describe("StringUtilsService", () => {
         }
       )).toBe("Hostname: api.meetup.com, Protocol: https:");
     });
+    it("should not distinguish between undefined, empty and null", () => {
+      const service: StringUtilsService = TestBed.inject(StringUtilsService);
+      expect(service.stringifyObject({value: undefined})).toBe("Value: (none)");
+      expect(service.stringifyObject({value: null})).toBe("Value: (none)");
+      expect(service.stringifyObject({value: ""})).toBe("Value: (none)");
+      expect(service.stringifyObject("")).toBe("(none)");
+    });
+    it("should allow a default value to be supplied for non-present values", () => {
+      const service: StringUtilsService = TestBed.inject(StringUtilsService);
+      expect(service.stringifyObject({value: undefined}, "(nowt)")).toBe("Value: (nowt)");
+      expect(service.stringifyObject({value: null}, "(nowt)")).toBe("Value: (nowt)");
+      expect(service.stringifyObject({value: ""}, "(nowt)")).toBe("Value: (nowt)");
+      expect(service.stringifyObject("", "(nowt)")).toBe("(nowt)");
+    });
     it("should return an object nested objects each with humanised key, values", () => {
       const service: StringUtilsService = TestBed.inject(StringUtilsService);
       expect(service.stringifyObject({

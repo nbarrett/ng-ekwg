@@ -75,17 +75,17 @@ export class StringUtilsService {
     };
   }
 
-  stringifyObject(inputValue): string {
+  stringifyObject(inputValue, defaultValue?: string): string {
     if (typeof inputValue === "object") {
       return map(inputValue, (value, key) => {
         if (isObject(value)) {
-          return `${startCase(key)} -> ${this.stringifyObject(value)}`;
+          return `${startCase(key)} -> ${this.stringifyObject(value, defaultValue)}`;
         } else {
-          return `${startCase(key)}: ${value}`;
+          return `${startCase(key)}: ${value || defaultValue || "(none)"}`;
         }
       }).join(", ");
     } else {
-      return inputValue;
+      return inputValue || defaultValue || "(none)";
     }
   }
 

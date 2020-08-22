@@ -418,59 +418,59 @@
         </div>
       </div>
     </tab>
-    <tab *ngIf="displayedWalk.walk.walkLeaderMemberId" [heading]="'Copy from previous walk'">
-      <div class="thumbnail thumbnail-admin-edit"
-           *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
-        <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="radio-inline map-radio-group map-radio-label">
+      <tab *ngIf="displayedWalk.walk.walkLeaderMemberId" [heading]="'Copy from previous walk'">
+        <div class="thumbnail thumbnail-admin-edit"
+             *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
+          <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="radio-inline map-radio-group map-radio-label">
 
-              <input [disabled]="false"
-                     id="copy-selected-walk-leader" type="radio"
-                     [(ngModel)]="copySource"
-                     (change)="populateWalkTemplates()"
-                     value="copy-selected-walk-leader"/>
-              <label for="copy-selected-walk-leader">Previously led by: <select
-                class="form-control input-sm input-led-by"
-                [(ngModel)]="copySourceFromWalkLeaderMemberId"
-                (change)="selectCopySelectedLeader()"
-                id="copy-member-walks">
-                <option value="">(no walk leader selected)</option>
-                <option *ngFor="let member of membersWithAliasOrMe()"
-                        [ngValue]="member.memberId"
-                        [textContent]="member.name">
-                </option>
+                <input [disabled]="false"
+                       id="copy-selected-walk-leader" type="radio"
+                       [(ngModel)]="copySource"
+                       (change)="populateWalkTemplates()"
+                       value="copy-selected-walk-leader"/>
+                <label for="copy-selected-walk-leader">Previously led by: <select
+                  class="form-control input-sm input-led-by"
+                  [(ngModel)]="copySourceFromWalkLeaderMemberId"
+                  (change)="selectCopySelectedLeader()"
+                  id="copy-member-walks">
+                  <option value="">(no walk leader selected)</option>
+                  <option *ngFor="let member of membersWithAliasOrMe()"
+                          [ngValue]="member.memberId"
+                          [textContent]="member.name">
+                  </option>
+                </select>
+                </label>
+
+                <input id="copy-with-os-maps-route-selected" type="radio"
+                       [(ngModel)]="copySource"
+                       (change)="populateWalkTemplates()"
+                       value="copy-with-os-maps-route-selected"/>
+                <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
+
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 mt-8">
+              <label for="copy-walks-list">
+                Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
+              <select
+                [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
+                [(ngModel)]="copyFrom.walkTemplate"
+                (change)="populateCurrentWalkFromTemplate()"
+                id="copy-walks-list">
+                <option value="">(none selected)</option>
+                <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
+                        [ngValue]="walkTemplate"
+                        [textContent]="walkTemplate | walkSummary"></option>
               </select>
-              </label>
-
-              <input id="copy-with-os-maps-route-selected" type="radio"
-                     [(ngModel)]="copySource"
-                     (change)="populateWalkTemplates()"
-                     value="copy-with-os-maps-route-selected"/>
-              <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
-
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-12 mt-8">
-            <label for="copy-walks-list">
-              Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
-            <select
-              [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
-              [(ngModel)]="copyFrom.walkTemplate"
-              (change)="populateCurrentWalkFromTemplate()"
-              id="copy-walks-list">
-              <option value="">(none selected)</option>
-              <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
-                      [ngValue]="walkTemplate"
-                      [textContent]="walkTemplate | walkSummary"></option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </tab>
+      </tab>
   </tabset>
   <div class="form-group">
     <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">

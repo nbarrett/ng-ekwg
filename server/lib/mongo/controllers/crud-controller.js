@@ -28,8 +28,6 @@ exports.create = (model) => {
         .then(result => {
           debug("post-update:document:", document, "result:", result);
           res.status(200).json({
-            body: req.body,
-            document,
             action: "update",
             response: transforms.toObjectWithId(result)
           });

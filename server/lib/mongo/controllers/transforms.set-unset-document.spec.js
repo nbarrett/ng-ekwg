@@ -29,6 +29,22 @@ it("removes fields containing only whitespace", done => {
   done();
 });
 
+it("removes fields containing undefined", done => {
+
+  const json = {
+    "userName": "nickek",
+    "displayName": undefined
+  }
+  expect(transforms.setUnSetDocument(json)).to.eql({
+      "$set": {"userName": "nickek"},
+      "$unset": {
+        "displayName": 1
+      }
+    }
+  );
+  done();
+});
+
 it("trims fields", done => {
 
   const json = {

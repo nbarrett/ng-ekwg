@@ -16,6 +16,7 @@ it("transforms request with criteria, select, sort included", done => {
           "$exists": true
         }
       },
+      "limit": {},
       "select": {
         "criteria": {
           "contentMetaDataType": "imagesHome"
@@ -44,6 +45,7 @@ it("transforms request with stringified values", done => {
           "$exists": true
         }
       },
+      "limit": {},
       "select": {
         "criteria": {
           "contentMetaDataType": "imagesHome"
@@ -70,6 +72,7 @@ it("transforms request with some values missing", done => {
           "$exists": true
         }
       },
+      "limit": {},
       "select": {},
       "sort": {}
     }

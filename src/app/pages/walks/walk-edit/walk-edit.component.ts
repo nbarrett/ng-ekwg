@@ -100,7 +100,7 @@ export class WalkEditComponent implements OnInit {
     private siteEditService: SiteEditService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -112,6 +112,7 @@ export class WalkEditComponent implements OnInit {
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
+    this.logger.info("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();
     this.siteEditService.events.subscribe(item => this.logDetectChanges());
     setInterval(() => {
@@ -122,7 +123,7 @@ export class WalkEditComponent implements OnInit {
   }
 
   notificationRequired() {
-    const walkDataAudit = this.walkEventService.walkDataAuditFor(this.displayedWalk.walk, this.status());
+    const walkDataAudit = this.walkEventService.walkDataAuditFor(this.displayedWalk.walk, this.status(), true);
     const notificationRequired = walkDataAudit.notificationRequired;
     this.logger.info("dataHasChanged:", notificationRequired, "walkDataAudit:", walkDataAudit);
     return notificationRequired;
@@ -219,11 +220,11 @@ export class WalkEditComponent implements OnInit {
     const memberId = this.displayedWalk.walk.walkLeaderMemberId;
     if (!memberId) {
       this.setStatus(EventType.AWAITING_LEADER);
-      delete this.displayedWalk.walk.walkLeaderMemberId;
-      delete this.displayedWalk.walk.contactId;
-      delete this.displayedWalk.walk.displayName;
-      delete this.displayedWalk.walk.contactPhone;
-      delete this.displayedWalk.walk.contactEmail;
+      this.displayedWalk.walk.walkLeaderMemberId = "";
+      this.displayedWalk.walk.contactId = "";
+      this.displayedWalk.walk.displayName = "";
+      this.displayedWalk.walk.contactPhone = "";
+      this.displayedWalk.walk.contactEmail = "";
     } else {
       const selectedMember: Member = this.display.members.find((member: Member) => {
         return member.id === memberId;
@@ -345,13 +346,13 @@ export class WalkEditComponent implements OnInit {
   }
 
   unlinkRamblersDataFromCurrentWalk() {
-    delete this.displayedWalk.walk.ramblersWalkId;
+    this.displayedWalk.walk.ramblersWalkId = "";
     this.notify.progress({title: "Unlink walk", message: "Previous Ramblers walk has now been unlinked."});
   }
 
   unlinkOSMapsFromCurrentWalk() {
-    delete this.displayedWalk.walk.osMapsRoute;
-    delete this.displayedWalk.walk.osMapsTitle;
+    this.displayedWalk.walk.osMapsRoute = "";
+    this.displayedWalk.walk.osMapsTitle = "";
     this.notify.progress({title: "Unlink walk", message: "Previous OS Maps route has now been unlinked."});
   }
 

@@ -1,20 +1,21 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import clone from "lodash-es/clone";
 import compact from "lodash-es/compact";
+import get from "lodash-es/get";
 import isArray from "lodash-es/isArray";
-import isNil from "lodash-es/isNil";
 import last from "lodash-es/last";
-import omitBy from "lodash-es/omitBy";
 import pick from "lodash-es/pick";
+import takeRight from "lodash-es/takeRight";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ChangedItem } from "../../models/changed-item.model";
 import { WalkDataAudit } from "../../models/walk-data-audit.model";
 import { WalkEvent } from "../../models/walk-event.model";
+import { CurrentPreviousData } from "../../models/walk-notification.model";
 import { Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { DateUtilsService } from "../date-utils.service";
-import { MemberLoginService } from "../member/member-login.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MemberLoginService } from "../member/member-login.service";
 import { StringUtilsService } from "../string-utils.service";
 import { EventType, WalksReferenceService } from "./walks-reference-data.service";
 
@@ -48,10 +49,9 @@ export class WalkEventService {
     return eventType;
   }
 
-  public walkDataAuditFor(walk: Walk, status: EventType): WalkDataAudit {
+  public walkDataAuditFor(walk: Walk, status: EventType, basedOnUnsavedData: boolean): WalkDataAudit {
     if (walk) {
-      const currentData = this.currentDataValues(walk);
-      const previousData = this.previousDataValues(walk);
+      const {currentData, previousData} = this.currentPreviousData(walk, basedOnUnsavedData);
       const changedItems = this.calculateChangedItems(currentData, previousData);
       const eventExists = this.latestEventWithStatusChangeIs(walk, status);
       const dataChanged = changedItems.length > 0;
@@ -76,7 +76,7 @@ export class WalkEventService {
   }
 
   public createEventIfRequired(walk: Walk, status: EventType, reason: string): WalkEvent {
-    const walkDataAudit = this.walkDataAuditFor(walk, status);
+    const walkDataAudit = this.walkDataAuditFor(walk, status, true);
     this.logger.debug("createEventIfRequired given status:", status, "walkDataAudit:", walkDataAudit);
     if (walkDataAudit.notificationRequired) {
       const event = {
@@ -115,30 +115,28 @@ export class WalkEventService {
   }
 
   public latestEvent(walk): WalkEvent {
-    return (walk.events && last(walk.events));
+    return last(walk?.events);
   }
 
-  private compactObject(o) {
-    return omitBy(o, isNil);
-  }
-
-  private currentDataValues(walk) {
-    return this.compactObject(pick(walk, auditedFields));
-  }
-
-  private previousDataValues(walk: Walk) {
-    const event: WalkEvent = this.latestEvent(walk);
-    return event && event.data;
+  private currentPreviousData(walk: Walk, basedOnUnsavedData: boolean): CurrentPreviousData {
+    if (basedOnUnsavedData) {
+      return {currentData: pick(walk, auditedFields), previousData: this.latestEvent(walk)?.data};
+    } else {
+      const latest2Events: WalkEvent[] = takeRight(walk.events, 2);
+      const currentData = latest2Events.length === 2 ? latest2Events[1]?.data : latest2Events[0]?.data;
+      const previousData = latest2Events.length === 2 ? latest2Events[0]?.data : undefined;
+      return {currentData, previousData};
+    }
   }
 
   private eventsLatestFirst(walk: Walk) {
     return walk.events && clone(walk.events).reverse() || [];
   }
 
-  private calculateChangedItems(currentData, previousData): ChangedItem[] {
+  private calculateChangedItems(currentData: object, previousData: object): ChangedItem[] {
     return compact(auditedFields.map((key) => {
-      const currentValue = currentData[key];
-      const previousValue = previousData[key];
+      const currentValue = get(currentData, [key]);
+      const previousValue = get(previousData, [key]);
       if (this.stringUtils.stringifyObject(previousValue) !== this.stringUtils.stringifyObject(currentValue)) {
         return {
           fieldName: key,

@@ -45,7 +45,7 @@ describe("WalksEventService", () => {
           data: {nearestTown: "that"}
         }]
       };
-      expect(service.walkDataAuditFor(walk, EventType.AWAITING_APPROVAL).changedItems)
+      expect(service.walkDataAuditFor(walk, EventType.AWAITING_APPROVAL, true).changedItems)
         .toEqual([
           {fieldName: "walkDate", previousValue: undefined, currentValue: 12},
           {fieldName: "nearestTown", previousValue: "that", currentValue: "this"},

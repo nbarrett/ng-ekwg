@@ -1,6 +1,6 @@
 <div style="font-size:12px">
     <p>Thanks for offering to lead the walk on <strong  [textContent]="walk.walkDate | displayDate" class="nowrap"></strong>!</p>
-    <div *ngIf="dataAuditDelta.dataChanged">
+    <div *ngIf="walkDataAudit.dataChanged">
         <p>Here are the details that have been completed so far:</p>
         <app-walk-notification-changes [data]="data"></app-walk-notification-changes>
     </div>

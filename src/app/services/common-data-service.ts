@@ -29,7 +29,7 @@ export class CommonDataService {
       notifications.next(httpErrorResponse.error);
     });
     const apiResponse = await shared.toPromise();
-    return rejectOnError && apiResponse.error ? Promise.reject("campaign update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse;
+    return rejectOnError && apiResponse.error ? Promise.reject("Update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse;
   }
 
   public toHttpParams(criteria: object): HttpParams {

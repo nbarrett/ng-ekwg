@@ -118,7 +118,7 @@ export class WalkNotificationService {
       walk: displayedWalk.walk,
       status: displayedWalk.status,
       event: this.walkEventService.latestEvent(displayedWalk.walk),
-      dataAuditDelta: this.walkEventService.walkDataAuditFor(displayedWalk.walk, displayedWalk.status),
+      walkDataAudit: this.walkEventService.walkDataAuditFor(displayedWalk.walk, displayedWalk.status, false),
       validationMessages: this.ramblersWalksAndEventsService.validateWalk(displayedWalk.walk).validationMessages,
       reason
     };

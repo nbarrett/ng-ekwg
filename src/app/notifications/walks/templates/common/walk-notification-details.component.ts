@@ -20,7 +20,7 @@ export class WalkNotificationDetailsComponent implements OnInit, AfterViewInit {
   public walk: Walk;
   public status: EventType;
   public event: WalkEvent;
-  public dataAuditDelta: WalkDataAudit;
+  public walkDataAudit: WalkDataAudit;
   public validationMessages: string[];
   public reason: string;
 
@@ -40,7 +40,7 @@ export class WalkNotificationDetailsComponent implements OnInit, AfterViewInit {
       this.walk = this.data.walk;
       this.status = this.data.status;
       this.event = this.data.event;
-      this.dataAuditDelta = this.data.dataAuditDelta;
+      this.walkDataAudit = this.data.walkDataAudit;
       this.validationMessages = this.data.validationMessages;
       this.reason = this.data.reason;
     }
