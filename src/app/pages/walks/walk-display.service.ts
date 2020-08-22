@@ -190,7 +190,6 @@ export class WalkDisplayService {
 
   walkLink(walk: Walk): string {
     return walk && walk.id ? this.urlService.notificationHref({
-      subArea: "walk",
       area: "walks",
       id: walk.id
     }) : undefined;
