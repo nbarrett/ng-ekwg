@@ -34,7 +34,7 @@ describe("MailchimpErrorParserService", () => {
         }
       ]
     };
-    const service: MailchimpErrorParserService = TestBed.get(MailchimpErrorParserService);
+    const service: MailchimpErrorParserService = TestBed.inject(MailchimpErrorParserService);
     expect(service.extractError(mailchimpResponse)).toEqual({ error: "Code: 213, Error: sales2@adaptassure.com has bounced, and cannot be resubscribed, Email -> Email: sales2@adaptassure.com" });
   });
 });

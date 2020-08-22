@@ -53,7 +53,7 @@ describe("ContentMetadataService", () => {
     ]
   };
   it("should transform ContentMetadataApiResponse with incorrect image paths to correct ones of type ContentMetadata", () => {
-    const service: ContentMetadataService = TestBed.get(ContentMetadataService);
+    const service: ContentMetadataService = TestBed.inject(ContentMetadataService);
     expect(service.transform(input, "imagesHome")).toEqual(output);
   });
 });

@@ -17,7 +17,7 @@ describe("ProfileConfirmationService", () => {
   }));
 
   it("should be created", () => {
-    const service: ProfileConfirmationService = TestBed.get(ProfileConfirmationService);
+    const service: ProfileConfirmationService = TestBed.inject(ProfileConfirmationService);
     expect(service).toBeTruthy();
   });
 });

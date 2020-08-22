@@ -18,7 +18,7 @@ describe("DbUtilsService", () => {
   }));
 
   it("should extract mongo duplicate message", () => {
-    const service: DbUtilsService = TestBed.get(DbUtilsService);
+    const service: DbUtilsService = TestBed.inject(DbUtilsService);
     expect(service.duplicateErrorFields("Unexpected error saving member - MongoError: E11000 duplicate key error index: nbarrett.members.$lastName_1_firstName_1_nameAlias_1 dup key: { : \"Barrett\", : \"Nick\", : \"nick.barrett\" }"))
       .toEqual("\"Barrett\", \"Nick\", \"nick.barrett\"");
   });

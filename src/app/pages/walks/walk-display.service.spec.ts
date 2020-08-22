@@ -92,7 +92,7 @@ describe("WalkDisplayService", () => {
       spy = spyOn(memberLoginService, "allowWalkAdminEdits").and.returnValue(true);
       const val = {memberId: "some-other-id"} as any;
       spy = spyOn(memberLoginService, "loggedInMember").and.returnValue(val);
-      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      const service: WalkDisplayService = TestBed.inject(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "any-walk-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
     });
 
@@ -100,7 +100,7 @@ describe("WalkDisplayService", () => {
       spy = spyOn(memberLoginService, "memberLoggedIn").and.returnValue(true);
       spy = spyOn(memberLoginService, "allowWalkAdminEdits").and.returnValue(false);
       spy = spyOn(memberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"} as any);
-      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      const service: WalkDisplayService = TestBed.inject(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.edit);
     });
 
@@ -108,14 +108,14 @@ describe("WalkDisplayService", () => {
       spy = spyOn(memberLoginService, "memberLoggedIn").and.returnValue(true);
       spy = spyOn(memberLoginService, "allowWalkAdminEdits").and.returnValue(false);
       spy = spyOn(memberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"} as any);
-      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      const service: WalkDisplayService = TestBed.inject(WalkDisplayService);
       expect(service.toWalkAccessMode({events: dontCare, walkDate: 0})).toEqual(WalksReferenceService.walkAccessModes.lead);
     });
 
     it("should return view if user is not logged in", () => {
       spy = spyOn(memberLoginService, "memberLoggedIn").and.returnValue(false);
       spy = spyOn(memberLoginService, "allowWalkAdminEdits").and.returnValue(false);
-      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      const service: WalkDisplayService = TestBed.inject(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId, events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });
 
@@ -123,7 +123,7 @@ describe("WalkDisplayService", () => {
       spy = spyOn(memberLoginService, "memberLoggedIn").and.returnValue(true);
       spy = spyOn(memberLoginService, "allowWalkAdminEdits").and.returnValue(false);
       spy = spyOn(memberLoginService, "loggedInMember").and.returnValue({memberId: "leader-id"} as any);
-      const service: WalkDisplayService = TestBed.get(WalkDisplayService);
+      const service: WalkDisplayService = TestBed.inject(WalkDisplayService);
       expect(service.toWalkAccessMode({walkLeaderMemberId: "another-walk-leader-id", events: dontCare, walkDate: anyWalkDate})).toEqual(WalksReferenceService.walkAccessModes.view);
     });
   });

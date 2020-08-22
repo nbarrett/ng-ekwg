@@ -27,26 +27,26 @@ describe("CommonDataService", () => {
   }));
 
   it("should return keys of complex input", () => {
-    const service: CommonDataService = TestBed.get(CommonDataService);
+    const service: CommonDataService = TestBed.inject(CommonDataService);
     const httpParams = service.toHttpParams(input);
     expect(httpParams.keys()).toEqual(["criteria", "select"]);
   });
 
   it("should return individual keys of complex input that match inputs", () => {
-    const service: CommonDataService = TestBed.get(CommonDataService);
+    const service: CommonDataService = TestBed.inject(CommonDataService);
     const httpParams = service.toHttpParams(input);
     expect(httpParams.get("criteria")).toEqual(JSON.stringify(criteria) as any);
     expect(httpParams.get("select")).toEqual(JSON.stringify(select) as any);
   });
 
   it("should return keys of simple input", () => {
-    const service: CommonDataService = TestBed.get(CommonDataService);
+    const service: CommonDataService = TestBed.inject(CommonDataService);
     const httpParams = service.toHttpParams(criteria);
     expect(httpParams.keys()).toEqual(["memberId"]);
   });
 
   it("should return individual keys of simple input that match inputs", () => {
-    const service: CommonDataService = TestBed.get(CommonDataService);
+    const service: CommonDataService = TestBed.inject(CommonDataService);
     const httpParams = service.toHttpParams(criteria);
     expect(httpParams.toString()).toEqual("memberId=12324");
   });

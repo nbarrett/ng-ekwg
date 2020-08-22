@@ -18,7 +18,7 @@ describe("MailchimpConfigService", () => {
   }));
 
   it("should be created", () => {
-    const service: MailchimpConfigService = TestBed.get(MailchimpConfigService);
+    const service: MailchimpConfigService = TestBed.inject(MailchimpConfigService);
     expect(service).toBeTruthy();
   });
 });

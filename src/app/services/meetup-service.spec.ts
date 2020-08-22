@@ -19,12 +19,12 @@ describe("MeetupService", () => {
   }));
 
   it("should show complete list of statuses", () => {
-    const service: MeetupService = TestBed.get(MeetupService);
+    const service: MeetupService = TestBed.inject(MeetupService);
     expect(service.eventStatuses()).toEqual(["past", "upcoming", "draft", "published", "proposed", "suggested"]);
   });
 
   it("should show complete list of publish statuses", () => {
-    const service: MeetupService = TestBed.get(MeetupService);
+    const service: MeetupService = TestBed.inject(MeetupService);
     expect(service.publishStatuses()).toEqual(["draft", "published"]);
   });
 });

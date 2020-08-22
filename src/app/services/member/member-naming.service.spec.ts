@@ -29,7 +29,7 @@ describe("MemberNamingService", () => {
   }));
 
   it("createUniqueUserName should generate the next available username were none exist already", () => {
-    const service: MemberNamingService = TestBed.get(MemberNamingService);
+    const service: MemberNamingService = TestBed.inject(MemberNamingService);
     expect(service.createUniqueUserName({
       firstName: "John",
       lastName: "Grant"
@@ -37,7 +37,7 @@ describe("MemberNamingService", () => {
   });
 
   it("createUniqueUserName should generate the next available username were some exist already", () => {
-    const service: MemberNamingService = TestBed.get(MemberNamingService);
+    const service: MemberNamingService = TestBed.inject(MemberNamingService);
     expect(service.createUniqueUserName({
       firstName: "John",
       lastName: "Grant"
@@ -45,7 +45,7 @@ describe("MemberNamingService", () => {
   });
 
   it("createDisplayName should generate the next available display name were some exist already", () => {
-    const service: MemberNamingService = TestBed.get(MemberNamingService);
+    const service: MemberNamingService = TestBed.inject(MemberNamingService);
     expect(service.createUniqueDisplayName({
       firstName: "John",
       lastName: "Grant"
@@ -53,7 +53,7 @@ describe("MemberNamingService", () => {
   });
 
   it("createDisplayName should generate the next available display name were none exist already", () => {
-    const service: MemberNamingService = TestBed.get(MemberNamingService);
+    const service: MemberNamingService = TestBed.inject(MemberNamingService);
     expect(service.createUniqueDisplayName({
       firstName: "John",
       lastName: "Grant"

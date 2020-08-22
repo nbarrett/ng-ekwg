@@ -34,7 +34,7 @@ describe("WalksEventService", () => {
 
   describe("dataAuditDelta", () => {
     it("changedItems should correctly calculate difference", () => {
-      const service: WalkEventService = TestBed.get(WalkEventService);
+      const service: WalkEventService = TestBed.inject(WalkEventService);
       const walk: Walk = {
         walkDate: 12,
         gridReference: "123",
@@ -57,7 +57,7 @@ describe("WalksEventService", () => {
 
   describe("latestEventWithStatusChangeIs", () => {
     it("should return a value if there is no existing event with status change", () => {
-      const service: WalkEventService = TestBed.get(WalkEventService);
+      const service: WalkEventService = TestBed.inject(WalkEventService);
       const walk: Walk = {
         walkDate: 12,
         gridReference: "123",

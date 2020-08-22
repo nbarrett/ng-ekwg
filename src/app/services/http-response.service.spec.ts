@@ -9,13 +9,13 @@ describe("HttpResponseService", () => {
   }));
 
   it("if response has a data object then return data", () => {
-    const service: HttpResponseService = TestBed.get(HttpResponseService);
+    const service: HttpResponseService = TestBed.inject(HttpResponseService);
     const data = {data: "hello"};
     expect(service.returnResponse(data)).toBe("hello");
   });
 
   it("if response doesnt have a data object then nothing", () => {
-    const service: HttpResponseService = TestBed.get(HttpResponseService);
+    const service: HttpResponseService = TestBed.inject(HttpResponseService);
     const data = {someObject: "hello"};
     expect(service.returnResponse(data)).toBeUndefined();
   });

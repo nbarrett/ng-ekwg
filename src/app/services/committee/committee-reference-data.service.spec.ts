@@ -76,14 +76,14 @@ describe("CommitteeReferenceDataService", () => {
   }));
 
   it("should return members for role", async(() => {
-    const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
+    const service: CommitteeReferenceDataService = TestBed.inject(CommitteeReferenceDataService);
     setTimeout(() => {
       expect(service.committeeMembersForRole("secretary")).toEqual([EXPECTED_NIC]);
     }, 0);
   }));
 
   it("should return committee members", async(() => {
-    const service: CommitteeReferenceDataService = TestBed.get(CommitteeReferenceDataService);
+    const service: CommitteeReferenceDataService = TestBed.inject(CommitteeReferenceDataService);
     setTimeout(() => {
       expect(service.committeeMembers()[1]).toEqual(EXPECTED_NIC);
     }, 0);
