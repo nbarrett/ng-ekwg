@@ -7,7 +7,7 @@
   </p>
   <div *ngIf="dataAuditDelta.dataChanged">
     <p>Here are the details that have been completed so far:</p>
-    <app-walk-notification-changes [data]="data"></app-walk-notification-changes>
+    <app-walk-notification-details [data]="data"></app-walk-notification-details>
   </div>
   <p *ngIf="validationMessages.length > 0"><strong>Note:</strong> The Walk can't be approved yet because <span
     [textContent]="validationMessages | asWalkValidationsList"></span>.</p>

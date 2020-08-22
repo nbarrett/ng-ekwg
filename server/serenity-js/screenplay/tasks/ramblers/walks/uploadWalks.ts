@@ -1,5 +1,5 @@
 import { PerformsActivities, Task } from "@serenity-js/core";
-import { Click, Enter } from "@serenity-js/protractor";
+import { Enter } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
@@ -29,7 +29,7 @@ export class UploadWalksSpecifiedWalks implements Task {
     return actor.attemptsTo(
       ClickWhenReady.on(WalksTargets.accordionUpload),
       Enter.theValue(this.fileName).into(WalksTargets.chooseFilesButton),
-      Click.on(WalksTargets.uploadWalksButton),
+      ClickWhenReady.on(WalksTargets.uploadWalksButton),
       WaitFor.errorOrCountOfWalksToBe(this.expectedWalks),
       ReportOn.uploadErrors());
   }

@@ -100,7 +100,7 @@ export class WalkEditComponent implements OnInit {
     private siteEditService: SiteEditService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -122,8 +122,9 @@ export class WalkEditComponent implements OnInit {
   }
 
   notificationRequired() {
-    const notificationRequired = this.walkEventService.walkDataAuditFor(this.displayedWalk.walk, this.status()).notificationRequired;
-    this.logger.debug("dataHasChanged:", notificationRequired);
+    const walkDataAudit = this.walkEventService.walkDataAuditFor(this.displayedWalk.walk, this.status());
+    const notificationRequired = walkDataAudit.notificationRequired;
+    this.logger.info("dataHasChanged:", notificationRequired, "walkDataAudit:", walkDataAudit);
     return notificationRequired;
   }
 

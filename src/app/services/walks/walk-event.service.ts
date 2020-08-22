@@ -138,7 +138,7 @@ export class WalkEventService {
   private calculateChangedItems(currentData, previousData): ChangedItem[] {
     return compact(auditedFields.map((key) => {
       const currentValue = currentData[key];
-      const previousValue = previousData && previousData[key];
+      const previousValue = previousData[key];
       if (this.stringUtils.stringifyObject(previousValue) !== this.stringUtils.stringifyObject(currentValue)) {
         return {
           fieldName: key,
