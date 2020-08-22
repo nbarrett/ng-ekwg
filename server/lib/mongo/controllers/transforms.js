@@ -6,9 +6,9 @@ debug.enabled = false;
 exports.toObjectWithId = (document) => {
   return document ? {
     id: document._id,
-    ...omit(document.toObject(), ["_id", "__v"])
+    ...omit(document.toObject(), ["_id", "__v"]),
   } : document;
-}
+};
 
 exports.setUnSetDocument = (document, parent, parentResponse) => {
   const parentPath = parent ? parent + "." : "";
@@ -33,7 +33,7 @@ exports.setUnSetDocument = (document, parent, parentResponse) => {
     }
   });
   return localResponse;
-}
+};
 
 exports.criteria = req => {
   return {_id: req.params.id};
@@ -51,23 +51,22 @@ exports.parse = (req, queryParameter) => {
 exports.parseQueryStringParameters = (req) => {
   return {
     criteria: exports.parse(req, "criteria"),
-    select: exports.parse(req, "select"),
     limit: exports.parse(req, "limit"),
-    sort: exports.parse(req, "sort")
-  }
+    select: exports.parse(req, "select"),
+    sort: exports.parse(req, "sort"),
+  };
 };
 
-
-exports.updateDocumentRequest = function (req) {
+exports.updateDocumentRequest = function(req) {
   const documentMinusIds = omit(req.body, ["_id", "__v", "id"]);
   return this.setUnSetDocument(documentMinusIds);
 };
 
-exports.createDocumentRequest = function (req) {
+exports.createDocumentRequest = function(req) {
   return exports.createDocument(exports.updateDocumentRequest(req));
 };
 
-exports.createDocument = function (setUnSetDocument) {
+exports.createDocument = function(setUnSetDocument) {
   const response = {};
   const setFields = setUnSetDocument.$set;
   each(setFields, (value, field) => {
@@ -84,13 +83,13 @@ exports.criteriaAndDocument = req => {
 
 exports.parseError = error => {
   if (error instanceof Error) {
-    debug("parseError:returning Error:", error.toString())
-    return error.toString()
+    debug("parseError:returning Error:", error.toString());
+    return error.toString();
   } else if (error.errmsg) {
-    debug("parseError:returning errmsg:", error.errmsg)
+    debug("parseError:returning errmsg:", error.errmsg);
     return error.errmsg;
   } else {
-    debug("parseError:returning errmsg:", typeof error, error)
+    debug("parseError:returning errmsg:", typeof error, error);
     return error;
   }
-}
+};

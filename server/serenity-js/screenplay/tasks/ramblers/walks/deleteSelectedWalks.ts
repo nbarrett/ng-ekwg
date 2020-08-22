@@ -1,10 +1,8 @@
-import { equals } from "@serenity-js/assertions";
+import { Ensure, isTrue } from "@serenity-js/assertions";
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { Click, Wait } from "@serenity-js/protractor";
+import { Accept, Click, ModalDialog } from "@serenity-js/protractor";
 import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksFound";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
-import { Accept } from "../../replace-with-serenty-js-when-released/Accept";
-import { Alert } from "../../replace-with-serenty-js-when-released/Alert";
 import { WaitFor } from "../common/waitFor";
 
 export class Delete implements Task {
@@ -24,8 +22,8 @@ export class Delete implements Task {
         selectedWalkCount = walks.length;
         return actor.attemptsTo(
           Click.on(WalksTargets.deleteSelected),
-          Wait.until(Alert.visibility(), equals(true)),
-          Accept.alert(),
+          Ensure.that(ModalDialog.hasPoppedUp(), isTrue()),
+          Accept.the(ModalDialog.window()),
           WaitFor.errorOrCountOfWalksToBe(totalWalkCount - selectedWalkCount));
       });
 

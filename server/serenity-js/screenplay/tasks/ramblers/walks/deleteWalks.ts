@@ -1,6 +1,6 @@
 import { Check } from "@serenity-js/assertions";
 import { PerformsActivities, Task } from "@serenity-js/core";
-import { isPresent, isVisible } from "@serenity-js/protractor";
+import { isVisible } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { Log } from "../../common/log";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
