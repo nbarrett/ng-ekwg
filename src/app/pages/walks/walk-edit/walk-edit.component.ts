@@ -603,6 +603,11 @@ export class WalkEditComponent implements OnInit {
     this.longerDescriptionPreview = false;
   }
 
+  previewLongerDescription() {
+    this.logger.debug("previewLongerDescription");
+    this.longerDescriptionPreview = true;
+  }
+
   selectCopySelectedLeader() {
     this.copySource = "copy-selected-walk-leader";
     this.populateWalkTemplates();
@@ -626,11 +631,6 @@ export class WalkEditComponent implements OnInit {
 
   walksCoordinatorName() {
     return this.committeeReferenceData.contactUsField("walks", "fullName");
-  }
-
-  previewLongerDescription() {
-    this.logger.debug("previewLongerDescription");
-    this.longerDescriptionPreview = true;
   }
 
   populateWalkTemplates(injectedMemberId?: string) {

@@ -7,6 +7,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { RouterHistoryService } from "../../../services/router-history.service";
 import { UrlService } from "../../../services/url.service";
 import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../reset-password-modal/reset-password-modal.component";
@@ -29,6 +30,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
               private authService: AuthService,
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
+              private routerHistoryService: RouterHistoryService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(LoginModalComponent, NgxLoggerLevel.OFF);
   }
@@ -94,6 +96,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   }
 
   close() {
+    this.routerHistoryService.navigateBackToLastMainPage();
     this.bsModalRef.hide();
   }
 

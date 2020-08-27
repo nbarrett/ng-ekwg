@@ -21,7 +21,7 @@ export class ContactUsDirective implements OnInit, OnDestroy {
   private logger: Logger;
   private dataSub: Subscription;
 
-  constructor(private committeeReferenceData: CommitteeReferenceDataService, private uRLService: UrlService,
+  constructor(private committeeReferenceData: CommitteeReferenceDataService, public uRLService: UrlService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ContactUsDirective, NgxLoggerLevel.OFF);
   }

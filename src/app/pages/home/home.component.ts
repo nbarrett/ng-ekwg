@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private  memberLoginService: MemberLoginService,
-    private  contentMetaDataService: ContentMetadataService,
+    private  contentMetadataService: ContentMetadataService,
     private  siteEditService: SiteEditService,
     private  instagramService: InstagramService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    this.contentMetaDataService.items("imagesHome")
+    this.contentMetadataService.items("imagesHome")
       .then(contentMetaData => {
         this.availableSlides = take(contentMetaData.files, contentMetaData.files.length);
         this.logger.debug("initialised with", this.availableSlides.length, "available slides");

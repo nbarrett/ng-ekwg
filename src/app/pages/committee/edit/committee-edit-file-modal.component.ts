@@ -50,7 +50,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public uploader: FileUploader;
   private confirmType: ConfirmType = ConfirmType.NONE;
 
-  constructor(private contentMetaDataService: ContentMetadataService,
+  constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
               private authService: AuthService,
               private mailchimpSegmentService: MailchimpSegmentService,

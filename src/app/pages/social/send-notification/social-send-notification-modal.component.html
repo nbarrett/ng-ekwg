@@ -1,0 +1,311 @@
+<div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">
+        &times;
+      </button>
+      <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
+    </div>
+    <div class="modal-body">
+      <tabset>
+        <tab [heading]="'Recipients & Addressing'">
+          <div class="thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-sm-7"><label>Send to:</label>
+                <div class="form-group">
+                  <div class="radio">
+                    <input (click)="clearRecipients()" id="all-ekwg-social" type="radio"
+                           [(ngModel)]="socialEvent.notification.content.destinationType"
+                           name="send-to"
+                           value="all-ekwg-social"/>
+                    <label for="all-ekwg-social">{{socialEvent?.notification?.content?.recipients?.value?.length}}
+                      Social Group
+                      Members <a
+                        *ngIf="socialEvent?.notification?.content?.recipients?.value?.length>0"
+                        (click)="editAllSocialRecipients()"
+                        [href]=""> (edit)</a>
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <input (click)="clearRecipients()"
+                           [disabled]="socialEvent.attendees.length===0"
+                           id="attendees"
+                           name="send-to"
+                           type="radio"
+                           [(ngModel)]="socialEvent.notification.content.destinationType"
+                           value="attendees"/>
+                    <label for="attendees">{{socialEvent.attendees.length}}
+                      Attendees <a *ngIf="socialEvent.attendees.length>0"
+                                   (click)="editAttendeeRecipients()"
+                                   [href]=""> (edit)</a>
+                    </label>
+                  </div>
+                  <div class="radio">
+                    <input id="custom"
+                           type="radio"
+                           name="send-to"
+                           [(ngModel)]="socialEvent.notification.content.destinationType"
+                           value="custom"/>
+                    <label for="custom"><span
+                      *ngIf="socialEvent?.notification?.content?.recipients?.value.length===0">Choose individual recipients</span><span
+                      *ngIf="socialEvent?.notification?.content?.recipients?.value.length>0">{{socialEvent?.notification?.content?.recipients?.value.length}}
+                      recipient(s) chosen<a
+                        (click)="clearRecipients()"
+                        [href]=""> (clear)</a></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col col-sm-5"><label>Address as:</label>
+                <div class="form-group">
+                  <div class="radio">
+                    <input id="addressee-first-name" type="radio"
+                           name="address-as"
+                           [(ngModel)]="socialEvent.notification.content.addresseeType"
+                           value="Hi *|FNAME|*,"/>
+                    <label for="addressee-first-name">Hi <i>first name</i></label>
+                  </div>
+                  <div class="radio">
+                    <input id="addressee-all" type="radio"
+                           name="address-as"
+                           [(ngModel)]="socialEvent.notification.content.addresseeType"
+                           value="Hi all,"/>
+                    <label for="addressee-all">Hi all</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="socialEvent?.notification?.content?.destinationType === 'custom'">
+              <div class="col-sm-12">
+                <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
+                     [tooltip]="helpMembers()">
+                  <ng-select #select [items]="selectableRecipients"
+                             bindLabel="memberInformation"
+                             name="member-selector"
+                             bindValue="id"
+                             placeholder="Select one or more members"
+                             [disabled]="notifyTarget.busy"
+                             [dropdownPosition]="'bottom'"
+                             [groupBy]="groupBy"
+                             [groupValue]="groupValue"
+                             [multiple]="true"
+                             [closeOnSelect]="true"
+                             (change)="onChange()"
+                             [(ngModel)]="socialEvent.notification.content.selectedMemberIds">
+                    <ng-template ng-optgroup-tmp let-item="item">
+                      <span class="group-header">{{item.name}} members</span>
+                      <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
+                    </ng-template>
+                  </ng-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab [heading]="'Edit Content'">
+          <div class="thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.title?.include}"
+                      for="include-title">Include Title:
+                      <input [(ngModel)]="socialEvent.notification.content.title.include"
+                             type="checkbox"
+                             id="include-title">
+                    </label>
+                  </div>
+                  <textarea [(ngModel)]="socialEvent.briefDescription"
+                            type="text"
+                            class="form-control input-sm"
+                            [disabled]="!socialEvent?.notification?.content?.title?.include"
+                            rows="1"
+                            id="title"
+                            placeholder="Enter the title you'd like at the top of the notification here">
+                                            </textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.text?.include}"
+                      for="include-notification-text">Include Notification text:
+                      <input
+                        [(ngModel)]="socialEvent.notification.content.text.include"
+                        type="checkbox"
+                        id="include-notification-text">
+                    </label>
+                  </div>
+                  <textarea [(ngModel)]="socialEvent.notification.content.text.value"
+                            type="text"
+                            class="form-control input-sm" rows="5"
+                            id="free-text"
+                            [disabled]="!socialEvent?.notification?.content?.text?.include"
+                            placeholder="Enter free text to be included of the notification here">
+                                            </textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.description?.include}"
+                      for="include-description">Include Social Event Description text:
+                      <input
+                        [(ngModel)]="socialEvent.notification.content.description.include"
+                        type="checkbox"
+                        id="include-description">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="socialEvent.attendees.length>0">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.recipients?.include}"
+                      for="include-attendees">Include List of attendees:
+                      <input
+                        [(ngModel)]="socialEvent.notification.content.recipients.include"
+                        type="checkbox"
+                        id="include-attendees">
+                      <span style="font-weight: normal"> ({{display.attendeeList(socialEvent, selectableRecipients)}}
+                        )</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="socialEvent.attachment">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.attachment?.include}"
+                           for="include-attachment">Include link to attachment:
+                      <input [(ngModel)]="socialEvent.notification.content.attachment.include"
+                             type="checkbox"
+                             id="include-attachment"><span
+                        style="font-weight: normal"> {{attachmentTitle(socialEvent)}}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab [heading]="'Signing Off'">
+          <div class="thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.replyTo?.include}"
+                      for="include-reply-to">Send replies to:
+                      <input [(ngModel)]="socialEvent.notification.content.replyTo.include"
+                             type="checkbox"
+                             id="include-reply-to">
+                    </label>
+                  </div>
+                  <select [(ngModel)]="socialEvent.notification.content.replyTo.value" id="replyTo"
+                          [disabled]="!socialEvent?.notification?.content?.replyTo?.include"
+                          class="form-control input-sm">
+                    <option *ngFor="let role of roles.replyTo"
+                            [ngValue]="role.type"
+                            [textContent]="role.nameAndDescription">
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.signoffText?.include}"
+                      for="include-signoff-text">Signoff with text:
+                      <input [(ngModel)]="socialEvent.notification.content.signoffText.include"
+                             type="checkbox"
+                             id="include-signoff-text">
+                    </label>
+                  </div>
+                  <textarea [(ngModel)]="socialEvent.notification.content.signoffText.value"
+                            type="text"
+                            class="form-control input-sm"
+                            [disabled]="!socialEvent?.notification?.content?.signoffText?.include"
+                            rows="3"
+                            id="signoff-text"
+                            placeholder="Enter any signoff text to be included of the notification here">
+                                            </textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group">
+                    <label
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.signoffAs?.include}"
+                      for="include-signoff-as">Signoff as:
+                      <input [(ngModel)]="socialEvent.notification.content.signoffAs.include"
+                             type="checkbox"
+                             id="include-signoff-as">
+                    </label>
+                  </div>
+                  <select [(ngModel)]="socialEvent.notification.content.signoffAs.value"
+                          id="signoff-as"
+                          [disabled]="!socialEvent?.notification?.content?.signoffAs?.include"
+                          class="form-control input-sm">
+                    <option *ngFor="let role of roles.signoff"
+                            [ngValue]="role.type"
+                            [textContent]="role.nameAndDescription">
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab [heading]="'Preview'">
+          <div class="thumbnail thumbnail-admin-edit">
+            <div class="form-horizontal">
+              <div id="preview" class="print-preview">
+              </div>
+            </div>
+          </div>
+        </tab>
+      </tabset>
+      <div *ngIf="notifyTarget.showAlert" class="row">
+        <div class="col-sm-12 mb-10">
+          <div class="alert {{notifyTarget.alertClass}}"><i
+            class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
+             title="Confirm sending of notification email"
+             [disabled]="notifyTarget.busy"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
+      <input type="submit" value="Complete of Mailchimp" (click)="completeInMailchimp()"
+             [disabled]="notifyTarget.busy"
+             title="Complete editing and sending of Mailchimp"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+      <input type="submit" value="Cancel Send" (click)="cancelSendNotification()"
+             [disabled]="notifyTarget.busy"
+             title="Cancel sending of notification email"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm button-form-left'">
+    </div>
+  </div>
+</div>

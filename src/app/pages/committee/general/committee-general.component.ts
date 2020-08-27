@@ -31,6 +31,7 @@ export class CommitteeGeneralComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private subscription: Subscription;
   public notifyTarget: AlertTarget = {};
+
   constructor(private memberLoginService: MemberLoginService,
               private mailchimpLinkService: MailchimpLinkService,
               public display: CommitteeDisplayService,

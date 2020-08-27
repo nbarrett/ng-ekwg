@@ -30,16 +30,16 @@ export class RouterHistoryService {
       });
   }
 
-  navigateBackToLastMainPage(response: LoginResponse) {
+  navigateBackToLastMainPage() {
     const validPages: string[] = this.pageService.pages.map(page => page.href);
     const lastPage = this.pageHistory.reverse()
       .find(page => {
         const pagePortion = first(page.substring(1).split("/"));
         const match = validPages.includes(pagePortion);
-        this.logger.debug("event:", response, "pagePortion", pagePortion, "of", page, "match ->", match);
+        this.logger.debug("event:pagePortion", pagePortion, "of", page, "match ->", match);
         return match;
       });
-    this.logger.debug("event:", response, "pageHistory", this.pageHistory, "lastPage ->", lastPage);
+    this.logger.debug("event:pageHistory", this.pageHistory, "lastPage ->", lastPage);
     this.urlService.navigateTo(lastPage || "/");
   }
 

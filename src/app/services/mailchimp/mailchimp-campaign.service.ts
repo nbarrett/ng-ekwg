@@ -40,7 +40,7 @@ export class MailchimpCampaignService {
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.ERROR);
-    this.allowSendCampaign = true;
+    this.allowSendCampaign = false;
   }
 
   async addCampaign(campaignId, campaignName) {

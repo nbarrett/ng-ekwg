@@ -1,4 +1,5 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
+import { FileNameData } from "./aws-object.model";
 import { DateValue } from "./date.model";
 import { MemberFilterSelection } from "./member.model";
 
@@ -7,11 +8,7 @@ export interface CommitteeFile extends Identifiable {
   createdDate?: number;
   postcode?: string;
   fileType: string;
-  fileNameData?: {
-    originalFileName?: string;
-    awsFileName?: string;
-    title?: string;
-  };
+  fileNameData?: FileNameData;
 }
 
 export interface CommitteeFileApiResponse extends ApiResponse {
@@ -73,25 +70,29 @@ export interface GroupEventsFilter {
 }
 
 export interface NotificationContent {
-  title: string;
-  list?: string;
-  customCampaignType?: string;
+  addresseeType?: string;
+  attachment?: { include?: boolean; value?: string; };
   campaignId?: string;
-  includeDownloadInformation: boolean;
-  addresseeType: string;
-  recipients: MemberFilterSelection[];
-  selectedMemberIds: string[];
-  signoffAs: { include: boolean; value: string; };
-  text: { include: boolean; value: string; };
-  signoffText: { include: boolean; value: string; };
-  destinationType: string;
+  customCampaignType?: string;
+  description?: { include: boolean; value?: string; };
+  destinationType?: string;
+  includeDownloadInformation?: boolean;
+  list?: string;
+  attendees?: { include?: boolean };
+  recipients?: { include?: boolean; value: MemberFilterSelection[] };
+  replyTo?: { include?: boolean; value: string; };
+  selectedMemberIds?: string[];
+  signoffAs?: { include?: boolean; value?: string; };
+  signoffText?: { include?: boolean; value?: string; };
+  text?: { include?: boolean; value?: string; };
+  title?: { include?: boolean; value?: string; };
 }
 
 export interface Notification {
   cancelled: boolean;
   content: NotificationContent;
-  groupEventsFilter: GroupEventsFilter;
-  groupEvents: GroupEvent[];
+  groupEventsFilter?: GroupEventsFilter;
+  groupEvents?: GroupEvent[];
 }
 
 export interface CommitteeYear {

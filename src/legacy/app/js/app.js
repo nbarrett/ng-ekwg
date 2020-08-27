@@ -1,7 +1,5 @@
 const mainPages = {
   HOME: "/",
-  SOCIAL: "/social",
-  COMMITTEE: "/committee",
   HOW_TO: "/how-to"
 };
 
@@ -56,9 +54,6 @@ angular.module("ekwgApp", [
       })
       .when("/letterhead/:firstPart?/:secondPart", {
         templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
-      })
-      .when(mainPages.SOCIAL + "/:socialEventId?", {
-        controller: "SocialEventsController", templateUrl: "partials/socialEvents/social.html", title: "social"
       })
       .otherwise({template: ''});
 

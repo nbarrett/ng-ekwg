@@ -1,0 +1,139 @@
+<app-accordion-group *ngIf="allow.detailView" groupTitle="Social Events In Detail" initiallyOpen="true"
+                     [icon]="'assets/images/ramblers/icon-getinvolved.png'">
+  <div class="thumbnail thumbnail-equal-padding" *ngIf="allow.edits">
+    <form class="form-inline">
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-addon round"><i class="glyphicon glyphicon-search"></i>
+          </div>
+          <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
+                 (ngModelChange)="onSearchChange($event)"
+                 name="quickSearch"
+                 class="form-control input-md inline-label round"
+                 type="text" placeholder="Quick Search">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="inline-label" for="selectType">Show:</label>
+        <select [(ngModel)]="filterParameters.selectType"
+                (ngModelChange)="refreshSocialEvents()" name="selectType" id="selectType"
+                class="form-control input-md round">
+          <option selected="selected" value="1">Future Social Events</option>
+          <option value="2">Past Social Events</option>
+          <option value="3">All Social Events</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="inline-label" for="sortOrder">Sort By:</label>
+        <select [(ngModel)]="filterParameters.fieldSort"
+                (ngModelChange)="refreshSocialEvents()" name="sortOrder" id="sortOrder"
+                class="form-control input-md round">
+          <option selected value="1">Date Ascending</option>
+          <option value="-1">Date Descending</option>
+        </select>
+      </div>
+      <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy"
+             value="Add New Social Event"
+             (click)="addSocialEvent()"
+             class="button-form pull-right mt-2"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
+    </form>
+    <div class="mt-12" *ngIf="notifyTarget.showAlert">
+      <div class="alert {{notifyTarget.alertClass}}"><i class="glyphicon {{notifyTarget.alert.icon}}"></i>
+        <strong class="ml-6">{{notifyTarget.alertTitle}}</strong>
+        {{notifyTarget.alertMessage}}
+      </div>
+    </div>
+  </div>
+  <div class="thumbnail event-thumbnail" *ngFor="let socialEvent of filteredSocialEvents">
+    <div class="row">
+      <div class="col-sm-8">
+        <h1><span [textContent]="socialEvent.eventDate | displayDay"></span></h1>
+        <h2><span [textContent]="socialEvent.briefDescription"></span></h2>
+        <h3 *ngIf="socialEvent?.eventTimeStart">Time: <span
+          [textContent]="socialEvent | eventTimes"></span></h3>
+      </div>
+      <div class="col-sm-4">
+        <input *ngIf="allow.edits" type="submit" value="edit"
+               (click)="editSocialEvent(socialEvent)"
+               title="Edit social event" class="button-form button-form-right">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="event-description">
+          <a class="event-thumbnail-image" target="_blank"
+             [href]="socialEvent.link">
+            <img *ngIf="socialEvent.thumbnail"
+                 [src]="socialEvent.thumbnail"
+                 id="thumbnail"></a>
+          <div class="green-bullets-no-rule">
+            <p markdown [data]="socialEvent.longerDescription"></p>
+            <ul>
+              <li *ngIf="socialEvent.attachment">
+                <a target="_blank" [textContent]="display.attachmentTitle(socialEvent)"
+                   [href]="display.attachmentUrl(socialEvent)"></a>
+              </li>
+              <li *ngIf="!socialEvent.thumbnail && socialEvent.link">
+                <a target="_blank"
+                   [href]="socialEvent.link">{{socialEvent.linkTitle || 'Link: ' + socialEvent.link}}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="event-panel round">
+          <h1>Location</h1>
+          <p><span [textContent]="socialEvent.location"></span> <a class="ml-6"
+                                                                   [href]="'http://maps.google.co.uk/maps?q=' + socialEvent.postcode"
+                                                                   target="_blank"><span tooltipPlacement="left"
+                                                                                         tooltip="Click to locate postcode {{socialEvent.postcode}} on Google Maps">{{socialEvent.postcode}}</span></a>
+          </p>
+          <div class="row related-links-row" *ngIf="display.socialEventLink(socialEvent)">
+            <div class="col-sm-12">
+              <label><a href="#" popover="Link has been copied to clipboard"
+                        triggers="" #pop="bs-popover"
+                        (click)="display.copyToClipboard(socialEvent, pop)">
+                <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg">
+                  <span tooltipPlacement="left"
+                        tooltip="Click to copy link to clipboard"></span></i> copy link </a> to this <a
+                [href]="display.socialEventLink(socialEvent)" target="_blank">social event</a></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="event-panel round">
+          <h1>Contact Details</h1>
+          <p><a [href]="'mailto: ' + socialEvent.contactEmail">
+                                <span tooltipPlacement="left"
+                                      tooltip="Click to email {{socialEvent.displayName}} at {{socialEvent.contactEmail}}">{{socialEvent.displayName}}</span></a>
+            <a class="ml-6" [href]="'tel: ' + socialEvent.contactPhone"><span tooltipPlacement="left"
+                                                                              tooltip="Click to ring {{socialEvent.displayName}} on {{socialEvent.contactPhone}} (mobile devices only)">{{socialEvent.contactPhone}}</span></a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-accordion-group>
+<div *ngIf="showLoginTooltip()" class="tooltip-link"
+     (click)="login()">
+  <app-accordion-group *ngIf="allow.summaryView" groupTitle="Social Events in Brief" initiallyOpen="true"
+                       [icon]="'assets/images/ramblers/icon-getinvolved.png'">
+    <div class="social-events-brief">
+      <ul>
+        <li *ngFor="let socialEvent of socialEvents; let index = index; trackBy: socialEventTracker">
+          <p class="social-event-date"><span
+            [textContent]="socialEvent.eventDate | displayDay"></span></p>
+          <p class="social-event-title"><span [textContent]="socialEvent.briefDescription"></span>
+          </p>
+          <img *ngIf="socialEvent.thumbnail" [src]="socialEvent.thumbnail"
+               [alt]="socialEvent.briefDescription"
+               [title]="socialEvent.briefDescription"></li>
+      </ul>
+    </div>
+  </app-accordion-group>
+</div>

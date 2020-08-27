@@ -515,6 +515,12 @@ img {
   border-radius: 6px;
 }
 
+.thumbnail-equal-padding {
+  padding: 16px 12px 12px 19px;
+  margin: 6px 0px 12px;
+  border-radius: 6px;
+}
+
 .calendar-in-label {
   /*display: inline-flex;*/
   font-weight: normal;
@@ -4610,6 +4616,10 @@ input[type="radio"]:checked + label {
 }
 
 /* Bootstrap 4 equivalents */
+
+.ml-2 {
+  margin-left: 2px;
+}
 
 .ml-6 {
   margin-left: 6px;

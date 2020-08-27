@@ -13,7 +13,8 @@ export interface MemberFilterSelection {
   member?: Member;
   memberInformation?: string;
   text?: string;
-  memberGrouping: string;
+  memberGrouping?: string;
+  disabled?: boolean;
 }
 
 export type IdentifiableOrId = Identifiable | string ;

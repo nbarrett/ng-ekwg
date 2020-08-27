@@ -37,7 +37,7 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
   public campaignSearchTerm: string;
   public config: MailchimpConfigResponse;
 
-  constructor(private contentMetaDataService: ContentMetadataService,
+  constructor(private contentMetadataService: ContentMetadataService,
               private mailchimpSegmentService: MailchimpSegmentService,
               private committeeQueryService: CommitteeQueryService,
               private committeeReferenceData: CommitteeReferenceDataService,

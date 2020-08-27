@@ -70,9 +70,9 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
       const committeeFileId = paramMap.get("committee-file-id");
       this.logger.debug("committeeFileId from route params:", paramMap, committeeFileId);
       if (committeeFileId) {
-        return this.committeeFileService.getById(committeeFileId);
+        this.committeeFileService.getById(committeeFileId);
       } else {
-        return this.committeeFileService.all();
+        this.committeeFileService.all();
       }
     });
     this.subscription = this.committeeFileService.notifications().subscribe((apiResponse: CommitteeFileApiResponse) => {

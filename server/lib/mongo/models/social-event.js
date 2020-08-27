@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
 const attendee = {
-  id: {type: String},
-  text: {type: String}
+  id: {type: String}
 }
 
 const recipient = {

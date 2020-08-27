@@ -1,0 +1,6 @@
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Social Events">
+  <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
+    <app-social-carousel [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm"></app-social-carousel>
+    <app-social-list [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm" [socialEventId]="socialEventId"></app-social-list>
+  </accordion>
+</app-page>

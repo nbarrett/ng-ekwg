@@ -25,8 +25,6 @@ import { HomeComponent } from "../pages/home/home.component";
 import { PrivacyPolicyComponent } from "../pages/home/privacy-policy.component";
 import { JoinUsComponent } from "../pages/join-us/join-us.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
-import { AuditDeltaChangedItemsPipePipe } from "../pipes/audit-delta-changed-items.pipe";
-import { AuditDeltaValuePipe } from "../pipes/audit-delta-value.pipe";
 import { ChangedItemsPipe } from "../pipes/changed-items.pipe";
 import { BroadcastService } from "../services/broadcast-service";
 import { CommitteeConfigService } from "../services/commitee-config.service";
@@ -49,7 +47,6 @@ import { NumberUtilsService } from "../services/number-utils.service";
 import { PageService } from "../services/page.service";
 import { ProfileConfirmationService } from "../services/profile-confirmation.service";
 import { RouterHistoryService } from "../services/router-history.service";
-import { SocialEventsService } from "../services/social-events/social-events.service";
 import { StringUtilsService } from "../services/string-utils.service";
 import { UrlService } from "../services/url.service";
 import { WalksQueryService } from "../services/walks/walks-query.service";
@@ -135,7 +132,6 @@ export class AppModule implements DoBootstrap {
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService))
       .factory("WalksService", downgradeInjectable(WalksService))
-      .factory("SocialEventsService", downgradeInjectable(SocialEventsService))
       .factory("CommitteeFileService", downgradeInjectable(CommitteeFileService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade, "path");
