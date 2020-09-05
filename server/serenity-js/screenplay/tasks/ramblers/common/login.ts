@@ -4,6 +4,7 @@ import { Click, Enter, isVisible, Wait } from "@serenity-js/protractor";
 import * as config from "../../../../../lib/config/config";
 import { WalksAndEventsManagerQuestions } from "../../../questions/ramblers/walksAndEventsManagerQuestions";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { ClickWhenReady } from "../../common/clickWhenReady";
 import { Hide } from "../../common/hide";
 
 export class Login implements Task {
@@ -19,9 +20,12 @@ export class Login implements Task {
       Ensure.that(WalksAndEventsManagerQuestions.LoginStatus, equals("Login")),
       Hide.target(WalksTargets.chatWindow),
       Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.chatWindow, not(isVisible())),
+      ClickWhenReady.on(WalksTargets.loginStartButton),
+      ClickWhenReady.on(WalksTargets.loginTab),
       Enter.theValue(username).into(WalksTargets.userName),
       Enter.theValue(password).into(WalksTargets.password),
-      Click.on(WalksTargets.loginButton),
+      Click.on(WalksTargets.loginSubmitButton),
+      Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.loginStatus, isVisible()),
       Ensure.that(WalksAndEventsManagerQuestions.LoginStatus, equals("Logout")),
     );
   }

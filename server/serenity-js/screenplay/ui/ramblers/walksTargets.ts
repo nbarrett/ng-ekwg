@@ -9,14 +9,20 @@ export class WalksTargets {
   public static chatWindow = Target.the("chat window")
     .located(by.id("launcher"));
 
+  public static loginTab = Target.the("login tab")
+    .located(by.linkText("Log In"));
+
   public static userName = Target.the("user name")
-    .located(by.css("#layout_0_content_0_innerleft_1_txtUsername"));
+    .located(by.css("input[type=email][name=email]"));
 
   public static password = Target.the("password")
-    .located(by.css("#layout_0_content_0_innerleft_1_txtPassword"));
+    .located(by.css("input[type=password][name=password]"));
 
-  public static loginButton = Target.the("login button")
+  public static loginStartButton = Target.the("Login start button")
     .located(by.css("#layout_0_content_0_innerleft_1_btnLogin"));
+
+  public static loginSubmitButton = Target.the("login submit button")
+    .located(by.css(".auth0-label-submit"));
 
   public static loginStatus = Target.the("login status")
     .located(by.css(".LoginOut"));
