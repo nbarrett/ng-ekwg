@@ -27,10 +27,11 @@ import { StringUtilsService } from "../../../services/string-utils.service";
   styleUrls: ["./send-emails-modal.component.sass"]
 })
 export class SendEmailsModalComponent implements OnInit {
+  tooltips: TooltipDirective[] = [];
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  public display: any = {};
+  public showHelp: false;
   members: Member[] = [];
   public selectableMembers: MemberFilterSelection[] = [];
   public selectedMemberIds: string[] = [];
@@ -39,6 +40,7 @@ export class SendEmailsModalComponent implements OnInit {
   memberFilterDate: DateValue;
   public emailTypes: MemberEmailType[] = [];
   public emailType: MemberEmailType;
+  public helpInfo: { monthsInPast: number; showHelp: boolean };
 
   constructor(private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
@@ -78,6 +80,8 @@ export class SendEmailsModalComponent implements OnInit {
 
   emailTypeChanged(memberEmailType: MemberEmailType) {
     this.populateMembers(memberEmailType.memberSelectorName);
+    this.tooltips.forEach(tooltip => tooltip.hide());
+    this.helpInfo.showHelp = false;
   }
 
   memberSelectorNamed(name: string): MemberSelector {
@@ -153,7 +157,7 @@ export class SendEmailsModalComponent implements OnInit {
         this.emailType = this.emailTypes[0];
         this.populateSelectedMembers();
         this.populateMembers("recently-added");
-        this.display = {
+        this.helpInfo = {
           showHelp: false,
           monthsInPast: 1,
         };
@@ -165,13 +169,14 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   helpMembers() {
-    return `Click below and select from the dropdown the members that you want to send a ${this.emailType.name} email to. You can type in  part of their name to find them more quickly. Repeat this step as many times as required to build up an list of members`;
+    return `In the member selection field, choose the members that you want to send a ${this.emailType.name} email to. You can type in  part of their name to find them more quickly. Repeat this step as many times as required to build up an list of members`;
   }
 
-  showHelp(show: boolean, tooltips: TooltipDirective[]) {
+  toggleHelp(show: boolean, tooltips: TooltipDirective[]) {
     this.logger.debug("tooltip:", show, "tooltips:", tooltips);
     tooltips.forEach(tooltip => show ? tooltip.show() : tooltip.hide());
-    this.display.showHelp = show;
+    this.helpInfo.showHelp = show;
+    this.tooltips = tooltips;
   }
 
   cancel() {
@@ -194,7 +199,7 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   calculateMemberFilterDate() {
-    const dateFilter = this.dateUtils.momentNowNoTime().subtract(this.display && this.emailType.monthsInPast, "months");
+    const dateFilter = this.dateUtils.momentNowNoTime().subtract(this.helpInfo && this.emailType.monthsInPast, "months");
     this.memberFilterDate = this.dateUtils.asDateValue(dateFilter);
     this.logger.info("calculateMemberFilterDate:", this.memberFilterDate);
   }
@@ -229,6 +234,7 @@ export class SendEmailsModalComponent implements OnInit {
   onMemberFilterDateChange(dateValue: DateValue) {
     this.memberFilterDate = dateValue;
     this.logger.debug("this.memberFilterDate", this.memberFilterDate);
+    this.populateSelectedMembers();
   }
 
   populateMembers(value: string) {
@@ -307,7 +313,6 @@ export class SendEmailsModalComponent implements OnInit {
 
   sendEmails() {
     this.alertTypeResetPassword = true;
-    this.display.duplicate = false;
     this.notify.setBusy();
     Promise.resolve(this.notifySuccess(`Preparing to email ${this.selectedMemberIds.length} member${this.selectedMemberIds.length === 1 ? "" : "s"}`))
       .then(() => this.invokeIfDefined(this.emailType.preSend))

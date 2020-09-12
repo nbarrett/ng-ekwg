@@ -25,7 +25,6 @@ const routes: Routes = [
   {path: "logout", component: LogoutComponent},
   {path: "mailing-preferences", component: MailingPreferencesComponent},
   {path: "privacy-policy", component: PrivacyPolicyComponent},
-  {path: "set-password/:password-reset-id", component: SetPasswordComponent},
   {path: "walks", loadChildren: () => import("./modules/walks/walks-routing.module").then(module => module.WalksRoutingModule)},
   {path: "**", component: NonRenderingComponent},
 ];

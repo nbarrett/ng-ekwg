@@ -27,9 +27,7 @@ exports.logout = (req, res) => {
         common.auditMemberLogin(member.userName, loginResponse, member);
         res.status(200).json({loginResponse: loginResponse});
       } else {
-        const loginResponse = {alertMessage: `The member ${member.userName} logged out but access token was not found`};
-        common.auditMemberLogin(member.userName, loginResponse, member);
-        res.status(200).json({loginResponse: loginResponse});
+        res.status(200).end();
       }
     })
     .catch(error => {

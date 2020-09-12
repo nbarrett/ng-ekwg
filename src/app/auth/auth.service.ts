@@ -66,10 +66,10 @@ export class AuthService {
     const shared: Observable<AuthResponse> = this.http.post<any>(url, body).pipe(share());
     shared.subscribe((authResponse: AuthResponse) => {
       this.logger.info(postType, "- authResponse", authResponse);
-      if (authResponse.tokens) {
+      if (authResponse?.tokens) {
         this.storeTokens(authResponse.tokens);
       }
-      this.authResponseSubject.next(authResponse.loginResponse);
+      this.authResponseSubject.next(authResponse?.loginResponse);
       if (broadcastEvent) {
         this.broadcastService.broadcast(broadcastEvent);
       }
@@ -79,7 +79,7 @@ export class AuthService {
       this.authResponseSubject.next(loginResponse);
     });
     const authResponse = await shared.toPromise();
-    return authResponse.loginResponse;
+    return authResponse?.loginResponse;
   }
 
   authResponse() {

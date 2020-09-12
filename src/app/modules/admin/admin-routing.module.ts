@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule } from "@angular/router";
 import { AdminAuthGuard } from "../../admin-auth-guard.service";
 import { LoggedInGuard } from "../../admin-login-guard.service";
+import { SetPasswordComponent } from "../../login/set-password.component";
 import { AdminComponent } from "../../pages/admin/admin/admin.component";
 import { ExpensesComponent } from "../../pages/admin/expenses/expenses.component";
 import { MemberAdminComponent } from "../../pages/admin/member-admin/member-admin.component";
@@ -25,6 +26,7 @@ import { AdminModule } from "./admin.module";
     {path: "contact-details", component: ContactDetailsComponent, canActivate: [LoggedInGuard]},
     {path: "member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
     {path: "member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
+    {path: "set-password/:password-reset-id", component: SetPasswordComponent},
   ])]
 })
 export class AdminRoutingModule {

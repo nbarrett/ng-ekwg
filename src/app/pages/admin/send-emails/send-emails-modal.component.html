@@ -23,10 +23,10 @@
             </div>
           </div>
           <div class="col-sm-3 panel-toggle">
-            <a *ngIf="!display.showHelp"
-               (click)="showHelp(true, [tooltip1, tooltip2])" [href]="">
+            <a *ngIf="!helpInfo.showHelp"
+               (click)="toggleHelp(true, [tooltip1, tooltip2])" [href]="">
               <i class="glyphicon glyphicon-question-sign markdown-preview-icon"></i> show help</a>
-            <a *ngIf="display.showHelp" (click)="showHelp(false,[tooltip1, tooltip2])" [href]="">
+            <a *ngIf="helpInfo.showHelp" (click)="toggleHelp(false,[tooltip1, tooltip2])" [href]="">
               <i class="glyphicon glyphicon-question-sign"></i> hide help</a>
           </div>
         </div>
@@ -45,7 +45,7 @@
                            id="recently-added"
                            (click)="populateMembers('recently-added')">
                     <label for="recently-added" class="form-inline">Added in last
-                      {{emailType.monthsInPast}} month(s):
+                      {{emailType.monthsInPast}} month(s) on/after:
                       <app-date-picker *ngIf="memberSelectorName==='recently-added'"
                                        class="input-group calendar-in-label"
                                        (dateChange)="onMemberFilterDateChange($event)"
