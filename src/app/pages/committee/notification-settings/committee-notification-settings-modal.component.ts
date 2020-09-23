@@ -8,7 +8,6 @@ import { Member } from "../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -40,7 +39,6 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
   constructor(private contentMetadataService: ContentMetadataService,
               private mailchimpSegmentService: MailchimpSegmentService,
               private committeeQueryService: CommitteeQueryService,
-              private committeeReferenceData: CommitteeReferenceDataService,
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,

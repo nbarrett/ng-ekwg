@@ -5,46 +5,32 @@ const attendee = {
   id: {type: String}
 }
 
-const recipient = {
-  id: {type: String},
-  order: {type: Number},
-  memberGrouping: {type: String},
-  text: {type: String}
+const notificationContent = {
+  addresseeType: {type: String},
+  attachment: {include: {type: Boolean}, value: {type: String},},
+  campaignId: {type: String},
+  customCampaignType: {type: String},
+  description: {include: {type: Boolean}, value: {type: String},},
+  destinationType: {type: String},
+  includeDownloadInformation: {type: Boolean},
+  list: {type: String},
+  attendees: {include: {type: Boolean}},
+  recipients: {include: {type: Boolean}, value: [{type: String}]},
+  replyTo: {include: {type: Boolean}, value: {type: String},},
+  selectedMemberIds: [{type: String}],
+  signoffAs: {include: {type: Boolean}, value: {type: String}},
+  signoffText: {include: {type: Boolean}, value: {type: String}},
+  text: {include: {type: Boolean}, value: {type: String}},
+  title: {include: {type: Boolean}, value: {type: String}},
 }
 
 const notification = {
-  destinationType: {type: String},
-  recipients: [recipient],
-  addresseeType: {type: String},
-  items: {
-    title: {
-      include: {type: Boolean}
-    },
-    notificationText: {
-      include: {type: Boolean},
-      value: {type: String}
-    },
-    description: {
-      include: {type: Boolean}
-    },
-    attendees: {
-      include: {type: Boolean}
-    },
-    attachment: {},
-    replyTo: {
-      include: {type: Boolean},
-      value: {type: String}
-    },
-    signoffText: {
-      include: {type: Boolean},
-      value: {type: String}
-    },
-    signoffAs: {
-      include: {type: Boolean},
-      value: {type: String}
-    }
-  }
+  cancelled: {type: Boolean},
+  content: notificationContent,
+  groupEventsFilter: {type: Object},
+  groupEvents: [{type: Object}]
 }
+
 const socialEventSchema = mongoose.Schema({
   eventDate: {type: Number},
   attendees: [attendee],
@@ -53,6 +39,9 @@ const socialEventSchema = mongoose.Schema({
   postcode: {type: String},
   eventTimeStart: {type: String},
   eventTimeEnd: {type: String},
+  link: {type: String},
+  linkTitle: {type: String},
+  thumbnail: {type: String},
   notification: notification,
   mailchimp: {
     segmentId: {type: Number},
@@ -70,8 +59,8 @@ const socialEventSchema = mongoose.Schema({
   attachment: {
     originalFileName: {type: String},
     awsFileName: {type: String},
-  },
-  attachmentTitle: {type: String}
+    title: {type: String},
+  }
 }, {collection: "socialEvents"});
 
 socialEventSchema.plugin(uniqueValidator);

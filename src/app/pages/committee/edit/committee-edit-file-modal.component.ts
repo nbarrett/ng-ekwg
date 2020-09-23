@@ -14,7 +14,6 @@ import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe"
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { FileUploadService } from "../../../services/file-upload.service";
@@ -56,7 +55,6 @@ export class CommitteeEditFileModalComponent implements OnInit {
               private mailchimpSegmentService: MailchimpSegmentService,
               public display: CommitteeDisplayService,
               private committeeQueryService: CommitteeQueryService,
-              private committeeReferenceData: CommitteeReferenceDataService,
               private committeeFileService: CommitteeFileService,
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,

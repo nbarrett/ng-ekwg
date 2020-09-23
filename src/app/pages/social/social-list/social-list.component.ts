@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { cloneDeep } from "lodash-es";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
@@ -104,7 +105,6 @@ export class SocialListComponent implements OnInit {
             message: "Click view all to restore normal view."
           });
         }
-        this.notify.setReady();
         this.confirm.clear();
         this.socialEvents = socialEvents;
         this.applyFilterToSocialEvents();
@@ -113,7 +113,14 @@ export class SocialListComponent implements OnInit {
     this.display.refreshSocialMemberFilterSelection()
       .then(members => {
         this.memberFilterSelections = members;
+        this.verifyReady();
       });
+  }
+
+  private verifyReady() {
+    if (this.memberFilterSelections?.length > 0 && this.socialEvents?.length > 0) {
+      this.notify.clearBusy();
+    }
   }
 
   applyFilterToSocialEvents(searchTerm?: string) {
@@ -123,7 +130,33 @@ export class SocialListComponent implements OnInit {
     const filteredCount = (this.filteredSocialEvents?.length) || 0;
     const eventCount = (this.socialEvents?.length) || 0;
     this.notify.progress(`${filteredCount} of ${eventCount} social event${eventCount === 1 ? "" : "s"} shown`);
-    this.notify.clearBusy();
+    this.verifyReady();
+  }
+
+  private migrateAttachments(phase: string) {
+    this.logger.debug("migrateAttachments: phase", phase);
+    this.filteredSocialEvents.map(item => item as any).filter(item => item.attachment || item.attachmentTitle).map(event => cloneDeep(event)).forEach(event => {
+      if (event.attachmentTitle && !event.attachment.title) {
+        if (typeof event.attachment === "string") {
+          this.logger.debug("Event needs migrating - attachment is string:", event.attachment, "attachmentTitle:", event.attachmentTitle);
+          const attachment = {title: event.attachmentTitle, awsFileName: event.attachment, originalFileName: event.attachment};
+          event.attachmentTitle = "";
+          this.socialEventsService.update(event).then(event => {
+            event.attachment = attachment;
+            this.socialEventsService.update(event);
+          });
+        } else {
+          this.logger.debug("Event needs migrating - attachment is object:", event.attachment, "attachmentTitle:", event.attachmentTitle);
+          event.attachment.title = event.attachmentTitle;
+          event.attachmentTitle = "";
+          this.socialEventsService.update(event);
+        }
+      } else if (!event.attachment.title) {
+        this.logger.debug("Event has no attachment title but in right format:", event.attachment);
+      } else {
+        this.logger.debug("Event already migrated - attachment:", event.attachment);
+      }
+    });
   }
 
   public refreshSocialEvents() {

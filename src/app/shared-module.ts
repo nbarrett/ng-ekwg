@@ -55,8 +55,7 @@ import { SnakeCasePipe } from "./pipes/snakecase.pipe";
 import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { BroadcastService } from "./services/broadcast-service";
-import { CommitteeConfigService } from "./services/commitee-config.service";
-import { CommitteeReferenceDataService } from "./services/committee/committee-reference-data.service";
+import { CommitteeConfigService } from "./services/committee/commitee-config.service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
 import { NotifierService } from "./services/notifier.service";
@@ -178,7 +177,6 @@ export class SharedModule {
         ChangedItemsPipe,
         ClipboardServiceProvider,
         CommitteeConfigService,
-        CommitteeReferenceDataService,
         CookieService,
         CustomNGXLoggerService,
         DisplayDateAndTimePipe,

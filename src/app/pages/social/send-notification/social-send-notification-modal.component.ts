@@ -1,9 +1,11 @@
 import { Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
+import { cloneDeep } from "lodash-es";
 import get from "lodash-es/get";
 import set from "lodash-es/set";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { Identifiable } from "../../../models/api-response.model";
 import { CommitteeMember } from "../../../models/committee.model";
 import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpGenericOtherContent } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
@@ -13,7 +15,8 @@ import { SocialNotificationComponentAndData, SocialNotificationDirective } from 
 import { SocialNotificationDetailsComponent } from "../../../notifications/social/templates/social-notification-details.component";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
+import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
+import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
@@ -31,15 +34,32 @@ import { SocialDisplayService } from "../social-display.service";
 
 @Component({
   selector: "app-social-send-notification-modal",
+  styleUrls: ["social-send-notification-modal.component.sass"],
   templateUrl: "./social-send-notification-modal.component.html"
 })
 export class SocialSendNotificationModalComponent implements OnInit {
+  @ViewChild(SocialNotificationDirective) notificationDirective: SocialNotificationDirective;
+  public socialEvent: SocialEvent;
+  public memberFilterSelections: MemberFilterSelection[];
+  public confirm: Confirm;
+  private notify: AlertInstance;
+  public notifyTarget: AlertTarget = {};
+  private logger: Logger;
+
+  public roles: {
+    replyTo: CommitteeMember[];
+    signoff: CommitteeMember[];
+  } = {replyTo: [], signoff: []};
+  public campaigns: MailchimpCampaignListResponse;
+  destinationType = "";
+  committeeFiles = [];
+  alertMessages = [];
   private attachmentBaseUrl: string;
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
-              private committeeReferenceData: CommitteeReferenceDataService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
@@ -55,39 +75,25 @@ export class SocialSendNotificationModalComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
+              private committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
   }
 
-  @ViewChild(SocialNotificationDirective) notificationDirective: SocialNotificationDirective;
-  public socialEvent: SocialEvent;
-  public confirm: Confirm;
-  public segmentMembers: MemberFilterSelection[] = [];
-  private notify: AlertInstance;
-  public notifyTarget: AlertTarget = {};
-  private logger: Logger;
-
-  public roles: { replyTo: any[]; signoff: CommitteeMember[] };
-  public selectableRecipients: MemberFilterSelection[] = [];
-  public campaigns: MailchimpCampaignListResponse;
-  destinationType = "";
-  committeeFiles = [];
-  alertMessages = [];
-  allowConfirmDelete = false;
-
   ngOnInit() {
-    this.logger.debug("constructed with", this.socialEvent, this.selectableRecipients.length, "selectableRecipients");
-    this.confirm.type = ConfirmType.SEND_NOTIFICATION;
+    this.logger.debug("ngOnInit", this.socialEvent, this.memberFilterSelections, "selectableRecipients");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.notify.setBusy();
-    this.segmentMembers = this.querySegmentMembers();
-    this.initialiseRoles();
-    this.initialiseNotification();
-    this.display.refreshSocialMemberFilterSelection()
-      .then(members => {
-        this.selectableRecipients = members;
-        this.notify.clearBusy();
-      });
+    this.committeeConfig.events().subscribe(committeeReferenceData => {
+      this.logger.debug("ngOnInit:committeeReferenceData", committeeReferenceData);
+      this.committeeReferenceData = committeeReferenceData;
+      this.initialiseRoles();
+      this.initialiseNotification();
+    });
+    this.confirm.type = ConfirmType.SEND_NOTIFICATION;
+  }
+
+  notReady() {
+    return this.roles.replyTo.length === 0 || this.notifyTarget.busy || (this.socialEvent.notification.content.selectedMemberIds.length === 0 && this.socialEvent.notification.content.destinationType === "custom");
   }
 
   initialiseNotification() {
@@ -101,7 +107,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.defaultNotificationField(["attachment"], {include: !!this.socialEvent.attachment});
     this.defaultNotificationField(["replyTo"], {include: !!this.socialEvent.displayName, value: this.socialEvent.displayName ? "organiser" : "social"});
     this.defaultNotificationField(["signoffText"], {include: true, value: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,"});
-    this.defaultNotificationField(["signoffAs", "value"], {include: true, value: this.loggedOnRole()?.type || "social"});
+    this.defaultNotificationField(["signoffAs"], {include: true, value: this.committeeReferenceData.loggedOnRole()?.type || "social"});
     this.logger.debug("onFirstNotificationOnly - creating this.socialEvent.notification ->", this.socialEvent.notification);
   }
 
@@ -128,15 +134,6 @@ export class SocialSendNotificationModalComponent implements OnInit {
     }
   }
 
-  loggedOnRole(): CommitteeMember {
-    const memberId = this.memberLoginService.loggedInMember().memberId;
-    const loggedOnRoleData = this.committeeReferenceData.committeeMembers().find((role) => {
-      return role.memberId === memberId;
-    });
-    this.logger.debug("loggedOnRole for", memberId, "->", loggedOnRoleData);
-    return loggedOnRoleData;
-  }
-
   roleForType(type) {
     const role = this.roles.replyTo.find(role => role.type === type);
     this.logger.debug("roleForType for", type, "->", role);
@@ -144,17 +141,19 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   initialiseRoles() {
-    this.roles = {signoff: this.committeeReferenceData.committeeMembers(), replyTo: this.committeeReferenceData.committeeMembers()};
+    this.roles.replyTo = cloneDeep(this.committeeReferenceData.committeeMembers());
+    this.roles.signoff = cloneDeep(this.committeeReferenceData.committeeMembers());
+    this.logger.debug("roles", this.roles);
     if (this.socialEvent.eventContactMemberId) {
       this.roles.replyTo.unshift({
         type: "organiser",
         fullName: this.socialEvent.displayName,
         memberId: this.socialEvent.eventContactMemberId,
-        description: "Organiser (" + this.socialEvent.displayName + ")",
+        description: "Organiser",
+        nameAndDescription: "Organiser (" + this.socialEvent.displayName + ")",
         email: this.socialEvent.contactEmail
       });
     }
-    this.logger.debug("initialiseRoles -> this.roles ->", this.roles);
   }
 
   attachmentTitle(socialEvent) {
@@ -166,16 +165,19 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   editAllSocialRecipients() {
+    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent.notification.content.recipients.value);
     this.socialEvent.notification.content.destinationType = "custom";
-    this.socialEvent.notification.content.recipients.value = this.selectableRecipients;
+    this.socialEvent.notification.content.recipients.value = this.memberFilterSelections.map(attendee => attendee.id);
   }
 
   editAttendeeRecipients() {
     this.socialEvent.notification.content.destinationType = "custom";
-    this.socialEvent.notification.content.recipients.value = this.socialEvent.attendees;
+    this.socialEvent.notification.content.recipients.value = this.socialEvent.attendees.map(attendee => attendee.id);
+    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent.notification.content.recipients.value);
   }
 
   clearRecipients() {
+    this.logger.debug("clearRecipients: pre clear - recipients:", this.socialEvent.notification.content.recipients.value);
     this.socialEvent.notification.content.recipients.value = [];
   }
 
@@ -188,7 +190,11 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   cancelSendNotification() {
-    close();
+    this.bsModalRef.hide();
+  }
+
+  saveAndSendLater() {
+    this.socialEventsService.update(this.socialEvent).then(() => this.bsModalRef.hide());
   }
 
   completeInMailchimp() {
@@ -242,19 +248,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   createOrSaveMailchimpSegment(): Promise<any> {
-    let members: MemberFilterSelection[];
-
-    switch (this.socialEvent.notification.content.destinationType) {
-      case "custom":
-        members = this.socialEvent.notification.content.recipients.value.filter(item => this.socialEvent.notification.content.selectedMemberIds.includes(item.id));
-        break;
-      case "all-ekwg-social":
-        members = this.selectableRecipients;
-        break;
-      default:
-        members = [];
-        break;
-    }
+    const members = this.querySegmentMembers();
 
     if (members.length > 0) {
       return this.mailchimpSegmentService.saveSegment("socialEvents", this.socialEvent.mailchimp, members, this.mailchimpSegmentService.formatSegmentName(this.socialEvent.briefDescription), members)
@@ -267,15 +261,15 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   private toMembers(): Member[] {
-    return this.selectableRecipients.map(item => item.member);
+    return this.memberFilterSelections.map(item => item.member);
   }
 
-  querySegmentMembers() {
+  querySegmentMembers(): Identifiable[] {
     switch (this.socialEvent?.notification?.content?.destinationType) {
       case "attendees":
         return this.socialEvent.attendees;
       case "custom":
-        return this.socialEvent?.notification?.content?.recipients?.value;
+        return this.socialEvent?.notification?.content?.recipients?.value.map(item => this.memberService.toIdentifiable(item));
       default:
         return [];
     }
@@ -339,11 +333,12 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.bsModalRef.hide();
   }
 
-  onChange() {
-    if (this.socialEvent.notification.content.selectedMemberIds.length > 0) {
+  onChange($event: any) {
+    this.logger.debug("$event", $event, "this.socialEvent.notification.content.recipients.value:", this.socialEvent.notification.content.recipients.value);
+    if (this.socialEvent.notification.content.recipients.value.length > 0) {
       this.notify.warning({
         title: "Member selection",
-        message: `${this.socialEvent.notification.content.selectedMemberIds.length} members manually selected`
+        message: `${this.socialEvent.notification.content.recipients.value.length} members manually selected`
       });
     } else {
       this.notify.hide();

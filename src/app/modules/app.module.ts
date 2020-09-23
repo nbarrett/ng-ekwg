@@ -27,9 +27,8 @@ import { JoinUsComponent } from "../pages/join-us/join-us.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
 import { ChangedItemsPipe } from "../pipes/changed-items.pipe";
 import { BroadcastService } from "../services/broadcast-service";
-import { CommitteeConfigService } from "../services/commitee-config.service";
+import { CommitteeConfigService } from "../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../services/committee/committee-file.service";
-import { CommitteeReferenceDataService } from "../services/committee/committee-reference-data.service";
 import { ConfigService } from "../services/config.service";
 import { ContentMetadataService } from "../services/content-metadata.service";
 import { DateUtilsService } from "../services/date-utils.service";
@@ -118,7 +117,6 @@ export class AppModule implements DoBootstrap {
       .factory("StringUtils", downgradeInjectable(StringUtilsService))
       .factory("Config", downgradeInjectable(ConfigService))
       .factory("MemberService", downgradeInjectable(MemberService))
-      .factory("CommitteeReferenceData", downgradeInjectable(CommitteeReferenceDataService))
       .factory("WalksReferenceService", downgradeInjectable(WalksReferenceService))
       .factory("WalksQueryService", downgradeInjectable(WalksQueryService))
       .factory("BroadcastService", downgradeInjectable(BroadcastService))

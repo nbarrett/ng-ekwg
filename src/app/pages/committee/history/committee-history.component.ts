@@ -12,9 +12,10 @@ import { LoginResponse } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { sortBy } from "../../../services/arrays";
+import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
+import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
@@ -39,12 +40,12 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   public committeeFileYears: CommitteeYear[] = [];
   public committeeFiles: CommitteeFile[] = [];
   public committeeFile: CommitteeFile;
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     public memberLoginService: MemberLoginService,
     private notifierService: NotifierService,
     private apiResponseProcessor: ApiResponseProcessor,
-    private committeeReferenceData: CommitteeReferenceDataService,
     public display: CommitteeDisplayService,
     private route: ActivatedRoute,
     private authService: AuthService,
@@ -53,6 +54,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     private committeeFileService: CommitteeFileService,
     private urlService: UrlService,
     private changeDetectorRef: ChangeDetectorRef,
+    private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.OFF);
   }
@@ -64,6 +66,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.info("ngOnInit");
+    this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {

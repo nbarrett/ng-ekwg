@@ -32,7 +32,7 @@ import { SocialSendNotificationModalComponent } from "../send-notification/socia
 import { SocialDisplayService } from "../social-display.service";
 
 @Component({
-  selector: "app-committee-edit-file-modal",
+  selector: "app-social-edit-modal",
   templateUrl: "social-edit-modal.component.html",
 })
 export class SocialEditModalComponent implements OnInit {
@@ -51,7 +51,7 @@ export class SocialEditModalComponent implements OnInit {
   private confirmType: ConfirmType = ConfirmType.NONE;
   public socialEventEditMode: string;
   public longerDescriptionPreview = true;
-  public memberFilterSelections: MemberFilterSelection[] = [];
+  public memberFilterSelections: MemberFilterSelection[];
   public selectedMemberIds: string[] = [];
 
   constructor(private contentMetadataService: ContentMetadataService,
@@ -82,7 +82,7 @@ export class SocialEditModalComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.eventDate = this.dateUtils.asDateValue(this.socialEvent.eventDate);
-    this.existingTitle = this.socialEvent?.fileNameData?.title;
+    this.existingTitle = this.socialEvent?.attachment?.title;
     this.campaignSearchTerm = "Master";
     this.notify.hide();
     this.uploader = this.fileUploadService.createUploaderFor("socialEvents");
@@ -96,18 +96,18 @@ export class SocialEditModalComponent implements OnInit {
           this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
         } else {
           const uploadResponse = JSON.parse(response);
-          this.socialEvent.fileNameData = uploadResponse.response.fileNameData;
-          this.socialEvent.fileNameData.title = this.existingTitle;
+          this.socialEvent.attachment = uploadResponse.response.fileNameData;
+          this.socialEvent.attachment.title = this.existingTitle;
           this.logger.info("JSON response:", uploadResponse, "socialEvent:", this.socialEvent);
           this.notify.clearBusy();
-          this.notify.success({title: "New file added", message: this.socialEvent.fileNameData.title});
+          this.notify.success({title: "New file added", message: this.socialEvent.attachment.title});
         }
       }
     );
   }
 
   onChange() {
-    this.socialEvent.attendees = this.selectedMemberIds.map(this.toAttendeeId);
+    this.socialEvent.attendees = this.selectedMemberIds.map(item => this.memberService.toIdentifiable(item));
     this.logger.debug("attendees: ", this.socialEvent.attendees);
     if (this.selectedMemberIds.length > 0) {
       this.notify.warning({
@@ -117,10 +117,6 @@ export class SocialEditModalComponent implements OnInit {
     } else {
       this.notify.hide();
     }
-  }
-
-  private toAttendeeId(id: string): Identifiable {
-    return {id};
   }
 
   groupBy(member: MemberFilterSelection) {
@@ -174,15 +170,15 @@ export class SocialEditModalComponent implements OnInit {
     this.socialEventsService.delete(this.socialEvent).then(() => this.close());
   }
 
-  selectMemberContactDetails() {
+  selectMemberContactDetails(memberId: string) {
     const socialEvent = this.socialEvent;
-    const memberId = socialEvent.eventContactMemberId;
     if (memberId === null) {
       socialEvent.eventContactMemberId = "";
       socialEvent.displayName = "";
       socialEvent.contactPhone = "";
       socialEvent.contactEmail = "";
     } else {
+      this.logger.debug("looking for member id", memberId, "in memberFilterSelections", this.memberFilterSelections);
       const selectedMember = this.memberFilterSelections.find(member => member.id === memberId).member;
       socialEvent.displayName = selectedMember.displayName;
       socialEvent.contactPhone = selectedMember.mobileNumber;
@@ -239,14 +235,12 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   browseToFile(fileElement: HTMLInputElement) {
-    this.existingTitle = this.socialEvent?.fileNameData?.title;
+    this.existingTitle = this.socialEvent?.attachment?.title;
     fileElement.click();
   }
 
   removeAttachment() {
-    this.socialEvent.fileNameData = undefined;
     this.socialEvent.attachment = {};
-    this.socialEvent.attachmentTitle = "";
   }
 
   onFileSelect($file: File[]) {
@@ -272,24 +266,17 @@ export class SocialEditModalComponent implements OnInit {
     const copiedSocialEvent = cloneDeep(this.socialEvent);
     delete copiedSocialEvent.id;
     delete copiedSocialEvent.mailchimp;
-    this.dateUtils.convertDateFieldInObject(copiedSocialEvent, "eventDate");
-    this.showSocialEventDialog(copiedSocialEvent, "Copy Existing", this.allow, this.confirm);
+    delete copiedSocialEvent.notification;
+    copiedSocialEvent.attendees = [];
+    this.socialEvent = copiedSocialEvent;
+    this.confirm.clear();
+    const existingRecordEditEnabled = this.allow.edits && "Copy Existing".startsWith("Edit");
+    this.allow.copy = existingRecordEditEnabled;
+    this.allow.delete = existingRecordEditEnabled;
     this.notify.success({
       title: "Existing social event copied!",
       message: "Make changes here and save to create a new social event."
     });
-  }
-
-  showSocialEventDialog(socialEvent: SocialEvent, socialEventEditMode: string, allow: SocialEventsPermissions, confirm: Confirm) {
-    confirm.clear();
-    if (!socialEvent.attendees) {
-      socialEvent.attendees = [];
-    }
-
-    const existingRecordEditEnabled = allow.edits && socialEventEditMode.startsWith("Edit");
-    allow.copy = existingRecordEditEnabled;
-    allow.delete = existingRecordEditEnabled;
-    this.modalService.show(SocialEditModalComponent, this.display.createModalOptions({socialEvent, allow, confirm}));
   }
 
   attendeeCaption() {
@@ -302,7 +289,12 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   sendSocialEventNotification() {
-    this.modalService.show(SocialSendNotificationModalComponent, this.display.createModalOptions({socialEvent: this.socialEvent, allow: this.allow, confirm: this.confirm}));
+    this.modalService.show(SocialSendNotificationModalComponent, this.display.createModalOptions({
+      memberFilterSelections: this.memberFilterSelections,
+      socialEvent: this.socialEvent,
+      allow: this.allow,
+      confirm: this.confirm
+    }));
     this.close();
   }
 

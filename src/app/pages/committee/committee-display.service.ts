@@ -6,8 +6,9 @@ import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeFile } from "../../models/committee.model";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
+import { CommitteeConfigService } from "../../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../../services/committee/committee-file.service";
-import { CommitteeReferenceDataService } from "../../services/committee/committee-reference-data.service";
+import { CommitteeReferenceData } from "../../services/committee/committee-reference-data";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -23,6 +24,7 @@ import { UrlService } from "../../services/url.service";
 export class CommitteeDisplayService {
   private logger: Logger;
   public committeeFileBaseUrl = this.contentMetadataService.baseUrl("committeeFiles");
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     private memberService: MemberService,
@@ -31,11 +33,12 @@ export class CommitteeDisplayService {
     private urlService: UrlService,
     private valueOrDefault: ValueOrDefaultPipe,
     private dateUtils: DateUtilsService,
-    private committeeReferenceData: CommitteeReferenceDataService,
     private committeeFileService: CommitteeFileService,
     private contentMetadataService: ContentMetadataService,
+    private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeDisplayService, NgxLoggerLevel.OFF);
+    this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
   }
 
@@ -69,7 +72,7 @@ export class CommitteeDisplayService {
   }
 
   allowAddCommitteeFile() {
-    return this.fileTypes && this.memberLoginService.allowFileAdmin();
+    return this.fileTypes() && this.memberLoginService.allowFileAdmin();
   }
 
   allowEditCommitteeFile(committeeFile: CommitteeFile) {

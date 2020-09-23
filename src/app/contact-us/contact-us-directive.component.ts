@@ -1,7 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { CommitteeReferenceDataService } from "../services/committee/committee-reference-data.service";
+import { CommitteeConfigService } from "../services/committee/commitee-config.service";
+import { CommitteeReferenceData } from "../services/committee/committee-reference-data";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { UrlService } from "../services/url.service";
 
@@ -20,24 +21,16 @@ export class ContactUsDirective implements OnInit, OnDestroy {
   @Input() heading: string;
   private logger: Logger;
   private dataSub: Subscription;
+  private committeeReferenceData: CommitteeReferenceData;
 
-  constructor(private committeeReferenceData: CommitteeReferenceDataService, public uRLService: UrlService,
-              private loggerFactory: LoggerFactory) {
+  constructor(public uRLService: UrlService,
+              private loggerFactory: LoggerFactory,
+              private committeeConfig: CommitteeConfigService) {
     this.logger = loggerFactory.createLogger(ContactUsDirective, NgxLoggerLevel.OFF);
   }
 
-  committeeMembers() {
-    return this.role ? this.committeeReferenceData.committeeMembersForRole(this.role) : this.committeeReferenceData.committeeMembers();
-  }
-
-  email() {
-    return this.committeeReferenceData.contactUsField(this.role, "email");
-  }
-
   ngOnInit() {
-    this.dataSub = this.committeeReferenceData.events().subscribe(referenceData => {
-      this.logger.debug("received event", referenceData);
-    });
+    this.dataSub = this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
   }
 
   ngOnDestroy() {
@@ -45,4 +38,13 @@ export class ContactUsDirective implements OnInit, OnDestroy {
       this.dataSub.unsubscribe();
     }
   }
+
+  committeeMembers() {
+    return this.role ? this.committeeReferenceData?.committeeMembersForRole(this.role) : this.committeeReferenceData?.committeeMembers();
+  }
+
+  email() {
+    return this.committeeReferenceData?.contactUsField(this.role, "email");
+  }
+
 }

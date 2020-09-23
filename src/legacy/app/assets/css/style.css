@@ -4581,7 +4581,7 @@ input[type="radio"] {
 
 input[type="radio"] + label {
   display: block;
-  padding: 2px 0px 5px 31px;
+  padding: 2px 0px 0px 31px;
   margin: 9px 4px 0 0;
   background: url(../images/ramblers/but-radio.png) no-repeat;
   cursor: pointer;
@@ -4619,6 +4619,10 @@ input[type="radio"]:checked + label {
 
 .ml-2 {
   margin-left: 2px;
+}
+
+.ml-4 {
+  margin-left: 4px;
 }
 
 .ml-6 {

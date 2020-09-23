@@ -15,14 +15,14 @@
       <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Date and Time:</td>
       <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
         <span [textContent]="socialEvent.eventDate | displayDate"></span>
-        <span [textContent]="socialEvent.eventTimeStart"></span>
+        <span class="ml-6" [textContent]="socialEvent.eventTimeStart"></span>
       </td>
     </tr>
     <tr *ngIf="socialEvent.postcode || socialEvent.location">
       <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Location:</td>
       <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
         <span [textContent]="socialEvent.location"></span>
-        <a [href]="'http://maps.google.co.uk/maps?q=' +socialEvent.postcode"
+        <a class="ml-6" [href]="'http://maps.google.co.uk/maps?q=' +socialEvent.postcode"
            target="_blank"><span
           [textContent]="socialEvent.postcode"></span></a></td>
     </tr>
@@ -44,14 +44,14 @@
     <tr *ngIf="socialEvent.notification.content.replyTo.include">
       <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Send email replies to:</td>
       <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
-        <a [href]="'mailto: ' + replyToRole.email"><span
-          [textContent]="replyToRole.fullName"></span></a> ({{replyToRole.email}})
+        <a [href]="'mailto: ' + replyTo()?.email"><span
+          [textContent]="replyTo()?.fullName"></span></a>
+        ({{replyTo()?.email}})
       </td>
     </tr>
     <tr *ngIf="socialEvent.notification.content.attachment.include && socialEvent.attachment">
       <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Attachment:</td>
-      <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px"><a target="_blank"
-                                                                                   id="attachment"
+      <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px"><a target="_blank" id="attachment"
                                                                                    [href]="display.attachmentUrl(socialEvent)"
                                                                                    [textContent]="display.attachmentTitle(socialEvent)"></a>
       </td>
@@ -63,7 +63,8 @@
     </tr>
   </table>
 
-  <p *ngIf="socialEvent.notification.content.signoffText.include" [textContent]-html="formattedSignoffText()"></p>
+  <p *ngIf="socialEvent.notification.content.signoffText.include"
+     [textContent]="socialEvent.notification.content.signoffText.value"></p>
   <app-contact-us *ngIf="socialEvent.notification.content.signoffAs.value" [format]="'list'"
-                  [role]="socialEvent.notification.content.signoffAs.value"></app-contact-us>
+                  [role]="signoffAs()?.type"></app-contact-us>
 </div>

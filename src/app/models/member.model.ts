@@ -8,7 +8,7 @@ export enum ProfileUpdateType {
 }
 
 export interface MemberFilterSelection {
-  id?: string;
+  id: string;
   order?: number;
   member?: Member;
   memberInformation?: string;

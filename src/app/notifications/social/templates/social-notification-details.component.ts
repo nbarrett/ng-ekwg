@@ -15,13 +15,9 @@ export class SocialNotificationDetailsComponent implements OnInit {
   @Input()
   public members: Member[];
   @Input()
+  public committeeMembers: CommitteeMember[];
+  @Input()
   public socialEvent: SocialEvent;
-
-  @Input()
-  public replyToRole: CommitteeMember;
-
-  @Input()
-  public userEdits: SocialEvent;
 
   protected logger: Logger;
 
@@ -40,4 +36,11 @@ export class SocialNotificationDetailsComponent implements OnInit {
     this.logger.debug("ngOnInit:socialEvent ->", this.socialEvent);
   }
 
+  replyTo() {
+    return this.committeeMembers.find(member => this.socialEvent?.notification?.content?.replyTo?.value === member.memberId);
+  }
+
+  signoffAs() {
+    return this.committeeMembers.find(member => this.socialEvent?.notification?.content?.signoffAs?.value === member.memberId);
+  }
 }

@@ -9,11 +9,7 @@ export interface FilterParameters {
 }
 
 export interface SocialEvent extends Identifiable {
-  attachment?: {
-    originalFileName?: string;
-    title?: string;
-  };
-  attachmentTitle?: any;
+  attachment?: FileNameData;
   attendees: Identifiable[];
   briefDescription?: string;
   contactEmail?: string;

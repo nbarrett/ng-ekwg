@@ -14,7 +14,8 @@ import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequ
 import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-audit.model";
 import { Walk, WalkExport } from "../../models/walk.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
-import { CommitteeReferenceDataService } from "../committee/committee-reference-data.service";
+import { CommitteeConfigService } from "../committee/commitee-config.service";
+import { CommitteeReferenceData } from "../committee/committee-reference-data";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -30,15 +31,17 @@ export class RamblersWalksAndEventsService {
   private logger: Logger;
   private auditNotifications = new Subject<RamblersUploadAuditApiResponse>();
   private walkNotifications = new Subject<RamblersWalksApiResponse>();
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(private http: HttpClient,
               private walksService: WalksService,
               private dateUtils: DateUtilsService,
               private displayDate: DisplayDatePipe,
               private memberLoginService: MemberLoginService,
-              private committeeReferenceDataService: CommitteeReferenceDataService,
               private commonDataService: CommonDataService,
+              committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
+    committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.logger = loggerFactory.createLogger(RamblersWalksAndEventsService, NgxLoggerLevel.OFF);
   }
 
@@ -197,7 +200,7 @@ export class RamblersWalksAndEventsService {
         validationMessages.push("both postcode and grid reference are missing");
       }
       if (isEmpty(walk.contactId)) {
-        const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "this can be supplied for this walk on Walk Leader tab" : "this will need to be setup for you by " + this.committeeReferenceDataService.contactUsField("walks", "fullName");
+        const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "this can be supplied for this walk on Walk Leader tab" : "this will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
         validationMessages.push("walk leader has no Ramblers contact Id setup on their member record (" + contactIdMessage + ")");
       }
       if (isEmpty(walk.displayName) && isEmpty(walk.displayName)) {

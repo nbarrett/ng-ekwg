@@ -1,8 +1,7 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
-      <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">
-        &times;
+      <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
       </button>
       <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
     </div>
@@ -18,13 +17,10 @@
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            name="send-to"
                            value="all-ekwg-social"/>
-                    <label for="all-ekwg-social">{{socialEvent?.notification?.content?.recipients?.value?.length}}
-                      Social Group
-                      Members <a
-                        *ngIf="socialEvent?.notification?.content?.recipients?.value?.length>0"
-                        (click)="editAllSocialRecipients()"
-                        [href]=""> (edit)</a>
-                    </label>
+                    <label for="all-ekwg-social">{{memberFilterSelections?.length}}
+                      Social Group Members</label>
+                    <a class="ml-4" *ngIf="memberFilterSelections.length>0"
+                       (click)="editAllSocialRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipients()"
@@ -35,10 +31,8 @@
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="attendees"/>
                     <label for="attendees">{{socialEvent.attendees.length}}
-                      Attendees <a *ngIf="socialEvent.attendees.length>0"
-                                   (click)="editAttendeeRecipients()"
-                                   [href]=""> (edit)</a>
-                    </label>
+                      Attendees</label><a class="ml-4" *ngIf="socialEvent.attendees.length>0"
+                                          (click)="editAttendeeRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input id="custom"
@@ -46,13 +40,13 @@
                            name="send-to"
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="custom"/>
-                    <label for="custom"><span
-                      *ngIf="socialEvent?.notification?.content?.recipients?.value.length===0">Choose individual recipients</span><span
-                      *ngIf="socialEvent?.notification?.content?.recipients?.value.length>0">{{socialEvent?.notification?.content?.recipients?.value.length}}
-                      recipient(s) chosen<a
-                        (click)="clearRecipients()"
-                        [href]=""> (clear)</a></span>
+                    <label for="custom"><span *ngIf="socialEvent?.notification?.content?.recipients?.value.length===0">Choose individual recipients</span>
+                      <span
+                        *ngIf="socialEvent?.notification?.content?.recipients?.value.length>0">{{socialEvent?.notification?.content?.recipients?.value.length}}
+                        recipient(s) chosen</span>
                     </label>
+                    <a class="ml-4" *ngIf="socialEvent.notification.content.recipients.value.length>0"
+                       (click)="clearRecipients()">(clear)</a>
                   </div>
                 </div>
               </div>
@@ -75,12 +69,12 @@
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="socialEvent?.notification?.content?.destinationType === 'custom'">
+            <div class="row">
               <div class="col-sm-12">
                 <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
                      [tooltip]="helpMembers()">
-                  <ng-select #select [items]="selectableRecipients"
-                             bindLabel="memberInformation"
+                  <ng-select #select [items]="memberFilterSelections"
+                             bindLabel="text"
                              name="member-selector"
                              bindValue="id"
                              placeholder="Select one or more members"
@@ -90,8 +84,8 @@
                              [groupValue]="groupValue"
                              [multiple]="true"
                              [closeOnSelect]="true"
-                             (change)="onChange()"
-                             [(ngModel)]="socialEvent.notification.content.selectedMemberIds">
+                             (change)="onChange($event)"
+                             [(ngModel)]="socialEvent.notification.content.recipients.value">
                     <ng-template ng-optgroup-tmp let-item="item">
                       <span class="group-header">{{item.name}} members</span>
                       <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
@@ -171,13 +165,13 @@
                 <div class="form-group">
                   <div class="checkbox-group">
                     <label
-                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.recipients?.include}"
+                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.attendees?.include}"
                       for="include-attendees">Include List of attendees:
                       <input
-                        [(ngModel)]="socialEvent.notification.content.recipients.include"
+                        [(ngModel)]="socialEvent.notification.content.attendees.include"
                         type="checkbox"
                         id="include-attendees">
-                      <span style="font-weight: normal"> ({{display.attendeeList(socialEvent, selectableRecipients)}}
+                      <span style="font-weight: normal"> ({{display.attendeeList(socialEvent, memberFilterSelections)}}
                         )</span>
                     </label>
                   </div>
@@ -219,7 +213,7 @@
                           [disabled]="!socialEvent?.notification?.content?.replyTo?.include"
                           class="form-control input-sm">
                     <option *ngFor="let role of roles.replyTo"
-                            [ngValue]="role.type"
+                            [ngValue]="role.memberId"
                             [textContent]="role.nameAndDescription">
                     </option>
                   </select>
@@ -266,7 +260,7 @@
                           [disabled]="!socialEvent?.notification?.content?.signoffAs?.include"
                           class="form-control input-sm">
                     <option *ngFor="let role of roles.signoff"
-                            [ngValue]="role.type"
+                            [ngValue]="role.memberId"
                             [textContent]="role.nameAndDescription">
                     </option>
                   </select>
@@ -279,6 +273,11 @@
           <div class="thumbnail thumbnail-admin-edit">
             <div class="form-horizontal">
               <div id="preview" class="print-preview">
+                <ng-template app-social-notification-template></ng-template>
+                <h2 class="mb-3">{{socialEvent.notification.content.title.value}}</h2>
+                <app-social-notification-details [members]="toMembers()" [socialEvent]="socialEvent"
+                                                 [committeeMembers]="this.roles.replyTo">
+                </app-social-notification-details>
               </div>
             </div>
           </div>
@@ -296,16 +295,18 @@
     <div class="modal-footer">
       <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
              title="Confirm sending of notification email"
-             [disabled]="notifyTarget.busy"
+             [disabled]="notReady()"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
-      <input type="submit" value="Complete of Mailchimp" (click)="completeInMailchimp()"
-             [disabled]="notifyTarget.busy"
+      <input type="submit" value="Complete in Mailchimp" (click)="completeInMailchimp()"
+             [disabled]="notReady()"
              title="Complete editing and sending of Mailchimp"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
       <input type="submit" value="Cancel Send" (click)="cancelSendNotification()"
-             [disabled]="notifyTarget.busy"
              title="Cancel sending of notification email"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm button-form-left'">
+             class ="button-form button-confirm button-form-left">
+      <input type="submit" value="Send Later" (click)="saveAndSendLater()"
+             title="Send Later"
+             class ="button-form button-confirm amber-confirm button-form-left">
     </div>
   </div>
 </div>

@@ -40,7 +40,7 @@ export class SocialDisplayService {
   }
 
   attachmentTitle(socialEvent: SocialEvent) {
-    return socialEvent && socialEvent.attachment ? (socialEvent.attachment.title || socialEvent.attachmentTitle || "Attachment: " + socialEvent.attachment.originalFileName) : "";
+    return socialEvent?.attachment ? (socialEvent.attachment.title || "Attachment: " + socialEvent.attachment.originalFileName) : "";
   }
 
   socialEventLink(socialEvent: SocialEvent) {
@@ -106,7 +106,7 @@ export class SocialDisplayService {
   }
 
   refreshSocialMemberFilterSelection(): Promise<MemberFilterSelection[]> {
-    return this.memberService.allLimitedFields(this.memberService.filterFor.SOCIAL_MEMBERS).then(members => {
+    return this.memberService.allLimitedFields(this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED).then(members => {
       this.logger.debug("refreshMembers -> populated ->", members.length, "members");
       return members.map((member => this.toMemberFilterSelection(member)))
         .sort(SORT_BY_NAME);

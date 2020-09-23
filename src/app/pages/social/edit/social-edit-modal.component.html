@@ -142,14 +142,14 @@
               <div class="col col-sm-12">
                 <div class="form-group">
                   <label for="contact-member">Event Organiser</label>
-                  <select [disabled]="!allow.edits" (ngModelChange)="selectMemberContactDetails()"
+                  <select [disabled]="!allow.edits" (ngModelChange)="selectMemberContactDetails($event)"
                           class="form-control input-sm"
                           [(ngModel)]="socialEvent.eventContactMemberId">
+                    <option value="">(no event organiser yet)</option>
                     <option *ngFor="let selection of memberFilterSelections"
                             [ngValue]="selection.id"
                             [textContent]="selection.member | fullNameWithAlias"
                             class="form-control round spaced-controls" id="contact-member">
-                    <option value="">(no event organiser yet)</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -229,10 +229,10 @@
                     uploading {{uploader.progress}}%
                   </div>
                 </div>
-                <div *ngIf="socialEvent?.fileNameData" class="form-group">
+                <div *ngIf="socialEvent?.attachment" class="form-group">
                   <label for="attachment">Title for original name
-                    {{socialEvent.fileNameData.originalFileName}}</label>
-                  <input *ngIf="allow.edits" [(ngModel)]="socialEvent.fileNameData.title"
+                    {{socialEvent.attachment.originalFileName}}</label>
+                  <input *ngIf="allow.edits" [(ngModel)]="socialEvent.attachment.title"
                          [disabled]="notifyTarget.busy"
                          type="text"
                          id="attachment"

@@ -127,7 +127,7 @@ angular.module('ekwgApp')
   .controller("HowToController", function ($rootScope, $window, $log, $sce, $timeout, $templateRequest, $compile, $q, $scope, $filter, $routeParams,
                                            $location, URLService, DateUtils, MailchimpLinkService, FileUtils, NumberUtils, MemberLoginService, MemberService,
                                            ContentMetaDataService, MailchimpSegmentService, MailchimpCampaignService, MemberResourcesReferenceData,
-                                           MailchimpConfig, Notifier, MemberResourcesService, CommitteeReferenceData, ModalService, SiteEditService, BroadcastService) {
+                                           MailchimpConfig, Notifier, MemberResourcesService, ModalService, SiteEditService, BroadcastService) {
 
     var logger = $log.getInstance("HowToController");
     $log.logLevels["HowToController"] = $log.LEVEL.OFF;

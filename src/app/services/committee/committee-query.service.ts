@@ -6,7 +6,6 @@ import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsF
 import { CommitteeDisplayService } from "../../pages/committee/committee-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { descending, sortBy } from "../arrays";
-import { CommitteeConfigService } from "../commitee-config.service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -14,8 +13,9 @@ import { SocialEventsService } from "../social-events/social-events.service";
 import { UrlService } from "../url.service";
 import { WalksQueryService } from "../walks/walks-query.service";
 import { WalksService } from "../walks/walks.service";
+import { CommitteeConfigService } from "./commitee-config.service";
 import { CommitteeFileService } from "./committee-file.service";
-import { CommitteeReferenceDataService } from "./committee-reference-data.service";
+import { CommitteeReferenceData } from "./committee-reference-data";
 
 @Injectable({
   providedIn: "root"
@@ -23,20 +23,21 @@ import { CommitteeReferenceDataService } from "./committee-reference-data.servic
 
 export class CommitteeQueryService {
   private logger: Logger;
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     private dateUtils: DateUtilsService,
     private walksService: WalksService,
     private walksQueryService: WalksQueryService,
-    private committeeReferenceData: CommitteeReferenceDataService,
     private committeeFileService: CommitteeFileService,
     private committeeDisplayService: CommitteeDisplayService,
     private socialEventsService: SocialEventsService,
     private memberLoginService: MemberLoginService,
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
-    private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
+    committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
+    committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
   }
 
   groupEvents(groupEventsFilter: GroupEventsFilter): Promise<GroupEvent[]> {

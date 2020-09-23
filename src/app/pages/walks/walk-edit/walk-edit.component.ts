@@ -25,7 +25,8 @@ import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-o
 import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
 import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/broadcast-service";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
+import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
+import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -73,6 +74,7 @@ export class WalkEditComponent implements OnInit {
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
   public meetupConfig: MeetupConfig;
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     private walksService: WalksService,
@@ -83,7 +85,6 @@ export class WalkEditComponent implements OnInit {
     private meetupService: MeetupService,
     private walkNotificationService: WalkNotificationService,
     private walkEventService: WalkEventService,
-    private committeeReferenceData: CommitteeReferenceDataService,
     private walksReferenceService: WalksReferenceService,
     private memberIdToFullNamePipe: MemberIdToFullNamePipe,
     private displayDateAndTime: DisplayDateAndTimePipe,
@@ -99,6 +100,7 @@ export class WalkEditComponent implements OnInit {
     private broadcastService: BroadcastService,
     private siteEditService: SiteEditService,
     private changeDetectorRef: ChangeDetectorRef,
+    private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
@@ -109,6 +111,7 @@ export class WalkEditComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);

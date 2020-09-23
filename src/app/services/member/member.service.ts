@@ -4,8 +4,9 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { chain } from "../../functions/chain";
 import { DataQueryOptions } from "../../models/api-request.model";
+import { Identifiable } from "../../models/api-response.model";
 import { MailchimpSubscription } from "../../models/mailchimp.model";
-import { Member, MemberApiResponse } from "../../models/member.model";
+import { Member, MemberApiResponse, MemberFilterSelection } from "../../models/member.model";
 import { CommonDataService } from "../common-data-service";
 import { DbUtilsService } from "../db-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -128,7 +129,7 @@ export class MemberService {
     return memberIdOrObject?.id ?? memberIdOrObject;
   }
 
-  allLimitedFields(filterFunction?: (value?: any) => boolean) {
+  allLimitedFields(filterFunction?: (value?: any) => boolean): Promise<Member[]> {
     return this.all({
       select: {
         mailchimpLists: 1,
@@ -166,6 +167,14 @@ export class MemberService {
 
   allMemberIdsWithPrivilege(privilege, members: Member[]) {
     return this.allMemberMembersWithPrivilege(privilege, members).map(member => member.id);
+  }
+
+  toIdentifiable(member: MemberFilterSelection | Member | string): Identifiable {
+    return typeof member === "string" ? {id: member} : {id: member.id};
+  }
+
+  toIdString(member: MemberFilterSelection | Member): string {
+    return member.id;
   }
 
 }

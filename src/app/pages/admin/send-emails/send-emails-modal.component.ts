@@ -218,13 +218,13 @@ export class SendEmailsModalComponent implements OnInit {
     const memberGrouping = member.receivedInLastBulkLoad ? expiredActive : "missing from last bulk load";
     const datePrefix = memberGrouping === "expired" ? ": " : ", " + (member.membershipExpiryDate < today ? "expired" : "expiry") + ": ";
     const memberInformation = `${this.fullNameWithAliasPipe.transform(member)} (${memberGrouping}${datePrefix}${this.dateUtils.displayDate(member.membershipExpiryDate) || "not known"})`;
-    return {member, memberInformation, memberGrouping};
+    return {id: member.id, member, memberInformation, memberGrouping};
   }
 
   renderCreatedInformation(member): MemberFilterSelection {
     const memberGrouping = member.membershipExpiryDate < this.dateUtils.momentNowNoTime().valueOf() ? "expired" : "active";
     const memberInformation = `${this.fullNameWithAliasPipe.transform(member)} (created ${this.dateUtils.displayDate(member.createdDate) || "not known"})`;
-    return {member, memberInformation, memberGrouping};
+    return {id: member.id, member, memberInformation, memberGrouping};
   }
 
   memberGrouping(member: MemberFilterSelection) {

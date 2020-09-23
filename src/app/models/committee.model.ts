@@ -1,7 +1,6 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
 import { DateValue } from "./date.model";
-import { MemberFilterSelection } from "./member.model";
 
 export interface CommitteeFile extends Identifiable {
   eventDate?: number;
@@ -46,15 +45,18 @@ export interface CommitteeFileType {
 }
 
 export interface CommitteeConfig {
-  contactUs: {
-    secretary: CommitteeMember;
-    treasurer: CommitteeMember;
-    membership: CommitteeMember;
-    social: CommitteeMember;
-    walks: CommitteeMember;
-    support: CommitteeMember;
+  committee: {
+    contactUs: {
+      chairman: CommitteeMember;
+      secretary: CommitteeMember;
+      treasurer: CommitteeMember;
+      membership: CommitteeMember;
+      social: CommitteeMember;
+      walks: CommitteeMember;
+      support: CommitteeMember;
+    };
+    fileTypes: CommitteeFileType [];
   };
-  fileTypes: CommitteeFileType [];
 }
 
 export interface GroupEventsFilter {
@@ -79,7 +81,7 @@ export interface NotificationContent {
   includeDownloadInformation?: boolean;
   list?: string;
   attendees?: { include?: boolean };
-  recipients?: { include?: boolean; value: MemberFilterSelection[] };
+  recipients?: { include?: boolean; value: string[] };
   replyTo?: { include?: boolean; value: string; };
   selectedMemberIds?: string[];
   signoffAs?: { include?: boolean; value?: string; };
@@ -89,8 +91,8 @@ export interface NotificationContent {
 }
 
 export interface Notification {
-  cancelled: boolean;
-  content: NotificationContent;
+  cancelled?: boolean;
+  content?: NotificationContent;
   groupEventsFilter?: GroupEventsFilter;
   groupEvents?: GroupEvent[];
 }

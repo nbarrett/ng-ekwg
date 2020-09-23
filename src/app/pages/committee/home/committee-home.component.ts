@@ -9,7 +9,6 @@ import { LoginResponse, Member } from "../../../models/member.model";
 import { Confirm } from "../../../models/ui-actions";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceDataService } from "../../../services/committee/committee-reference-data.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -39,7 +38,6 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
               private urlService: UrlService,
               private dateUtils: DateUtilsService,
               private committeeFileService: CommitteeFileService,
-              private committeeReferenceData: CommitteeReferenceDataService,
               private committeeQueryService: CommitteeQueryService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeHomeComponent, NgxLoggerLevel.OFF);

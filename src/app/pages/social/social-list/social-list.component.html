@@ -6,6 +6,7 @@
         <div class="input-group">
           <div class="input-group-addon round"><i class="glyphicon glyphicon-search"></i>
           </div>
+
           <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
                  (ngModelChange)="onSearchChange($event)"
                  name="quickSearch"
@@ -55,7 +56,8 @@
       </div>
       <div class="col-sm-4">
         <input *ngIf="allow.edits" type="submit" value="edit"
-               (click)="editSocialEvent(socialEvent)"
+               (click)="editSocialEvent(socialEvent)" [disabled]="notifyTarget.busy"
+               [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'"
                title="Edit social event" class="button-form button-form-right">
       </div>
     </div>
