@@ -142,7 +142,7 @@ export class ExpenseDisplayService {
   }
 
   refreshMembers() {
-    this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS)
+    this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS)
       .then((members) => {
         this.members = members;
       });

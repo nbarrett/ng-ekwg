@@ -6,7 +6,7 @@
       <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
     </div>
     <div class="modal-body">
-      <tabset>
+      <tabset *ngIf="socialEvent.notification">
         <tab [heading]="'Recipients & Addressing'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
@@ -40,12 +40,12 @@
                            name="send-to"
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="custom"/>
-                    <label for="custom"><span *ngIf="socialEvent?.notification?.content?.recipients?.value.length===0">Choose individual recipients</span>
+                    <label for="custom"><span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length===0">Choose individual recipients</span>
                       <span
-                        *ngIf="socialEvent?.notification?.content?.recipients?.value.length>0">{{socialEvent?.notification?.content?.recipients?.value.length}}
+                        *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length>0">{{socialEvent?.notification?.content?.selectedMemberIds?.length}}
                         recipient(s) chosen</span>
                     </label>
-                    <a class="ml-4" *ngIf="socialEvent.notification.content.recipients.value.length>0"
+                    <a class="ml-4" *ngIf="socialEvent.notification.content.selectedMemberIds.length>0"
                        (click)="clearRecipients()">(clear)</a>
                   </div>
                 </div>
@@ -85,7 +85,7 @@
                              [multiple]="true"
                              [closeOnSelect]="true"
                              (change)="onChange($event)"
-                             [(ngModel)]="socialEvent.notification.content.recipients.value">
+                             [(ngModel)]="socialEvent.notification.content.selectedMemberIds">
                     <ng-template ng-optgroup-tmp let-item="item">
                       <span class="group-header">{{item.name}} members</span>
                       <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
@@ -118,6 +118,67 @@
                             id="title"
                             placeholder="Enter the title you'd like at the top of the notification here">
                                             </textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="socialEvent?.notification?.content?.eventDetails">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <div class="checkbox-group form-inline">
+                    <label [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.eventDetails?.include}"
+                           for="include-event-details">Include Event details with title:
+                      <input
+                        [(ngModel)]="socialEvent.notification.content.eventDetails.include"
+                        type="checkbox"
+                        id="include-event-details">
+                    </label>
+                  </div>
+                  <input [(ngModel)]="socialEvent.notification.content.eventDetails.value"
+                         type="text"
+                         class="form-control input-sm"
+                         [disabled]="!socialEvent?.notification?.content?.eventDetails?.include"
+                         placeholder="Enter heading of event detail here">
+                </div>
+                <div class="row" *ngIf="socialEvent.attendees.length>0">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <div class="checkbox-group">
+                        <label
+                          [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.attendees?.include}"
+                          for="include-attendees">Include List of attendees:
+                          <input
+                            [(ngModel)]="socialEvent.notification.content.attendees.include"
+                            type="checkbox"
+                            id="include-attendees">
+                          <span
+                            style="font-weight: normal"> ({{display.attendeeList(socialEvent, memberFilterSelections)}}
+                            )</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-12">
+                    <div class="form-group">
+                      <div class="checkbox-group">
+                        <label [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.replyTo?.include}"
+                               for="include-reply-to">Send replies to:
+                          <input [(ngModel)]="socialEvent.notification.content.replyTo.include"
+                                 type="checkbox"
+                                 id="include-reply-to">
+                        </label>
+                      </div>
+                      <select [(ngModel)]="socialEvent.notification.content.replyTo.value" id="replyTo"
+                              [disabled]="!socialEvent?.notification?.content?.replyTo?.include"
+                              class="form-control input-sm">
+                        <option *ngFor="let role of roles.replyTo"
+                                [ngValue]="role.memberId"
+                                [textContent]="role.nameAndDescription">
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,24 +221,6 @@
                 </div>
               </div>
             </div>
-            <div class="row" *ngIf="socialEvent.attendees.length>0">
-              <div class="col-sm-12">
-                <div class="form-group">
-                  <div class="checkbox-group">
-                    <label
-                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.attendees?.include}"
-                      for="include-attendees">Include List of attendees:
-                      <input
-                        [(ngModel)]="socialEvent.notification.content.attendees.include"
-                        type="checkbox"
-                        id="include-attendees">
-                      <span style="font-weight: normal"> ({{display.attendeeList(socialEvent, memberFilterSelections)}}
-                        )</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="row" *ngIf="socialEvent.attachment">
               <div class="col-sm-12">
                 <div class="form-group">
@@ -197,29 +240,6 @@
         </tab>
         <tab [heading]="'Signing Off'">
           <div class="thumbnail thumbnail-admin-edit">
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="form-group">
-                  <div class="checkbox-group">
-                    <label
-                      [ngClass]="{'ui-state-active': socialEvent?.notification?.content?.replyTo?.include}"
-                      for="include-reply-to">Send replies to:
-                      <input [(ngModel)]="socialEvent.notification.content.replyTo.include"
-                             type="checkbox"
-                             id="include-reply-to">
-                    </label>
-                  </div>
-                  <select [(ngModel)]="socialEvent.notification.content.replyTo.value" id="replyTo"
-                          [disabled]="!socialEvent?.notification?.content?.replyTo?.include"
-                          class="form-control input-sm">
-                    <option *ngFor="let role of roles.replyTo"
-                            [ngValue]="role.memberId"
-                            [textContent]="role.nameAndDescription">
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
@@ -275,8 +295,7 @@
               <div id="preview" class="print-preview">
                 <ng-template app-social-notification-template></ng-template>
                 <h2 class="mb-3">{{socialEvent.notification.content.title.value}}</h2>
-                <app-social-notification-details [members]="toMembers()" [socialEvent]="socialEvent"
-                                                 [committeeMembers]="this.roles.replyTo">
+                <app-social-notification-details [members]="toMembers()" [socialEvent]="socialEvent">
                 </app-social-notification-details>
               </div>
             </div>
@@ -296,17 +315,17 @@
       <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
              title="Confirm sending of notification email"
              [disabled]="notReady()"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
+             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
       <input type="submit" value="Complete in Mailchimp" (click)="completeInMailchimp()"
              [disabled]="notReady()"
              title="Complete editing and sending of Mailchimp"
-             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+      <input type="submit" value="Save and Send Later" (click)="saveAndSendLater()"
+             title="Send Later"
+             class="button-form button-confirm amber-confirm button-form-left">
       <input type="submit" value="Cancel Send" (click)="cancelSendNotification()"
              title="Cancel sending of notification email"
-             class ="button-form button-confirm button-form-left">
-      <input type="submit" value="Send Later" (click)="saveAndSendLater()"
-             title="Send Later"
-             class ="button-form button-confirm amber-confirm button-form-left">
+             class="button-form button-confirm button-form-left">
     </div>
   </div>
 </div>

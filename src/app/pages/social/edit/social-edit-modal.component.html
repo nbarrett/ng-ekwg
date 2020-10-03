@@ -229,20 +229,26 @@
                     uploading {{uploader.progress}}%
                   </div>
                 </div>
-                <div *ngIf="socialEvent?.attachment" class="form-group">
-                  <label for="attachment">Title for original name
-                    {{socialEvent.attachment.originalFileName}}</label>
-                  <input *ngIf="allow.edits" [(ngModel)]="socialEvent.attachment.title"
-                         [disabled]="notifyTarget.busy"
-                         type="text"
-                         id="attachment"
-                         class="form-control input-md"
-                         placeholder="Enter a title for this attachment"/>
+                <div *ngIf="socialEvent?.attachment">
+                  <div class="form-group">Originally uploaded as: {{socialEvent.attachment.originalFileName}}</div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="form-inline" for="attachment-title">Title:
+                        <input *ngIf="allow.edits" [(ngModel)]="socialEvent.attachment.title"
+                               [disabled]="notifyTarget.busy"
+                               type="text"
+                               id="attachment-title"
+                               class="form-control input-md"
+                               placeholder="Enter a title for this attachment"/></label>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-inline ml-12" for="attachment">Display: <a target="_blank"
+                                                                                    [href]="display.attachmentUrl(socialEvent)"
+                                                                                    id="attachment">
+                        {{display.attachmentTitle(socialEvent)}}</a></label>
+                    </div>
+                  </div>
                 </div>
-                <label for="attachment">Display: <a target="_blank"
-                                                    [href]="display.attachmentUrl(socialEvent)">
-                  {{display.attachmentTitle(socialEvent)}}</a></label>
-
               </div>
             </div>
           </div>
@@ -266,20 +272,27 @@
     </div>
     <div class="modal-footer">
       <input *ngIf="allow.edits" type="submit" value="Save" (click)="saveSocialEventDetails()"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              title="Save this social event" class="button-form button-form-left"/>
       <input *ngIf="allow.edits" type="submit" value="Send Notification"
              (click)="sendSocialEventNotification()" title="Send social event notification"
-             class="button-form button-form-left"/>
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
+             class="button-form yellow-confirm"/>
       <input *ngIf="allow.delete" type="submit" value="Delete" (click)="deleteSocialEventDetails()"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              title="Delete this social event" class="button-form button-form-left"/>
       <input *ngIf="confirm.deleteConfirmOutstanding()" type="submit" value="Confirm Deletion"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              (click)="confirmDeleteSocialEventDetails()" title="Confirm delete of this social event"
              class="button-form button-form-left button-confirm"/>
       <input *ngIf="allow.edits" type="submit" value="Cancel" (click)="cancelSocialEventDetails()"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              title="Cancel and don't save social event" class="button-form button-form-left"/>
       <input *ngIf="allow.copy" type="submit" value="Copy" (click)="copyDetailsToNewSocialEvent()"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              title="Copy details to new social event" class="button-form button-form-left"/>
       <input *ngIf="!allow.edits" type="submit" value="Close" (click)="cancelSocialEventDetails()"
+             [ngClass]="{'disabled-button-form': notifyTarget.busy}"
              title="Close this social event without saving" class="button-form button-form-left"/>
     </div>
   </div>

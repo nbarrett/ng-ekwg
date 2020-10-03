@@ -1,20 +1,18 @@
-<div id="home-carousel">
-  <div class="carousel-wrapper">
-    <div class="slider-container">
-      <div class="sc-inner">
-        <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
-                  [interval]="slideDisplayInterval" [showIndicators]="false"
-                  (activeSlideChange)="activeSlideChange($event)">
-          <slide *ngFor="let slide of loadedSlides; let index = index; trackBy: slideTracker" active="slide.active">
-            <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
-            <div class="carousel-caption d-none d-md-block">
-              <h4>{{slide.text}}</h4>
-              <small *ngIf="slide.eventId">taken on <a
-                href="walk url">date of walk</a></small>
-            </div>
-          </slide>
-        </carousel>
-      </div>
+<div class="carousel-wrapper">
+  <div class="slider-container">
+    <div class="sc-inner">
+      <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
+                [interval]="slideDisplayInterval" [showIndicators]="false"
+                (activeSlideChange)="activeSlideChange($event)">
+        <slide *ngFor="let slide of loadedSlides; let index = index; trackBy: slideTracker" active="slide.active">
+          <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
+          <div class="carousel-caption d-none d-md-block">
+            <h4>{{slide.text}}</h4>
+            <small *ngIf="slide.eventId">taken on <a
+              href="walk url">date of walk</a></small>
+          </div>
+        </slide>
+      </carousel>
     </div>
   </div>
 </div>

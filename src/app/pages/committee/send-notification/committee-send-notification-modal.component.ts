@@ -103,7 +103,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
         destinationType: "committee",
         addresseeType: "Hi *|FNAME|*,",
         selectedMemberIds: [],
-        recipients: {value: []},
         signoffAs: {
           include: true,
           value: this.committeeReferenceData.loggedOnRole().type || "secretary"
@@ -130,7 +129,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     }
 
     const promises: any[] = [
-      this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
+      this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
         this.members = members;
         this.logger.debug("refreshMembers -> populated ->", this.members.length, "members");
         this.selectableRecipients = members
@@ -284,7 +283,6 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
   }
 
   private showSelectedMemberIds() {
-    this.notification.content.selectedMemberIds = this.notification.content.recipients.value;
     this.onChange();
     this.campaignIdChanged();
     this.logger.debug("notification.content.destinationType", this.notification.content.destinationType, "notification.content.addresseeType", this.notification.content.addresseeType);
@@ -294,7 +292,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.content.destinationType = "custom";
     this.notification.content.campaignId = this.campaignIdFor("general");
     this.notification.content.list = "general";
-    this.notification.content.recipients.value = this.allGeneralSubscribedList().map(item => this.memberService.toIdString(item));
+    this.notification.content.selectedMemberIds = this.allGeneralSubscribedList().map(item => this.memberService.toIdString(item));
     this.showSelectedMemberIds();
 
   }
@@ -304,7 +302,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.content.destinationType = "custom";
     this.notification.content.campaignId = this.campaignIdFor("walks");
     this.notification.content.list = "walks";
-    this.notification.content.recipients.value = this.allWalksSubscribedList().map(item => this.memberService.toIdString(item));
+    this.notification.content.selectedMemberIds = this.allWalksSubscribedList().map(item => this.memberService.toIdString(item));
     this.showSelectedMemberIds();
   }
 
@@ -313,7 +311,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.content.destinationType = "custom";
     this.notification.content.campaignId = this.campaignIdFor("socialEvents");
     this.notification.content.list = "socialEvents";
-    this.notification.content.recipients.value = this.allSocialSubscribedList().map(item => this.memberService.toIdString(item));
+    this.notification.content.selectedMemberIds = this.allSocialSubscribedList().map(item => this.memberService.toIdString(item));
     this.showSelectedMemberIds();
   }
 
@@ -322,7 +320,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.content.destinationType = "custom";
     this.notification.content.campaignId = this.campaignIdFor("committee");
     this.notification.content.list = "general";
-    this.notification.content.recipients.value = this.allCommitteeList().map(item => this.memberService.toIdString(item));
+    this.notification.content.selectedMemberIds = this.allCommitteeList().map(item => this.memberService.toIdString(item));
     this.showSelectedMemberIds();
   }
 
@@ -330,7 +328,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.content.customCampaignType = campaignType;
     this.notification.content.campaignId = this.campaignIdFor(campaignType);
     this.notification.content.list = "general";
-    this.notification.content.recipients.value = [];
+    this.notification.content.selectedMemberIds = [];
     this.showSelectedMemberIds();
   }
 
@@ -424,7 +422,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
 
             switch (this.notification.content.destinationType) {
               case "custom":
-                members = this.notification.content.recipients.value.filter(item => this.notification.content.selectedMemberIds.includes(item))
+                members = this.notification.content.selectedMemberIds.filter(item => this.notification.content.selectedMemberIds.includes(item))
                   .map(item => this.toMemberFilterSelection(this.members.find(member => member.id === item)));
                 break;
               case "committee":

@@ -189,7 +189,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
 
   refreshMembers(): any {
     this.notify.setBusy();
-    this.memberService.allLimitedFields()
+    this.memberService.publicFields()
       .then(refreshedMembers => {
         this.members = refreshedMembers;
         this.logger.info("refreshMembers:found", refreshedMembers.length, "members");

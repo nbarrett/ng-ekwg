@@ -444,7 +444,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   refreshMembers() {
     if (this.memberLoginService.memberLoggedIn()) {
       this.notify.progress({title: "Expenses", message: "Refreshing member data..."});
-      return this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
+      return this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
         this.logger.debug("refreshMembers: found", members.length, "members");
         return this.members = members;
       });

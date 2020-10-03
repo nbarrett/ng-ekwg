@@ -81,7 +81,7 @@ export interface NotificationContent {
   includeDownloadInformation?: boolean;
   list?: string;
   attendees?: { include?: boolean };
-  recipients?: { include?: boolean; value: string[] };
+  eventDetails?: { include?: boolean; value: string };
   replyTo?: { include?: boolean; value: string; };
   selectedMemberIds?: string[];
   signoffAs?: { include?: boolean; value?: string; };

@@ -1,14 +1,15 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { cloneDeep } from "lodash-es";
+import { cloneDeep, isNumber, isObject } from "lodash-es";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ApiAction } from "../../../models/api-response.model";
 import { MemberFilterSelection } from "../../../models/member.model";
 import { FilterParameters, SocialEvent, SocialEventApiResponse, SocialEventsPermissions } from "../../../models/social-events.model";
-import { Confirm } from "../../../models/ui-actions";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
@@ -38,11 +39,11 @@ export class SocialListComponent implements OnInit {
   private searchChangeObservable: Subject<string>;
   public filteredSocialEvents: SocialEvent[] = [];
   private logger: Logger;
-  private todayValue: number;
   public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: 1};
   public memberFilterSelections: MemberFilterSelection[];
 
-  constructor(private stringUtils: StringUtilsService,
+  constructor(private authService: AuthService,
+              private stringUtils: StringUtilsService,
               private searchFilterPipe: SearchFilterPipe,
               private memberService: MemberService,
               private siteEditService: SiteEditService,
@@ -71,12 +72,12 @@ export class SocialListComponent implements OnInit {
   public socialEventId: string;
 
   ngOnInit() {
+    this.authService.authResponse().subscribe(() => this.authChanges());
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.success({
       title: "Finding social events",
       message: "please wait..."
     });
-    this.todayValue = this.dateUtils.momentNowNoTime().valueOf();
     if (this.socialEventId) {
       this.logger.debug("socialEventId from route params:", this.socialEventId);
       this.socialEventsService.getById(this.socialEventId);
@@ -110,11 +111,11 @@ export class SocialListComponent implements OnInit {
         this.applyFilterToSocialEvents();
       }
     });
-    this.display.refreshSocialMemberFilterSelection()
-      .then(members => {
-        this.memberFilterSelections = members;
-        this.verifyReady();
-      });
+    this.authChanges();
+  }
+
+  todayValue(): number {
+    return this.dateUtils.momentNowNoTime().valueOf();
   }
 
   private verifyReady() {
@@ -131,6 +132,30 @@ export class SocialListComponent implements OnInit {
     const eventCount = (this.socialEvents?.length) || 0;
     this.notify.progress(`${filteredCount} of ${eventCount} social event${eventCount === 1 ? "" : "s"} shown`);
     this.verifyReady();
+  }
+
+  private migrateEmptyEventDates(socialEvents: SocialEvent[]) {
+    const invalidEvents: SocialEvent[] = socialEvents.filter((item) => {
+      return !item.eventDate || !isNumber(item.eventDate) || isObject(item.eventDate);
+    }).map((item, index) => {
+      this.logger.debug(index, " - item.eventDate: ", item.eventDate);
+      return item;
+    });
+    this.confirm.type = ConfirmType.APPROVE;
+    this.logger.debug("invalidEvents", invalidEvents);
+    invalidEvents.forEach(event => {
+      event.eventDate = this.dateUtils.asMoment().startOf("day").subtract(1, "days").valueOf();
+      this.logger.debug("fixed date is", this.dateUtils.displayDateAndTime(event.eventDate));
+      this.socialEventsService.update(event);
+    });
+    Promise.all(socialEvents.filter(item => !item.eventDate || !isNumber(item.eventDate) || isObject(item.eventDate)).map(item => {
+      this.logger.debug("old event: ", item);
+      return ({...item, eventDate: this.todayValue()});
+    }).map(item => {
+      return item;
+      // return this.socialEventsService.update(item);
+    })).then(fixed => this.logger.debug("invalidEvents dates:", fixed));
+
   }
 
   private migrateAttachments(phase: string) {
@@ -161,16 +186,21 @@ export class SocialListComponent implements OnInit {
 
   public refreshSocialEvents() {
     this.notify.setBusy();
-    this.logger.debug("refreshSocialEvents:criteria", this.criteria(), "sort:", this.sort());
-    this.socialEventsService.all({criteria: this.criteria(), sort: this.sort()});
+    const dataQueryOptions = {criteria: this.criteria(), sort: this.sort()};
+    this.logger.debug("refreshSocialEvents:dataQueryOptions", dataQueryOptions);
+    if (this.memberLoginService.memberLoggedIn()) {
+      this.socialEventsService.all(dataQueryOptions);
+    } else {
+      this.socialEventsService.allPublic(dataQueryOptions);
+    }
   }
 
   criteria() {
     switch (Number(this.filterParameters.selectType)) {
       case 1:
-        return {eventDate: {$gte: this.todayValue}};
+        return {eventDate: {$gte: this.todayValue()}};
       case 2:
-        return {eventDate: {$lt: this.todayValue}};
+        return {eventDate: {$lt: this.todayValue()}};
       case 3:
         return {};
     }
@@ -185,7 +215,7 @@ export class SocialListComponent implements OnInit {
   }
 
   addSocialEvent() {
-    this.showSocialEventDialog({eventDate: this.todayValue, attendees: []}, "Add New", this.allow, this.confirm);
+    this.showSocialEventDialog({eventDate: this.todayValue(), attendees: []}, "Add New", this.allow, this.confirm);
   }
 
   viewSocialEvent(socialEvent) {
@@ -226,5 +256,15 @@ export class SocialListComponent implements OnInit {
     this.logger.debug("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
 
+  }
+
+  private authChanges() {
+    if (this.memberLoginService.memberLoggedIn()) {
+      this.display.refreshSocialMemberFilterSelection()
+        .then(members => {
+          this.memberFilterSelections = members;
+          this.verifyReady();
+        });
+    }
   }
 }

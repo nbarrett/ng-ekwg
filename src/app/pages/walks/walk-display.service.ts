@@ -117,7 +117,7 @@ export class WalkDisplayService {
 
   refreshMembers() {
     if (this.memberLoginService.memberLoggedIn()) {
-      this.memberService.allLimitedFields(this.memberService.filterFor.GROUP_MEMBERS)
+      this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS)
         .then((members) => {
           this.members = members;
         });

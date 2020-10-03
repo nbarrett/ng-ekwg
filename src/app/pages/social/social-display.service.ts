@@ -106,7 +106,7 @@ export class SocialDisplayService {
   }
 
   refreshSocialMemberFilterSelection(): Promise<MemberFilterSelection[]> {
-    return this.memberService.allLimitedFields(this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED).then(members => {
+    return this.memberService.publicFields(this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED).then(members => {
       this.logger.debug("refreshMembers -> populated ->", members.length, "members");
       return members.map((member => this.toMemberFilterSelection(member)))
         .sort(SORT_BY_NAME);

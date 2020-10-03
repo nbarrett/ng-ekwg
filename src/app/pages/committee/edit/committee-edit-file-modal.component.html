@@ -53,8 +53,8 @@
               </div>
             </div>
             <div *ngIf="committeeFile?.fileNameData" class="form-group">
-              <label for="attachment">Title for original name
-                {{committeeFile.fileNameData.originalFileName}}</label>
+              Originally uploaded as: <span>{{committeeFile.fileNameData.originalFileName}}</span>
+              <label for="attachment">Display Title</label>
               <input *ngIf="display.allowAddCommitteeFile()" [(ngModel)]="committeeFile.fileNameData.title"
                      [disabled]="notifyTarget.busy"
                      type="text"

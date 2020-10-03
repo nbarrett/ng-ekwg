@@ -38,6 +38,27 @@ export class MemberService {
     SOCIAL_MEMBERS: member => member.groupMember && member.socialMember,
   };
 
+  publicFieldsDataQueryOptions: DataQueryOptions = {
+    select: {
+      mailchimpLists: 1,
+      groupMember: 1,
+      socialMember: 1,
+      financeAdmin: 1,
+      treasuryAdmin: 1,
+      fileAdmin: 1,
+      committee: 1,
+      walkChangeNotifications: 1,
+      email: 1,
+      displayName: 1,
+      contactId: 1,
+      mobileNumber: 1,
+      id: 1,
+      firstName: 1,
+      lastName: 1,
+      nameAlias: 1
+    }
+  };
+
   notifications(): Observable<MemberApiResponse> {
     return this.memberNotifications.asObservable();
   }
@@ -129,27 +150,8 @@ export class MemberService {
     return memberIdOrObject?.id ?? memberIdOrObject;
   }
 
-  allLimitedFields(filterFunction?: (value?: any) => boolean): Promise<Member[]> {
-    return this.all({
-      select: {
-        mailchimpLists: 1,
-        groupMember: 1,
-        socialMember: 1,
-        financeAdmin: 1,
-        treasuryAdmin: 1,
-        fileAdmin: 1,
-        committee: 1,
-        walkChangeNotifications: 1,
-        email: 1,
-        displayName: 1,
-        contactId: 1,
-        mobileNumber: 1,
-        id: 1,
-        firstName: 1,
-        lastName: 1,
-        nameAlias: 1
-      }
-    }).then(members => chain(members)
+  publicFields(filterFunction?: (value?: any) => boolean): Promise<Member[]> {
+    return this.all(this.publicFieldsDataQueryOptions).then(members => chain(members)
       .filter(filterFunction || (() => true))
       .sortBy(member => member.firstName + member.lastName).value());
   }

@@ -75,9 +75,9 @@
                            [(ngModel)]="notification.content.destinationType"
                            value="custom"/>
                     <label for="custom">
-                      <span *ngIf="notification.content.recipients.value.length===0">Choose individual recipients</span>
+                      <span *ngIf="notification.content.selectedMemberIds.length===0">Choose individual recipients</span>
                       <span
-                        *ngIf="notification.content.recipients.value.length>0">{{this.notification.content.selectedMemberIds.length}}
+                        *ngIf="notification.content.selectedMemberIds.length>0">{{this.notification.content.selectedMemberIds.length}}
                         recipient(s) chosen from {{this.notification.content.list}} list</span>
                     </label>
                     <a (click)="clearRecipientsForCampaignOfType()"> (clear)</a>

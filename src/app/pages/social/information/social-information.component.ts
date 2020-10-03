@@ -2,19 +2,19 @@ import { Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ContentMetadataItem } from "../../../models/content-metadata.model";
-import { SocialEvent, SocialEventsPermissions } from "../../../models/social-events.model";
+import { SocialEventsPermissions } from "../../../models/social-events.model";
 import { Confirm } from "../../../models/ui-actions";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { AlertInstance } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
-  selector: "app-social-carousel",
-  templateUrl: "./social-carousel.component.html",
+  selector: "app-social-information",
+  styleUrls: ["./social-information.component.sass"],
+  templateUrl: "./social-information.component.html",
 })
-export class SocialCarouselComponent implements OnInit {
+export class SocialInformationComponent implements OnInit {
   @Input()
   public allow: SocialEventsPermissions;
   @Input()
@@ -27,7 +27,7 @@ export class SocialCarouselComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialCarouselComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialInformationComponent, NgxLoggerLevel.OFF);
   }
 
   private logger: Logger;

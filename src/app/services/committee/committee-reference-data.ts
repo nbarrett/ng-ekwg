@@ -2,6 +2,7 @@ import get from "lodash-es/get";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
+import { SocialEvent } from "../../models/social-events.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { FileType } from "./committee-file-type.model";
@@ -22,6 +23,7 @@ export class CommitteeReferenceData {
       email: data.email
     }));
   }
+
   private logger: Logger;
   private localFileTypes: FileType[] = [];
   private localCommitteeMembers: CommitteeMember[] = [];
@@ -30,8 +32,24 @@ export class CommitteeReferenceData {
     return new CommitteeReferenceData(referenceData, memberLoginService, loggerFactory);
   }
 
+  committeeMemberFromSocialEvent(socialEvent: SocialEvent): CommitteeMember {
+    return {
+      type: "organiser",
+      fullName: socialEvent.displayName,
+      memberId: socialEvent.eventContactMemberId,
+      description: "Organiser",
+      nameAndDescription: "Organiser (" + socialEvent.displayName + ")",
+      email: socialEvent.contactEmail
+    };
+  }
+
   committeeMembers(): CommitteeMember[] {
     return this.localCommitteeMembers;
+  }
+
+  committeeMembersPlusOrganiser(socialEvent: SocialEvent): CommitteeMember[] {
+    return socialEvent.eventContactMemberId ?
+      [this.committeeMemberFromSocialEvent(socialEvent)].concat(this.committeeMembers()) : this.committeeMembers();
   }
 
   loggedOnRole(): CommitteeMember {
@@ -52,27 +70,27 @@ export class CommitteeReferenceData {
     return this.committeeMembers().filter(member => roles.includes(member.type));
   }
 
-  contactUsField(role, field) {
+  contactUsField(role, field): string {
     return get(this.committeeConfig.committee.contactUs, [role, field]);
   }
 
-  memberId(role) {
+  memberId(role): string {
     return this.contactUsField(role, "memberId");
   }
 
-  email(role) {
+  email(role): string {
     return this.contactUsField(role, "email");
   }
 
-  description(role) {
+  description(role): string {
     return this.contactUsField(role, "description");
   }
 
-  fullName(role) {
+  fullName(role): string {
     return this.contactUsField(role, "fullName");
   }
 
-  isPublic(fileTypeDescription) {
+  isPublic(fileTypeDescription): boolean {
     const found = this.fileTypes().find(fileType => fileType.description === fileTypeDescription);
     return found && found.public;
   }

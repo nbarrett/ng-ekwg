@@ -19,8 +19,19 @@ export class SocialEventsService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEventsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialEventsService, NgxLoggerLevel.DEBUG);
   }
+
+  publicFieldsDataQueryOptions: DataQueryOptions = {
+    select: {
+      briefDescription: 1,
+      eventDate: 1,
+      location: 1,
+      longerDescription: 1,
+      attachment: 1,
+      thumbnail: 1
+    }
+  };
 
   notifications(): Observable<SocialEventApiResponse> {
     return this.socialEventNotifications.asObservable();
@@ -33,6 +44,14 @@ export class SocialEventsService {
     return apiResponse.response as SocialEvent[];
   }
 
+  async allPublic(dataQueryOptions?: DataQueryOptions): Promise<SocialEvent[]> {
+    const publicDataQueryOptions: DataQueryOptions = {...dataQueryOptions, select: this.publicFieldsDataQueryOptions.select};
+    const params = this.commonDataService.toHttpParams(publicDataQueryOptions);
+    this.logger.debug("allPublic:dataQueryOptions", publicDataQueryOptions, "params", params.toString());
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<SocialEventApiResponse>(`${this.BASE_URL}/all-public`, {params}), this.socialEventNotifications);
+    return apiResponse.response as SocialEvent[];
+  }
+
   async createOrUpdate(socialEvent: SocialEvent): Promise<SocialEvent> {
     if (socialEvent.id) {
       return this.update(socialEvent);
@@ -41,7 +60,7 @@ export class SocialEventsService {
     }
   }
 
-  async getById(socialEventId: string): Promise<SocialEvent>  {
+  async getById(socialEventId: string): Promise<SocialEvent> {
     this.logger.debug("getById:", socialEventId);
     const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<SocialEventApiResponse>(`${this.BASE_URL}/${socialEventId}`), this.socialEventNotifications);
     return apiResponse.response as SocialEvent;

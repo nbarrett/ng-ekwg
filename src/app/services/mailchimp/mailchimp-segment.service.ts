@@ -21,10 +21,11 @@ export class MailchimpSegmentService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.DEBUG);
   }
 
   createSubscriptionRequests(listType: string, memberIds: IdentifiableOrId[], members: Member[]): SubscriptionRequest[] {
+    this.logger.debug("createSubscriptionRequests based on listType", listType, "memberIds:", memberIds, "members:", members);
     const subscriptionRequests: SubscriptionRequest[] = memberIds
       .map(memberId => this.memberService.toMember(memberId, members))
       .filter(member => member?.email)
