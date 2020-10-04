@@ -410,7 +410,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
               from_email: this.committeeReferenceData.contactUsField(replyToRole, "email"),
               list_id: config.mailchimp.lists[list]
             };
-            this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions, "config", config);
+            this.logger.debug("Sending", campaignName, "with otherOptions", otherOptions, "config", config);
             const segmentId = this.mailchimpSegmentService.getMemberSegmentId(currentMember, list);
             const campaignId = this.notification.content?.campaignId;
 
@@ -418,7 +418,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
               return validateExistenceOf(list, "campaign id");
             }
 
-            this.logger.debug("Sending Sending" + campaignId, "segmentId", segmentId, "for currentMember", currentMember);
+            this.logger.debug("Sending", campaignId, "segmentId", segmentId, "for member", currentMember);
 
             switch (this.notification.content.destinationType) {
               case "custom":
@@ -484,7 +484,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
   }
 
   confirmSendNotification(dontSend?: boolean) {
-    const campaignName = this.notification.content.title.value;
+    const campaignName = this.campaigns.data.find(campaign => campaign.id === this.notification.content.campaignId).title;
+    this.logger.debug("campaignName", campaignName, "based on this.notification.content.campaignId", this.notification.content.campaignId);
     this.notify.setBusy();
     return Promise.resolve(this.generateNotificationHTML(this.notificationDirective, this.committeeFile, this.notification, this.members))
       .then(notificationText => this.sendEmailCampaign(notificationText, campaignName, dontSend))
