@@ -29,7 +29,7 @@ export class SocialNotificationDetailsComponent implements OnInit {
     private committeeConfig: CommitteeConfigService,
     public display: SocialDisplayService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialNotificationDetailsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
 
   memberFilterSelections(): MemberFilterSelection[] {
@@ -42,10 +42,10 @@ export class SocialNotificationDetailsComponent implements OnInit {
   }
 
   replyTo(): CommitteeMember {
-    return this.committeeReferenceData?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.replyTo?.value === member.memberId);
+    return this.display?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.replyTo?.value === member.memberId);
   }
 
   signoffAs(): CommitteeMember {
-    return this.committeeReferenceData?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.signoffAs?.value === member.memberId);
+    return this.display?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.signoffAs?.value === member.memberId);
   }
 }

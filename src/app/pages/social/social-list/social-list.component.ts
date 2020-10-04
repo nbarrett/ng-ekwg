@@ -59,7 +59,7 @@ export class SocialListComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               private modalService: BsModalService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.OFF);
   }
 
   @Input()
@@ -94,7 +94,7 @@ export class SocialListComponent implements OnInit {
         this.logger.warn("received error:", apiResponse.error);
         this.notify.error({
           title: "Problem viewing Social Events",
-          message: "Click refresh to clear this message."
+          message: "Refresh this page to clear this message."
         });
       } else if (this.confirm.notificationsOutstanding()) {
         this.logger.debug("Not processing subscription response due to confirm:", this.confirm.type);
@@ -103,7 +103,7 @@ export class SocialListComponent implements OnInit {
         if (apiResponse.action === ApiAction.QUERY && !!this.socialEventId) {
           this.notify.warning({
             title: "Single Social Event being viewed",
-            message: "Click view all to restore normal view."
+            message: "Refresh this page to return to normal view."
           });
         }
         this.confirm.clear();
@@ -131,6 +131,7 @@ export class SocialListComponent implements OnInit {
     const filteredCount = (this.filteredSocialEvents?.length) || 0;
     const eventCount = (this.socialEvents?.length) || 0;
     this.notify.progress(`${filteredCount} of ${eventCount} social event${eventCount === 1 ? "" : "s"} shown`);
+    this.notify.clearBusy();
     this.verifyReady();
   }
 

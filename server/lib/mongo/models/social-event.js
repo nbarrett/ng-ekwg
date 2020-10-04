@@ -11,6 +11,7 @@ const notificationContent = {
   campaignId: {type: String},
   customCampaignType: {type: String},
   description: {include: {type: Boolean}, value: {type: String},},
+  eventDetails: {include: {type: Boolean}, value: {type: String},},
   destinationType: {type: String},
   includeDownloadInformation: {type: Boolean},
   list: {type: String},

@@ -5,8 +5,8 @@
       </button>
       <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
     </div>
-    <div class="modal-body">
-      <tabset *ngIf="socialEvent.notification">
+    <div class="modal-body" *ngIf="socialEvent?.notification?.content?.title">
+      <tabset *ngIf="socialEvent?.notification?.content">
         <tab [heading]="'Recipients & Addressing'">
           <div class="thumbnail thumbnail-admin-edit">
             <div class="row">
@@ -41,9 +41,8 @@
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="custom"/>
                     <label for="custom"><span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length===0">Choose individual recipients</span>
-                      <span
-                        *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length>0">{{socialEvent?.notification?.content?.selectedMemberIds?.length}}
-                        recipient(s) chosen</span>
+                      <span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length>0">
+                        {{socialEvent?.notification?.content?.selectedMemberIds?.length}} recipient(s) chosen</span>
                     </label>
                     <a class="ml-4" *ngIf="socialEvent.notification.content.selectedMemberIds.length>0"
                        (click)="clearRecipients()">(clear)</a>
@@ -66,10 +65,17 @@
                            value="Hi all,"/>
                     <label for="addressee-all">Hi all</label>
                   </div>
+                  <div class="radio">
+                    <input id="addressee-none" type="radio"
+                           name="address-as"
+                           [(ngModel)]="socialEvent.notification.content.addresseeType"
+                           value=""/>
+                    <label for="addressee-none">No addressing</label>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" *ngIf="socialEvent.notification.content.destinationType ==='custom'">
               <div class="col-sm-12">
                 <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
                      [tooltip]="helpMembers()">
@@ -315,14 +321,16 @@
       <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
              title="Confirm sending of notification email"
              [disabled]="notReady()"
-             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form green-confirm button-form-left'">
+             class="button-form green-confirm button-form-left"
+             [ngClass]="{'disabled-button-form': notReady()}">
       <input type="submit" value="Complete in Mailchimp" (click)="completeInMailchimp()"
              [disabled]="notReady()"
              title="Complete editing and sending of Mailchimp"
-             [ngClass]="notReady() ? 'disabled-button-form button-form-left': 'button-form button-confirm blue-confirm button-form-left'">
+             class="button-form blue-confirm button-form-left"
+             [ngClass]="{'disabled-button-form': notReady()}">
       <input type="submit" value="Save and Send Later" (click)="saveAndSendLater()"
              title="Send Later"
-             class="button-form button-confirm amber-confirm button-form-left">
+             class="button-form button-form-left amber-confirm">
       <input type="submit" value="Cancel Send" (click)="cancelSendNotification()"
              title="Cancel sending of notification email"
              class="button-form button-confirm button-form-left">

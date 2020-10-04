@@ -2,7 +2,6 @@ import get from "lodash-es/get";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
-import { SocialEvent } from "../../models/social-events.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { FileType } from "./committee-file-type.model";
@@ -12,7 +11,7 @@ export class CommitteeReferenceData {
   constructor(private committeeConfig: CommitteeConfig,
               private memberLoginService: MemberLoginService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeReferenceData, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeReferenceData, NgxLoggerLevel.OFF);
     this.localFileTypes = this.committeeConfig.committee.fileTypes;
     this.localCommitteeMembers = map(this.committeeConfig.committee.contactUs, (data, type) => ({
       type,
@@ -32,24 +31,8 @@ export class CommitteeReferenceData {
     return new CommitteeReferenceData(referenceData, memberLoginService, loggerFactory);
   }
 
-  committeeMemberFromSocialEvent(socialEvent: SocialEvent): CommitteeMember {
-    return {
-      type: "organiser",
-      fullName: socialEvent.displayName,
-      memberId: socialEvent.eventContactMemberId,
-      description: "Organiser",
-      nameAndDescription: "Organiser (" + socialEvent.displayName + ")",
-      email: socialEvent.contactEmail
-    };
-  }
-
   committeeMembers(): CommitteeMember[] {
     return this.localCommitteeMembers;
-  }
-
-  committeeMembersPlusOrganiser(socialEvent: SocialEvent): CommitteeMember[] {
-    return socialEvent.eventContactMemberId ?
-      [this.committeeMemberFromSocialEvent(socialEvent)].concat(this.committeeMembers()) : this.committeeMembers();
   }
 
   loggedOnRole(): CommitteeMember {

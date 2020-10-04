@@ -19,7 +19,7 @@ export class SocialEventsService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEventsService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialEventsService, NgxLoggerLevel.OFF);
   }
 
   publicFieldsDataQueryOptions: DataQueryOptions = {

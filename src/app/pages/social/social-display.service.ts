@@ -3,11 +3,14 @@ import cloneDeep from "lodash-es/cloneDeep";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { PopoverDirective } from "ngx-bootstrap/popover";
 import { NgxLoggerLevel } from "ngx-logger";
+import { CommitteeMember } from "../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../models/member.model";
 import { SocialEvent } from "../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { sortBy } from "../../services/arrays";
+import { CommitteeConfigService } from "../../services/committee/commitee-config.service";
+import { CommitteeReferenceData } from "../../services/committee/committee-reference-data";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -24,6 +27,7 @@ const SORT_BY_NAME = sortBy("order", "member.lastName", "member.firstName");
 export class SocialDisplayService {
   private logger: Logger;
   public attachmentBaseUrl = this.contentMetadataService.baseUrl("socialEvents");
+  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     @Inject("ClipboardService") private clipboardService,
@@ -34,9 +38,31 @@ export class SocialDisplayService {
     private valueOrDefault: ValueOrDefaultPipe,
     private fullNameWithAlias: FullNameWithAliasPipe,
     private dateUtils: DateUtilsService,
+    private committeeConfig: CommitteeConfigService,
     private contentMetadataService: ContentMetadataService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialDisplayService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialDisplayService, NgxLoggerLevel.OFF);
+    this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
+  }
+
+  committeeMembersPlusOrganiser(socialEvent: SocialEvent): CommitteeMember[] {
+    return socialEvent.eventContactMemberId ?
+      [this.committeeMemberFromSocialEvent(socialEvent)].concat(this.committeeReferenceData.committeeMembers()) : this.committeeReferenceData.committeeMembers();
+  }
+
+  committeeMembers(): CommitteeMember[] {
+    return this.committeeReferenceData.committeeMembers();
+  }
+
+  committeeMemberFromSocialEvent(socialEvent: SocialEvent): CommitteeMember {
+    return {
+      type: "organiser",
+      fullName: socialEvent.displayName,
+      memberId: socialEvent.eventContactMemberId,
+      description: "Organiser",
+      nameAndDescription: "Organiser (" + socialEvent.displayName + ")",
+      email: socialEvent.contactEmail
+    };
   }
 
   attachmentTitle(socialEvent: SocialEvent) {

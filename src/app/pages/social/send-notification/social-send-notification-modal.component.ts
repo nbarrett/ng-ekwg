@@ -1,5 +1,6 @@
 import { Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
 import get from "lodash-es/get";
+import isUndefined from "lodash-es/isUndefined";
 import set from "lodash-es/set";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -15,7 +16,6 @@ import { SocialNotificationDetailsComponent } from "../../../notifications/socia
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
-import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
@@ -51,7 +51,6 @@ export class SocialSendNotificationModalComponent implements OnInit {
   committeeFiles = [];
   alertMessages = [];
   private attachmentBaseUrl: string;
-  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private mailchimpSegmentService: MailchimpSegmentService,
@@ -73,22 +72,18 @@ export class SocialSendNotificationModalComponent implements OnInit {
               public bsModalRef: BsModalRef,
               private committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.memberFilterSelections);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.committeeConfig.events().subscribe(committeeReferenceData => {
-      this.committeeReferenceData = committeeReferenceData;
-      this.initialiseRoles();
-      this.logger.debug("ngOnInit:committeeReferenceData", this.committeeReferenceData);
-      this.initialiseNotification();
-    });
+    this.initialiseRoles();
+    this.initialiseNotification();
     this.confirm.type = ConfirmType.SEND_NOTIFICATION;
   }
 
-  notReady() {
+  notReady(): boolean {
     return this.roles.replyTo.length === 0 || this.notifyTarget.busy || (this.socialEvent.notification.content.selectedMemberIds.length === 0 && this.socialEvent.notification.content.destinationType === "custom");
   }
 
@@ -101,9 +96,9 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.defaultNotificationField(["description"], {include: true});
     this.defaultNotificationField(["attendees"], {include: this.socialEvent.attendees.length > 0});
     this.defaultNotificationField(["attachment"], {include: !!this.socialEvent.attachment});
-    this.defaultNotificationField(["replyTo"], {include: !!this.socialEvent.displayName, value: this.socialEvent.displayName ? "organiser" : "social"});
+    this.defaultNotificationField(["replyTo"], {include: true, value: this.roleForType(this.socialEvent.displayName ? "organiser" : "social").memberId});
     this.defaultNotificationField(["signoffText"], {include: true, value: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,"});
-    this.defaultNotificationField(["signoffAs"], {include: true, value: this.committeeReferenceData.loggedOnRole()?.type || "social"});
+    this.defaultNotificationField(["signoffAs"], {include: true, value: this.roleForType("social").memberId});
     this.logger.debug("onFirstNotificationOnly - creating this.socialEvent.notification ->", this.socialEvent.notification);
   }
 
@@ -124,10 +119,14 @@ export class SocialSendNotificationModalComponent implements OnInit {
   defaultNotificationField(path: string[], value: any) {
     if (!this.socialEvent.notification.content) {
       this.socialEvent.notification.content = {};
+      this.logger.debug("creating notification content");
     }
-    if (!get(this.socialEvent.notification.content, path)) {
-      this.logger.debug("setting field", path, "to value", value);
+    const target = get(this.socialEvent.notification.content, path);
+    if (isUndefined(target)) {
+      this.logger.debug("existing target:", target, "setting path:", path, "to value:", value,);
       set(this.socialEvent.notification.content, path, value);
+    } else {
+      this.logger.debug("path", path, "already", target);
     }
   }
 
@@ -144,8 +143,8 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   initialiseRoles() {
-    this.roles.replyTo = this.committeeReferenceData.committeeMembersPlusOrganiser(this.socialEvent);
-    this.roles.signoff = this.committeeReferenceData.committeeMembersPlusOrganiser(this.socialEvent);
+    this.roles.replyTo = this.display.committeeMembersPlusOrganiser(this.socialEvent);
+    this.roles.signoff = this.display.committeeMembers();
   }
 
   attachmentTitle(socialEvent) {

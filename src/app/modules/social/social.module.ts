@@ -25,7 +25,7 @@ import { SharedModule } from "../../shared-module";
     SharedModule
   ],
   providers: [
-    SocialDisplayService,
+    SocialDisplayService
   ]
 })
 export class SocialModule {

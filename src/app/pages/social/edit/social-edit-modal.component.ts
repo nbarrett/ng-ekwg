@@ -74,7 +74,7 @@ export class SocialEditModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEditModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialEditModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

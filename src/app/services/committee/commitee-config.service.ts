@@ -18,7 +18,7 @@ export class CommitteeConfigService {
   constructor(private config: ConfigService,
               private memberLoginService: MemberLoginService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeConfigService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeConfigService, NgxLoggerLevel.OFF);
     this.refresh();
   }
 
