@@ -25,8 +25,8 @@
                     <label for="send-to-committee">{{allCommitteeList().length}}
                       Committee Members
                     </label>
-                    <a *ngIf="allCommitteeList().length>0"
-                       (click)="editCommitteeRecipients()"> (edit)</a>
+                    <a class="ml-4" *ngIf="allCommitteeList().length>0"
+                       (click)="editCommitteeRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('general')" id="send-to-general"
@@ -37,8 +37,8 @@
                            value="general"/>
                     <label for="send-to-general">{{allGeneralSubscribedList().length}} General List
                       Members </label>
-                    <a *ngIf="allGeneralSubscribedList().length>0"
-                       (click)="editAllEKWGRecipients()"> (edit)</a>
+                    <a class="ml-4" *ngIf="allGeneralSubscribedList().length>0"
+                       (click)="editAllEKWGRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('walks')"
@@ -51,9 +51,8 @@
                     <label for="send-to-walks">{{allWalksSubscribedList().length}} Walks List
                       Members
                     </label>
-                    <a *ngIf="allWalksSubscribedList().length>0"
-                       (click)="editAllWalksRecipients()"
-                    > (edit)</a>
+                    <a class="ml-4" *ngIf="allWalksSubscribedList().length>0"
+                       (click)="editAllWalksRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
@@ -67,7 +66,7 @@
                       Social List Members
                     </label>
                     <a *ngIf="allSocialSubscribedList().length>0"
-                       (click)="editAllSocialRecipients()"> (edit)</a>
+                       (click)="editAllSocialRecipients()">(edit)</a>
                   </div>
                   <div class="radio">
                     <input id="custom" type="radio"
@@ -75,7 +74,8 @@
                            [(ngModel)]="notification.content.destinationType"
                            value="custom"/>
                     <label for="custom">
-                      <span *ngIf="notification.content.selectedMemberIds.length===0">Choose individual recipients</span>
+                      <span
+                        *ngIf="notification.content.selectedMemberIds.length===0">Choose individual recipients</span>
                       <span
                         *ngIf="notification.content.selectedMemberIds.length>0">{{this.notification.content.selectedMemberIds.length}}
                         recipient(s) chosen from {{this.notification.content.list}} list</span>
@@ -149,7 +149,7 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="notification-title">Email title:</label>
-                  <input [(ngModel)]="notification.content.title" type="text" class="form-control input-sm"
+                  <input [(ngModel)]="notification.content.title.value" type="text" class="form-control input-sm"
                          id="notification-title"
                          placeholder="This will appear as the email title to the recipient">
                 </div>
@@ -360,7 +360,7 @@
             <div class="form-horizontal">
               <div id="preview" class="print-preview">
                 <ng-template app-committee-notification-template></ng-template>
-                <h2 class="mb-3">{{notification.content.title}}</h2>
+                <h2 class="mb-3">{{notification.content.title.value}}</h2>
                 <app-committee-notification-details [committeeFile]="committeeFile" [members]="members"
                                                     [notification]="notification">
                 </app-committee-notification-details>

@@ -7,6 +7,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeMember, GroupEvent, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
 import {
+  CampaignConfig,
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
   MailchimpConfigResponse,
@@ -347,7 +348,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     }
   }
 
-  campaignInfoForCampaign(campaignId: string) {
+  campaignInfoForCampaign(campaignId: string): CampaignConfig {
     return chain(this.config.mailchimp.campaigns)
       .map((data, campaignType) => {
         const campaignData = extend({campaignType}, data);
@@ -361,7 +362,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     const infoForCampaign = this.campaignInfoForCampaign(this.notification.content.campaignId);
     this.logger.debug("for campaignId", this.notification.content.campaignId, "infoForCampaign", infoForCampaign);
     if (infoForCampaign) {
-      this.notification.content.title = infoForCampaign.name;
+      this.notification.content.title.value = infoForCampaign.name;
     }
   }
 
@@ -484,7 +485,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
   }
 
   confirmSendNotification(dontSend?: boolean) {
-    const campaignName = this.campaigns.data.find(campaign => campaign.id === this.notification.content.campaignId).title;
+    const campaignName = this.notification.content.title.value;
     this.logger.debug("campaignName", campaignName, "based on this.notification.content.campaignId", this.notification.content.campaignId);
     this.notify.setBusy();
     return Promise.resolve(this.generateNotificationHTML(this.notificationDirective, this.committeeFile, this.notification, this.members))
