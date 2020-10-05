@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const xlsx = require("xlsx");
 const moment = require("moment-timezone");
-const {find, first, chain, isEmpty, isObject, map, get} = require("lodash");
+const {find, first, chain, isEmpty, isObject, map, trim} = require("lodash");
 const csv = require("csv");
 const childProcess = require("child_process");
 const BULK_LOAD_SUFFIX = "MemberList.csv";
@@ -148,21 +148,29 @@ exports.uploadRamblersData = (req, res) => {
 
   function extractExcelDataToJson(uploadedWorkbook, userFileName, res) {
     debug('Reading members from ' + uploadedWorkbook);
-    var workbook = xlsx.readFile(uploadedWorkbook);
-    var ramblersSheet = chain(workbook.SheetNames)
-      .filter(function (sheet) {
-        debug("sheet", sheet);
-        return sheet.includes("Full List");
-      }).first().value();
-    debug('Importing data from workbook sheet', ramblersSheet);
-    var json = xlsx.utils.sheet_to_json(workbook.Sheets[ramblersSheet]);
-    if (json.length > 0) {
-      extractMemberDataFromArray(json, userFileName, res)
-      return returnResponse();
-    } else {
-      debugAndError('Excel workbook ' + userFileName + ' did not contain a sheet called [' + ramblersSheet + '] or no data rows were found in it');
-      returnResponse();
-    }
+    bulkUploadResponse.files.data = `${uploadSessionFolder}/${userFileName}`;
+    aws.putObjectDirect(uploadSessionFolder, userFileName, uploadedWorkbook)
+      .then(response => {
+        if (response.error) {
+          return response;
+        } else {
+          var workbook = xlsx.readFile(uploadedWorkbook);
+          var ramblersSheet = chain(workbook.SheetNames)
+            .filter(function (sheet) {
+              debug("sheet", sheet);
+              return sheet.includes("Full List");
+            }).first().value();
+          debug('Importing data from workbook sheet', ramblersSheet);
+          var json = xlsx.utils.sheet_to_json(workbook.Sheets[ramblersSheet]);
+          if (json.length > 0) {
+            extractMemberDataFromArray(json, userFileName, res)
+            return returnResponse();
+          } else {
+            debugAndError('Excel workbook ' + userFileName + ' did not contain a sheet called [' + ramblersSheet + '] or no data rows were found in it');
+            returnResponse();
+          }
+        }
+      })
   }
 
   function extractFromFile(unzipPath, extractedFiles, fileNameSuffix, res) {
@@ -193,32 +201,32 @@ exports.uploadRamblersData = (req, res) => {
           currentDataRow = dataRow;
           if (dataRow["[Expiry Date]"]) {
             return {
-              membershipExpiryDate: dataRow["[Expiry Date]"].trim(),
-              membershipNumber: dataRow["[Membership Number]"].trim(),
-              mobileNumber: dataRow["[Telephone]"].trim(),
-              email: dataRow["[Private Email]"].trim(),
-              firstName: dataRow["[Forenames]"] || dataRow["[Initials]"].trim(),
-              lastName: dataRow["[Surname]"].trim(),
-              postcode: dataRow["[Postcode]"].trim()
+              membershipExpiryDate: trim(dataRow["[Expiry Date]"]),
+              membershipNumber: trim(dataRow["[Membership Number]"]),
+              mobileNumber: trim(dataRow["[Telephone]"]),
+              email: trim(dataRow["[Private Email]"]),
+              firstName: trim(dataRow["[Forenames]"] || dataRow["[Initials]"]),
+              lastName: trim(dataRow["[Surname]"]),
+              postcode: trim(dataRow["[Postcode]"])
             }
           } else if (dataRow["Membership_No"]) {
             return {
-              membershipNumber: dataRow["Membership_No"].trim(),
-              mobileNumber: dataRow["Tel"].trim(),
-              email: dataRow["Email"].trim(),
-              firstName: dataRow["Forenames"] || dataRow["Initials"].trim(),
-              lastName: dataRow["Surname"].trim(),
-              postcode: dataRow["PostCode"].trim()
+              membershipNumber: trim(dataRow["Membership_No"]),
+              mobileNumber: trim(dataRow["Tel"]),
+              email: trim(dataRow["Email"]),
+              firstName: trim(dataRow["Forenames"] || dataRow["Initials"]),
+              lastName: trim(dataRow["Surname"]),
+              postcode: trim(dataRow["PostCode"])
             }
           } else if (dataRow["Mem No."]) {
             return {
-              membershipExpiryDate: dataRow["Expiry date"].trim(),
-              membershipNumber: dataRow["Mem No."],
-              mobileNumber: dataRow["Mobile Telephone"].trim(),
-              email: dataRow["Email Address"].trim(),
-              firstName: dataRow["Forenames"] || dataRow["Initials"].trim(),
-              lastName: dataRow["Surname"].trim(),
-              postcode: dataRow["Postcode"].trim()
+              membershipExpiryDate: trim(dataRow["Expiry date"]),
+              membershipNumber: trim(dataRow["Mem No."]),
+              mobileNumber: trim(dataRow["Mobile Telephone"]),
+              email: trim(dataRow["Email Address"]),
+              firstName: trim(dataRow["Forenames"] || dataRow["Initials"]),
+              lastName: trim(dataRow["Surname"]),
+              postcode: trim(dataRow["Postcode"])
             }
           } else {
             return debugAndError("Loading of data from " + userFileName + " failed processing data row " + JSON.stringify(currentDataRow) + " due to membership record type not being recognised");
