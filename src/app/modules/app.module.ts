@@ -4,14 +4,12 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { setUpLocationSync } from "@angular/router/upgrade";
 import { downgradeComponent, downgradeInjectable, getAngularJSGlobal, UpgradeModule } from "@angular/upgrade/static";
 import { NgxLoggerLevel } from "ngx-logger";
-import { LegacyUrlService } from "../ajs-upgraded-providers";
 import { AppRoutingModule } from "../app-routing.module";
 import { AppComponent } from "../app.component";
 import { ContactUsDirective } from "../contact-us/contact-us-directive.component";
 import { LoginPanelComponent } from "../login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "../login/forgot-password.component";
 import { LoginComponent } from "../login/login.component";
-import { MailingPreferencesComponent } from "../login/mailing-preferences.component";
 import { SetPasswordComponent } from "../login/set-password.component";
 import { LogoutComponent } from "../logout/logout.component";
 import { MainLogoComponent } from "../main-logo/main-logo.component";
@@ -30,7 +28,6 @@ import { LoginModalComponent } from "../pages/login/login-modal/login-modal.comp
 import { ChangedItemsPipe } from "../pipes/changed-items.pipe";
 import { BroadcastService } from "../services/broadcast-service";
 import { CommitteeConfigService } from "../services/committee/commitee-config.service";
-import { CommitteeFileService } from "../services/committee/committee-file.service";
 import { ConfigService } from "../services/config.service";
 import { ContentMetadataService } from "../services/content-metadata.service";
 import { DateUtilsService } from "../services/date-utils.service";
@@ -73,7 +70,6 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
-    MailingPreferencesComponent,
     MainLogoComponent,
     MainTitleComponent,
     MeetupDescriptionComponent,
@@ -108,7 +104,6 @@ export class AppModule implements DoBootstrap {
     const legacy = getAngularJSGlobal().module("ekwgApp")
       .directive("markdownEditor", downgradeComponent({component: MarkdownEditorComponent}))
       .directive("contactUs", downgradeComponent({component: ContactUsDirective}))
-      .factory("LegacyUrlService", LegacyUrlService)
       .factory("PageService", downgradeInjectable(PageService))
       .factory("DbUtils", downgradeInjectable(DbUtilsService))
       .factory("HttpResponseService", downgradeInjectable(HttpResponseService))

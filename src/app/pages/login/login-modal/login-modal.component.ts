@@ -9,6 +9,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { RouterHistoryService } from "../../../services/router-history.service";
 import { UrlService } from "../../../services/url.service";
+import { MailingPreferencesModalComponent } from "../../mailing-preferences/mailing-preferences-modal.component";
 import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../reset-password-modal/reset-password-modal.component";
 
@@ -52,10 +53,17 @@ export class LoginModalComponent implements OnInit, OnDestroy {
           message: "Please try again"
         });
       } else if (loginResponse.memberLoggedIn) {
-        this.bsModalRef.hide();
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
-          return this.urlService.navigateTo("mailing-preferences");
+          this.modalService.show(MailingPreferencesModalComponent, {
+            class: "modal-lg",
+            animated: false,
+            show: true,
+            initialState: {
+              member: this.memberLoginService.loggedInMember().memberId
+            }
+          });
         }
+        this.bsModalRef.hide();
         return true;
       } else if (loginResponse.showResetPassword) {
         this.modalService.show(ResetPasswordModalComponent, {

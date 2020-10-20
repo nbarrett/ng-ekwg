@@ -8,6 +8,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
+import { MailingPreferencesModalComponent } from "../../mailing-preferences/mailing-preferences-modal.component";
 import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-password-modal.component";
 
 @Component({
@@ -51,9 +52,16 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.info("subscribe:reset password", loginResponse);
       if (loginResponse.memberLoggedIn) {
-        this.bsModalRef.hide();
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
-          return this.urlService.navigateTo("mailing-preferences");
+          this.modalService.show(MailingPreferencesModalComponent, {
+            class: "modal-lg",
+            animated: false,
+            show: true,
+            initialState: {
+              member: this.memberLoginService.loggedInMember().memberId
+            }
+          });
+          this.bsModalRef.hide();
         } else {
           return this.urlService.navigateTo("/");
         }

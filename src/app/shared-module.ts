@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS} from "@angular/common/http";
 import { ModuleWithProviders, NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
@@ -21,7 +21,7 @@ import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { LoggedInGuard } from "./admin-login-guard.service";
-import { AuthenticationModalsServiceProvider, ClipboardServiceProvider } from "./ajs-upgraded-providers";
+import { ClipboardServiceProvider } from "./ajs-upgraded-providers";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
@@ -173,7 +173,6 @@ export class SharedModule {
       providers: [
         AuditDeltaChangedItemsPipePipe,
         AuditDeltaValuePipe,
-        AuthenticationModalsServiceProvider,
         BroadcastService,
         ChangedItemsPipe,
         ClipboardServiceProvider,

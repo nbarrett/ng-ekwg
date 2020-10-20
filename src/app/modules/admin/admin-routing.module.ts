@@ -11,6 +11,7 @@ import { MemberLoginAuditComponent } from "../../pages/admin/member-login-audit/
 import { ChangePasswordComponent } from "../../pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
+import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
 import { AdminModule } from "./admin.module";
 
 @NgModule({
@@ -18,6 +19,7 @@ import { AdminModule } from "./admin.module";
     {path: "", component: AdminComponent},
     {path: "expenses", component: ExpensesComponent, canActivate: [LoggedInGuard]},
     {path: "expenses/:expense-id", component: ExpensesComponent, canActivate: [LoggedInGuard]},
+    {path: "mailing-preferences", component: MailingPreferencesModalComponent, canActivate: [AdminAuthGuard]},
     {path: "member-login-audit", component: MemberLoginAuditComponent, canActivate: [AdminAuthGuard]},
     {path: "member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
     {path: "profile", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},

@@ -29,27 +29,17 @@ import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-sub
 import { SendEmailsModalComponent } from "../../pages/admin/send-emails/send-emails-modal.component";
 import { ForgotPasswordModalComponent } from "../../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../../pages/login/reset-password-modal/reset-password-modal.component";
+import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
 import { FormatAuditPipe } from "../../pipes/format-audit-pipe";
 import { SharedModule } from "../../shared-module";
 
 @NgModule({
   declarations: [
-    ForgotPasswordModalComponent,
     AdminComponent,
-    ExpensesComponent,
-    ExpenseDetailModalComponent,
-    ExpensePaidModalComponent,
-    ExpenseReturnModalComponent,
-    ExpenseSubmitModalComponent,
-    MemberAdminModalComponent,
-    MemberAdminComponent,
-    MemberBulkLoadComponent,
-    MemberLoginAuditComponent,
     ChangePasswordComponent,
     ContactDetailsComponent,
     EmailSubscriptionsComponent,
-    SendEmailsModalComponent,
-    ResetPasswordModalComponent,
+    ExpenseDetailModalComponent,
     ExpenseNotificationApproverFirstApprovalComponent,
     ExpenseNotificationApproverPaidComponent,
     ExpenseNotificationApproverReturnedComponent,
@@ -63,6 +53,18 @@ import { SharedModule } from "../../shared-module";
     ExpenseNotificationDirective,
     ExpenseNotificationTreasurerPaidComponent,
     ExpenseNotificationTreasurerSecondApprovalComponent,
+    ExpensePaidModalComponent,
+    ExpenseReturnModalComponent,
+    ExpensesComponent,
+    ExpenseSubmitModalComponent,
+    ForgotPasswordModalComponent,
+    MailingPreferencesModalComponent,
+    MemberAdminComponent,
+    MemberAdminModalComponent,
+    MemberBulkLoadComponent,
+    MemberLoginAuditComponent,
+    ResetPasswordModalComponent,
+    SendEmailsModalComponent,
   ],
   imports: [
     SharedModule

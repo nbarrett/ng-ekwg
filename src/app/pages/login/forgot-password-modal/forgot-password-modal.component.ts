@@ -13,6 +13,7 @@ import { MailchimpListSubscriptionService } from "../../../services/mailchimp/ma
 import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { RouterHistoryService } from "../../../services/router-history.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 
@@ -41,6 +42,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
               private mailchimpSegmentService: MailchimpSegmentService,
               private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
+              private routerHistoryService: RouterHistoryService,
               private stringUtils: StringUtilsService,
               private urlService: UrlService,
               public bsModalRef: BsModalRef,
@@ -160,6 +162,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   }
 
   close() {
+    this.routerHistoryService.navigateBackToLastMainPage();
     this.bsModalRef.hide();
   }
 
