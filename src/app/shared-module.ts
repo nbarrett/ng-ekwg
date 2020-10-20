@@ -58,6 +58,7 @@ import { BroadcastService } from "./services/broadcast-service";
 import { CommitteeConfigService } from "./services/committee/commitee-config.service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
+import { MemberResourcesReferenceDataService } from "./services/member/member-resources-reference-data.service";
 import { NotifierService } from "./services/notifier.service";
 import { RouterHistoryService } from "./services/router-history.service";
 import { SiteEditService } from "./site-edit/site-edit.service";
@@ -186,6 +187,7 @@ export class SharedModule {
         EventNotePipe,
         FullNamePipe,
         FullNameWithAliasOrMePipe,
+        MemberResourcesReferenceDataService,
         FullNameWithAliasPipe,
         HumanisePipe,
         LastConfirmedDateDisplayed,

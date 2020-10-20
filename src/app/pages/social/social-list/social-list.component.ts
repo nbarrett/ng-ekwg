@@ -34,10 +34,10 @@ import { SocialDisplayService } from "../social-display.service";
 })
 export class SocialListComponent implements OnInit {
   private subscription: Subscription;
-  public socialEvents: SocialEvent[] = [];
-  public notify: AlertInstance;
   private searchChangeObservable: Subject<string>;
   public filteredSocialEvents: SocialEvent[] = [];
+  public socialEvents: SocialEvent[] = [];
+  public notify: AlertInstance;
   private logger: Logger;
   public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: 1};
   public memberFilterSelections: MemberFilterSelection[];

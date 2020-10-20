@@ -7,6 +7,7 @@ import { MailingPreferencesComponent } from "./login/mailing-preferences.compone
 import { LogoutComponent } from "./logout/logout.component";
 import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { HomeComponent } from "./pages/home/home.component";
+import { HowToComponent } from "./pages/how-to/how-to.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
@@ -19,6 +20,8 @@ const routes: Routes = [
   {path: "contact-us", component: ContactUsComponent},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "home", component: HomeComponent},
+  {path: "how-to", component: HowToComponent},
+  {path: "how-to/:member-resource-id", component: HowToComponent},
   {path: "join-us", component: JoinUsComponent},
   {path: "login", component: LoginComponent},
   {path: "logout", component: LogoutComponent},

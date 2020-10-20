@@ -1,0 +1,218 @@
+<div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      <h4 class="modal-title">{{editMode}} <em>Article</em></h4>
+    </div>
+    <div class="modal-body">
+      <div class="thumbnail">
+        <div class="row">
+          <div class="col col-sm-6">
+            <div class="form-group">
+              <app-date-picker [label]="'Date'"
+                               [size]="'md'"
+                               (dateChange)="resourceDateChanged($event)"
+                               [dateValue]="resourceDate">
+              </app-date-picker>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="resource-type">Access</label>
+              <select [(ngModel)]="memberResource.accessLevel" id="visibility"
+                      class="form-control input-sm">
+                <option *ngFor="let accessLevel of memberResourcesReferenceData.accessLevels()"
+                        [textContent]="accessLevel.description"
+                        [ngValue]="accessLevel.id">
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="resource-type">Type</label>
+              <select [(ngModel)]="memberResource.resourceType" id="resource-type"
+                      class="form-control input-sm">
+                <option *ngFor="let resourceType of memberResourcesReferenceData.resourceTypes()"
+                        [textContent]="resourceType.description"
+                        [ngValue]="resourceType.id">
+              </select>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select [(ngModel)]="memberResource.subject" id="subject"
+                      option=""
+                      class="form-control input-sm">
+                <option *ngFor="let subject of memberResourcesReferenceData.subjects()"
+                        [textContent]="subject.description"
+                        [ngValue]="subject.id">
+                <option value="">(none)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="memberResource.resourceType==='email'">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-inline">
+                <div class="form-group">
+                  <label for="campaign-search-term">Search the last <select
+                    [disabled]="notifyTarget.busy"
+                    [(ngModel)]="memberResource.data.campaignSearchLimit"
+                    class="form-control input-sm">
+                    <option value="100">100</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
+                  </select> campaign <select
+                    [disabled]="notifyTarget.busy"
+                    [(ngModel)]="memberResource.data.campaignSearchField"
+                    class="form-control input-sm">
+                    <option value="subject">subjects</option>
+                    <option value="title">titles</option>
+                  </select> for the text</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <form>
+              <div class="col-sm-10">
+                <div class="form-group">
+                  <input id="campaign-search-term" type="text"
+                         [(ngModel)]="memberResource.data.campaignSearchTerm"
+                         [disabled]="notifyTarget.busy"
+                         name="campaignSearchTerm"
+                         class="form-control input-sm"
+                         placeholder="Enter campaign search term">
+                </div>
+              </div>
+              <div class="col-sm-2">
+                <div class="form-group">
+                  <input type="submit" value="Search"
+                         (click)="performCampaignSearch(true)"
+                         title="Search"
+                         name="search"
+                         [ngClass]="notifyTarget.busy ? 'btn btn-default button-form disabled-button-form': 'btn btn-default button-form blue-confirm'">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group">
+                <label for="campaign">Campaign matches ({{campaigns.length || 0}})</label>
+                <select [disabled]="notifyTarget.busy"
+                        (ngModelChange)="campaignChange()"
+                        [(ngModel)]="memberResource.data.campaign" id="campaign"
+                        class="form-control input-sm">
+                  <option *ngFor="let campaign of campaigns trackBy campaignTracker"
+                          [textContent]="campaignTitle(campaign)"
+                          [ngValue]="campaign">
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row" *ngIf="memberResource.resourceType==='file'">
+          <div class="row">
+            <div class="col-md-12">
+              <input type="submit" [disabled]="notifyTarget.busy"
+                     value="Browse for attachment"
+                     (click)="browseToFile(fileElement)"
+                     class="button-form mb-10 w-100"
+                     [ngClass]="{'disabled-button-form': notifyTarget.busy}"/>
+              <input [disabled]="notifyTarget.busy" type="submit"
+                     value="Remove attachment" (click)="removeAttachment()" title="Remove attachment"
+                     [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'"/>
+              <input #fileElement id="browse-to-file" name="attachment" class="hidden-input"
+                     type="file" value="Upload"
+                     ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader"/>
+              <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
+                   (fileOver)="fileOver($event)"
+                   (onFileDrop)="fileDropped($event)"
+                   [uploader]="uploader"
+                   class="well drop-zone">Or drop file here
+              </div>
+              <div class="progress" *ngIf="notifyTarget.busy">
+                <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
+                  uploading {{uploader.progress}}%
+                </div>
+              </div>
+              <div *ngIf="memberResource?.data?.fileNameData">
+                <div class="form-group">Originally uploaded
+                  as: {{memberResource?.data?.fileNameData.originalFileName}}</div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label class="form-inline" for="attachment-title">Title:
+                      <input [(ngModel)]="memberResource?.data?.fileNameData.title"
+                             [disabled]="notifyTarget.busy"
+                             type="text"
+                             id="attachment-title"
+                             class="form-control input-md"
+                             placeholder="Enter a title for this attachment"/></label>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-inline ml-12" for="attachment">Display: <a target="_blank"
+                                                                                  [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)"
+                                                                                  id="attachment">
+                      {{fileUtils.attachmentTitle(memberResource, 'data', 'file')}}</a></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input [disabled]="notifyTarget.busy" [(ngModel)]="memberResource.title" id="title"
+                     class="form-control input-sm">
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea lines="10" [disabled]="notifyTarget.busy" [(ngModel)]="memberResource.description"
+                        id="description"
+                        class="form-control input-sm"></textarea>
+            </div>
+          </div>
+          <div class="col-sm-12">
+            <div class="form-group">
+              <label for="link-preview">Link preview: </label>
+              <a target="_blank" id="link-preview"
+                 [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)">{{memberResource.title}}</a>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="notifyTarget.showAlert" class="row">
+          <div class="col-sm-12 mb-10">
+            <div class="alert {{notifyTarget.alert.class}}"><i
+              class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <input type="submit" value="Save" [disabled]="notifyTarget.busy" (click)="save()"
+             title="Save"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+      <input *ngIf="!confirm.deleteConfirmOutstanding()" type="submit" value="Delete File"
+             [disabled]="notifyTarget.busy" (click)="delete()" title="Delete File"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+      <input *ngIf="confirm.deleteConfirmOutstanding()" type="submit" value="Confirm Delete of File"
+             [disabled]="notifyTarget.busy" (click)="confirmDelete()"
+             title="Confirm delete"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left button-confirm'">
+      <input type="submit" value="Cancel Change" [disabled]="notifyTarget.busy"
+             (click)="cancelChange()" title="Cancel changes and close this dialog"
+             [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
+    </div>
+  </div>
+</div>

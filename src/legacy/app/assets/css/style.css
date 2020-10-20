@@ -2436,7 +2436,6 @@ img[src~="bordered"] {
 }
 
 
-
 .social-event-date {
   margin: 0px 0px 0px 0px;
 }
@@ -2858,8 +2857,7 @@ table.inactive th {
 
 .breadcrumbs ul li.last {
   background: none;
-  padding-top: 1px
-
+  padding-top: 1px;
 }
 
 .article-list {
@@ -2914,7 +2912,7 @@ table.inactive th {
 .right-col-section {
   float: left;
   width: 100%;
-  padding: 20px 0 0 0;
+  padding: 0 0 0 0;
   margin: 0 0 20px 0;
 }
 

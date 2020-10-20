@@ -173,7 +173,7 @@ export interface MailchimpCampaignListRequest {
   limit: number;
   concise: boolean;
   status: string;
-  title: string;
+  title?: string;
 }
 
 export interface MailchimpCampaignListResponse {

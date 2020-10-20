@@ -22,6 +22,8 @@ import { PageNavigatorComponent } from "../page-navigator/page-navigator.compone
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { ContactUsComponent } from "../pages/contact-us/contact-us.component";
 import { HomeComponent } from "../pages/home/home.component";
+import { HowToModalComponent } from "../pages/how-to/how-to-modal.component";
+import { HowToComponent } from "../pages/how-to/how-to.component";
 import { PrivacyPolicyComponent } from "../pages/home/privacy-policy.component";
 import { JoinUsComponent } from "../pages/join-us/join-us.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
@@ -64,6 +66,8 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
     ContactUsComponent,
     ForgotPasswordComponent,
     HomeComponent,
+    HowToModalComponent,
+    HowToComponent,
     JoinUsComponent,
     LoginComponent,
     LoginModalComponent,
@@ -129,8 +133,7 @@ export class AppModule implements DoBootstrap {
       .factory("RouterHistoryService", downgradeInjectable(RouterHistoryService))
       .factory("DateUtils", downgradeInjectable(DateUtilsService))
       .factory("Notifier", downgradeInjectable(NotifierService))
-      .factory("WalksService", downgradeInjectable(WalksService))
-      .factory("CommitteeFileService", downgradeInjectable(CommitteeFileService));
+      .factory("WalksService", downgradeInjectable(WalksService));
     this.upgrade.bootstrap(document.body, [legacy.name], {strictDi: true});
     setUpLocationSync(this.upgrade, "path");
     appRef.bootstrap(AppComponent);
