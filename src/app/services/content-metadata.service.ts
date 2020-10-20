@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DataQueryOptions } from "../models/api-request.model";
-import { ContentMetadata, ContentMetadataApiResponse } from "../models/content-metadata.model";
+import { ContentMetadata, ContentMetadataApiResponse, ContentMetadataItem } from "../models/content-metadata.model";
 import { CommonDataService } from "./common-data-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
@@ -25,7 +25,7 @@ export class ContentMetadataService {
     return `${this.S3_BASE_URL}/${metaDataPathSegment}`;
   }
 
-  createNewMetaData(withDefaults) {
+  createNewMetaData(withDefaults): ContentMetadataItem {
     if (withDefaults) {
       return {image: "(select file)", text: "(Enter title here)"};
     } else {

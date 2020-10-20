@@ -28,6 +28,7 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
+import { ImageEditorComponent } from "./pages/image-editor/image-editor.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
@@ -105,6 +106,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     HumanisePipe,
     LastConfirmedDateDisplayed,
     MarkdownEditorComponent,
+    ImageEditorComponent,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,

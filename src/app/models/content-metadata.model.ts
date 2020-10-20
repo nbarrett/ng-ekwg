@@ -15,8 +15,8 @@ export interface ContentMetadata {
 export interface ContentMetadataItem {
   eventId?: string;
   eventType?: EventType;
-  image: string;
-  text: string;
+  image?: string;
+  text?: string;
 }
 
 export interface ContentMetadataApiResponse extends ApiResponse {

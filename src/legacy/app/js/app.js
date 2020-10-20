@@ -44,9 +44,6 @@ angular.module("ekwgApp", [
     uiSelectConfig.closeOnSelect = false;
 
     $routeProvider
-      .when("/image-editor/:imageSource", {
-        controller: "ImageEditController", templateUrl: "partials/imageEditor/image-editor.html", title: "image editor"
-      })
       .when("/letterhead/:firstPart?/:secondPart", {
         templateUrl: "partials/letterhead/letterhead.html", title: "letterhead"
       })
