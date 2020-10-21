@@ -38,7 +38,7 @@ export class MailingPreferencesModalComponent implements OnInit {
               private urlService: UrlService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailingPreferencesModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailingPreferencesModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

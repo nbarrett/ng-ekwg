@@ -29,8 +29,8 @@ export class UrlService {
     return "/" + first(url.pathname.substring(1).split("/"));
   }
 
-  navigateTo(page?: string, area?: string): Promise<boolean> {
-    if (this.siteEdit.active()) {
+  navigateTo(page?: string, area?: string, alwaysNavigate?: boolean): Promise<boolean> {
+    if (!alwaysNavigate && this.siteEdit.active()) {
       this.logger.info(`site edit active - not navigating to ${page} > ${area}`);
     } else {
       const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;

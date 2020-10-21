@@ -8,7 +8,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "src/app/models/alert-target.model";
 import { AuthService } from "../../auth/auth.service";
-import { ContentMetadata, ContentMetadataItem } from "../../models/content-metadata.model";
+import { ContentMetadata } from "../../models/content-metadata.model";
 import { MemberResourcesPermissions } from "../../models/member-resource.model";
 import { Confirm } from "../../models/ui-actions";
 import { ContentMetadataService } from "../../services/content-metadata.service";
@@ -33,10 +33,9 @@ export class ImageEditorComponent implements OnInit {
   public confirm = new Confirm();
   public destinationType: string;
   public imageSource: string;
-  private subscription: Subscription;
   public uploader: FileUploader;
   public imageMetaData: ContentMetadata;
-  public currentImageMetaDataItem: ContentMetadataItem;
+  public currentImageIndex: number;
   public allow: MemberResourcesPermissions = {};
   public hasFileOver = false;
 
@@ -51,7 +50,7 @@ export class ImageEditorComponent implements OnInit {
     protected dateUtils: DateUtilsService,
     private routerHistoryService: RouterHistoryService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageEditorComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ImageEditorComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -79,8 +78,11 @@ export class ImageEditorComponent implements OnInit {
               this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
             } else {
               const uploadResponse = JSON.parse(response);
-              this.currentImageMetaDataItem.image = this.imageMetaData.baseUrl + "/" + uploadResponse.response.fileNameData.awsFileName;
-              this.logger.info("JSON response:", uploadResponse, "memberResource:", this.currentImageMetaDataItem);
+              const contentMetadataItem = this.imageMetaData.files[this.currentImageIndex];
+              this.logger.info("image path prior to upload:", contentMetadataItem.image);
+              contentMetadataItem.image = this.contentMetadataService.baseUrl(this.imageSource) + "/" + uploadResponse.response.fileNameData.awsFileName;
+              this.logger.info("JSON response:", uploadResponse, "current contentMetadataItem[" + this.currentImageIndex + "]:", contentMetadataItem);
+              this.logger.info("image path after upload:", contentMetadataItem.image);
               this.notify.clearBusy();
               this.notify.success({title: "New file added", message: uploadResponse.response.fileNameData.title});
             }
@@ -108,11 +110,6 @@ export class ImageEditorComponent implements OnInit {
       }).catch(response => this.notify.error({title: "Failed to refresh images", message: response}));
   }
 
-  exitBackToPreviousWindow() {
-    this.routerHistoryService.navigateBackToLastMainPage();
-
-  }
-
   reverseSortOrder() {
     this.imageMetaData.files = this.imageMetaData.files.reverse();
   }
@@ -125,8 +122,8 @@ export class ImageEditorComponent implements OnInit {
     }
   }
 
-  replace(fileElement: HTMLInputElement, imageMetaDataItem) {
-    this.currentImageMetaDataItem = imageMetaDataItem;
+  replace(fileElement: HTMLInputElement, index: number) {
+    this.currentImageIndex = index;
     this.browseToFile(fileElement);
   }
 
@@ -150,18 +147,21 @@ export class ImageEditorComponent implements OnInit {
     this.imageMetaData.files = without(this.imageMetaData.files, imageMetaDataItem);
   }
 
-  insertHere(fileElement: HTMLInputElement, imageMetaDataItem) {
+  insertHere(fileElement: HTMLInputElement, index: number) {
     const insertedImageMetaDataItem = this.contentMetadataService.createNewMetaData(true);
-    const currentIndex = this.imageMetaData.files.indexOf(imageMetaDataItem);
-    this.imageMetaData.files.splice(currentIndex, 0, insertedImageMetaDataItem);
-    this.replace(fileElement, insertedImageMetaDataItem);
+    this.imageMetaData.files.splice(index, 0, insertedImageMetaDataItem);
+    this.replace(fileElement, index);
   }
 
-  saveAll() {
+  saveChangeAndExit() {
     this.contentMetadataService.createOrUpdate(this.imageMetaData)
       .then(contentMetaData => {
         this.exitBackToPreviousWindow();
       }).catch(response => this.notify.error({title: "Failed to save images", message: response}));
+  }
+
+  public exitBackToPreviousWindow() {
+    this.urlService.navigateTo("/", undefined, true);
   }
 
   applyAllowEdits() {
@@ -182,8 +182,9 @@ export class ImageEditorComponent implements OnInit {
     this.notify.progress({title: "Image upload", message: `uploading ${first($file).name} - please wait...`});
   }
 
-  public fileOver(e: any): void {
-    this.hasFileOver = e;
+  public fileOver(index: number): void {
+    this.hasFileOver = index === this.currentImageIndex;
+    this.logger.info("hasFileOver:", this.hasFileOver);
   }
 
   fileDropped($event: File[]) {
