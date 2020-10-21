@@ -20,10 +20,14 @@ import { PageNavigatorComponent } from "../page-navigator/page-navigator.compone
 import { PageTitleComponent } from "../page-title/page-title.component";
 import { ContactUsComponent } from "../pages/contact-us/contact-us.component";
 import { HomeComponent } from "../pages/home/home.component";
+import { PrivacyPolicyComponent } from "../pages/home/privacy-policy.component";
 import { HowToModalComponent } from "../pages/how-to/how-to-modal.component";
 import { HowToComponent } from "../pages/how-to/how-to.component";
-import { PrivacyPolicyComponent } from "../pages/home/privacy-policy.component";
 import { JoinUsComponent } from "../pages/join-us/join-us.component";
+import { LetterheadTitleConfigComponent } from "../pages/letterhead/letterhead-title-config.component";
+import { LetterheadTitleOutputComponent } from "../pages/letterhead/letterhead-title-output.component";
+import { LetterheadTitlePartConfigComponent } from "../pages/letterhead/letterhead-title-part-config.component";
+import { LetterheadComponent } from "../pages/letterhead/letterhead.component";
 import { LoginModalComponent } from "../pages/login/login-modal/login-modal.component";
 import { ChangedItemsPipe } from "../pipes/changed-items.pipe";
 import { BroadcastService } from "../services/broadcast-service";
@@ -71,6 +75,10 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
     LoginPanelComponent,
     LogoutComponent,
     MainLogoComponent,
+    LetterheadComponent,
+    LetterheadTitlePartConfigComponent,
+    LetterheadTitleConfigComponent,
+    LetterheadTitleOutputComponent,
     MainTitleComponent,
     MeetupDescriptionComponent,
     NonRenderingComponent,

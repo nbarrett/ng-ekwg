@@ -21,8 +21,8 @@ import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { LoggedInGuard } from "./admin-login-guard.service";
-import { ClipboardServiceProvider } from "./ajs-upgraded-providers";
 import { AuthInterceptor } from "./auth/auth.interceptor";
+import { ClipboardService } from "./services/clipboard.service";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
@@ -85,28 +85,27 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     RouterModule,
     TabsModule.forRoot(),
     TooltipModule.forRoot(),
-    UiSwitchModule
+    UiSwitchModule,
   ],
   declarations: [
-    PanelExpanderComponent,
     AccordionGroupComponent,
     ContactUsDirective,
     CreatedAuditPipe,
-    FormatAuditPipe,
     DatePickerComponent,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
-    LineFeedsToBreaksPipe,
     DisplayDayPipe,
     EventNotePipe,
+    FormatAuditPipe,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
-    LastConfirmedDateDisplayed,
-    MarkdownEditorComponent,
     ImageEditorComponent,
+    LastConfirmedDateDisplayed,
+    LineFeedsToBreaksPipe,
+    MarkdownEditorComponent,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,
@@ -114,10 +113,11 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     MoneyPipe,
     NotificationUrlComponent,
     PageComponent,
+    PanelExpanderComponent,
     SearchFilterPipe,
     SnakeCasePipe,
     UpdatedAuditPipe,
-    ValueOrDefaultPipe
+    ValueOrDefaultPipe,
   ],
   exports: [
     AccordionGroupComponent,
@@ -143,8 +143,8 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     FullNameWithAliasPipe,
     HumanisePipe,
     LastConfirmedDateDisplayed,
-    LoggerModule,
     LineFeedsToBreaksPipe,
+    LoggerModule,
     MarkdownEditorComponent,
     MarkdownModule,
     MeetupEventSummaryPipe,
@@ -173,11 +173,11 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
+        ClipboardService,
         AuditDeltaChangedItemsPipePipe,
         AuditDeltaValuePipe,
         BroadcastService,
         ChangedItemsPipe,
-        ClipboardServiceProvider,
         CommitteeConfigService,
         CookieService,
         CustomNGXLoggerService,

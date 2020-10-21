@@ -49,7 +49,6 @@ export class ExpenseDisplayService {
   private receiptBaseUrl: string;
 
   constructor(
-    @Inject("ClipboardService") private clipboardService,
     private contentMetadata: ContentMetadataService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,

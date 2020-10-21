@@ -65,8 +65,7 @@
     <div class="row mt-12">
       <div class="col-sm-6">
         <div class="form-group">
-          <label [for]="'image-' + index">Image {{index + 1}} of {{imageMetaData.files.length}}
-            : {{imageMetaDataItem.image.split('/').pop()}}</label>
+          <label [for]="'image-' + index">Image {{index + 1}} of {{imageMetaData.files.length}}</label>
           <img [id]="'image-' + index" class="img-responsive" [src]="imageMetaDataItem.image" alt=""/>
         </div>
       </div>

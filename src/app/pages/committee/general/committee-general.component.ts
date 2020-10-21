@@ -73,6 +73,10 @@ export class CommitteeGeneralComponent implements OnInit, OnDestroy {
     this.modalService.show(CommitteeNotificationSettingsModalComponent, this.display.createModalOptions());
   }
 
+  configureLetterheads() {
+    this.urlService.navigateTo("letterhead");
+  }
+
   ngOnDestroy(): void {
     this.logger.debug("unsubscribing");
     this.subscription.unsubscribe();

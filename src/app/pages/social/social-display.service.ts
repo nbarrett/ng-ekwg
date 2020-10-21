@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { PopoverDirective } from "ngx-bootstrap/popover";
@@ -9,6 +9,7 @@ import { SocialEvent } from "../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { sortBy } from "../../services/arrays";
+import { ClipboardService } from "../../services/clipboard.service";
 import { CommitteeConfigService } from "../../services/committee/commitee-config.service";
 import { CommitteeReferenceData } from "../../services/committee/committee-reference-data";
 import { ContentMetadataService } from "../../services/content-metadata.service";
@@ -30,7 +31,6 @@ export class SocialDisplayService {
   private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
-    @Inject("ClipboardService") private clipboardService,
     private memberService: MemberService,
     private modalService: BsModalService,
     private memberLoginService: MemberLoginService,
@@ -38,6 +38,7 @@ export class SocialDisplayService {
     private valueOrDefault: ValueOrDefaultPipe,
     private fullNameWithAlias: FullNameWithAliasPipe,
     private dateUtils: DateUtilsService,
+    private clipboardService: ClipboardService,
     private committeeConfig: CommitteeConfigService,
     private contentMetadataService: ContentMetadataService,
     loggerFactory: LoggerFactory) {
@@ -77,8 +78,7 @@ export class SocialDisplayService {
   }
 
   copyToClipboard(socialEvent: SocialEvent, pop: PopoverDirective) {
-    this.clipboardService.copyToClipboard(this.socialEventLink(socialEvent));
-    pop.show();
+    this.clipboardService.copyToClipboard(this.socialEventLink(socialEvent), pop);
   }
 
   attachmentUrl(socialEvent) {

@@ -11,6 +11,7 @@ import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
 import { GoogleMapsConfig, Walk } from "../../models/walk.model";
 import { BroadcastService } from "../../services/broadcast-service";
+import { ClipboardService } from "../../services/clipboard.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { GoogleMapsService } from "../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -48,11 +49,11 @@ export class WalkDisplayService {
   loggedIn: boolean;
 
   constructor(
-    @Inject("ClipboardService") private clipboardService,
     private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private googleMapsService: GoogleMapsService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
+    private clipboardService: ClipboardService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -168,8 +169,7 @@ export class WalkDisplayService {
   }
 
   copyWalkToClipboard(walk: Walk, pop: PopoverDirective) {
-    this.clipboardService.copyToClipboard(this.walkLink(walk));
-    pop.show();
+    this.clipboardService.copyToClipboard(this.walkLink(walk), pop);
   }
 
   latestEventTypeFor(walk: Walk): WalkEventType {

@@ -1839,24 +1839,6 @@ a.svg:after {
   width: 940px;
 }
 
-.letterhead p {
-  padding: 25px 0px 0px 0px;
-  font-family: 'BitterBold', sans-serif;
-  font-size: 22px;
-  color: #fff;
-  font-style: normal;
-}
-
-.letterhead img {
-  float: left;
-  padding: 28px 7px 0px 0px;
-}
-
-.letterhead span {
-  color: #A8B400;
-  font-style: normal;
-}
-
 .home-lower {
   background: #eee;
   border-top: 1px solid #ddd;
