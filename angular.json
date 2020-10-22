@@ -44,47 +44,22 @@
               "src/favicon.ico",
               "src/assets",
               {
-                "input": "src/legacy/app/assets",
+                "input": "src/app/assets",
                 "glob": "**/**/*.*",
                 "output": "/assets"
-              },
-              {
-                "input": "src/legacy/app/partials",
-                "glob": "**/**/*.*",
-                "output": "/partials"
               }
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/legacy/vendor/angular-ui-select/dist/select.min.css",
-              "src/app/styles/bs-datepicker.css",
-              "src/app/styles/ui-switch.component.scss",
-              "src/legacy/app/assets/css/style.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/app/assets/styles/bs-datepicker.css",
+              "src/app/assets/styles/ui-switch.component.scss",
+              "src/app/assets/styles/style.css",
               "src/styles.sass"
             ],
             "scripts": [
-              "node_modules/marked/lib/marked.js",
-              "src/legacy/vendor/jquery/dist/jquery.slim.js",
-              "node_modules/angular/angular.min.js",
-              "node_modules/angular-resource/angular-resource.min.js",
-              "node_modules/angular-route/angular-route.min.js",
-              "node_modules/angular-sanitize/angular-sanitize.min.js",
-              "node_modules/angular-cookies/angular-cookies.min.js",
-              "node_modules/angular-animate/angular-animate.min.js",
-              "node_modules/angular-logger/dist/angular-logger.min.js",
-              "src/legacy/vendor/angularjs-mongolab-promise/mongolabResourceHttp.js",
-              "src/legacy/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js",
-              "src/legacy/vendor/angular-ui-select/dist/select.min.js",
-              "src/legacy/vendor/angular-modal-service/dst/angular-modal-service.js",
-              "src/legacy/vendor/ng-file-upload/ng-file-upload.min.js",
-              "src/legacy/vendor/xml2json/xml2json.js",
-              "src/legacy/vendor/showdown/dist/showdown.min.js",
-              "src/legacy/vendor/angular-markdown-directive/markdown.js",
-              "src/legacy/vendor/underscore/underscore-min.js",
-              "src/legacy/vendor/underscore.string/dist/underscore.string.min.js",
-              "node_modules/popper.js/dist/umd/popper.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "src/ekwg-legacy/app/js/ng-ekwg.js"
+              "./node_modules/popper.js/dist/umd/popper.min.js",
+              "./node_modules/jquery/dist/jquery.slim.min.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
             ],
             "es5BrowserSupport": true
           },
@@ -140,27 +115,7 @@
               "src/styles.sass"
             ],
             "scripts": [
-              "node_modules/marked/lib/marked.js",
-              "src/legacy/vendor/jquery/dist/jquery.slim.js",
-              "node_modules/angular/angular.min.js",
-              "node_modules/angular-resource/angular-resource.min.js",
-              "node_modules/angular-route/angular-route.min.js",
-              "node_modules/angular-sanitize/angular-sanitize.min.js",
-              "node_modules/angular-cookies/angular-cookies.min.js",
-              "node_modules/angular-animate/angular-animate.min.js",
-              "node_modules/angular-logger/dist/angular-logger.min.js",
-              "src/legacy/vendor/angularjs-mongolab-promise/mongolabResourceHttp.js",
-              "src/legacy/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js",
-              "src/legacy/vendor/angular-ui-select/dist/select.min.js",
-              "src/legacy/vendor/angular-modal-service/dst/angular-modal-service.js",
-              "src/legacy/vendor/ng-file-upload/ng-file-upload.min.js",
-              "src/legacy/vendor/xml2json/xml2json.js",
-              "src/legacy/vendor/showdown/dist/showdown.min.js",
-              "src/legacy/vendor/angular-markdown-directive/markdown.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "src/legacy/vendor/underscore/underscore-min.js",
-              "src/legacy/vendor/underscore.string/dist/underscore.string.min.js",
-              "src/ekwg-legacy/app/js/ng-ekwg.js"
+              "./node_modules/jquery/dist/jquery.slim.min.js"
             ],
             "assets": [
               "src/favicon.ico",
