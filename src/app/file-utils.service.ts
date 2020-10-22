@@ -60,7 +60,7 @@ export class FileUtilsService {
     if (fileNameData && this.fileExtensionIs(fileNameData.awsFileName, ["doc", "docx", "jpg", "pdf", "ppt", "png", "txt", "xls", "xlsx"])) {
       icon = "icon-" + this.fileExtension(fileNameData.awsFileName).substring(0, 3) + ".jpg";
     }
-    return "assets/images/ramblers/" + icon;
+    return "images/ramblers/" + icon;
   }
 
 }

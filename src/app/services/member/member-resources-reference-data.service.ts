@@ -70,7 +70,7 @@ export class MemberResourcesReferenceDataService {
         action: "View page",
         description: "External Link",
         icon() {
-          return "assets/images/ramblers/favicon.ico";
+          return "images/ramblers/favicon.ico";
         },
         resourceUrl() {
           return "TBA";
