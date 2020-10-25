@@ -3,7 +3,5 @@ mailchimp:
     general:  aa7629edbc
     walks:  33dc7f1d48
     socialEvents: a88f6a4f44
-mongo:
-  database: nbarrett
 aws:
   bucket: ekwg-testing

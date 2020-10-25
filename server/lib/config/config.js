@@ -58,9 +58,6 @@ module.exports = {
     url: config.meetup.url,
   },
   mongo: {
-    apiKey: validatedEnvironmentVariable("MONGOLAB_APIKEY"),
-    database: config.mongo.database,
-    dbUrl: config.mongo.dbUrl,
     uri: validatedEnvironmentVariable("MONGODB_URI"),
   },
   production: env === "production",

@@ -6,8 +6,6 @@ meetup:
   url: https://www.meetup.com
   apiUrl: https://api.meetup.com
   group: Kent-Ramblers
-mongo:
-  dbUrl:  https://api.mlab.com/api/1/databases
 server:
   listenPort: 5000
   distFolder: ../../../dist/ng-ekwg
