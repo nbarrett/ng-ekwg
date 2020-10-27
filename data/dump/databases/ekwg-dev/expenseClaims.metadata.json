@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"nbarrett.expenseClaims"}],"uuid":"3e54052c22774819aa6c205b14d7b16c","collectionName":"expenseClaims"}

@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"nbarrett.config"}],"uuid":"58bff851d7e041dc81b3fb5efea452d5","collectionName":"config"}

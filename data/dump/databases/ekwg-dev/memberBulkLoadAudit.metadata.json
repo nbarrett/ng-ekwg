@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"nbarrett.memberBulkLoadAudit"}],"uuid":"253c2926253d42b6b681b2ae278f0c24","collectionName":"memberBulkLoadAudit"}
