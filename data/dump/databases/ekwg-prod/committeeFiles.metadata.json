@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.committeeFiles"}],"uuid":"f4399d7bc17f449f91c550757b608199","collectionName":"committeeFiles"}

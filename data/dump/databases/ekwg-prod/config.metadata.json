@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.config"}],"uuid":"0ca583d3d7924a6388fc55edad5e9155","collectionName":"config"}
