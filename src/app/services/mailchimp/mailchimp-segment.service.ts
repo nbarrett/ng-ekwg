@@ -75,7 +75,7 @@ export class MailchimpSegmentService {
   }
 
   getMemberSegmentId(member: Member, segmentType: string): number {
-    return member?.mailchimpSegmentIds[segmentType];
+    return member?.mailchimpSegmentIds && member?.mailchimpSegmentIds[segmentType];
   }
 
   setMemberSegmentId(member: Member, segmentType: string, segmentId: number): void {
