@@ -1,6 +1,6 @@
 import { Target } from "@serenity-js/protractor";
+import { padStart } from "lodash";
 import { by } from "protractor";
-import { lpad } from "underscore.string";
 
 const walksViewParent = "#layout_0_content_2_innerleft_2_tabWalks";
 
@@ -86,6 +86,6 @@ export class WalksTargets {
 
   public static checkboxSelector(rowIndex: number, date: string) {
     return Target.the("checkbox for " + date + " walk")
-      .located(by.css(walksViewParent + "_rptResults_ctl" + lpad((rowIndex + 1).toString(), 2, "0") + "_chkSelected"));
+      .located(by.css(walksViewParent + "_rptResults_ctl" + padStart((rowIndex + 1).toString(), 2, "0") + "_chkSelected"));
   }
 }

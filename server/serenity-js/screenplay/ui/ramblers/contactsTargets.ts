@@ -1,6 +1,6 @@
 import { Target } from "@serenity-js/protractor";
+import { padStart } from "lodash";
 import { by } from "protractor";
-import { lpad } from "underscore.string";
 
 export class ContactsTargets {
 
@@ -49,7 +49,7 @@ export class ContactsTargets {
   public static checkboxSelector(rowIndex: number) {
     return Target.the("checkbox index " +
       rowIndex).located(by.css("#layout_0_content_1_innerleft_2_tabContacts_rptResults_ctl01_chkSelectedContact" +
-      lpad((rowIndex + 1).toString(), 2, "0") +
+      padStart((rowIndex + 1).toString(), 2, "0") +
       "_chkSelectedContact"));
   }
 }
