@@ -1,10 +1,7 @@
-"use strict";
-let path = require("path");
-let config = require("config");
-let distFolder = path.resolve(__dirname, config.server.distFolder);
+import * as configData from "config";
 
-function validatedEnvironmentVariable(variableName) {
-  let variableValue = process.env[variableName];
+function validatedEnvironmentVariable(variableName: string): string {
+  const variableValue = process.env[variableName];
   if (!variableValue) {
     throw new Error("Environment variable '" + variableName + "' must be set");
   }
@@ -17,20 +14,21 @@ function logNamespace(moduleName) {
   return `ekwg:${env}:${moduleName || ""}`;
 }
 
-module.exports = {
+export const config = {
   auth: {
-    secret: validatedEnvironmentVariable("AUTH_SECRET")},
+    secret: validatedEnvironmentVariable("AUTH_SECRET"),
+  },
   aws: {
     accessKeyId: validatedEnvironmentVariable("AWS_ACCESS_KEY_ID"),
-    baseHostingUrl: "http://s3-" + config.aws.region + "." + config.aws.domain + "/" + config.aws.bucket,
-    bucket: config.aws.bucket,
-    domain: config.aws.domain,
-    region: config.aws.region,
+    baseHostingUrl: "http://s3-" + configData.aws.region + "." + configData.aws.domain + "/" + configData.aws.bucket,
+    bucket: configData.aws.bucket,
+    domain: configData.aws.domain,
+    region: configData.aws.region,
     secretAccessKey: validatedEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
-    uploadUrl: "https://" + config.aws.bucket + ".s3.amazonaws.com",
+    uploadUrl: "https://" + configData.aws.bucket + ".s3.amazonaws.com",
   },
   dev: env !== "production",
-  env: env,
+  env,
   googleMaps: {
     apiKey: validatedEnvironmentVariable("GOOGLE_MAPS_APIKEY"),
   },
@@ -40,41 +38,40 @@ module.exports = {
     clientSecret: validatedEnvironmentVariable("INSTAGRAM_CLIENT_SECRET"),
     userId: validatedEnvironmentVariable("INSTAGRAM_USER_ID"),
   },
-  logNamespace: logNamespace,
+  logNamespace,
   mailchimp: {
     apiKey: validatedEnvironmentVariable("MAILCHIMP_APIKEY"),
     lists: {
-      general: config.mailchimp.lists.general,
-      socialEvents: config.mailchimp.lists.socialEvents,
-      walks: config.mailchimp.lists.walks,
+      general: configData.mailchimp.lists.general,
+      socialEvents: configData.mailchimp.lists.socialEvents,
+      walks: configData.mailchimp.lists.walks,
     },
   },
   meetup: {
-    apiUrl: config.meetup.apiUrl,
-    group: config.meetup.group,
+    apiUrl: configData.meetup.apiUrl,
+    group: configData.meetup.group,
     oauth: {
       accessToken: validatedEnvironmentVariable("MEETUP_ACCESS_TOKEN"),
     },
-    url: config.meetup.url,
+    url: configData.meetup.url,
   },
   mongo: {
     uri: validatedEnvironmentVariable("MONGODB_URI"),
   },
   production: env === "production",
   ramblers: {
-    groupCode: config.ramblers.groupCode,
+    groupCode: configData.ramblers.groupCode,
     gwem: {
       password: validatedEnvironmentVariable("RAMBLERS_GWEM_PASSWORD"),
       userName: validatedEnvironmentVariable("RAMBLERS_GWEM_USER"),
     },
-    listWalksPath: config.ramblers.listWalksPath,
-    url: config.ramblers.url,
+    listWalksPath: configData.ramblers.listWalksPath,
+    url: configData.ramblers.url,
   },
   server: {
-    cookieSecret: config.server.cookieSecret,
-    distFolder: distFolder,
-    listenPort: process.env.PORT || config.server.listenPort,
-    staticUrl: config.server.staticUrl,
-    uploadDir: config.server.uploadDir,
+    cookieSecret: configData.server.cookieSecret,
+    listenPort: process.env.PORT || configData.server.listenPort,
+    staticUrl: configData.server.staticUrl,
+    uploadDir: configData.server.uploadDir,
   },
 };

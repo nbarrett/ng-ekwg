@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("meetup:venues"));
 const messageHandlers = require("../shared/message-handlers");
 const querystring = require("querystring");

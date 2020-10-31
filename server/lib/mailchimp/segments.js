@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("mailchimp:routes:segments"));
 const messageHandler = require("./messageHandler");
 const mcapi = require("mailchimp-api");

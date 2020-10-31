@@ -54,4 +54,4 @@ Thumbs.db
 /server/target/
 /server/upload-errors-source.html
 /data/scripts/
-/server/lib/ts-gen/
+/server/ts-gen/

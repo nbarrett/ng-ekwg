@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("meetup:config"));
 
 exports.config = function (req, res) {

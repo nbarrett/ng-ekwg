@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config.js");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("ramblers:ramblers-audit-parser"));
 debug.enabled = false;
 const {some, isEmpty, isUndefined, includes} = require("lodash");

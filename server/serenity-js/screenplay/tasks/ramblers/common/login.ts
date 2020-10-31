@@ -1,7 +1,7 @@
 import { Ensure, equals, not } from "@serenity-js/assertions";
 import { AnswersQuestions, Duration, PerformsActivities, Task } from "@serenity-js/core";
 import { Click, Enter, isVisible, Wait } from "@serenity-js/protractor";
-import * as config from "../../../../../lib/config/config";
+import { config } from "../../../../../lib/config/config";
 import { WalksAndEventsManagerQuestions } from "../../../questions/ramblers/walksAndEventsManagerQuestions";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";

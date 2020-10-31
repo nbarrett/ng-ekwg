@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config.js");
+const {config} = require("../config/config");
 const parser = require("./ramblers-audit-parser");
 const debug = require("debug")(config.logNamespace("ramblers-walk-upload"));
 const moment = require("moment-timezone");

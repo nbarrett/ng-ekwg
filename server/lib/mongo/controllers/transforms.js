@@ -1,5 +1,5 @@
 const {omit, each, includes, set, isArray} = require("lodash");
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const debug = require("debug")(config.logNamespace("transforms"));
 debug.enabled = false;
 
@@ -57,16 +57,16 @@ exports.parseQueryStringParameters = (req) => {
   };
 };
 
-exports.updateDocumentRequest = function(req) {
+exports.updateDocumentRequest = function (req) {
   const documentMinusIds = omit(req.body, ["_id", "__v", "id"]);
   return this.setUnSetDocument(documentMinusIds);
 };
 
-exports.createDocumentRequest = function(req) {
+exports.createDocumentRequest = function (req) {
   return exports.createDocument(exports.updateDocumentRequest(req));
 };
 
-exports.createDocument = function(setUnSetDocument) {
+exports.createDocument = function (setUnSetDocument) {
   const response = {};
   const setFields = setUnSetDocument.$set;
   each(setFields, (value, field) => {

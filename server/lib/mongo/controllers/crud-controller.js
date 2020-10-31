@@ -1,5 +1,5 @@
 const {isNumber} = require("lodash");
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const transforms = require("./transforms");
 
 exports.create = (model) => {

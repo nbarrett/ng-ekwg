@@ -1,4 +1,4 @@
-"use strict";
+
 const {escapeRegExp, isNumber} = require("lodash");
 
 exports.generateUid = () => {

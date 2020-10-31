@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 let ramblersConfig = config.ramblers;
 const debug = require("debug")(config.logNamespace("ramblers:gwem"));
 const moment = require("moment-timezone");

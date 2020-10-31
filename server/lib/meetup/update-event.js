@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const messageHandlers = require("../shared/message-handlers");
 const debug = require("debug")(config.logNamespace("event-update"));
 const requestDefaults = require("./request-defaults");

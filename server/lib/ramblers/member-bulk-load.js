@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config.js");
+const {config} = require("../config/config");
 const aws = require("../aws/aws-controllers");
 const debug = require("debug")(config.logNamespace("ramblers:memberBulkLoad"));
 const path = require("path");

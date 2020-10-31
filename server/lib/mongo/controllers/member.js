@@ -1,5 +1,5 @@
 const _ = require("lodash")
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const authConfig = require("../../auth/auth-config");
 const debug = require("debug")(config.logNamespace("database:member"));
 const member = require("../models/member");

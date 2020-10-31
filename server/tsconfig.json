@@ -10,10 +10,15 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./lib/ts-gen/",
-    "declaration": true
+    "outDir": "./ts-gen/",
+    "declaration": true,
+    "allowSyntheticDefaultImports": true
   },
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
-    "serenity-js/**/*.ts"
+    "serenity-js/**/*.ts",
+    "lib/**/*.*"
   ]
 }

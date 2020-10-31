@@ -1,4 +1,4 @@
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const stringUtils = require("../../shared/string-utils");
 const debug = require("debug")(config.logNamespace("member-common"));
 

@@ -1,4 +1,4 @@
-var config = require("../config/config");
+var {config} = require("../config/config");
 
 exports.processSuccessfulResponse = function (req, res, response, messageType, debug) {
   debug("Data", JSON.stringify(response), "Received", messageType, "successful response");

@@ -1,4 +1,4 @@
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("mongoose-client"));
 const mongoose = require("mongoose");
 const transforms = require("../mongo/controllers/transforms");

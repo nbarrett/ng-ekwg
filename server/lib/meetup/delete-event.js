@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const messageHandlers = require("../shared/message-handlers");
 const requestDefaults = require("./request-defaults");
 const debug = require("debug")(config.logNamespace("meetup:event-delete"));

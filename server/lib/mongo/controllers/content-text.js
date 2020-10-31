@@ -1,5 +1,5 @@
 const contentText = require("../models/content-text");
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const transforms = require("./transforms");
 const debug = require("debug")(config.logNamespace("context-text"));
 

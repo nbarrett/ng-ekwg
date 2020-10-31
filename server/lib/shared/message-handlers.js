@@ -1,7 +1,6 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const https = require("https");
-const _ = require("underscore");
+const isEmpty = require("lodash/isEmpty");
 const querystring = require("querystring");
 
 exports.httpRequest = (options) => new Promise((resolve, reject) => {
@@ -35,7 +34,7 @@ exports.httpRequest = (options) => new Promise((resolve, reject) => {
         const rawData = Buffer.concat(data).toString();
         try {
           options.debug("parsing raw data", rawData)
-          let parsedDataJSON = _.isEmpty(rawData) ? {} : JSON.parse(rawData);
+          let parsedDataJSON = isEmpty(rawData) ? {} : JSON.parse(rawData);
           returnValue.response = parsedDataJSON.errors ? parsedDataJSON : (options.mapper ? options.mapper(parsedDataJSON) : parsedDataJSON);
         } catch (err) {
           options.res.statusCode = 500;
@@ -59,7 +58,7 @@ exports.httpRequest = (options) => new Promise((resolve, reject) => {
     options.debug("ERROR:", JSON.stringify(rejectedResponse));
     reject(rejectedResponse);
   });
-  if (!_.isEmpty(options.body)) {
+  if (!isEmpty(options.body)) {
     options.debug("sending body", options.body)
     const formData = querystring.stringify(options.body);
     options.debug("writing formData", formData)
@@ -75,7 +74,7 @@ function createRequestAudit(options) {
       url: options.req.url,
     }
   };
-  if (!_.isEmpty(options.body)) {
+  if (!isEmpty(options.body)) {
     requestAudit.request.body = options.body;
   }
   if (config.dev) {

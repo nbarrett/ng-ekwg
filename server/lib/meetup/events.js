@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("meetup:events"));
 const moment = require("moment-timezone");
 const messageHandlers = require("../shared/message-handlers");

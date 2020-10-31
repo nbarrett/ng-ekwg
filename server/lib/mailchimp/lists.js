@@ -1,5 +1,4 @@
-"use strict";
-let config = require("../config/config");
+let {config} = require("../config/config");
 let debug = require("debug")(config.logNamespace("mailchimp:routes:lists"));
 let messageHandler = require("./messageHandler");
 let mcapi = require("mailchimp-api");

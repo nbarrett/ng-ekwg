@@ -1,16 +1,14 @@
-"use strict";
-let config = require("../config/config.js");
+const {config} = require("../config/config");
 const {first, isObject, map} = require("lodash");
-let url = require("url");
-let debug = require("debug")(config.logNamespace("aws"));
-let AWS = require("aws-sdk");
-let http = require("http");
-let crypto = require("crypto");
-let s3Config = {accessKeyId: config.aws.accessKeyId, secretAccessKey: config.aws.secretAccessKey};
-let s3 = new AWS.S3(s3Config);
-let fs = require("fs");
-let path = require("path");
-let baseHostingUrl = config.aws.baseHostingUrl;
+const debug = require("debug")(config.logNamespace("aws"));
+const AWS = require("aws-sdk");
+const http = require("http");
+const crypto = require("crypto");
+const s3Config = {accessKeyId: config.aws.accessKeyId, secretAccessKey: config.aws.secretAccessKey};
+const s3 = new AWS.S3(s3Config);
+const fs = require("fs");
+const path = require("path");
+const baseHostingUrl = config.aws.baseHostingUrl;
 http.globalAgent.maxSockets = 20;
 debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl);
 
@@ -77,7 +75,7 @@ exports.listBuckets = (req, res) => {
 };
 
 exports.putObject = (req, res) => {
-  let uploadedFile = first(req.files);
+  const uploadedFile = first(req.files);
   debug("received file", uploadedFile.originalname, "into location", uploadedFile.path, "containing", uploadedFile.size, "bytes");
   return exports.putObjectDirect(req.params.key, req.params.file)
     .then(response => {
@@ -93,9 +91,9 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
   debug("configured with", s3Config);
   const bucket = config.aws.bucket;
 
-  let objectKey = `${rootFolder}/${path.basename(fileName)}`;
-  let data = fs.readFileSync(localFileName);
-  let params = {
+  const objectKey = `${rootFolder}/${path.basename(fileName)}`;
+  const data = fs.readFileSync(localFileName);
+  const params = {
     Bucket: bucket,
     Key: objectKey,
     Body: data,
@@ -104,12 +102,12 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
   debug(`Saving file to ${bucket}/${objectKey}`);
   return s3.putObject(params).promise()
     .then(data => {
-      let information = `Successfully uploaded file to ${bucket}/${objectKey}`;
+      const information = `Successfully uploaded file to ${bucket}/${objectKey}`;
       debug(information, "->", data);
       return ({responseData: data, information: information});
     })
     .catch(error => {
-      let errorMessage = `Failed to upload object to ${bucket}/${objectKey}`;
+      const errorMessage = `Failed to upload object to ${bucket}/${objectKey}`;
       debug(errorMessage, "->", error);
       return ({responseData: error, error: errorMessage});
     });

@@ -1,6 +1,6 @@
 const moment = require("moment-timezone");
 const authConfig = require("../../auth/auth-config");
-const config = require("../../config/config");
+const {config} = require("../../config/config");
 const refreshToken = require("../models/refresh-token");
 const debug = require("debug")(config.logNamespace("database:auth"));
 const memberAudit = require("../models/member-audit");

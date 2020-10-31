@@ -1,7 +1,7 @@
-"use strict";
+
 const {clone} = require("lodash");
 const mkdirpsync = require('mkdirpsync');
-const config = require("../config/config");
+const {config} = require("../config/config");
 const stringUtils = require("../shared/string-utils");
 const debug = require("debug")(config.logNamespace("template-migrator"));
 let fs = require("fs");

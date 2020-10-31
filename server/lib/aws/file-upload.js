@@ -1,5 +1,4 @@
-"use strict";
-const config = require("../config/config.js");
+const {config} = require("../config/config");
 const aws = require("../aws/aws-controllers");
 const debug = require("debug")(config.logNamespace("s3-file-upload"));
 const {keys, last, first, isObject, map} = require("lodash");

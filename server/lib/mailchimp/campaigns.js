@@ -1,12 +1,10 @@
-"use strict";
-let config = require("../config/config");
-let debug = require("debug")(config.logNamespace("mailchimp:routes:campaigns"));
-let messageHandler = require("./messageHandler");
-let mcapi = require("mailchimp-api");
-let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
-let _ = require("underscore");
-let moment = require("moment-timezone");
-let _str = require("underscore.string");
+const {config} = require("../config/config");
+const debug = require("debug")(config.logNamespace("mailchimp:routes:campaigns"));
+const messageHandler = require("./messageHandler");
+const mcapi = require("mailchimp-api");
+const mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
+const moment = require("moment-timezone");
+const pick = "lodash/pick";
 /*
 
  campaigns/content (string apikey, string cid, struct options)
@@ -120,12 +118,12 @@ exports.list = (req, res) => {
       }
     }
 
-    var filteredResponse = _str.toBoolean(req.query.concise) ? {
+    var filteredResponse = req.query.concise === "true" ? {
       total: responseData.data.length,
       errors: responseData.errors,
-      data: _.chain(responseData.data)
+      data: responseData.data
         .map(campaign => {
-          var campaignFields = _.pick(campaign, ["id", "web_id", "list_id", "template_id", "title", "subject", "saved_segment", "status", "from_name", "archive_url_long"]);
+          var campaignFields = pick(campaign, ["id", "web_id", "list_id", "template_id", "title", "subject", "saved_segment", "status", "from_name", "archive_url_long"]);
           addDateField(campaign, "create_time", campaignFields);
           addDateField(campaign, "send_time", campaignFields);
           return campaignFields;

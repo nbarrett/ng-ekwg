@@ -8,7 +8,6 @@ meetup:
   group: Kent-Ramblers
 server:
   listenPort: 5000
-  distFolder: ../../../dist/ng-ekwg
   uploadDir:  /tmp/ekwgFiles
   staticUrl:  /
   cookieSecret: ekwg

@@ -1,4 +1,4 @@
-const config = require("../config/config");
+const {config} = require("../config/config");
 const refreshToken = require("./refresh-token");
 const debug = require("debug")(config.logNamespace("instagram:recent-media"));
 const messageHandlers = require("../shared/message-handlers");

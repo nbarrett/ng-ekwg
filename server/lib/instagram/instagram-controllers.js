@@ -1,5 +1,4 @@
-"use strict";
-let config = require("../config/config.js");
+let {config} = require("../config/config");
 let debug = require("debug")(config.logNamespace("instagram"));
 let ig = require("instagram-node").instagram();
 let port = config.server.listenPort;

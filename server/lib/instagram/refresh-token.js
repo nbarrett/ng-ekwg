@@ -1,4 +1,4 @@
-const config = require("../config/config");
+const {config} = require("../config/config");
 const debug = require("debug")(config.logNamespace("instagram:refresh-token"));
 const messageHandlers = require("../shared/message-handlers");
 exports.refreshToken = (req, res) => {
