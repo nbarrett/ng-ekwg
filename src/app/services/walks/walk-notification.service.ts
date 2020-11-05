@@ -3,9 +3,9 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { MailchimpGenericOtherContent } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { WalkCampaignConfiguration } from "../../models/walk-campaign-configuration.model";
-import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkEventNotificationMapping, WalkEventType } from "../../models/walk-event-type.model";
 import { WalkNotification } from "../../models/walk-notification.model";
+import { DisplayedWalk, EventType } from "../../models/walk.model";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationCoordinatorApprovedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
 import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
@@ -33,7 +33,7 @@ import { MemberService } from "../member/member.service";
 import { AlertInstance, NotifierService } from "../notifier.service";
 import { RamblersWalksAndEventsService } from "./ramblers-walks-and-events.service";
 import { WalkEventService } from "./walk-event.service";
-import { EventType, WalksReferenceService } from "./walks-reference-data.service";
+import { WalksReferenceService } from "./walks-reference-data.service";
 import { WalksService } from "./walks.service";
 
 @Injectable({

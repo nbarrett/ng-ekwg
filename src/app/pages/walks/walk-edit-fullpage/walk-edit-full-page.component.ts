@@ -2,13 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { DisplayedWalk } from "../../../models/walk-displayed.model";
-import { Walk } from "../../../models/walk.model";
+import { DisplayedWalk, EventType, Walk } from "../../../models/walk.model";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
-import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
 

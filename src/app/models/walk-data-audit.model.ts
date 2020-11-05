@@ -1,5 +1,5 @@
-import { EventType } from "../services/walks/walks-reference-data.service";
 import { ChangedItem } from "./changed-item.model";
+import { EventType } from "./walk.model";
 
 export interface WalkDataAudit {
   eventExists: boolean;

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Walk } from "../models/walk.model";
-import { WalkDisplayService, WalkViewMode } from "../pages/walks/walk-display.service";
+import { Walk, WalkViewMode } from "../models/walk.model";
+import { WalkDisplayService} from "../pages/walks/walk-display.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Component({

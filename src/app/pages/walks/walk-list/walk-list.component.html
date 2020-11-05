@@ -16,11 +16,8 @@
             <select [(ngModel)]="filterParameters.selectType"
                     (change)="refreshWalks('change filterParameters.selectType')" name="selectType"
                     class="form-control round spaced-controls">
-              <option selected="selected" value="1">Walks Today Onwards</option>
-              <option value="2">Past Walks</option>
-              <option value="3">All Walks</option>
-              <option value="4">Walks With No Leader</option>
-              <option value="5">Walks With No Details</option>
+              <option *ngFor="let filter of walksFilter()" [ngValue]="filter.value"
+                      [selected]="filter.selected">{{filter.description}}</option>
             </select>
           </div>
           <div class="form-group">

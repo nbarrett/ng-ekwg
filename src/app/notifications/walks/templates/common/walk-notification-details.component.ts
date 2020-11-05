@@ -4,10 +4,9 @@ import { Member } from "../../../../models/member.model";
 import { WalkDataAudit } from "../../../../models/walk-data-audit.model";
 import { WalkEvent } from "../../../../models/walk-event.model";
 import { WalkNotification } from "../../../../models/walk-notification.model";
-import { Walk } from "../../../../models/walk.model";
+import { EventType, Walk } from "../../../../models/walk.model";
 import { WalkDisplayService } from "../../../../pages/walks/walk-display.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
-import { EventType } from "../../../../services/walks/walks-reference-data.service";
 
 @Component({
   selector: "app-walk-notification-details",

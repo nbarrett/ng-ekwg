@@ -17,14 +17,12 @@ import { MeetupEventResponse } from "../models/meetup-event-response.model";
 import { MeetupLocationResponse } from "../models/meetup-location-response.model";
 import { MeetupVenueRequest } from "../models/meetup-venue-request.model";
 import { MeetupVenueConflictResponse, MeetupVenueResponse } from "../models/meetup-venue-response.model";
-import { DisplayedWalk } from "../models/walk-displayed.model";
-import { Walk } from "../models/walk.model";
+import { DisplayedWalk, EventType, Walk } from "../models/walk.model";
 import { ConfigService } from "./config.service";
 import { DateUtilsService } from "./date-utils.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { AlertInstance } from "./notifier.service";
 import { StringUtilsService } from "./string-utils.service";
-import { EventType } from "./walks/walks-reference-data.service";
 
 export const meetupDescriptionPrefix = "meetup-description-prefix";
 

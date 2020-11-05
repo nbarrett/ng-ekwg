@@ -3,19 +3,8 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { VenueType } from "../../models/walk-venue.model";
+import { EventType, WalkFilter } from "../../models/walk.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
-
-export enum EventType {
-  AWAITING_LEADER = "awaitingLeader",
-  AWAITING_WALK_DETAILS = "awaitingWalkDetails",
-  WALK_DETAILS_REQUESTED = "walkDetailsRequested",
-  WALK_DETAILS_UPDATED = "walkDetailsUpdated",
-  WALK_DETAILS_COPIED = "walkDetailsCopied",
-  AWAITING_APPROVAL = "awaitingApproval",
-  APPROVED = "approved",
-  DELETED = "deleted",
-  UNKNOWN = "unknown"
-}
 
 @Injectable({
   providedIn: "root"
@@ -29,6 +18,15 @@ export class WalksReferenceService {
     edit: {caption: "edit", title: "Edit existing", walkWritable: true} as WalkAccessMode,
     lead: {caption: "lead", title: "Lead this", initialiseWalkLeader: true, walkWritable: true} as WalkAccessMode
   };
+
+  walksFilter: WalkFilter[] = [
+    {value: 1, description: "Walks Today Onwards", selected: true},
+    {value: 2, description: "Past Walks"},
+    {value: 3, description: "All Walks"},
+    {value: 4, description: "Walks With No Leader"},
+    {value: 5, description: "Walks With No Details"},
+    {value: 6, description: "Deleted Walks", adminOnly: true}
+  ];
 
   private logger: Logger;
 

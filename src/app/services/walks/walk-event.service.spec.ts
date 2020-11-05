@@ -1,10 +1,9 @@
 import { HttpClientTestingModule, HttpTestingController } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
-import { Router } from "@angular/router";
 import { RouterTestingModule } from "@angular/router/testing";
 import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
-import { Walk } from "../../models/walk.model";
+import { EventType, Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
@@ -12,7 +11,6 @@ import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe"
 import { StringUtilsService } from "../string-utils.service";
 
 import { WalkEventService } from "./walk-event.service";
-import { EventType } from "./walks-reference-data.service";
 
 describe("WalksEventService", () => {
   const MemberLoginService = {

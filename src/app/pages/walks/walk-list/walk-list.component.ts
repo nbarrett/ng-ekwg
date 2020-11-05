@@ -6,8 +6,7 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { LoginResponse } from "../../../models/member.model";
-import { DisplayedWalk } from "../../../models/walk-displayed.model";
-import { Walk } from "../../../models/walk.model";
+import { DisplayedWalk, EventType, Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
 import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
@@ -39,7 +38,7 @@ export class WalkListComponent implements OnInit {
   private todayValue: number;
   private walks: Walk[];
   public filteredWalks: DisplayedWalk[] = [];
-  public filterParameters = {quickSearch: "", selectType: "1", ascending: "true"};
+  public filterParameters = {quickSearch: "", selectType: 1, ascending: "true"};
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
 
@@ -87,6 +86,11 @@ export class WalkListComponent implements OnInit {
       .subscribe(searchTerm => this.applyFilterToWalks(searchTerm));
   }
 
+  walksFilter() {
+    return this.walksReferenceService.walksFilter
+      .filter(item => item.adminOnly ? this.memberLoginService.allowWalkAdminEdits() : true);
+  }
+
   walkTracker(index: number, walk: DisplayedWalk) {
     return walk.walk.id;
   }
@@ -100,8 +104,7 @@ export class WalkListComponent implements OnInit {
     this.logger.debug("applyFilterToWalks:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
     this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch)
-      .map(walk => this.display.toDisplayedWalk(walk))
-      .filter(walk => this.walksQueryService.activeWalk(walk.walk));
+      .map(walk => this.display.toDisplayedWalk(walk));
     const walksCount = (this.filteredWalks && this.filteredWalks.length) || 0;
     this.notify.progress("Showing " + walksCount + " walk(s)");
     if (this.filteredWalks.length > 0 && this.display.expandedWalks.length === 0) {
@@ -142,16 +145,18 @@ export class WalkListComponent implements OnInit {
 
   walksCriteriaObject() {
     switch (this.filterParameters.selectType) {
-      case "1":
+      case 1:
         return {walkDate: {$gte: this.todayValue}};
-      case "2":
+      case 2:
         return {walkDate: {$lt: this.todayValue}};
-      case "3":
+      case 3:
         return {};
-      case "4":
+      case 4:
         return {displayName: {$exists: false}};
-      case "5":
+      case 5:
         return {briefDescriptionAndStartPoint: {$exists: false}};
+      case 6:
+        return {"events.eventType": {$eq: EventType.DELETED.toString()}};
     }
   }
 
@@ -175,7 +180,9 @@ export class WalkListComponent implements OnInit {
           return [walk];
         });
     } else {
-      return this.walksService.all({criteria: this.walksCriteriaObject(), sort: this.walksSortObject()});
+      const criteria = this.walksCriteriaObject();
+      this.logger.info("walksCriteriaObject:this.filterParameters.criteria", criteria);
+      return this.walksService.all({criteria, sort: this.walksSortObject()});
     }
   }
 
@@ -209,7 +216,7 @@ export class WalkListComponent implements OnInit {
       .then(walks => {
         this.display.setNextWalkId(walks);
         this.logger.debug("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
-        this.walks = this.currentWalkId ? walks : this.walksQueryService.activeWalks(walks);
+        this.walks = this.currentWalkId || this.filterParameters.selectType === 6 ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();
         this.logAndDetectChanges("walks query");

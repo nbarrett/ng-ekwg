@@ -1,4 +1,4 @@
-import { EventType } from "../services/walks/walks-reference-data.service";
+import { EventType } from "./walk.model";
 
 export interface WalkEventType {
   eventType: EventType;

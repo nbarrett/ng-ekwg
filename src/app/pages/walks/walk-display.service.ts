@@ -1,15 +1,14 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
 import { PopoverDirective } from "ngx-bootstrap/popover";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
-import { DisplayedWalk } from "../../models/walk-displayed.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
-import { GoogleMapsConfig, Walk } from "../../models/walk.model";
+import { DisplayedWalk, EventType, GoogleMapsConfig, Walk, WalkViewMode } from "../../models/walk.model";
 import { BroadcastService } from "../../services/broadcast-service";
 import { ClipboardService } from "../../services/clipboard.service";
 import { DateUtilsService } from "../../services/date-utils.service";
@@ -21,14 +20,7 @@ import { UrlService } from "../../services/url.service";
 import { RamblersWalksAndEventsService } from "../../services/walks/ramblers-walks-and-events.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
-import { EventType, WalksReferenceService } from "../../services/walks/walks-reference-data.service";
-
-export enum WalkViewMode {
-  VIEW = "view",
-  EDIT = "edit",
-  EDIT_FULL_SCREEN = "edit-full-screen",
-  LIST = "list"
-}
+import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 
 @Injectable({
   providedIn: "root"
@@ -37,8 +29,6 @@ export enum WalkViewMode {
 export class WalkDisplayService {
 
   expandedWalks: ExpandedWalk [] = [];
-  longerDescriptionPreview = true;
-
   private logger: Logger;
   public grades = ["Easy access", "Easy", "Leisurely", "Moderate", "Strenuous", "Technical"];
   public walkTypes = ["Circular", "Linear"];

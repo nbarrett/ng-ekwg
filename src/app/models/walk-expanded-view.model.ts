@@ -1,4 +1,4 @@
-import { WalkViewMode } from "../pages/walks/walk-display.service";
+import { WalkViewMode } from "./walk.model";
 
 export interface ExpandedWalk {
   walkId: string;

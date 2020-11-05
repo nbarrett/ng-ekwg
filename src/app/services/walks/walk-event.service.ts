@@ -11,13 +11,13 @@ import { ChangedItem } from "../../models/changed-item.model";
 import { WalkDataAudit } from "../../models/walk-data-audit.model";
 import { WalkEvent } from "../../models/walk-event.model";
 import { CurrentPreviousData } from "../../models/walk-notification.model";
-import { Walk } from "../../models/walk.model";
+import { EventType, Walk } from "../../models/walk.model";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { StringUtilsService } from "../string-utils.service";
-import { EventType, WalksReferenceService } from "./walks-reference-data.service";
+import { WalksReferenceService } from "./walks-reference-data.service";
 
 const auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription",
   "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "meetupEventDescription", "osMapsRoute", "osMapsTitle", "postcode",

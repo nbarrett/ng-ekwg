@@ -10,11 +10,10 @@ import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
 import { ConfirmType } from "../../../models/ui-actions";
 import { DisplayedEvent } from "../../../models/walk-displayed-event.model";
-import { DisplayedWalk } from "../../../models/walk-displayed.model";
 import { WalkEventType } from "../../../models/walk-event-type.model";
 import { WalkEvent } from "../../../models/walk-event.model";
 import { WalkNotification } from "../../../models/walk-notification.model";
-import { Walk, WalkExport } from "../../../models/walk.model";
+import { DisplayedWalk, EventType, Walk, WalkExport, WalkViewMode } from "../../../models/walk.model";
 import { MeetupDescriptionComponent } from "../../../notifications/walks/templates/meetup/meetup-description.component";
 import { WalkNotificationDirective } from "../../../notifications/walks/walk-notification.directive";
 import { ChangedItemsPipe } from "../../../pipes/changed-items.pipe";
@@ -37,10 +36,10 @@ import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
-import { EventType, WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
-import { WalkDisplayService, WalkViewMode } from "../walk-display.service";
+import { WalkDisplayService} from "../walk-display.service";
 
 interface DisplayMember {
   memberId: string;
@@ -265,6 +264,7 @@ export class WalkEditComponent implements OnInit {
         });
       } else {
         const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
+        this.logger.info("eventType", eventType)
         if (!isEmpty(eventType)) {
           this.setStatus(eventType);
           this.priorStatus = eventType;

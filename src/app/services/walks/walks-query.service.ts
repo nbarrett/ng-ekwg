@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { chain } from "../../functions/chain";
-import { Walk } from "../../models/walk.model";
+import { EventType, Walk } from "../../models/walk.model";
 import { DateUtilsService } from "../date-utils.service";
 import { WalkEventService } from "./walk-event.service";
-import { EventType } from "./walks-reference-data.service";
 
 @Injectable({
   providedIn: "root"
@@ -19,8 +18,16 @@ export class WalksQueryService {
     return !this.walkEventsService.latestEventWithStatusChangeIs(walk, EventType.DELETED);
   }
 
+  deletedWalk(walk: Walk) {
+    return this.walkEventsService.latestEventWithStatusChangeIs(walk, EventType.DELETED);
+  }
+
   activeWalks(walks: Walk[]) {
     return walks.filter(walk => this.activeWalk(walk));
+  }
+
+  deletedWalks(walks: Walk[]) {
+    return walks.filter(walk => this.deletedWalk(walk));
   }
 
   nextWalkId(walks: Walk[]): string {
