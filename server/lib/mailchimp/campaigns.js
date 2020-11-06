@@ -4,7 +4,7 @@ const messageHandler = require("./messageHandler");
 const mcapi = require("mailchimp-api");
 const mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
 const moment = require("moment-timezone");
-const pick = "lodash/pick";
+const pick = require("lodash/pick");
 /*
 
  campaigns/content (string apikey, string cid, struct options)
