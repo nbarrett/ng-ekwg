@@ -24,7 +24,7 @@ export class MailchimpLinkService {
   }
 
   public campaigns() {
-    return `${this.mailchimpApiUrl}/campaign`;
+    return `${this.mailchimpApiUrl}/campaigns`;
   }
 
   public campaignPreview(webId: string) {

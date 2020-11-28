@@ -26,7 +26,7 @@ export class CommitteeConfigService {
     this.logger.debug("queryData:started");
     this.getConfig().then(referenceData => {
       this.logger.debug("notifying subscribers:", referenceData);
-      this.subject.next(CommitteeReferenceData.create(referenceData, this.memberLoginService, this.loggerFactory));
+      this.subject.next(CommitteeReferenceData.create(referenceData, this.memberLoginService));
     });
   }
 

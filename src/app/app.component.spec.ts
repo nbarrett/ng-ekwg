@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
-import { UpgradeModule } from "@angular/upgrade/static";
 import { ComponentLoaderFactory } from "ngx-bootstrap/component-loader";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { PositioningService } from "ngx-bootstrap/positioning";
@@ -27,7 +26,6 @@ describe("AppComponent", () => {
         LoggerTestingModule,
         RouterTestingModule,
         HttpClientTestingModule,
-        UpgradeModule
       ],
       providers: [
         ComponentLoaderFactory,

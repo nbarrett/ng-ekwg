@@ -1,4 +1,4 @@
-import { async, TestBed } from "@angular/core/testing";
+import { async } from "@angular/core/testing";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
 import { CommitteeReferenceData } from "./committee-reference-data";
 
@@ -79,16 +79,13 @@ const mockData: CommitteeConfig = {
 
 describe("CommitteeReferenceData", () => {
 
-  beforeEach(() => TestBed.configureTestingModule({}));
-
   it("should return members for role", async(() => {
-    const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null, null);
+    const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembersForRole("secretary")).toEqual([EXPECTED_NIC]);
   }));
 
   it("should return committee members", async(() => {
-    const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null, null);
+    const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembers()[1]).toEqual(EXPECTED_NIC);
   }));
-
 });

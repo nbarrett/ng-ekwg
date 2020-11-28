@@ -1,17 +1,13 @@
 import get from "lodash-es/get";
 import map from "lodash-es/map";
-import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
-import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
 import { FileType } from "./committee-file-type.model";
 
 export class CommitteeReferenceData {
 
   constructor(private committeeConfig: CommitteeConfig,
-              private memberLoginService: MemberLoginService,
-              private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeReferenceData, NgxLoggerLevel.OFF);
+              private memberLoginService: MemberLoginService) {
     this.localFileTypes = this.committeeConfig.committee.fileTypes;
     this.localCommitteeMembers = map(this.committeeConfig.committee.contactUs, (data, type) => ({
       type,
@@ -23,12 +19,11 @@ export class CommitteeReferenceData {
     }));
   }
 
-  private logger: Logger;
   private localFileTypes: FileType[] = [];
   private localCommitteeMembers: CommitteeMember[] = [];
 
-  static create(referenceData: CommitteeConfig, memberLoginService: MemberLoginService, loggerFactory: LoggerFactory) {
-    return new CommitteeReferenceData(referenceData, memberLoginService, loggerFactory);
+  static create(referenceData: CommitteeConfig, memberLoginService: MemberLoginService) {
+    return new CommitteeReferenceData(referenceData, memberLoginService);
   }
 
   committeeMembers(): CommitteeMember[] {
@@ -37,11 +32,9 @@ export class CommitteeReferenceData {
 
   loggedOnRole(): CommitteeMember {
     const memberId = this.memberLoginService.loggedInMember().memberId;
-    const loggedOnRoleData = this.committeeMembers().find((role) => {
+    return this.committeeMembers().find((role) => {
       return role.memberId === memberId;
     });
-    this.logger.debug("loggedOnRole for", memberId, "->", loggedOnRoleData);
-    return loggedOnRoleData;
   }
 
   fileTypes(): FileType[] {
