@@ -1,10 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { NgSelectComponent } from "@ng-select/ng-select";
-import { find, map } from "lodash-es";
+import { map } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
-import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
 import { SaveSegmentResponse } from "../../../models/mailchimp.model";
@@ -292,12 +291,17 @@ export class SendEmailsModalComponent implements OnInit {
     this.logger.debug("removing ", this.selectedMemberIds.length, "members from group");
     const saveMemberPromises = [];
 
-    chain(this.selectedMemberIds)
-      .map(memberId => find(this.members, member => this.memberService.extractMemberId(member) === memberId.id)).map(member => {
-      member.groupMember = false;
-      this.mailchimpListService.resetUpdateStatusForMember(member);
-      saveMemberPromises.push(this.memberService.createOrUpdate(member));
-    });
+    this.selectedMemberIds
+      .map(memberId => this.members.find(member => this.memberService.extractMemberId(member) === memberId))
+      .filter(member => {
+        this.logger.debug("in memberIds:", this.selectedMemberIds, "member exists:", member);
+        return !!member;
+      })
+      .forEach(member => {
+        member.groupMember = false;
+        this.mailchimpListService.resetUpdateStatusForMember(member);
+        saveMemberPromises.push(this.memberService.createOrUpdate(member));
+      });
 
     return Promise.all(saveMemberPromises)
       .then(() => this.notifySuccess(`EKWG group membership has now been removed for ${saveMemberPromises.length} member(s)`));

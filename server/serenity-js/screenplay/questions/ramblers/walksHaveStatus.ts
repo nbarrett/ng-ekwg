@@ -1,5 +1,5 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
-import { every } from "underscore";
+import { every } from "lodash";
 import { WalkFilters } from "../../tasks/ramblers/walks/selectWalks";
 import { RamblersWalkSummaries } from "./ramblersWalksFound";
 
