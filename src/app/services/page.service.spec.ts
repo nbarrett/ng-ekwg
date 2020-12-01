@@ -1,6 +1,5 @@
 import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
-import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { PageService } from "./page.service";
 
@@ -11,7 +10,7 @@ describe("PageService", () => {
       LoggerTestingModule,
       RouterTestingModule,
     ],
-    providers: [CookieService]
+    providers: []
   }).compileComponents());
 
   describe("pageForArea", () => {

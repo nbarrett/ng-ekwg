@@ -1,9 +1,7 @@
-$sw-tn-knob-size: 20px !default;
 $sw-sm-knob-size: 15px !default;
 $sw-md-knob-size: 30px !default;
 $sw-lg-knob-size: 40px !default;
 
-$sw-tn-font-size: 9px !default;
 $sw-sm-font-size: 9px !default;
 $sw-md-font-size: 16px !default;
 $sw-lg-font-size: 16px !default;
@@ -13,9 +11,6 @@ $sw-sm-min-width: 20px;
 $sw-md-min-width: 50px;
 $sw-lg-min-width: 60px;
 
-%tiny-switch-min-width {
-  min-width: $sw-sm-min-width;
-}
 %small-switch-min-width {
   min-width: $sw-sm-min-width;
 }
@@ -26,9 +21,6 @@ $sw-lg-min-width: 60px;
   min-width: $sw-lg-min-width;
 }
 
-%tiny-label-font-size {
-  font-size: $sw-tn-font-size;
-}
 %small-label-font-size {
   font-size: $sw-sm-font-size;
 }
@@ -47,11 +39,6 @@ $sw-lg-min-width: 60px;
       height: nth($i, 2);
       border-radius: nth($i, 2);
       small {
-        width: nth($i, 2);
-        height: nth($i, 2);
-        right: calc(100% - #{nth($i, 2)});
-      }
-      tiny {
         width: nth($i, 2);
         height: nth($i, 2);
         right: calc(100% - #{nth($i, 2)});
@@ -90,7 +77,7 @@ $sw-lg-min-width: 60px;
   -webkit-transition: 0.3s ease-out all;
   white-space: nowrap;
 
-  tiny {
+  small {
     border-radius: 100%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     position: absolute;
@@ -99,23 +86,13 @@ $sw-lg-min-width: 60px;
     transition: 0.3s ease-out all;
     -webkit-transition: 0.3s ease-out all;
     background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-
-  small {
-    border-radius: 100%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-    position: absolute;
-    top: 0;
-    right: calc(100% - 25px);
-    transition: 0.3s ease-out all;
-    -webkit-transition: 0.3s ease-out all;
-    background: #fff;
-  }
-
   // populate &.small, &.medium, &.large classes
   @include config-switch-sizes(
     'switch-',
-    'tiny' $sw-tn-knob-size,
     'small' $sw-sm-knob-size,
     'medium' $sw-md-knob-size,
     'large' $sw-lg-knob-size
@@ -123,12 +100,7 @@ $sw-lg-min-width: 60px;
 
   &.checked {
     background: #A8B400;
-    //background: rgb(100, 189, 99);
     color:#333;
-    tiny {
-      right: 0;
-      left: auto;
-    }
     small {
       right: 0;
       left: auto;
@@ -137,16 +109,17 @@ $sw-lg-min-width: 60px;
       top: 0;
       .switch-label {
         &-checked {
-          opacity: 1;
+          // opacity: 1;
+          display: block;
         }
+
         &-unchecked {
-          opacity: 0;
-          opacity: 0;
+          // opacity: 0;
+          display: none;
         }
       }
     }
   }
-
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -159,21 +132,38 @@ $sw-lg-min-width: 60px;
     min-height: 100%;
     justify-content: flex-start;
     align-items: center;
-    top: -100%;
+    top: 0;
     position: relative;
     pointer-events: none;
+
     > span {
       display: block;
       min-height: 100%;
     }
 
     .switch-label {
+      color:#333;
       &-checked {
-        opacity: 0;
+        // opacity: 0;
+        display: none;
       }
+
       &-unchecked {
-        opacity: 1;
+        // opacity: 1;
+        display: block;
       }
+    }
+  }
+
+  &.loading {
+    background-color: #f1f1f1;
+
+    small {
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+      right: 50%;
+      transform: translateX(50%);
     }
   }
 }

@@ -5,7 +5,6 @@ import { AuthService } from "../../auth/auth.service";
 import { MemberCookie } from "../../models/member.model";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { BroadcastService } from "../broadcast-service";
-import { CookieParserService } from "../cookie-parser.service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { NumberUtilsService } from "../number-utils.service";
@@ -25,8 +24,7 @@ export class MemberLoginService {
     private numberUtils: NumberUtilsService,
     private urlService: UrlService,
     private dateUtils: DateUtilsService,
-    private loggerFactory: LoggerFactory,
-    private cookieParserService: CookieParserService) {
+    private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberLoginService, NgxLoggerLevel.OFF);
   }
 

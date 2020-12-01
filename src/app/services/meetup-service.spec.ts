@@ -1,7 +1,6 @@
 import { HttpClient, HttpHandler } from "@angular/common/http";
 import { TestBed } from "@angular/core/testing";
 import { RouterTestingModule } from "@angular/router/testing";
-import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
@@ -12,7 +11,7 @@ import { MeetupService } from "./meetup.service";
 describe("MeetupService", () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule, RouterTestingModule],
-    providers: [CookieService, MemberIdToFullNamePipe, FullNameWithAliasPipe, FullNamePipe, HttpClient, HttpHandler,
+    providers: [MemberIdToFullNamePipe, FullNameWithAliasPipe, FullNamePipe, HttpClient, HttpHandler,
       {provide: "ConfigData", useValue: {}},
       {provide: "MemberService", useValue: {}}
     ]

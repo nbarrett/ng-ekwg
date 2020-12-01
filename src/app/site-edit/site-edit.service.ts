@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import { CookieService } from "ngx-cookie-service";
 import { Observable, Subject } from "rxjs";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -14,14 +13,14 @@ export class SiteEditService {
   private logger: Logger;
   public events: Observable<NamedEvent>;
 
-  constructor(private cookieService: CookieService, private loggerFactory: LoggerFactory) {
+  constructor(private loggerFactory: LoggerFactory) {
     this.subject = new Subject();
     this.events = this.subject.asObservable();
     this.logger = loggerFactory.createLogger(SiteEditService, NgxLoggerLevel.OFF);
   }
 
   active() {
-    const editSite = this.cookieService.get("editSite");
+    const editSite = localStorage.getItem("editSite");
     const active = editSite === "true";
     this.logger.debug("editSite", editSite, "active:", active);
     return active;
@@ -30,7 +29,7 @@ export class SiteEditService {
   toggle(state: boolean) {
     const priorState = this.active();
     const newState = JSON.stringify(state);
-    this.cookieService.set("editSite", newState);
+    localStorage.setItem("editSite", newState);
     this.subject.next(NamedEvent.withData(NamedEventType.EDIT_SITE, state));
     this.logger.debug("toggle:priorState", priorState, "newState", newState);
   }

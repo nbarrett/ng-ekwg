@@ -1,6 +1,5 @@
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
-import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
@@ -23,7 +22,7 @@ const input = {
 describe("CommonDataService", () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule, HttpClientTestingModule],
-    providers: [CookieService, StringUtilsService, MemberIdToFullNamePipe, FullNamePipe, FullNameWithAliasPipe]
+    providers: [StringUtilsService, MemberIdToFullNamePipe, FullNamePipe, FullNameWithAliasPipe]
   }));
 
   it("should return keys of complex input", () => {

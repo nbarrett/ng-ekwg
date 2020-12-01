@@ -4,7 +4,6 @@ import { RouterTestingModule } from "@angular/router/testing";
 import { ComponentLoaderFactory } from "ngx-bootstrap/component-loader";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { PositioningService } from "ngx-bootstrap/positioning";
-import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { UiSwitchComponent } from "ngx-ui-switch";
 import { AppComponent } from "./app.component";
@@ -35,8 +34,8 @@ describe("AppComponent", () => {
         MemberIdToFullNamePipe,
         FullNameWithAliasPipe,
         {provide: "MemberService", useValue: {}},
-        {provide: "MemberAuditService", useValue: {}},
-        CookieService],
+        {provide: "MemberAuditService", useValue: {}}
+        ],
       declarations: [AppComponent,
         MainLogoComponent, PageTitleComponent, MainTitleComponent,
         SiteNavigatorComponent, LoginPanelComponent, PageNavigatorComponent, SiteEditComponent, UiSwitchComponent

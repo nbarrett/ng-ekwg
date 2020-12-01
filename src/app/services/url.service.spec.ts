@@ -1,7 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { TestBed } from "@angular/core/testing";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-import { CookieService } from "ngx-cookie-service";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { UrlService } from "./url.service";
@@ -18,9 +17,8 @@ describe("UrlService", () => {
   };
 
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [LoggerTestingModule, RouterModule.forRoot([])],
+    imports: [LoggerTestingModule, RouterModule.forRoot([], { relativeLinkResolution: "legacy" })],
     providers: [
-      CookieService,
       {provide: Router, useValue: {url: "/admin/member-bulk-load/12398719823"}},
       {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
       {provide: DOCUMENT, useValue: LOCATION_VALUE}]

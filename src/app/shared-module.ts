@@ -15,7 +15,6 @@ import { ModalModule } from "ngx-bootstrap/modal";
 import { PopoverModule } from "ngx-bootstrap/popover";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
-import { CookieService } from "ngx-cookie-service";
 import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
 import { MarkdownModule } from "ngx-markdown";
 import { UiSwitchModule } from "ngx-ui-switch";
@@ -179,7 +178,6 @@ export class SharedModule {
         BroadcastService,
         ChangedItemsPipe,
         CommitteeConfigService,
-        CookieService,
         CustomNGXLoggerService,
         DisplayDateAndTimePipe,
         DisplayDatePipe,

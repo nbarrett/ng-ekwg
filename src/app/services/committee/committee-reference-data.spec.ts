@@ -1,4 +1,4 @@
-import { async } from "@angular/core/testing";
+import { waitForAsync } from "@angular/core/testing";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
 import { CommitteeReferenceData } from "./committee-reference-data";
 
@@ -79,12 +79,12 @@ const mockData: CommitteeConfig = {
 
 describe("CommitteeReferenceData", () => {
 
-  it("should return members for role", async(() => {
+  it("should return members for role", waitForAsync(() => {
     const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembersForRole("secretary")).toEqual([EXPECTED_NIC]);
   }));
 
-  it("should return committee members", async(() => {
+  it("should return committee members", waitForAsync(() => {
     const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembers()[1]).toEqual(EXPECTED_NIC);
   }));
