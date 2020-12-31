@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"1"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.walks"}],"uuid":"0e61a419d234460e96789258eeea51c9","collectionName":"walks"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.walks"}],"uuid":"d5e59a8b03ad4e50868a21f6ee445b01","collectionName":"walks"}
