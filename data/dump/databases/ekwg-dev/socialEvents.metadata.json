@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"nbarrett.socialEvents"}],"uuid":"bd37f23ad6b3446aba80b546ccadbf25","collectionName":"socialEvents"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg-dev.socialEvents"}],"uuid":"66565067d6e64374804b3884ab267f7c","collectionName":"socialEvents"}
