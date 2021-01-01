@@ -1,4 +1,4 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const https = require("https");
 const isEmpty = require("lodash/isEmpty");
 const querystring = require("querystring");
@@ -77,7 +77,7 @@ function createRequestAudit(options) {
   if (!isEmpty(options.body)) {
     requestAudit.request.body = options.body;
   }
-  if (config.dev) {
+  if (envConfig.dev) {
     requestAudit.request.apiRequest = options.apiRequest;
   }
   return requestAudit;

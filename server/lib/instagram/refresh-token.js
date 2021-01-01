@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("instagram:refresh-token"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("instagram:refresh-token"));
 const messageHandlers = require("../shared/message-handlers");
 exports.refreshToken = (req, res) => {
   return messageHandlers.httpRequest({
@@ -10,7 +10,7 @@ exports.refreshToken = (req, res) => {
         "Content-Type": "application/json; charset=utf-8"
       },
       method: "get",
-      path: `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${config.instagram.accessToken}`
+      path: `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${envConfig.instagram.accessToken}`
     },
     debug: debug,
     res: res,

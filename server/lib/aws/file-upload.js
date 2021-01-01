@@ -1,6 +1,6 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const aws = require("../aws/aws-controllers");
-const debug = require("debug")(config.logNamespace("s3-file-upload"));
+const debug = require("debug")(envConfig.logNamespace("s3-file-upload"));
 const {keys, last, first, isObject, map} = require("lodash");
 const stringUtils = require("../shared/string-utils");
 exports.uploadFile = (req, res) => {

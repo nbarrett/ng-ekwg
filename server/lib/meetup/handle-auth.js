@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("meetup:handle-auth"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("meetup:handle-auth"));
 
 exports.handleAuth = function (req, res) {
   debug("handleAuth called with req.query", req.query);

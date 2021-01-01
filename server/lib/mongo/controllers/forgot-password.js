@@ -3,8 +3,8 @@ const member = require("../models/member");
 const transforms = require("./transforms");
 const authCommon = require("./auth-common");
 const memberCommon = require("./member-common");
-const {config} = require("../../config/config");
-const debug = require("debug")(config.logNamespace("database:forgot-password"));
+const {envConfig} = require("../../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("database:forgot-password"));
 
 exports.forgotPassword = (req, res) => {
   try {

@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("meetup:venues"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("meetup:venues"));
 const messageHandlers = require("../shared/message-handlers");
 const querystring = require("querystring");
 const requestDefaults = require("./request-defaults");
@@ -12,7 +12,7 @@ exports.create = function (req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "post",
-      path: `/${config.meetup.group}/venues`
+      path: `/${envConfig.meetup.group}/venues`
     },
     debug: debug,
     successStatusCodes: defaultOptions.successStatusCodes,

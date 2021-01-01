@@ -1,10 +1,47 @@
-const express = require("express");
+// @ts-ignore
+import mailchimp = require("@mailchimp/mailchimp_marketing");
+import debug = require("debug");
+import express = require("express");
+import transforms = require("../mongo/controllers/transforms");
+import config = require("../mongo/models/config");
+import campaigns = require("./campaigns");
+import routes = require("./index");
+import lists = require("./lists");
+import reports = require("./reports");
+import segments = require("./segments");
+import { envConfig } from "../env-config/env-config";
+
+const debugLog = debug(envConfig.logNamespace("mailchimp"));
+
+function resolvePrefix(result: any): string {
+  const url = new URL(result.mailchimp.apiUrl);
+  return url.host.split("\.")[0];
+}
+
+config.findOne({"mailchimp": {"$exists": true}})
+  .then((result: any) => {
+    mailchimp.setConfig({
+      apiKey: envConfig.mailchimp.apiKey,
+      server: resolvePrefix(result),
+    });
+    queryLists();
+  })
+  .catch(error => {
+    debugLog(`config error`, transforms.parseError(error));
+  });
+
+async function run() {
+  debugLog("calling ping...");
+  const response = await mailchimp.ping.get();
+  debugLog(response);
+}
+
+const queryLists = async () => {
+  const response = await mailchimp.lists.getAllLists();
+  debugLog(response);
+};
+
 const router = express.Router();
-const routes = require("./index");
-const lists = require("./lists");
-const segments = require("./segments");
-const campaigns = require("./campaigns");
-const reports = require("./reports");
 
 router.get("/index", routes.index);
 router.get("/lists", lists.list);
@@ -38,4 +75,4 @@ router.post("/campaigns/:campaignId/update", campaigns.update);
 router.get("/reports", reports.list);
 router.get("/reports/:id", reports.view);
 
-module.exports = router;
+export const mailchimpRoutes = router;

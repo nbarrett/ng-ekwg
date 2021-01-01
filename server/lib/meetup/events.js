@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("meetup:events"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("meetup:events"));
 const moment = require("moment-timezone");
 const messageHandlers = require("../shared/message-handlers");
 const requestDefaults = require("./request-defaults");
@@ -15,7 +15,7 @@ exports.all = function (req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "get",
-      path: `/${config.meetup.group}/events?&sign=true&photo-host=public&page=20&status=${status}`
+      path: `/${envConfig.meetup.group}/events?&sign=true&photo-host=public&page=20&status=${status}`
     },
     mapper: detail ? undefined : toConciseResponse,
     successStatusCodes: defaultOptions.successStatusCodes,
@@ -34,7 +34,7 @@ exports.single = function (req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "get",
-      path: `/${config.meetup.group}/events/${req.params.eventId}`
+      path: `/${envConfig.meetup.group}/events/${req.params.eventId}`
     },
     successStatusCodes: defaultOptions.successStatusCodes,
     res: res,

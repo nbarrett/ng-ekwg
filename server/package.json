@@ -16,7 +16,7 @@
     "protractor": "protractor protractor.conf.js",
     "report": "serenity-bdd run",
     "preserver": "tsc",
-    "server": "node ./ts-gen/lib/server",
+    "server": "nodemon ./ts-gen/lib/server",
     "test": "failsafe protractor report",
     "tsc": "tsc  --project ./tsconfig.json",
     "unit-test": ". scripts/setenv-test.sh && mocha --config=.mocharc.yml",
@@ -30,6 +30,7 @@
     ]
   },
   "dependencies": {
+    "@mailchimp/mailchimp_marketing": "3.0.27",
     "@serenity-js/assertions": "2.14.0",
     "@serenity-js/console-reporter": "2.14.0",
     "@serenity-js/core": "2.14.0",

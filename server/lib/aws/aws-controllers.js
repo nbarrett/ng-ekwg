@@ -1,14 +1,14 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const {first, isObject, map} = require("lodash");
-const debug = require("debug")(config.logNamespace("aws"));
+const debug = require("debug")(envConfig.logNamespace("aws"));
 const AWS = require("aws-sdk");
 const http = require("http");
 const crypto = require("crypto");
-const s3Config = {accessKeyId: config.aws.accessKeyId, secretAccessKey: config.aws.secretAccessKey};
+const s3Config = {accessKeyId: envConfig.aws.accessKeyId, secretAccessKey: envConfig.aws.secretAccessKey};
 const s3 = new AWS.S3(s3Config);
 const fs = require("fs");
 const path = require("path");
-const baseHostingUrl = config.aws.baseHostingUrl;
+const baseHostingUrl = envConfig.aws.baseHostingUrl;
 http.globalAgent.maxSockets = 20;
 debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl);
 
@@ -30,7 +30,7 @@ exports.get = (req, res, next) => {
   });
 };
 
-exports.getConfig = (req, res) => res.send(config.aws);
+exports.getConfig = (req, res) => res.send(envConfig.aws);
 
 exports.s3Policy = (req, res) => {
   debug("req.query.mimeType", req.query.mimeType, "req.query.objectKey", req.query.objectKey);
@@ -38,7 +38,7 @@ exports.s3Policy = (req, res) => {
     "expiration": expiryTime(),
     "conditions": [
       ["starts-with", "$key", `${req.query.objectKey ? req.query.objectKey : ""}/`],
-      {"bucket": config.aws.bucket},
+      {"bucket": envConfig.aws.bucket},
       {"acl": "public-read"},
       ["starts-with", "$Content-Type", req.query.mimeType ? req.query.mimeType : ""],
       {"success_action_status": "201"},
@@ -50,16 +50,16 @@ exports.s3Policy = (req, res) => {
   var base64Policy = new Buffer(stringPolicy, "utf-8").toString("base64");
 
   debug("s3Policy", s3Policy);
-  debug("config.aws.secretAccessKey", config.aws.secretAccessKey);
+  debug("config.aws.secretAccessKey", envConfig.aws.secretAccessKey);
 
   // sign the base64 encoded policy
-  var signature = crypto.createHmac("sha1", config.aws.secretAccessKey)
+  var signature = crypto.createHmac("sha1", envConfig.aws.secretAccessKey)
     .update(new Buffer(base64Policy, "utf-8")).digest("base64");
 
   return res.status(200).send({
     s3Policy: base64Policy,
     s3Signature: signature,
-    AWSAccessKeyId: config.aws.accessKeyId,
+    AWSAccessKeyId: envConfig.aws.accessKeyId,
   });
 };
 
@@ -89,7 +89,7 @@ exports.putObject = (req, res) => {
 
 exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
   debug("configured with", s3Config);
-  const bucket = config.aws.bucket;
+  const bucket = envConfig.aws.bucket;
 
   const objectKey = `${rootFolder}/${path.basename(fileName)}`;
   const data = fs.readFileSync(localFileName);
@@ -115,7 +115,7 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
 
 exports.getObject = (req, res) => {
   var key = req.params.key + "/" + req.params.file;
-  var options = {Bucket: config.aws.bucket, Key: key};
+  var options = {Bucket: envConfig.aws.bucket, Key: key};
   debug("getting object", options);
   s3.getObject(options).createReadStream().pipe(res)
     .on("error", e => {

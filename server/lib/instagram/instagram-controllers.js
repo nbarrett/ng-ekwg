@@ -1,19 +1,19 @@
-let {config} = require("../config/config");
-let debug = require("debug")(config.logNamespace("instagram"));
+let {envConfig} = require("../env-config/env-config");
+let debug = require("debug")(envConfig.logNamespace("instagram"));
 let ig = require("instagram-node").instagram();
-let port = config.server.listenPort;
+let port = envConfig.server.listenPort;
 let redirectUri = "http://localhost:" + port + "/instagram/handleAuth";
 module.exports = instagramAuthentication => {
 
   instagramAuthentication.result = {
-    accessToken: config.instagram.accessToken,
-    userId: config.instagram.userId,
+    accessToken: envConfig.instagram.accessToken,
+    userId: envConfig.instagram.userId,
   };
 
   ig.use({
-    client_id: config.instagram.clientId,
-    client_secret: config.instagram.clientSecret,
-    access_token: config.instagram.accessToken,
+    client_id: envConfig.instagram.clientId,
+    client_secret: envConfig.instagram.clientSecret,
+    access_token: envConfig.instagram.accessToken,
   });
 
   function authorise(req, res) {

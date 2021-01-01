@@ -1,7 +1,7 @@
 import { Ensure, equals, not } from "@serenity-js/assertions";
 import { AnswersQuestions, Duration, PerformsActivities, Task } from "@serenity-js/core";
 import { Click, Enter, isVisible, Wait } from "@serenity-js/protractor";
-import { config } from "../../../../../lib/config/config";
+import { envConfig } from "../../../../../lib/env-config/env-config";
 import { WalksAndEventsManagerQuestions } from "../../../questions/ramblers/walksAndEventsManagerQuestions";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";
@@ -14,8 +14,8 @@ export class Login implements Task {
   }
 
   performAs(actor: PerformsActivities & AnswersQuestions): Promise<void> {
-    const username = config.ramblers.gwem.userName;
-    const password = config.ramblers.gwem.password;
+    const username = envConfig.ramblers.gwem.userName;
+    const password = envConfig.ramblers.gwem.password;
     return actor.attemptsTo(
       Ensure.that(WalksAndEventsManagerQuestions.LoginStatus, equals("Login")),
       Hide.target(WalksTargets.chatWindow),

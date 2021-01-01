@@ -1,8 +1,8 @@
-let {config} = require("../config/config");
-let debug = require("debug")(config.logNamespace("mailchimp:routes:lists"));
+let {envConfig} = require("../env-config/env-config");
+let debug = require("debug")(envConfig.logNamespace("mailchimp:routes:lists"));
 let messageHandler = require("./messageHandler");
 let mcapi = require("mailchimp-api");
-let mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
+let mc = new mcapi.Mailchimp(envConfig.mailchimp.apiKey);
 
 /*
  * GET list of lists.

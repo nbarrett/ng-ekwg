@@ -1,6 +1,6 @@
-const {config} = require("../../config/config");
+const {envConfig} = require("../../env-config/env-config");
 const authConfig = require("../../auth/auth-config");
-const debug = require("debug")(config.logNamespace("database:login"));
+const debug = require("debug")(envConfig.logNamespace("database:login"));
 const auth = require("../models/auth");
 const authCommon = require("./auth-common");
 

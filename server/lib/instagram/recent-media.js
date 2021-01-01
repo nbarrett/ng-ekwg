@@ -1,6 +1,6 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const refreshToken = require("./refresh-token");
-const debug = require("debug")(config.logNamespace("instagram:recent-media"));
+const debug = require("debug")(envConfig.logNamespace("instagram:recent-media"));
 const messageHandlers = require("../shared/message-handlers");
 const refreshOnEachCall = true;
 
@@ -13,7 +13,7 @@ recentMedia = (res, req) => {
         "Content-Type": "application/json; charset=utf-8"
       },
       method: "get",
-      path: `https://graph.instagram.com/${config.instagram.userId}/media?access_token=${config.instagram.accessToken}&fields=id,media_type,media_url,permalink,username,timestamp,caption`
+      path: `https://graph.instagram.com/${envConfig.instagram.userId}/media?access_token=${envConfig.instagram.accessToken}&fields=id,media_type,media_url,permalink,username,timestamp,caption`
     },
     debug: debug,
     res: res,

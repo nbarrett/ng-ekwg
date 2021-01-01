@@ -1,8 +1,8 @@
 const auth = require("../models/auth");
 const authConfig = require("../../auth/auth-config");
 const authCommon = require("./auth-common");
-const {config} = require("../../config/config");
-const debug = require("debug")(config.logNamespace("database:reset-password"));
+const {envConfig} = require("../../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("database:reset-password"));
 
 exports.resetPassword = (req, res) => {
   const userName = req.body.userName;

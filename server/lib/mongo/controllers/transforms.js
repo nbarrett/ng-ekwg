@@ -1,6 +1,6 @@
 const {omit, each, includes, set, isArray} = require("lodash");
-const {config} = require("../../config/config");
-const debug = require("debug")(config.logNamespace("transforms"));
+const {envConfig} = require("../../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("transforms"));
 debug.enabled = false;
 
 exports.toObjectWithId = (document) => {

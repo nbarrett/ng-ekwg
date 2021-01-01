@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("ramblers:ramblers-audit-parser"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("ramblers:ramblers-audit-parser"));
 debug.enabled = false;
 const {some, isEmpty, isUndefined, includes} = require("lodash");
 const errorIcons = ["⨯", "✗"];
@@ -42,7 +42,7 @@ exports.parseStandardOut = auditMessage => {
       || isEmpty(auditMessageItem)
       || isUndefined(auditMessageItem)
       || auditMessageItem.length <= 2
-      || exports.anyMatch(auditMessageItem, [config.logNamespace(), "SceneTagged", "ActivityStarts"])) {
+      || exports.anyMatch(auditMessageItem, [envConfig.logNamespace(), "SceneTagged", "ActivityStarts"])) {
       return {audit: false}
     } else if (auditMessageItem.includes("ActivityFinished: ")) {
       const messageAndResult = auditMessageItem.split("ActivityFinished: ")[1].split(1);
@@ -75,7 +75,7 @@ exports.parseStandardOut = auditMessage => {
 exports.parseStandardError = auditMessage => {
   debug("parseStandardError:auditMessage", auditMessage);
   if (isEmpty(auditMessage)
-    || auditMessage.includes(config.logNamespace())
+    || auditMessage.includes(envConfig.logNamespace())
     || includes(["\n", "", "npm"], auditMessage.trim())) {
     return [{
       audit: false

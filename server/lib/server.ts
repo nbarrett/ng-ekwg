@@ -11,7 +11,6 @@ import favicon = require("serve-favicon");
 import aws = require("./aws/aws");
 import googleMaps = require("./google-maps/googleMaps");
 import instagram = require("./instagram/instagram");
-import mailchimp = require("./mailchimp/mailchimp");
 import meetup = require("./meetup/meetup");
 import logs = require("./middleware/logs");
 import migration = require("./migration/migration-controller");
@@ -32,19 +31,20 @@ import socialEvent = require("./mongo/routes/social-event");
 import walkRoutes = require("./mongo/routes/walk");
 import ramblers = require("./ramblers/ramblers");
 import { install } from "source-map-support";
-import { config } from "./config/config";
+import { envConfig } from "./env-config/env-config";
+import { mailchimpRoutes } from "./mailchimp/mailchimp";
 
 install();
-const debugLog = debug(config.logNamespace("server"));
+const debugLog = debug(envConfig.logNamespace("server"));
 const distFolder = path.resolve(__dirname, "../../../dist/ng-ekwg");
 const currentDir = path.resolve(__dirname);
 debugLog("currentDir:", currentDir, "distFolder:", distFolder);
 const app = express();
 app.use(compression());
-app.set("port", config.server.listenPort);
+app.set("port", envConfig.server.listenPort);
 app.disable("view cache");
 app.use(favicon(path.join(distFolder, "assets/images/ramblers/favicon.ico")));
-app.use(logger(config.env));
+app.use(logger(envConfig.env));
 app.use(methodOverride());
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true}));
@@ -55,7 +55,7 @@ app.use("/api/migration", migration);
 app.use("/api/aws", aws);
 app.use("/api/google-maps", googleMaps);
 app.use("/api/instagram", instagram);
-app.use("/api/mailchimp", mailchimp);
+app.use("/api/mailchimp", mailchimpRoutes);
 app.use("/api/meetup", meetup);
 app.use("/api/database/auth", auth);
 app.use("/api/database/content-text", contentText);
@@ -81,5 +81,5 @@ if (app.get("env") === "dev") {
 }
 mongooseClient.connect();
 app.listen(app.get("port"), function () {
-  debugLog("listening on port " + config.server.listenPort);
+  debugLog("listening on port " + envConfig.server.listenPort);
 });

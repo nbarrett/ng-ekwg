@@ -1,8 +1,8 @@
 const moment = require("moment-timezone");
 const authConfig = require("../../auth/auth-config");
-const {config} = require("../../config/config");
+const {envConfig} = require("../../env-config/env-config");
 const refreshToken = require("../models/refresh-token");
-const debug = require("debug")(config.logNamespace("database:auth"));
+const debug = require("debug")(envConfig.logNamespace("database:auth"));
 const memberAudit = require("../models/member-audit");
 const pleaseTryAgain = `. Please try again or`;
 const please = `. Please`;

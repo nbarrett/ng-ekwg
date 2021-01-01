@@ -1,4 +1,4 @@
-var {config} = require("../config/config");
+var {envConfig} = require("../env-config/env-config");
 
 exports.processSuccessfulResponse = function (req, res, response, messageType, debug) {
   debug("Data", JSON.stringify(response), "Received", messageType, "successful response");
@@ -19,7 +19,7 @@ exports.debug = function (messageType, requestData, debug) {
 };
 
 exports.mapListTypeToId = function (req, debug) {
-  var listId = config.mailchimp.lists[req.params.listType];
+  var listId = envConfig.mailchimp.lists[req.params.listType];
   debug('Mapping list type "' + req.params.listType + '" -> mailchimp Id', listId);
   return listId;
 };

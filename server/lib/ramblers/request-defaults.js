@@ -1,8 +1,8 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const url = require("url");
 
 exports.createApiRequestOptions = function () {
-  const ramblersUrl = url.parse(config.ramblers.url);
+  const ramblersUrl = url.parse(envConfig.ramblers.url);
   return {
     hostname: ramblersUrl.host,
     protocol: ramblersUrl.protocol,

@@ -1,10 +1,10 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("mailchimp:routes:segments"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("mailchimp:routes:segments"));
 const messageHandler = require("./messageHandler");
 const mcapi = require("mailchimp-api");
 const transforms = require("./../mongo/controllers/transforms");
 
-const mc = new mcapi.Mailchimp(config.mailchimp.apiKey);
+const mc = new mcapi.Mailchimp(envConfig.mailchimp.apiKey);
 
 /*
 

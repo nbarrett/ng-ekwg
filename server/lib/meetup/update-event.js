@@ -1,6 +1,6 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const messageHandlers = require("../shared/message-handlers");
-const debug = require("debug")(config.logNamespace("event-update"));
+const debug = require("debug")(envConfig.logNamespace("event-update"));
 const requestDefaults = require("./request-defaults");
 
 exports.updateEvent = function (req, res) {
@@ -11,7 +11,7 @@ exports.updateEvent = function (req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "patch",
-      path: `/${config.meetup.group}/events/${req.params.eventId}`,
+      path: `/${envConfig.meetup.group}/events/${req.params.eventId}`,
     },
     body: req.body,
     successStatusCodes: defaultOptions.successStatusCodes,

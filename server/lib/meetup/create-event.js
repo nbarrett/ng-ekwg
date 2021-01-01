@@ -1,7 +1,7 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const messageHandlers = require("../shared/message-handlers");
 const requestDefaults = require("./request-defaults");
-const debug = require("debug")(config.logNamespace("meetup:event-create"));
+const debug = require("debug")(envConfig.logNamespace("meetup:event-create"));
 
 exports.createEvent = function (req, res) {
   const defaultOptions = requestDefaults.createApiRequestOptions(req.body);
@@ -11,7 +11,7 @@ exports.createEvent = function (req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "post",
-      path: `/${config.meetup.group}/events`,
+      path: `/${envConfig.meetup.group}/events`,
     },
     body: req.body,
     successStatusCodes: defaultOptions.successStatusCodes,

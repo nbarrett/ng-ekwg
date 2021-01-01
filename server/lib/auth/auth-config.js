@@ -2,12 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const randtoken = require("rand-token");
 const passport = require("passport");
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("auth-config"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("auth-config"));
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
 const tokenExpiry = {auth: 60 * 60 * 12, refresh: 60 * 60};
-const SECRET = config.auth.secret
+const SECRET = envConfig.auth.secret;
 const passportOpts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: SECRET

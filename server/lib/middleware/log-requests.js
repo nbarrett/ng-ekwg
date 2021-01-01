@@ -1,5 +1,5 @@
-const {config} = require("../config/config");
-const debug = require("debug")(config.logNamespace("log-requests"));
+const {envConfig} = require("../env-config/env-config");
+const debug = require("debug")(envConfig.logNamespace("log-requests"));
 const fs = require("fs");
 const {get} = require("lodash");
 const moment = require("moment-timezone");

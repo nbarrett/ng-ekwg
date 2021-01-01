@@ -1,7 +1,7 @@
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const messageHandlers = require("../shared/message-handlers");
 const requestDefaults = require("./request-defaults");
-const debug = require("debug")(config.logNamespace("meetup:locations"));
+const debug = require("debug")(envConfig.logNamespace("meetup:locations"));
 
 exports.locations = function (req, res) {
   const defaultOptions = requestDefaults.createApiRequestOptions(req.body)

@@ -1,5 +1,6 @@
 import * as configData from "config";
 
+console.log("configData", configData);
 function validatedEnvironmentVariable(variableName: string): string {
   const variableValue = process.env[variableName];
   if (!variableValue) {
@@ -14,7 +15,7 @@ function logNamespace(moduleName) {
   return `ekwg:${env}:${moduleName || ""}`;
 }
 
-export const config = {
+export const envConfig = {
   auth: {
     secret: validatedEnvironmentVariable("AUTH_SECRET"),
   },

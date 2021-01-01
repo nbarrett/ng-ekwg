@@ -1,11 +1,11 @@
 const express = require("express");
-const {config} = require("../config/config");
+const {envConfig} = require("../env-config/env-config");
 const router = express.Router();
-let debug = require("debug")(config.logNamespace("google-maps"));
+let debug = require("debug")(envConfig.logNamespace("google-maps"));
 
 router.get("/config", (req, res) => {
-  debug(config.googleMaps);
-  res.send(config.googleMaps);
+  debug(envConfig.googleMaps);
+  res.send(envConfig.googleMaps);
 });
 
 module.exports = router;
