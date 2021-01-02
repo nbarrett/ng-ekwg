@@ -5,7 +5,7 @@ import find from "lodash-es/find";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../models/expense.model";
+import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../notifications/expenses/expense.model";
 import { Member } from "../../models/member.model";
 import { Confirm, ConfirmType, EditMode } from "../../models/ui-actions";
 import { ContentMetadataService } from "../content-metadata.service";

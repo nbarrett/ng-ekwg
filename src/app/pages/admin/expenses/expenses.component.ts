@@ -16,7 +16,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ApiAction, ApiResponse } from "../../../models/api-response.model";
-import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem, ExpenseNotificationRequest } from "../../../models/expense.model";
+import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem, ExpenseNotificationRequest } from "../../../notifications/expenses/expense.model";
 import { Member } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ExpenseNotificationDirective } from "../../../notifications/expenses/expense-notification.directive";

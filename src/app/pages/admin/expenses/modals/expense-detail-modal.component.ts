@@ -6,7 +6,7 @@ import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../../auth/auth.service";
 import { AlertTarget } from "../../../../models/alert-target.model";
-import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../models/expense.model";
+import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../notifications/expenses/expense.model";
 import { Confirm, EditMode } from "../../../../models/ui-actions";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";

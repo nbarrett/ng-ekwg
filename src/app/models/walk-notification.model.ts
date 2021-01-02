@@ -1,4 +1,3 @@
-
 import { WalkDataAudit } from "./walk-data-audit.model";
 import { WalkEvent } from "./walk-event.model";
 import { EventType, Walk } from "./walk.model";

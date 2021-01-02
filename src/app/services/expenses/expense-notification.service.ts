@@ -1,6 +1,6 @@
 import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../models/expense.model";
+import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../notifications/expenses/expense.model";
 import { MailchimpExpenseOtherContent, SaveSegmentResponse } from "../../models/mailchimp.model";
 import { ExpenseNotificationComponentAndData } from "../../notifications/expenses/expense-notification.directive";
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";

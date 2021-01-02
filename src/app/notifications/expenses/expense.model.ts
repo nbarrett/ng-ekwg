@@ -1,9 +1,9 @@
 import { Type } from "@angular/core";
-import { ExpenseNotificationDirective } from "../notifications/expenses/expense-notification.directive";
-import { ExpenseNotificationDetailsComponent } from "../notifications/expenses/templates/common/expense-notification-details.component";
-import { AlertInstance } from "../services/notifier.service";
-import { ApiResponse } from "./api-response.model";
-import { Member } from "./member.model";
+import { ExpenseNotificationDirective } from "./expense-notification.directive";
+import { ExpenseNotificationDetailsComponent } from "./templates/common/expense-notification-details.component";
+import { AlertInstance } from "../../services/notifier.service";
+import { ApiResponse } from "../../models/api-response.model";
+import { Member } from "../../models/member.model";
 
 export interface ExpenseFilter {
   filter: (arg?: any) => boolean;

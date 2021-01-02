@@ -1,5 +1,5 @@
 import { Directive, Type, ViewContainerRef } from "@angular/core";
-import { ExpenseClaim } from "../../models/expense.model";
+import { ExpenseClaim } from "./expense.model";
 import { ExpenseNotificationDetailsComponent } from "./templates/common/expense-notification-details.component";
 
 @Directive({
