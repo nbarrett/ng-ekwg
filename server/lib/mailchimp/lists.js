@@ -5,43 +5,6 @@ let mcapi = require("mailchimp-api");
 let mc = new mcapi.Mailchimp(envConfig.mailchimp.apiKey);
 
 /*
- * GET list of lists.
- */
-
-exports.list = (req, res) => {
-  var requestData = {};
-  var messageType = "list lists";
-  debug(messageType, requestData);
-  mc.lists.list(requestData, responseData => {
-    messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
-  });
-};
-
-/*
- * list members.
- */
-
-exports.members = (req, res) => {
-  var requestData = {
-    id: messageHandler.mapListTypeToId(req, debug),
-    status: "subscribed",
-    opts: {
-      start: 0,
-      limit: 100,
-    }
-  };
-  var messageType = "list members";
-  debug(messageType, requestData);
-  mc.lists.members(requestData, responseData => {
-    messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debug);
-  }, error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debug);
-  });
-};
-
-/*
  * Subscribe an email to a list.
  */
 

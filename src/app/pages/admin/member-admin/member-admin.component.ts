@@ -8,13 +8,15 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, MEMBER_SORT, SELECT_ALL, MemberTableFilter } from "../../../models/table-filtering.model";
+import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, SELECT_ALL } from "../../../models/table-filtering.model";
+import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -37,7 +39,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private memberAdminBaseUrl: string;
   private today: number;
-  private members: Member[] = [];
+  public members: Member[] = [];
   public quickSearch = "";
   private searchChangeObservable: Subject<string>;
   public memberFilter: MemberTableFilter;
@@ -46,6 +48,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   filters: any;
   private subscription: Subscription;
   private logoutSubscription: Subscription;
+  public confirm = new Confirm();
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
@@ -56,6 +59,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               private mailchimpListService: MailchimpListService,
+              private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
@@ -284,4 +288,18 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   updateMailchimpLists() {
     this.mailchimpListUpdaterService.updateMailchimpLists(this.notify, this.members);
   }
+
+  bulkUnsubscribe() {
+    this.confirm.type = ConfirmType.BULK_ACTION;
+  }
+
+  bulkUnsubscribeCancel() {
+    this.confirm.clear();
+  }
+
+  confirmBulkUnsubscribe() {
+    this.mailchimpListSubscriptionService.setMailchimpSubscriptionsStateFor(this.memberFilter.results, false, this.notify)
+      .then(() => this.confirm.clear());
+  }
+
 }

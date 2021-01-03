@@ -16,9 +16,9 @@ export class MailchimpErrorParserService {
 
   extractError(responseData): { error: string } {
     let error;
-    if (responseData && (responseData.error || responseData.errno)) {
+    if (responseData?.error || responseData?.errno) {
       error = {error: responseData};
-    } else if (responseData && responseData.errors && responseData.errors.length > 0) {
+    } else if (responseData?.errors?.length > 0) {
       error = {
         error: responseData.errors.map(error => this.stringUtils.stringifyObject(error)).join(", ")
       };

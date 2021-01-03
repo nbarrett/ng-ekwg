@@ -16,7 +16,7 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="spaced-label" for="filter-members">Filter:</label>
+            <label class="spaced-label mr-6" for="filter-members">Filter:</label>
             <select class="form-control input-sm"
                     [(ngModel)]="memberFilter.selectedFilter"
                     (ngModelChange)="refreshMembers($event)"
@@ -40,6 +40,22 @@
             <input [disabled]="notifyTarget.busy" type="submit" value="Update Mailchimp Lists"
                    (click)="updateMailchimpLists()" title="Update Mailchimp Lists"
                    [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+            <span *ngIf="confirm.noneOutstanding()">
+              <input [disabled]="notifyTarget.busy" type="submit"
+                     [value]="'Bulk Unsubscribe ' + memberFilter.results.length + ' members'"
+                     (click)="bulkUnsubscribe()"
+                     [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+            </span>
+            <span *ngIf="confirm.bulkActionOutstanding()">
+              <input [disabled]="notifyTarget.busy" type="submit"
+                     [value]="'Cancel Bulk Unsubscribe'"
+                     (click)="bulkUnsubscribeCancel()"
+                     [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab green-confirm'">
+              <input [disabled]="notifyTarget.busy" type="submit"
+                     [value]="'Confirm Bulk Unsubscribe'"
+                     (click)="confirmBulkUnsubscribe()"
+                     [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab button-confirm'">
+            </span>
             <div *ngIf="notifyTarget.showAlert">
               <div class="alert {{notifyTarget.alertClass}}"><i
                 class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">

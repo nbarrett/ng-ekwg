@@ -1,3 +1,5 @@
+import { ApiResponse } from "./api-response.model";
+
 export interface MailchimpConfigResponse {
   id: string;
   mailchimp: MailchimpConfig;
@@ -36,13 +38,17 @@ export interface MailchimpConfig {
   };
 }
 
+export enum SubscriptionStatus {
+  Subscribed = "subscribed",
+}
+
 export interface CampaignConfig {
   campaignId: string;
   name: string;
   monthsInPast?: number;
 }
 
-export interface MergeVariables {
+export interface MergeFields {
   EMAIL?: string;
   FNAME: string;
   LNAME: string;
@@ -53,59 +59,30 @@ export interface MergeVariables {
 }
 
 export interface MergeVariablesRequest {
-  merge_vars: MergeVariables;
+  merge_vars: MergeFields;
 }
 
-export interface MailchimpSubscriber {
-  email: string;
-  id: string;
-  euid: string;
-  email_type: string;
-  ip_signup: string;
-  timestamp_signup: string;
-  ip_opt: string;
-  timestamp_opt: string;
-  member_rating: number;
-  info_changed: string;
+export interface MailchimpMemberIdentifiers {
+  email_address: string;
+  unique_email_id: string;
   web_id: number;
-  leid: number;
-  language: string;
-  list_id: string;
-  list_name: string;
-  merges: MergeVariables;
-  status: string;
-  timestamp: string;
-  is_gmonkey: false;
-  lists: [
-    {
-      id: string;
-      status: string
-    }];
-  geo: {
-    latitude: string;
-    longitude: string;
-    gmtoff: string;
-    dstoff: string;
-    timezone: string;
-    cc: string;
-    region: string;
-  };
-  clients: {
-    name: string;
-    icon_url: string;
-  };
-  static_segments: [
-    {
-      id: number;
-      name: string;
-      added: string
-    }];
-  notes: [];
+}
+
+export interface MailchimpListMember extends MailchimpMemberIdentifiers {
+  status: SubscriptionStatus;
+  merge_fields: MergeFields;
+  last_changed: Date;
 }
 
 export interface MailchimpListResponse {
-  total: number;
-  data: MailchimpSubscriber[];
+  list_id: string;
+  members: MailchimpListMember[];
+}
+
+export interface SubscriberIdentifiersWithError {
+  code: number;
+  email: SubscriberIdentifiers;
+  error: string;
 }
 
 export interface MailchimpSubscription {
@@ -122,6 +99,14 @@ export interface SubscriberIdentifiers {
   leid?: number;
 }
 
+export function toMailchimpMemberIdentifiers(subscriberIdentifiers: SubscriberIdentifiers): MailchimpMemberIdentifiers {
+  return {
+    unique_email_id: subscriberIdentifiers.euid,
+    web_id: subscriberIdentifiers.leid,
+    email_address: subscriberIdentifiers.email
+  };
+}
+
 export type SubscriptionRequest = SubscriberIdentifiers | MergeVariablesRequest & MailchimpSubscription;
 
 export interface MailchimpBatchSubscriptionResponse {
@@ -130,7 +115,7 @@ export interface MailchimpBatchSubscriptionResponse {
   add_count: number;
   adds: SubscriberIdentifiers[];
   update_count: number;
-  errors: any[];
+  errors: SubscriberIdentifiersWithError[];
 }
 
 export interface MailchimpBatchUnsubscribeResponse {
@@ -298,3 +283,21 @@ export interface MailchimpCampaignReplicateIdentifiersResponse extends Mailchimp
   web_id?: number;
 }
 
+export interface MailchimpListAudit {
+  id?: string;
+  memberId: string;
+  timestamp: number;
+  listType: string;
+  status: AuditStatus;
+  audit: any;
+}
+
+export enum AuditStatus {
+  warning = "warning",
+  error = "error",
+}
+
+export interface MailchimpListAuditApiResponse extends ApiResponse {
+  request: any;
+  response?: MailchimpListAudit | MailchimpListAudit[];
+}

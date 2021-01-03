@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
 import omit from "lodash-es/omit";
 import { NgxLoggerLevel } from "ngx-logger";
-import { AuditField, Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
+import { AuditField, Member, MemberAction, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -90,7 +90,7 @@ export class MemberBulkLoadService {
         }).catch(response => {
           this.logger.warn("member save error for member:", member, "response:", response);
           audit.member = member;
-          audit.memberAction = "error";
+          audit.memberAction = MemberAction.error;
           this.logger.warn("member was not saved, so saving it to audit:", audit);
           notify.warning({title: "Bulk member load " + qualifier + " failed", message: auditMessage});
           audit.auditErrorMessage = omit(response.error, "request");

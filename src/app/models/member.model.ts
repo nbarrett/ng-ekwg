@@ -156,13 +156,24 @@ export interface AuditField {
 export interface MemberUpdateAudit extends Auditable {
   uploadSessionId: string;
   updateTime: number;
-  memberAction: string;
+  memberAction: MemberAction;
   rowNumber: number;
   changes: number;
   auditMessage: string;
   memberId?: string;
   member?: Member;
   auditErrorMessage?: object;
+}
+
+export enum MemberAction {
+  created = "created",
+  complete = "complete",
+  summary = "summary",
+  success = "success",
+  info = "info",
+  updated = "updated",
+  error = "error",
+  skipped = "skipped"
 }
 
 export interface MemberAuthAudit {

@@ -4,6 +4,7 @@ const transforms = require("./transforms");
 
 exports.create = (model) => {
   const debug = require("debug")(envConfig.logNamespace(`database:${model.modelName}`));
+  debug.enabled = false;
   return {
     create: (req, res) => {
       const document = transforms.createDocumentRequest(req);

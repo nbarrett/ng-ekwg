@@ -9,9 +9,10 @@
     ],
     "module": "commonjs",
     "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "sourceMap": true,
-    "outDir": "./ts-gen/",
+    "outDir": "ts-gen",
     "declaration": true,
     "allowSyntheticDefaultImports": true
   },
@@ -20,6 +21,7 @@
   ],
   "include": [
     "serenity-js/**/*.ts",
-    "lib/**/*.*"
+    "lib/**/*.*",
+    "../src/app/models/**/*.*"
   ]
 }

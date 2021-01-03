@@ -1,10 +1,10 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
-import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { AlertInstance } from "../notifier.service";
 import { StringUtilsService } from "../string-utils.service";
+import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
 import { MailchimpListService } from "./mailchimp-list.service";
 
 @Injectable({
@@ -53,11 +53,6 @@ export class MailchimpListUpdaterService {
       message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + this.stringUtils.stringify(errorResponse.error)) : "")
     });
     notify.clearBusy();
-  }
-
-  private resetAllBatchSubscriptions(members: Member[]) {
-    // careful with calling this - it resets all batch subscriptions to default values
-    this.mailchimpListSubscriptionService.resetAllBatchSubscriptions(members, false);
   }
 
   private updateWalksList(members, notify: AlertInstance) {

@@ -1,6 +1,5 @@
 import * as configData from "config";
 
-console.log("configData", configData);
 function validatedEnvironmentVariable(variableName: string): string {
   const variableValue = process.env[variableName];
   if (!variableValue) {
