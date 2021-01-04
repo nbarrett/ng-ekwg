@@ -15,7 +15,7 @@
     "preprotractor": "serenity-bdd update --ignoreSSL",
     "protractor": "protractor protractor.conf.js",
     "report": "serenity-bdd run",
-    "preserver": "tsc",
+    "postinstall": "tsc",
     "server": "node ts-gen/server/lib/server",
     "test": "failsafe protractor report",
     "tsc": "tsc  --project ./tsconfig.json",
