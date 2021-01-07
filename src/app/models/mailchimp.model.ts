@@ -39,7 +39,10 @@ export interface MailchimpConfig {
 }
 
 export enum SubscriptionStatus {
-  Subscribed = "subscribed",
+  SUBSCRIBED = "subscribed",
+  UNSUBSCRIBED = "unsubscribed",
+  CLEANED = "cleaned",
+  PENDING = "pending"
 }
 
 export interface CampaignConfig {
@@ -49,7 +52,7 @@ export interface CampaignConfig {
 }
 
 export interface MergeFields {
-  EMAIL?: string;
+  EMAIL: string;
   FNAME: string;
   LNAME: string;
   MEMBER_NUM: string;
@@ -64,14 +67,8 @@ export interface MergeVariablesRequest {
 
 export interface MailchimpMemberIdentifiers {
   email_address: string;
-  unique_email_id: string;
+  unique_email_id?: string;
   web_id: number;
-}
-
-export interface MailchimpListMember extends MailchimpMemberIdentifiers {
-  status: SubscriptionStatus;
-  merge_fields: MergeFields;
-  last_changed: Date;
 }
 
 export interface MailchimpListResponse {
@@ -79,16 +76,12 @@ export interface MailchimpListResponse {
   members: MailchimpListMember[];
 }
 
-export interface SubscriberIdentifiersWithError {
-  code: number;
-  email: SubscriberIdentifiers;
-  error: string;
-}
-
 export interface MailchimpSubscription {
   subscribed?: boolean;
   updated?: boolean;
-  leid?: string;
+  leid?: number;   // will be deleted
+  unique_email_id?: string;
+  web_id?: number;
   lastUpdated?: number;
   email?: SubscriberIdentifiers;
 }
@@ -99,29 +92,22 @@ export interface SubscriberIdentifiers {
   leid?: number;
 }
 
-export function toMailchimpMemberIdentifiers(subscriberIdentifiers: SubscriberIdentifiers): MailchimpMemberIdentifiers {
-  return {
-    unique_email_id: subscriberIdentifiers.euid,
-    web_id: subscriberIdentifiers.leid,
-    email_address: subscriberIdentifiers.email
-  };
+export interface MailchimpSubscriptionMember {
+  email_address: string;
+  status: SubscriptionStatus;
+  merge_fields: MergeFields;
 }
 
 export type SubscriptionRequest = SubscriberIdentifiers | MergeVariablesRequest & MailchimpSubscription;
 
 export interface MailchimpBatchSubscriptionResponse {
+  new_members: MailchimpMember[];
+  updated_members: MailchimpMember[];
+  errors: MailchimpEmailWithError[];
+  total_created: number;
+  total_updated: number;
   error_count: number;
-  updates: SubscriberIdentifiers[];
-  add_count: number;
-  adds: SubscriberIdentifiers[];
-  update_count: number;
-  errors: SubscriberIdentifiersWithError[];
-}
-
-export interface MailchimpBatchUnsubscribeResponse {
-  success_count: number;
-  error_count: number;
-  errors: any[];
+  _links: Link[];
 }
 
 export interface MailchimpListSegmentResetResponse {
@@ -300,4 +286,84 @@ export enum AuditStatus {
 export interface MailchimpListAuditApiResponse extends ApiResponse {
   request: any;
   response?: MailchimpListAudit | MailchimpListAudit[];
+}
+
+export interface Link {
+  rel: string;
+  href: string;
+  method: string;
+  targetSchema: string;
+  schema: string;
+}
+
+export interface MailchimpEmailWithError {
+  email_address: string;
+  error: string;
+  error_code: string;
+}
+
+export interface MailchimpListMember {
+  email_address: string;
+  unique_email_id: string;
+  web_id: number;
+  status: SubscriptionStatus;
+  merge_fields: MergeFields;
+  last_changed: string;
+}
+
+export interface MailchimpMember extends MailchimpMemberIdentifiers {
+  id: string;
+  email_address: string;
+  unique_email_id: string;
+  email_type: string;
+  status: SubscriptionStatus;
+  merge_fields: MergeFields;
+  interests?: Interests;
+  stats: Stats;
+  ip_signup: string;
+  timestamp_signup: string;
+  ip_opt: string;
+  timestamp_opt: string;
+  member_rating: number;
+  last_changed: string;
+  language: string;
+  vip: boolean;
+  email_client: string;
+  location: Location;
+  last_note: LastNote;
+  tags_count: number;
+  tags: Tag[];
+  list_id: string;
+  _links: Link[];
+}
+
+export interface Interests {
+  property1?: boolean;
+  property2?: boolean;
+}
+
+export interface LastNote {
+  note_id: number;
+  created_at: string;
+  created_by: string;
+  note: string;
+}
+
+export interface Location {
+  latitude: number;
+  longitude: number;
+  gmtoff: number;
+  dstoff: number;
+  country_code: string;
+  timezone: string;
+}
+
+export interface Stats {
+  avg_open_rate: number;
+  avg_click_rate: number;
+}
+
+export interface Tag {
+  id: number;
+  name: string;
 }

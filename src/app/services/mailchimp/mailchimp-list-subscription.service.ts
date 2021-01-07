@@ -3,14 +3,15 @@ import { cloneDeep } from "lodash-es";
 import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
 import {
-  MailchimpBatchSubscriptionResponse,
-  MailchimpSubscription,
-  MergeVariablesRequest,
   AuditStatus,
-  SubscriberIdentifiers,
-  SubscriberIdentifiersWithError,
+  MailchimpBatchSubscriptionResponse,
+  MailchimpEmailWithError,
+  MailchimpMember,
+  MailchimpSubscription,
+  MailchimpSubscriptionMember,
+  MergeVariablesRequest,
   SubscriptionRequest,
-  toMailchimpMemberIdentifiers
+  SubscriptionStatus,
 } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { DateUtilsService } from "../date-utils.service";
@@ -76,21 +77,16 @@ export class MailchimpListSubscriptionService {
   createBatchSubscriptionForList(listType, members: Member[]): Promise<Member[]> {
     this.logger.debug(`Sending ${listType} member data to Mailchimp`);
     const batchedMembers = [];
-    const subscriptionRequests: SubscriptionRequest[] = members
+    const subscriptionRequests: MailchimpSubscriptionMember[] = members
       .filter(member => this.mailchimpListService.includeMemberInSubscription(listType, member))
       .map((member: Member) => {
         batchedMembers.push(member);
-        const request: MergeVariablesRequest = {
-          merge_vars: {
-            FNAME: member.firstName,
-            LNAME: member.lastName,
-            MEMBER_NUM: member.membershipNumber,
-            MEMBER_EXP: this.dateUtils.displayDate(member.membershipExpiryDate),
-            USERNAME: member.userName,
-            PW_RESET: member.passwordResetId || ""
-          }
+        return {
+          email_address: member.email,
+          email_type: "html",
+          status: SubscriptionStatus.SUBSCRIBED,
+          merge_fields: this.mailchimpListService.toMergeVariables(member)
         };
-        return this.addMailchimpIdentifiersToRequest(member, listType, request);
       });
     this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
     if (subscriptionRequests.length > 0) {
@@ -99,13 +95,13 @@ export class MailchimpListSubscriptionService {
         .then((response: MailchimpBatchSubscriptionResponse) => {
           this.logger.info("createBatchSubscriptionForList response", response);
           const savePromises = [];
-          this.processValidResponses(listType, response.updates.concat(response.adds), batchedMembers, savePromises);
+          this.processValidResponses(listType, response.updated_members.concat(response.new_members), batchedMembers, savePromises);
           this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
-          const totalResponseCount = response.updates.length + response.adds.length + response.errors.length;
+          const totalResponseCount = response.total_created + response.total_updated + response.error_count;
           this.logger.debug(`Send of ${subscriptionRequests.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
           return Promise.all(savePromises).then(() => {
             return this.refreshMembersIfAdmin().then(refreshedMembers => {
-              this.logger.debug(`Send of ${subscriptionRequests.length} members to ${listType} list completed with ${response.add_count} member(s) added, ${response.update_count} updated and ${response.error_count} error(s)`);
+              this.logger.debug(`Send of ${subscriptionRequests.length} members to ${listType} list completed with ${response.total_created} member(s) added, ${response.total_updated} updated and ${response.error_count} error(s)`);
               return refreshedMembers;
             });
           });
@@ -116,45 +112,44 @@ export class MailchimpListSubscriptionService {
           return Promise.reject(errorMessage);
         });
     } else {
-      const message = `No ${listType} updates to send Mailchimp`;
-      this.logger.info(message);
+      const message = `No ${listType} updates to send to Mailchimp`;
       this.logger.debug(message);
       return this.refreshMembersIfAdmin();
     }
   }
 
-  processValidResponses(listType, validResponses: SubscriberIdentifiers[], batchedMembers, savePromises) {
-    each(validResponses, (subscriberIdentifiers: SubscriberIdentifiers) => {
-      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, toMailchimpMemberIdentifiers(subscriberIdentifiers));
+  processValidResponses(listType: string, mailchimpMembers: MailchimpMember[], batchedMembers: Member[], savePromises) {
+    each(mailchimpMembers, (mailchimpMemberIdentifiers: MailchimpMember) => {
+      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, mailchimpMemberIdentifiers);
       if (member) {
-        member.mailchimpLists[listType].code = undefined;
-        member.mailchimpLists[listType].error = undefined;
+        member.mailchimpLists[listType].code = null;
+        member.mailchimpLists[listType].error = null;
         this.logger.debug(`processing valid response for member ${member.email}`);
         savePromises.push(this.memberService.updateMailSubscription(member.id, listType, member.mailchimpLists[listType]));
       }
     });
   }
 
-  processErrorResponses(listType, errorResponses: SubscriberIdentifiersWithError[], batchedMembers, savePromises) {
-    errorResponses.forEach(response => {
-      const member: Member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, toMailchimpMemberIdentifiers(response.email));
+  processErrorResponses(listType, errorResponses: MailchimpEmailWithError[], batchedMembers, savePromises) {
+    errorResponses.forEach((mailchimpEmailWithError: MailchimpEmailWithError) => {
+      const member: Member = this.mailchimpListService.findMemberAndMarkAsUpdatedFromError(listType, batchedMembers, mailchimpEmailWithError);
       if (member) {
-        this.logger.debug("processing error response", response, "for member", member.email);
-        const recoverable = [210, 211, 212, 213, 214, 215, 220, 250].includes(response.code);
+        this.logger.debug("processing error mailchimpEmailWithError", mailchimpEmailWithError, "for member", member.email);
+        const autoUnsubscribingWarning = ["ERROR_GENERIC"].includes(mailchimpEmailWithError.error_code);
         this.mailchimpListAuditService.create({
-          audit: cloneDeep(response),
+          audit: cloneDeep(mailchimpEmailWithError),
           listType,
           memberId: member.id,
-          status: recoverable ? AuditStatus.warning : AuditStatus.error,
+          status: autoUnsubscribingWarning ? AuditStatus.warning : AuditStatus.error,
           timestamp: this.dateUtils.nowAsValue()
         });
-        if (recoverable) {
+        if (autoUnsubscribingWarning) {
           member.mailchimpLists[listType].subscribed = false;
-          delete response.error;
+          delete mailchimpEmailWithError.error;
         }
         savePromises.push(this.memberService.update(member));
       } else {
-        this.logger.warn("failed to find member when processing error response", response);
+        this.logger.warn("failed to find member when processing error mailchimpEmailWithError", mailchimpEmailWithError);
       }
     });
   }

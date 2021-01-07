@@ -5,6 +5,8 @@ const MailchimpSubscription = {
   subscribed: {type: Boolean},
   updated: {type: Boolean},
   leid: {type: String},
+  web_id: {type: Number},
+  unique_email_id: {type: String},
   lastUpdated: {type: Number},
   email: {type: String}
 }

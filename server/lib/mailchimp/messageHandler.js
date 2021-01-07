@@ -1,13 +1,13 @@
-var {envConfig} = require("../env-config/env-config");
-
+const {envConfig} = require("../env-config/env-config");
 exports.processSuccessfulResponse = function (req, res, response, messageType, debug) {
   debug("Data", JSON.stringify(response), "Received", messageType, "successful response");
   res.json({request: {messageType}, response});
 };
 
 exports.processUnsuccessfulResponse = function (req, res, error, messageType, debug) {
-  debug("Received", messageType, "error response", JSON.stringify(error));
-  res.json({request: {messageType}, error: error});
+  const errorResponse = {code: error.code, message: error.message, stack: error.stack};
+  debug("Received", messageType, "error response:", errorResponse);
+  res.json({request: {messageType}, error: errorResponse});
 };
 
 exports.logRequestData = function (messageType, requestData, debug) {

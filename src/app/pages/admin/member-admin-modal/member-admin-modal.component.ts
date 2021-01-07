@@ -27,7 +27,7 @@ import { StringUtilsService } from "../../../services/string-utils.service";
   templateUrl: "./member-admin-modal.component.html",
   styleUrls: ["./member-admin-modal.component.sass"]
 })
-export class MemberAdminModalComponent implements OnInit{
+export class MemberAdminModalComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   member: Member;
@@ -108,12 +108,12 @@ export class MemberAdminModalComponent implements OnInit{
     this.memberService.delete(this.member).then(() => this.bsModalRef.hide());
   }
 
-  viewMailchimpListEntry(leid: string) {
-    return window.open(`${this.mailchimpLinkService.listView(leid)}`);
+  viewMailchimpListEntry(webId: number) {
+    return window.open(`${this.mailchimpLinkService.listView(webId)}`);
   }
 
-  profileSettingsConfirmedChecked() {
-    this.profileConfirmationService.processMember(this.member);
+  profileSettingsConfirmedChecked(profileSettingsConfirmed: boolean) {
+    this.profileConfirmationService.processMember(this.member, profileSettingsConfirmed);
   }
 
   close() {

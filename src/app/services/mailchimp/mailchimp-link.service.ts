@@ -27,7 +27,7 @@ export class MailchimpLinkService {
     return `${this.mailchimpApiUrl}/campaigns`;
   }
 
-  public campaignPreview(webId: string) {
+  public campaignPreview(webId: number) {
     return `${this.mailchimpApiUrl}/campaigns/preview-content-html?id=${webId}`;
   }
 
@@ -39,8 +39,8 @@ export class MailchimpLinkService {
     return `${this.mailchimpApiUrl}/campaigns/edit?id=${webId}`;
   }
 
-  public listView(leid: string) {
-    return `${this.mailchimpApiUrl}/lists/members/view?id=${leid}`;
+  public listView(webId: number) {
+    return `${this.mailchimpApiUrl}/lists/members/view?id=${webId}`;
   }
 
 }

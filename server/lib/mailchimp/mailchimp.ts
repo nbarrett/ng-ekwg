@@ -1,87 +1,15 @@
-// @ts-ignore
-import mailchimp = require("@mailchimp/mailchimp_marketing");
-import debug = require("debug");
 import express = require("express");
-import transforms = require("../mongo/controllers/transforms");
-import config = require("../mongo/models/config");
 import campaigns = require("./campaigns");
-import lists = require("./lists");
-import messageHandler = require("./messageHandler");
 import reports = require("./reports");
 import segments = require("./segments");
-import { MailchimpConfigResponse } from "../../../src/app/models/mailchimp.model";
-import { envConfig } from "../env-config/env-config";
+import { lists } from "./mailchimp-lists";
 
-const debugLog = debug(envConfig.logNamespace("mailchimp"));
 const router = express.Router();
 
-function resolvePrefix(result: MailchimpConfigResponse): string {
-  const url = new URL(result.mailchimp.apiUrl);
-  return url.host.split("\.")[0];
-}
-
-config.findOne({"mailchimp": {"$exists": true}})
-  .then((result: MailchimpConfigResponse) => {
-    mailchimp.setConfig({
-      apiKey: envConfig.mailchimp.apiKey,
-      server: resolvePrefix(result),
-    });
-  })
-  .catch(error => {
-    debugLog(`config error`, transforms.parseError(error));
-  });
-
-router.get("/lists", (req, res) => {
-  const messageType = "list lists";
-  const opts = {
-    fields: ["lists.id",
-      "lists.web_id",
-      "lists.name",
-      "lists.stats.member_count",
-      "lists.stats.unsubscribe_count",
-      "lists.stats.cleaned_count",
-      "lists.stats.campaign_count",
-      "lists.stats.campaign_last_sent",
-      "lists.stats.merge_field_count"],
-    status: "subscribed",
-    offset: 0,
-    count: 100
-  };
-
-  mailchimp.lists.getAllLists(opts)
-    .then(responseData => {
-      messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
-    }).catch(error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
-  });
-});
-
-router.get("/lists/:listType", (req, res) => {
-  const messageType = "mailchimp-list-members";
-  const listId = messageHandler.mapListTypeToId(req, debugLog);
-  const opts = {
-    fields: ["list_id",
-      "members.web_id",
-      "members.unique_email_id",
-      "members.email_address",
-      "members.status",
-      "members.merge_fields",
-      "members.last_changed"],
-    status: "subscribed",
-    offset: 0,
-    count: 100
-  };
-  mailchimp.lists.getListMembersInfo(listId, opts)
-    .then(responseData => {
-      messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
-    })
-    .catch(error => {
-      messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
-    });
-});
+router.get("/lists", lists.mailchimpLists);
+router.get("/lists/:listType", lists.mailchimpListMembers);
 
 router.post("/lists/:listType/batchSubscribe", lists.batchSubscribe);
-router.post("/lists/:listType/batchUnsubscribe", lists.batchUnsubscribe);
 
 router.post("/lists/:listType/segmentAdd", segments.segmentAdd);
 router.delete("/lists/:listType/segmentDel/:segmentId", segments.segmentDel);

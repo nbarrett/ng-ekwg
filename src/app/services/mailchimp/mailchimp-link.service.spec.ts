@@ -19,7 +19,7 @@ describe("MailchimpLinkService", () => {
   it("should return campaign preview url", waitForAsync(() => {
     const service: MailchimpLinkService = TestBed.inject(MailchimpLinkService);
     setTimeout(() => {
-      expect(service.campaignPreview("123466")).toEqual("https://us3.admin.mailchimp.com/campaigns/preview-content-html?id=123466");
+      expect(service.campaignPreview(123466)).toEqual("https://us3.admin.mailchimp.com/campaigns/preview-content-html?id=123466");
     }, 0);
   }));
 

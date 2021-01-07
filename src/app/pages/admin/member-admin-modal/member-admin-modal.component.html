@@ -245,9 +245,8 @@
                     confirm their profile settings on next login:</p>
                   <label
                     [ngClass]="{'ui-state-active': member.profileSettingsConfirmed}"
-                    for="profile-settings-confirmed">Profile settings confirmed
-                    ({{member | lastConfirmedDateDisplayed}})
-                    <input (click)="profileSettingsConfirmedChecked()"
+                    for="profile-settings-confirmed">Profile settings confirmed ({{member | lastConfirmedDateDisplayed}})
+                    <input (ngModelChange)="profileSettingsConfirmedChecked($event)"
                            [(ngModel)]="member.profileSettingsConfirmed" type="checkbox"
                            id="profile-settings-confirmed">
                   </label>
@@ -269,11 +268,11 @@
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member?.mailchimpLists?.walks?.leid"
-                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.walks?.web_id"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.web_id)"
                               title="View walks list entry In Mailchimp">
                         <img
-                          [ngClass]="member?.mailchimpLists?.walks?.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.walks?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View walks list entry In Mailchimp"></button>
                     </div>
@@ -289,11 +288,11 @@
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member?.mailchimpLists?.socialEvents.leid"
-                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.socialEvents.web_id"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.web_id)"
                               title="View social list entry In Mailchimp">
                         <img
-                          [ngClass]="member?.mailchimpLists?.socialEvents?.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.socialEvents?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View social list entry In Mailchimp"></button>
                     </div>
@@ -309,11 +308,11 @@
                       </label>
                     </div>
                     <div class="col-sm-7">
-                      <button [disabled]="!member?.mailchimpLists?.general.leid"
-                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.general.leid)"
+                      <button [disabled]="!member?.mailchimpLists?.general.web_id"
+                              (click)="viewMailchimpListEntry(member?.mailchimpLists?.general.web_id)"
                               title="View general list entry In Mailchimp">
                         <img
-                          [ngClass]="member?.mailchimpLists?.general.leid ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                          [ngClass]="member?.mailchimpLists?.general.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
                           src="assets/images/mailchimp/freddie_wink.svg"
                           alt="View general list entry In Mailchimp"></button>
                     </div>
