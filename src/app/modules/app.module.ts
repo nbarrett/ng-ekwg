@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AppRoutingModule } from "../app-routing.module";
 import { AppComponent } from "../app.component";
+import { CarouselStoryNavigatorComponent } from "../carousel-story-navigator/carousel-story-navigator.component";
 import { FooterComponent } from "../footer/footer.component";
 import { LoginPanelComponent } from "../login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "../login/forgot-password.component";
@@ -37,6 +38,7 @@ import { SiteNavigatorComponent } from "../site-navigator/site-navigator.compone
   declarations: [
     AppComponent,
     ChangedItemsPipe,
+    CarouselStoryNavigatorComponent,
     ContactUsComponent,
     FooterComponent,
     ForgotPasswordComponent,

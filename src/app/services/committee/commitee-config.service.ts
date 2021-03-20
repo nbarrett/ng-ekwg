@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, ReplaySubject, Subject } from "rxjs";
+import { Observable, ReplaySubject} from "rxjs";
 import { CommitteeConfig } from "../../models/committee.model";
 import { CommitteeReferenceData } from "./committee-reference-data";
 import { ConfigService } from "../config.service";

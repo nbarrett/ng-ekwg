@@ -13,6 +13,7 @@ let id = 0;
 export class DatePickerComponent implements OnInit {
 
   @Input() dateValue: DateValue;
+  @Input() value: number;
   @Input() size: string;
   @Input() label: string;
   @Output() dateChange: EventEmitter<DateValue> = new EventEmitter();
@@ -24,9 +25,12 @@ export class DatePickerComponent implements OnInit {
 
   ngOnInit() {
     this.id = `${kebabCase(this.label || "date-picker")}-${id++}`;
+    if (!this.dateValue && this.value) {
+      this.dateValue = this.dateUtils.asDateValue(this.value);
+    }
   }
 
   onModelChange(date: Date) {
-    this.dateChange.next(this.dateUtils.asDateValue(date));
+    this.dateChange.next(this.dateUtils.  asDateValue(date));
   }
 }

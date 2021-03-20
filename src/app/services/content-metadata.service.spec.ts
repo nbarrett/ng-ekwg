@@ -24,6 +24,7 @@ describe("ContentMetadataService", () => {
       id: "53729e3fb1e8b51319e3a2ec",
       contentMetaDataType: "imagesHome",
       baseUrl: "api/aws/s3/imagesHome",
+      imageTags: [],
       files: [
         {
           image: "aws/s3/imagesHome/5c02d083-35c5-4175-9411-3698d1af7f68.jpeg",
@@ -41,6 +42,7 @@ describe("ContentMetadataService", () => {
     id: "53729e3fb1e8b51319e3a2ec",
     contentMetaDataType: "imagesHome",
     baseUrl: "api/aws/s3/imagesHome",
+    imageTags: [],
     files: [
       {
         image: "api/aws/s3/imagesHome/5c02d083-35c5-4175-9411-3698d1af7f68.jpeg",
@@ -54,6 +56,6 @@ describe("ContentMetadataService", () => {
   };
   it("should transform ContentMetadataApiResponse with incorrect image paths to correct ones of type ContentMetadata", () => {
     const service: ContentMetadataService = TestBed.inject(ContentMetadataService);
-    expect(service.transform(input, "imagesHome")).toEqual(output);
+    expect(service.transformFiles(input, "imagesHome")).toEqual(output);
   });
 });

@@ -69,6 +69,7 @@ export interface GroupEventsFilter {
   includeWalks: boolean;
   includeSocialEvents: boolean;
   includeCommitteeEvents: boolean;
+  sortBy?: string;
 }
 
 export interface NotificationContent {

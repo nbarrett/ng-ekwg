@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
-import get from "lodash-es/get";
 import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
 import pick from "lodash-es/pick";
@@ -46,6 +45,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() category: string;
   @Input() text: string;
   @Input() rows: number;
+  @Input() editCaptionText: string;
   @Input() editNameEnabled: boolean;
   @Input() deleteEnabled: boolean;
   @Input() editInitiallyActive: boolean;
@@ -79,6 +79,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     this.logger.debug("ngOnInit", this.name || this.data);
     this.editCaption = "querying";
     this.previewCaption = "querying";
+    this.editCaption = this.editCaptionText || "edit";
     this.editorState = {
       editActive: this.editInitiallyActive || this.siteEditService.active(),
       preview: this.previewInitiallyActive === undefined ? true : this.previewInitiallyActive,
@@ -94,14 +95,14 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
       this.originalContent = cloneDeep(this.content);
       this.setDescription();
     } else if (this.text) {
-      this.editCaption = "edit";
+      this.editCaptionText = this.editCaptionText || "edit";
       this.previewCaption = "preview";
       this.content = {name: this.name, text: this.text, category: this.category};
       this.originalContent = cloneDeep(this.content);
       this.logger.debug("editing injected content", this.content, "editorState:", this.editorState);
     } else {
       this.queryContent().then(() => {
-        this.editCaption = "edit";
+        this.editCaptionText = this.editCaptionText || "edit";
         this.previewCaption = "preview";
         this.setDescription();
         this.changeDetectorRef.detectChanges();

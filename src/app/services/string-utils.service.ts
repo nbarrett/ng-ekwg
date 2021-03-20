@@ -102,4 +102,7 @@ export class StringUtilsService {
     return str.substr(0, chars);
   }
 
+  pluraliseWithCount(count: number, text: string) {
+    return `${count} ${count === 1 ? text : text + "s"}`;
+  }
 }

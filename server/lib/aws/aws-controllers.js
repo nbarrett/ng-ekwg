@@ -1,4 +1,5 @@
 const {envConfig} = require("../env-config/env-config");
+const moment = require("moment-timezone");
 const {first, isObject, map} = require("lodash");
 const debug = require("debug")(envConfig.logNamespace("aws"));
 const AWS = require("aws-sdk");
@@ -13,15 +14,51 @@ http.globalAgent.maxSockets = 20;
 debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl);
 
 function expiryTime() {
-  var _date = new Date();
-  var expiryDate = `${_date.getFullYear()}-${_date.getMonth() + 1}-${_date.getDate() + 1}T${_date.getHours() + 3}:00:00.000Z`;
+  const _date = new Date();
+  const expiryDate = `${_date.getFullYear()}-${_date.getMonth() + 1}-${_date.getDate() + 1}T${_date.getHours() + 3}:00:00.000Z`;
   debug("expiryDate:", expiryDate);
   return expiryDate;
 }
 
-exports.get = (req, res, next) => {
+exports.listObjects = (req, res) => {
+  const bucketParams = {
+    Bucket: envConfig.aws.bucket,
+    Prefix: req.params.prefix,
+    MaxKeys: 2000
+  };
+  s3.listObjects(bucketParams, (err, data) => {
+    if (err) {
+      return res.status(500).send(err);
+    } else {
+      const response = data.Contents.map(item => ({
+        key: item.Key,
+        lastModified: moment(item.LastModified).tz("Europe/London").valueOf(),
+        size: item.Size
+      }))
+      return res.status(200).send(response);
+    }
+  });
+};
+
+exports.getObject = (req, res) => {
+  const key = `${req.params.bucket}${req.params[0]}`;
+  const options = {Bucket: envConfig.aws.bucket, Key: key};
+  debug("getting object", options);
+  try {
+    s3.getObject(options).createReadStream()
+      .on("error", error => {
+        debug("On error", error.message, "on s3 request", key);
+        res.status(500).send(error);
+      }).pipe(res)
+  } catch (error) {
+    debug("Caught error", error.message, "on s3 request", key);
+    res.status(500).send(error)
+  }
+};
+
+exports.get = (req, res) => {
   debug("req.method:", req.method, "req.url:", req.url, "req.params", req.params);
-  var remoteUrl = `${baseHostingUrl}/${req.params.bucket}${req.params[0]}`;
+  const remoteUrl = `${baseHostingUrl}/${req.params.bucket}${req.params[0]}`;
   debug("mapping Request from", req.method, req.url, "-> server path", remoteUrl);
   http.get(remoteUrl, serverResponse => {
     serverResponse.pipe(res);
@@ -34,7 +71,7 @@ exports.getConfig = (req, res) => res.send(envConfig.aws);
 
 exports.s3Policy = (req, res) => {
   debug("req.query.mimeType", req.query.mimeType, "req.query.objectKey", req.query.objectKey);
-  var s3Policy = {
+  const s3Policy = {
     "expiration": expiryTime(),
     "conditions": [
       ["starts-with", "$key", `${req.query.objectKey ? req.query.objectKey : ""}/`],
@@ -46,14 +83,14 @@ exports.s3Policy = (req, res) => {
   };
 
   // stringify and encode the policy
-  var stringPolicy = JSON.stringify(s3Policy);
-  var base64Policy = new Buffer(stringPolicy, "utf-8").toString("base64");
+  const stringPolicy = JSON.stringify(s3Policy);
+  const base64Policy = new Buffer(stringPolicy, "utf-8").toString("base64");
 
   debug("s3Policy", s3Policy);
   debug("config.aws.secretAccessKey", envConfig.aws.secretAccessKey);
 
   // sign the base64 encoded policy
-  var signature = crypto.createHmac("sha1", envConfig.aws.secretAccessKey)
+  const signature = crypto.createHmac("sha1", envConfig.aws.secretAccessKey)
     .update(new Buffer(base64Policy, "utf-8")).digest("base64");
 
   return res.status(200).send({
@@ -65,7 +102,6 @@ exports.s3Policy = (req, res) => {
 
 exports.listBuckets = (req, res) => {
   s3.listBuckets((err, data) => {
-    debug("data.Buckets", data);
     if (!err) {
       return res.status(200).send(data);
     } else {
@@ -110,15 +146,5 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
       const errorMessage = `Failed to upload object to ${bucket}/${objectKey}`;
       debug(errorMessage, "->", error);
       return ({responseData: error, error: errorMessage});
-    });
-};
-
-exports.getObject = (req, res) => {
-  var key = req.params.key + "/" + req.params.file;
-  var options = {Bucket: envConfig.aws.bucket, Key: key};
-  debug("getting object", options);
-  s3.getObject(options).createReadStream().pipe(res)
-    .on("error", e => {
-      debug("Got error", e.message, "on s3 request", key);
     });
 };

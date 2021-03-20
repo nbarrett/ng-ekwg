@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { take } from "lodash-es";
 import clone from "lodash-es/clone";
-import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ContentMetadataItem } from "../../models/content-metadata.model";
+import { ContentMetadataItem, RECENT_PHOTOS } from "../../models/content-metadata.model";
 import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
+import { DateUtilsService } from "../../services/date-utils.service";
+import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
@@ -19,16 +21,19 @@ import { SiteEditService } from "../../site-edit/site-edit.service";
 export class HomeComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public feeds: { facebook: {}; instagram: { recentMedia: InstagramMediaPost[] } };
-  public loadedSlides: ContentMetadataItem[] = [];
-  private availableSlides: ContentMetadataItem[] = [];
+  public viewableSlides: ContentMetadataItem[] = [];
+  private allSlides: ContentMetadataItem[] = [];
+  private selectedStorySlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
   public slideDisplayInterval = clone(this.slideInterval);
   private addNewSlideInterval: number;
 
   constructor(
+    public imageTagDataService: ImageTagDataService,
     private  memberLoginService: MemberLoginService,
     private  contentMetadataService: ContentMetadataService,
     private  siteEditService: SiteEditService,
+    private  dateUtils: DateUtilsService,
     private  instagramService: InstagramService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
@@ -41,10 +46,25 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.imageTagDataService.selectedTag().subscribe(tag => {
+      if (tag) {
+        this.viewableSlides = [];
+        const excludeFromRecentKeys: number[] = this.imageTagDataService.imageTagsSorted().filter(tag => tag.excludeFromRecent).map(tag => tag.key);
+        const sinceDate = this.dateUtils.momentNow().add(-6, "months");
+        const showRecentPhotos: boolean = tag === RECENT_PHOTOS;
+        this.selectedStorySlides = this.allSlides.filter(file => showRecentPhotos ?
+          file.date >= sinceDate.valueOf() && !file.tags.find(tag => excludeFromRecentKeys.includes(tag))
+          : file?.tags?.includes(tag.key));
+        this.logger.info(this.selectedStorySlides.length, "slides selected from tag:", tag.subject, "excludeFromRecentKeys:", excludeFromRecentKeys.join(", "), "sinceDate:", this.dateUtils.displayDate(sinceDate));
+        this.addNewSlide();
+      }
+    });
+
     this.contentMetadataService.items("imagesHome")
       .then(contentMetaData => {
-        this.availableSlides = take(contentMetaData.files, contentMetaData.files.length);
-        this.logger.debug("initialised with", this.availableSlides.length, "available slides");
+        this.allSlides = contentMetaData.files;
+        this.imageTagDataService.populateFrom(contentMetaData.imageTags);
+        this.logger.debug("initialised with", this.allSlides.length, "slides in total");
         this.addNewSlide();
       });
     this.instagramService.recentMedia()
@@ -61,22 +81,29 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   slidesFunction() {
-    this.logger.debug("slidesFunction - length:", this.loadedSlides.length);
-    return this.loadedSlides;
+    this.logger.debug("slidesFunction - length:", this.viewableSlides.length);
+    return this.viewableSlides;
   }
 
   allowEdits() {
     return this.siteEditService.active() && this.memberLoginService.allowContentEdits();
   }
 
+  eventUrl(slide: ContentMetadataItem) {
+    return this.urlService.notificationHref({
+      area: slide.dateSource,
+      id: slide.eventId
+    });
+  }
+
   addNewSlide(force?: boolean) {
     if (force || this.slideDisplayInterval > 0) {
-      this.logger.debug("addNewSlide - slide count:", this.loadedSlides.length);
-      if (this.loadedSlides.length < this.availableSlides.length) {
-        this.logger.debug("adding slide", this.loadedSlides.length + 1);
-        this.loadedSlides.push(this.availableSlides[this.loadedSlides.length]);
+      this.logger.info("addNewSlide - slide count:", this.viewableSlides.length);
+      if (this.viewableSlides.length < this.selectedStorySlides.length) {
+        this.logger.info("adding slide", this.viewableSlides.length + 1);
+        this.viewableSlides.push(this.selectedStorySlides[this.viewableSlides.length]);
       } else {
-        this.logger.debug("no more slides to add:", this.loadedSlides.length);
+        this.logger.info("no more slides to add:", this.viewableSlides.length);
         this.clearInterval();
       }
     } else {
@@ -90,8 +117,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   activeSlideChange(slideNumber: number) {
-    this.logger.debug("displaying slide:", slideNumber + 1, "slide count:", this.loadedSlides.length);
-    if (this.loadedSlides.length < this.availableSlides.length && slideNumber === this.loadedSlides.length - 1) {
+    this.logger.debug("displaying slide:", slideNumber + 1, "slide count:", this.viewableSlides.length);
+    if (this.viewableSlides.length < this.selectedStorySlides.length && slideNumber === this.viewableSlides.length - 1) {
       this.addNewSlide(true);
     }
   }

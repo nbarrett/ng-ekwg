@@ -105,7 +105,7 @@ export class CommitteeQueryService {
 
     return Promise.all(promises).then(() => {
       this.logger.info("performed total of", promises.length, "events types containing total of", events.length, "events:", events);
-      return events.sort(sortBy("eventDate"));
+      return events.sort(sortBy(groupEventsFilter.sortBy || "eventDate"));
     });
   }
 

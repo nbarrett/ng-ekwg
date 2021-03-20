@@ -13,6 +13,10 @@ export interface Identifiable {
   id?: string;
 }
 
+export interface WithMongoId {
+  _id?: string;
+}
+
 export enum ApiAction {
   CREATE = "create",
   DELETE = "delete",

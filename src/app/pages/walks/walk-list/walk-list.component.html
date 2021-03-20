@@ -67,48 +67,48 @@
               </td>
               <td width="13%" (click)="display.view(displayedWalk.walk)"
                   id="walkDate-{{index}}" class="nowrap">
-                            <span tooltip-placement="left"
+                            <span tooltipPlacement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="displayedWalk.walk.walkDate|displayDate" name="walkDate"></span></td>
               <td width="7%" (click)="display.view(displayedWalk.walk)"
                   id="startTime-{{index}}">
-                            <span tooltip-placement="left"
+                            <span tooltipPlacement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(displayedWalk, 'startTime')" name="startTime"></span>
               </td>
               <td width="32%" (click)="display.view(displayedWalk.walk)"
                   id="briefDescription-{{index}}">
-                            <span tooltip-placement="left"
+                            <span tooltipPlacement="left"
                                   tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(displayedWalk, 'briefDescriptionAndStartPoint')"
                                   name="briefDescriptionAndStartPoint"></span></td>
               <td width="7%" (click)="display.view(displayedWalk.walk)" id="distance-{{index}}">
-                            <span tooltip-placement="left" tooltip="Click to show walk detail"
+                            <span tooltipPlacement="left" tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(displayedWalk, 'distance')" name="distance"></span></td>
               <td width="8%" id="postcode-{{index}}">
                 <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(displayedWalk, 'postcode')"
                    target="_blank">
-                                <span tooltip-placement="left"
+                                <span tooltipPlacement="left"
                                       tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"
                                       [textContent]="viewWalkField(displayedWalk, 'postcode')"
                                       name="postcode"></span></a></td>
               <td width="12%" id="contactEmail-{{index}}">
                 <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail">
-                                <span tooltip-placement="left"
+                                <span tooltipPlacement="left"
                                       tooltip="Click to email {{displayedWalk.walk.displayName}} at {{viewWalkField(displayedWalk, 'contactEmail')}}"
                                       [textContent]="displayedWalk.walk.displayName" name="displayName"></span></a>
-                <span class="tooltip-link" *ngIf="!allowDetailView()" tooltip-placement="left"
-                      (click)="loginOrLogout()" tooltip-trigger="mouseenter"
+                <span class="tooltip-link" *ngIf="!allowDetailView()" tooltipPlacement="left"
+                      (click)="loginOrLogout()" tooltipTrigger="mouseenter"
                       tooltip="Click again to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}"
                       [textContent]="displayedWalk.walk.displayName"></span></td>
               <td width="11%" id="contactPhone-{{index}}">
                 <a *ngIf="allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
-                            <span tooltip-placement="left"
+                            <span tooltipPlacement="left"
                                   tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                   [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                   name="contactPhone"></span></a>
                 <a *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
-                                <span tooltip-placement="left"
+                                <span tooltipPlacement="left"
                                       tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                       [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                       name="contactPhone"></span></a>

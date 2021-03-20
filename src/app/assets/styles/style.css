@@ -2586,12 +2586,6 @@ table.inactive th {
   color: #fff;
 }
 
-.after-image-rule {
-  background: url("../images/ramblers/dot-darkgrey-hor.png") top repeat-x;
-  padding: 20px 0 10px 0;
-  margin: 0;
-}
-
 .green-icon {
   color: rgb(32, 191, 57);
   display: block;

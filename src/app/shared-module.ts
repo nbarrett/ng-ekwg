@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { HTTP_INTERCEPTORS} from "@angular/common/http";
+import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { ModuleWithProviders, NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
@@ -17,17 +17,18 @@ import { TabsModule } from "ngx-bootstrap/tabs";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
 import { MarkdownModule } from "ngx-markdown";
+import { TagifyModule } from "ngx-tagify";
 import { UiSwitchModule } from "ngx-ui-switch";
 import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { LoggedInGuard } from "./admin-login-guard.service";
 import { AuthInterceptor } from "./auth/auth.interceptor";
-import { ClipboardService } from "./services/clipboard.service";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
 import { ImageEditorComponent } from "./pages/image-editor/image-editor.component";
+import { TagEditorComponent } from "./pages/tag/tag-editor.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
@@ -55,7 +56,9 @@ import { SnakeCasePipe } from "./pipes/snakecase.pipe";
 import { UpdatedAuditPipe } from "./pipes/updated-audit-pipe";
 import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { BroadcastService } from "./services/broadcast-service";
+import { ClipboardService } from "./services/clipboard.service";
 import { CommitteeConfigService } from "./services/committee/commitee-config.service";
+import { ImageTagDataService } from "./services/image-tag-data-service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
 import { MemberResourcesReferenceDataService } from "./services/member/member-resources-reference-data.service";
@@ -83,10 +86,12 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     PopoverModule.forRoot(),
     RouterModule,
     TabsModule.forRoot(),
+    TagifyModule.forRoot(),
     TooltipModule.forRoot(),
     UiSwitchModule,
   ],
   declarations: [
+    TagEditorComponent,
     AccordionGroupComponent,
     ContactUsDirective,
     CreatedAuditPipe,
@@ -172,11 +177,12 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
-        ClipboardService,
         AuditDeltaChangedItemsPipePipe,
         AuditDeltaValuePipe,
+        ImageTagDataService,
         BroadcastService,
         ChangedItemsPipe,
+        ClipboardService,
         CommitteeConfigService,
         CustomNGXLoggerService,
         DisplayDateAndTimePipe,
@@ -186,7 +192,6 @@ export class SharedModule {
         EventNotePipe,
         FullNamePipe,
         FullNameWithAliasOrMePipe,
-        MemberResourcesReferenceDataService,
         FullNameWithAliasPipe,
         HumanisePipe,
         LastConfirmedDateDisplayed,
@@ -197,6 +202,7 @@ export class SharedModule {
         MeetupEventSummaryPipe,
         MemberIdsToFullNamesPipe,
         MemberIdToFullNamePipe,
+        MemberResourcesReferenceDataService,
         NotifierService,
         RouterHistoryService,
         SearchFilterPipe,
