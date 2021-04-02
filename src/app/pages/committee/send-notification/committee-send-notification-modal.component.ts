@@ -99,7 +99,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
       cancelled: false,
       content: {
         text: {value: "", include: true},
-        signoffText: {value: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,", include: true},
+        signoffText: {value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,", include: true},
         includeDownloadInformation: !!this.committeeFile,
         destinationType: "committee",
         addresseeType: "Hi *|FNAME|*,",
@@ -126,7 +126,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
 
     if (this.committeeFile) {
       this.notification.content.title.value = this.committeeFile.fileType;
-      this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I\"ve uploaded a new file to the EKWG website. The file information is as follows:";
+      this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the EKWG website. The file information is as follows:";
     }
 
     const promises: any[] = [

@@ -97,7 +97,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.defaultNotificationField(["attendees"], {include: this.socialEvent.attendees.length > 0});
     this.defaultNotificationField(["attachment"], {include: !!this.socialEvent.attachment});
     this.defaultNotificationField(["replyTo"], {include: true, value: this.roleForType(this.socialEvent.displayName ? "organiser" : "social").memberId});
-    this.defaultNotificationField(["signoffText"], {include: true, value: "If you have any questions about the above, please don\"t hesitate to contact me.\n\nBest regards,"});
+    this.defaultNotificationField(["signoffText"], {include: true, value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,"});
     this.defaultNotificationField(["signoffAs"], {include: true, value: this.roleForType("social").memberId});
     this.logger.debug("onFirstNotificationOnly - creating this.socialEvent.notification ->", this.socialEvent.notification);
   }

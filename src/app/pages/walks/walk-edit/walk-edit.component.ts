@@ -260,7 +260,7 @@ export class WalkEditComponent implements OnInit {
         this.notify.success({
           title: "Thanks for offering to lead this walk " + this.memberLoginService.loggedInMember().firstName + "!",
           message: "Please complete as many details you can, then click Save to allocate this slot on the walks programme. " +
-            "It will be published to the public once it\"s approved. If you want to release this slot again, just click Cancel."
+            "It will be published to the public once it's approved. If you want to release this slot again, just click Cancel."
         });
       } else {
         const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
@@ -407,7 +407,7 @@ export class WalkEditComponent implements OnInit {
     this.confirmAction = ConfirmType.CANCEL;
     this.notify.warning({
       title: "Cancel changes",
-      message: "Click Confirm to lose any changes you\"ve just made for " +
+      message: "Click Confirm to lose any changes you've just made for " +
         this.displayDate.transform(this.displayedWalk.walk.walkDate) + ", or Cancel to carry on editing."
     });
   }
@@ -580,7 +580,7 @@ export class WalkEditComponent implements OnInit {
       this.notify.warning({
         title: "This walk still has the following " + validationMessages.length + " field(s) that need attention",
         message: validationMessages.join(", ") +
-          ". You\"ll have to get the rest of these details completed before you mark the walk as approved."
+          ". You'll have to get the rest of these details completed before you mark the walk as approved."
       });
     } else {
       this.notify.success({
