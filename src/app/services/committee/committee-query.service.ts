@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { first } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
-import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsFilter } from "../../models/committee.model";
+import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsFilter, GroupEventTypes } from "../../models/committee.model";
 import { CommitteeDisplayService } from "../../pages/committee/committee-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { descending, sortBy } from "../arrays";
@@ -44,7 +44,7 @@ export class CommitteeQueryService {
     this.logger.debug("groupEventsFilter", groupEventsFilter);
     const fromDate = groupEventsFilter.fromDate.value;
     const toDate = groupEventsFilter.toDate.value;
-    this.logger.info("groupEventsFilter:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
+    this.logger.debug("groupEventsFilter:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
     const events: GroupEvent[] = [];
     const promises = [];
     const committeeContactDetails: CommitteeMember = this.committeeReferenceData.committeeMembersForRole("secretary")[0];
@@ -55,8 +55,7 @@ export class CommitteeQueryService {
           .then(walks => walks.forEach(walk => events.push({
             id: walk.id,
             selected: true,
-            eventType: "Walk",
-            area: "walks",
+            eventType: GroupEventTypes.WALK,
             eventDate: walk.walkDate,
             eventTime: walk.startTime,
             distance: walk.distance,
@@ -74,8 +73,7 @@ export class CommitteeQueryService {
           .then(committeeFiles => committeeFiles.forEach(committeeFile => events.push({
             id: committeeFile.id,
             selected: true,
-            eventType: "AGM & Committee",
-            area: "committee",
+            eventType: GroupEventTypes.COMMITTEE,
             eventDate: committeeFile.eventDate,
             postcode: committeeFile.postcode,
             description: committeeFile.fileType,
@@ -90,8 +88,7 @@ export class CommitteeQueryService {
           .then(socialEvents => socialEvents.forEach(socialEvent => events.push({
             id: socialEvent.id,
             selected: true,
-            eventType: "Social Event",
-            area: "social",
+            eventType: GroupEventTypes.SOCIAL,
             eventDate: socialEvent.eventDate,
             eventTime: socialEvent.eventTimeStart,
             postcode: socialEvent.postcode,
@@ -104,7 +101,7 @@ export class CommitteeQueryService {
     }
 
     return Promise.all(promises).then(() => {
-      this.logger.info("performed total of", promises.length, "events types containing total of", events.length, "events:", events);
+      this.logger.debug("performed total of", promises.length, "events types containing total of", events.length, "events:", events);
       return events.sort(sortBy(groupEventsFilter.sortBy || "eventDate"));
     });
   }
@@ -136,7 +133,7 @@ export class CommitteeQueryService {
 
   committeeFileYears(committeeFiles): CommitteeYear[] {
     const latestYearValue = this.latestYear(committeeFiles);
-    this.logger.info("latestYearValue", latestYearValue);
+    this.logger.debug("latestYearValue", latestYearValue);
     const years = chain(committeeFiles)
       .map(file => this.extractYear(file))
       .filter(year => !isNaN(year))
@@ -144,7 +141,7 @@ export class CommitteeQueryService {
       .map(item => this.addLatestYearFlag(item, latestYearValue))
       .value()
       .sort(descending());
-    this.logger.info("committeeFileYears", years);
+    this.logger.debug("committeeFileYears", years);
     return years.length === 0 ? [{year: this.latestYear(committeeFiles), latestYear: true}] : years;
   }
 

@@ -114,7 +114,7 @@ export class WalkEditComponent implements OnInit {
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
-    this.logger.info("displayedWalk:", this.displayedWalk);
+    this.logger.debug("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();
     this.siteEditService.events.subscribe(item => this.logDetectChanges());
     setInterval(() => {
@@ -127,7 +127,7 @@ export class WalkEditComponent implements OnInit {
   notificationRequired() {
     const walkDataAudit = this.walkEventService.walkDataAuditFor(this.displayedWalk.walk, this.status(), true);
     const notificationRequired = walkDataAudit.notificationRequired;
-    this.logger.info("dataHasChanged:", notificationRequired, "walkDataAudit:", walkDataAudit);
+    this.logger.debug("dataHasChanged:", notificationRequired, "walkDataAudit:", walkDataAudit);
     return notificationRequired;
   }
 
@@ -264,7 +264,7 @@ export class WalkEditComponent implements OnInit {
         });
       } else {
         const eventType: EventType = this.display.statusFor(this.displayedWalk.walk);
-        this.logger.info("eventType", eventType)
+        this.logger.debug("eventType", eventType);
         if (!isEmpty(eventType)) {
           this.setStatus(eventType);
           this.priorStatus = eventType;

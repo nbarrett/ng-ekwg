@@ -8,7 +8,7 @@ import { ContactUsComponent } from "./pages/contact-us/contact-us.component";
 import { HomeComponent } from "./pages/home/home.component";
 import { HowToComponent } from "./pages/how-to/how-to.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
-import { ImageEditorComponent } from "./pages/image-editor/image-editor.component";
+import { ImageListComponent } from "./pages/image-editor/image-list/image-list.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
 import { LetterheadComponent } from "./pages/letterhead/letterhead.component";
 import { Logger, LoggerFactory } from "./services/logger-factory.service";
@@ -23,7 +23,7 @@ const routes: Routes = [
   {path: "home", component: HomeComponent},
   {path: "how-to", component: HowToComponent},
   {path: "how-to/:member-resource-id", component: HowToComponent},
-  {path: "image-editor/:image-source", component: ImageEditorComponent},
+  {path: "image-editor/:image-source", component: ImageListComponent},
   {path: "join-us", component: JoinUsComponent},
   {path: "letterhead", component: LetterheadComponent},
   {path: "login", component: LoginComponent},

@@ -26,14 +26,6 @@ export class ContentMetadataService {
     return `${this.S3_BASE_URL}/${metaDataPathSegment}`;
   }
 
-  createNewMetaData(withDefaults): ContentMetadataItem {
-    if (withDefaults) {
-      return {image: "(select file)", text: "(Enter title here)"};
-    } else {
-      return {};
-    }
-  }
-
   transformFiles(contentMetaData: ContentMetadataApiResponse, contentMetaDataType: string): ContentMetadata {
     return {
       ...contentMetaData.response, files: contentMetaData.response.files.map(file => ({

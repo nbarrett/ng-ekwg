@@ -3,14 +3,20 @@
     <div class="sc-inner">
       <app-carousel-story-navigator></app-carousel-story-navigator>
       <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
-                [interval]="slideDisplayInterval" [showIndicators]="false"
-                (activeSlideChange)="activeSlideChange($event)">
-        <slide *ngFor="let slide of viewableSlides; let index = index; trackBy: slideTracker" active="slide.active">
-          <img [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
-          <div class="carousel-caption d-none d-md-block">
-            <h4>{{slide.text}}</h4>
-            <small *ngIf="slide.eventId">taken on <a
-              [href]="eventUrl(slide)">{{slide.date | displayDate}}</a></small>
+                [interval]="slideInterval"
+                [pauseOnFocus]="true"
+                [showIndicators]="false"
+                (activeSlideChange)="activeSlideChange()">
+        <slide *ngFor="let slide of viewableSlides; let index = index;">
+          <img *ngIf="slide" [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
+          <div class="carousel-caption form-inline">
+            <h4>{{slide.text}}
+            </h4>
+            <small tooltipPlacement="right" [tooltip]="eventTooltip(slide)" [adaptivePosition]=""
+                   (mouseenter)="hoverEvent(true)"
+                   (mouseleave)="hoverEvent(false)" [ngClass]="{'badge event-date-badge' : hoverActive}">
+              <a *ngIf="slide.eventId" [href]="eventUrl(slide)"> on {{slide.date | displayDate}}</a>
+            </small>
           </div>
         </slide>
       </carousel>
@@ -21,7 +27,8 @@
   <div class="no-header-padding" role="main">
     <div class="row">
       <div class="col-sm-12">
-        <a *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"><span class="badge">
+        <a *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"
+           [queryParams]="{story: imageTagDataService.currentTag()?.key}"><span class="badge">
       <i class="glyphicon glyphicon-pencil badge-icon"></i> edit images</span></a>
         <app-markdown-editor [editCaptionText]="'edit content'" class="green-bullets-no-rule"
                              name="welcome"></app-markdown-editor>

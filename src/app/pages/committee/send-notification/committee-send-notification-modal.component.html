@@ -192,7 +192,7 @@
                   <app-date-picker id="from-date"
                                    [size]="'md round'"
                                    (dateChange)="onFromDateChange($event)"
-                                   [dateValue]="this.notification.groupEventsFilter.fromDate">
+                                   [value]="this.notification.groupEventsFilter.fromDate">
                   </app-date-picker>
                 </div>
                 <div class="form-group">
@@ -200,7 +200,7 @@
                   <app-date-picker id="to-date"
                                    [size]="'md round'"
                                    (dateChange)="onToDateChange($event)"
-                                   [dateValue]="this.notification.groupEventsFilter.toDate">
+                                   [value]="this.notification.groupEventsFilter.toDate">
                   </app-date-picker>
                 </div>
               </div>
@@ -277,9 +277,9 @@
                               <span [textContent]="event.eventTime"></span>
                             </span>
                       •
-                      <span [textContent]="event.eventType"></span>
+                      <span [textContent]="event?.eventType?.description"></span>
                       •
-                      <app-notification-url [area]="event?.area"
+                      <app-notification-url [area]="event?.eventType.area"
                                             [id]="event?.id"
                                             [text]="event?.title"
                                             target="_blank"></app-notification-url>

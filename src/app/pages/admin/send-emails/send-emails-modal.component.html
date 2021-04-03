@@ -49,7 +49,7 @@
                       <app-date-picker *ngIf="memberSelectorName==='recently-added'"
                                        class="input-group calendar-in-label"
                                        (dateChange)="onMemberFilterDateChange($event)"
-                                       [dateValue]="memberFilterDate">
+                                       [value]="memberFilterDate">
                       </app-date-picker>
                     </label>
                   </div>
@@ -67,7 +67,7 @@
                       <app-date-picker *ngIf="memberSelectorName==='expired-members'"
                                        class="calendar-in-label"
                                        (dateChange)="onMemberFilterDateChange($event)"
-                                       [dateValue]="memberFilterDate">
+                                       [value]="memberFilterDate">
                       </app-date-picker>
                     </label>
                   </div>

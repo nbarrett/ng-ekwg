@@ -27,7 +27,8 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
-import { ImageEditorComponent } from "./pages/image-editor/image-editor.component";
+import { ImageEditComponent } from "./pages/image-editor/image-edit/image-edit.component";
+import { ImageListComponent } from "./pages/image-editor/image-list/image-list.component";
 import { TagEditorComponent } from "./pages/tag/tag-editor.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
@@ -58,6 +59,7 @@ import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { BroadcastService } from "./services/broadcast-service";
 import { ClipboardService } from "./services/clipboard.service";
 import { CommitteeConfigService } from "./services/committee/commitee-config.service";
+import { ImageDuplicatesService } from "./services/image-duplicates-service";
 import { ImageTagDataService } from "./services/image-tag-data-service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
@@ -90,39 +92,40 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     TooltipModule.forRoot(),
     UiSwitchModule,
   ],
-  declarations: [
-    TagEditorComponent,
-    AccordionGroupComponent,
-    ContactUsDirective,
-    CreatedAuditPipe,
-    DatePickerComponent,
-    DisplayDateAndTimePipe,
-    DisplayDatePipe,
-    DisplayDatesPipe,
-    DisplayDayPipe,
-    EventNotePipe,
-    FormatAuditPipe,
-    FullNamePipe,
-    FullNameWithAliasOrMePipe,
-    FullNameWithAliasPipe,
-    HumanisePipe,
-    ImageEditorComponent,
-    LastConfirmedDateDisplayed,
-    LineFeedsToBreaksPipe,
-    MarkdownEditorComponent,
-    MeetupEventSummaryPipe,
-    MemberIdsToFullNamesPipe,
-    MemberIdToFirstNamePipe,
-    MemberIdToFullNamePipe,
-    MoneyPipe,
-    NotificationUrlComponent,
-    PageComponent,
-    PanelExpanderComponent,
-    SearchFilterPipe,
-    SnakeCasePipe,
-    UpdatedAuditPipe,
-    ValueOrDefaultPipe,
-  ],
+    declarations: [
+        TagEditorComponent,
+        AccordionGroupComponent,
+        ContactUsDirective,
+        CreatedAuditPipe,
+        DatePickerComponent,
+        DisplayDateAndTimePipe,
+        DisplayDatePipe,
+        DisplayDatesPipe,
+        DisplayDayPipe,
+        EventNotePipe,
+        FormatAuditPipe,
+        FullNamePipe,
+        FullNameWithAliasOrMePipe,
+        FullNameWithAliasPipe,
+        HumanisePipe,
+        ImageListComponent,
+        LastConfirmedDateDisplayed,
+        LineFeedsToBreaksPipe,
+        MarkdownEditorComponent,
+        MeetupEventSummaryPipe,
+        MemberIdsToFullNamesPipe,
+        MemberIdToFirstNamePipe,
+        MemberIdToFullNamePipe,
+        MoneyPipe,
+        NotificationUrlComponent,
+        PageComponent,
+        PanelExpanderComponent,
+        SearchFilterPipe,
+        SnakeCasePipe,
+        UpdatedAuditPipe,
+        ValueOrDefaultPipe,
+        ImageEditComponent,
+    ],
   exports: [
     AccordionGroupComponent,
     AccordionModule,
@@ -180,6 +183,7 @@ export class SharedModule {
         AuditDeltaChangedItemsPipePipe,
         AuditDeltaValuePipe,
         ImageTagDataService,
+        ImageDuplicatesService,
         BroadcastService,
         ChangedItemsPipe,
         ClipboardService,

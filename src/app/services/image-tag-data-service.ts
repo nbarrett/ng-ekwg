@@ -46,6 +46,10 @@ export class ImageTagDataService {
     return this.imageTagsSorted().filter(tag => keys.includes(tag.key));
   }
 
+  currentTag(): ImageTag {
+    return this.findTag(this.selectedValue);
+  }
+
   findTag(value: ImageTag | number | string): ImageTag {
     if (typeof value === "object") {
       return this.findTag(value.key);

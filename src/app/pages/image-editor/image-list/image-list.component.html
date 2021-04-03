@@ -1,0 +1,100 @@
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Edit Images">
+  <div *ngIf="!allow.edit">
+    <div class="well"><img src="assets/images/ramblers/icon-members.png"
+                           alt="members area"/>
+      You need to be logged of with the correct administration privileges to view this page. Click the link above to
+      login.
+    </div>
+  </div>
+  <div *ngIf="allow.edit && contentMetadata">
+    <div class="row">
+      <div class="col-sm-6">
+        <h1>EKWG Image Editor
+          <br/>
+          <small>Add, remove, replace or re-order images for carousels</small>
+        </h1>
+      </div>
+      <div class="col-sm-6">
+        <div class="form-group">
+          <label for="imageSource">Edit images from</label>
+          <select [(ngModel)]="imageSource" id="imageSource" class="form-control round"
+                  (ngModelChange)="refreshImageMetaData(imageSource)">
+            <option selected="selected" value="imagesHome">Home Page</option>
+            <option value="imagesSocialEvents">Social Events</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="green-bullets-no-rule">
+      <ul>Directions for this page
+        <li>This page allows EKWG site content administrators to add, remove, replace or re-order images that are
+          displayed inside scrolling 'carousels' on the Home and the Social Events pages.
+        </li>
+        <li *ngIf="imageSource == 'imagesHome'">Please note of order for images to appear correctly for this view,
+          they must first be cropped to 940 pixels wide x 300 pixels high. This editor can't do that cropping
+          for you! (yet)
+        </li>
+        <li>Use the buttons to the right of each image to <b>replace</b>, <b>delete</b> or <b>insert</b> a new
+          image, or <b>move up or down</b> an existing image.
+        </li>
+        <li>Use the buttons just below these directions to save all of the changes you've just made or to exit
+          without saving if you've done something by mistake that you want to
+          undo!
+        </li>
+        <li>Add or change the title to the right of each image. This is displayed of white over the image. Try to
+          keep this below {{imageTitleLength()}} characters otherwise it will wrap onto the next
+          line and won't look quite as good.
+        </li>
+        <li>You can click <b>Reverse Sort Order</b> to get the carousel to start displaying the images from the
+          other end of the sort sequence
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 form-inline">
+        <input type="submit" value="Save Changes and Exit" (click)="saveChangeAndExit()" title="Save Changes and Exit"
+               class="button-form"/>
+        <input type="submit" value="Exit Without Saving" (click)="exitBackToPreviousWindow()"
+               title="Exit Without Saving" class="button-form"/>
+        <input type="submit" value="Reverse Sort Order" (click)="reverseSortOrder()" title="Reverse Sort Order"
+               class="button-form"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12 form-inline">
+        <div class="checkbox-group">
+          <label [ngClass]="{'ui-state-active': showDuplicates}" for="show-duplicates"><input
+            [(ngModel)]="showDuplicates"
+            (ngModelChange)="applyFilters()"
+            type="checkbox"
+            id="show-duplicates">Show images that are duplicated</label>
+        </div>
+        <label class="ml-6" for="filterByTag">Show images tagged with:</label>
+        <select [(ngModel)]="tagFilter" id="filterByTag" class="form-control round ml-6"
+                (ngModelChange)="applyFilters()">
+          <option *ngFor="let imageTag of selectableTags()"
+                  [ngValue]="imageTag.key"
+                  [textContent]="imageTag.subject">
+        </select>
+      </div>
+    </div>
+    <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+      <i class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+      {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+    </div>
+    <div class="thumbnail" *ngFor="let imageMetaDataItem of filteredFiles; let index = index;">
+      <app-edit-image [index]="index"
+                      [imageCount]="filteredFiles.length"
+                      [notify]="notify"
+                      [notifyTarget]="notifyTarget"
+                      [uploader]="uploader"
+                      [item]="imageMetaDataItem"
+                      (insert)="insert($event)"
+                      (imageChange)="imageChange($event)"
+                      (delete)="delete($event)"
+                      (moveUp)="moveUp($event)"
+                      (moveDown)="moveDown($event)">
+      </app-edit-image>
+    </div>
+  </div>
+</app-page>

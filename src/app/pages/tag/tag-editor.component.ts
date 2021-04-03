@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { cloneDeep, isEqual } from "lodash-es";
 import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { TagData, TagifySettings } from "ngx-tagify";
@@ -75,15 +76,23 @@ export class TagEditorComponent implements OnInit {
 
   onAdd(data) {
     const tagData: TagData = data.added;
+    const preAddTags: number[] = cloneDeep(this.tags);
     if (!tagData.key) {
       const newImage: ImageTag = this.imageTagData.addTag(tagData.value);
       this.tags.push(newImage.key);
-      this.logger.info("adding new Image tag", newImage);
-    } else {
+      this.logger.debug("adding new Image tag", newImage);
+    } else if (!this.tags.includes(tagData.key)) {
       this.tags.push(tagData.key);
       this.logger.debug("adding existing Image tag", tagData);
     }
-    this.tagsChange.emit(this.imageTagData.asImageTags(this.tags));
+
+    if (isEqual(preAddTags, this.tags)) {
+      this.logger.debug("onAdd:", this.text, "no change to tags", tagData);
+    } else {
+      const emitValue = this.imageTagData.asImageTags(this.tags);
+      this.logger.debug("onAdd:", this.text, "preAddTags:", preAddTags, "postAddTags:", this.tags, "emitting:", emitValue);
+      this.tagsChange.emit(emitValue);
+    }
   }
 
   onRemove(data: TagData[]) {

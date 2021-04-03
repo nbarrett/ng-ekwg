@@ -1,6 +1,35 @@
+import map from "lodash-es/map";
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
 import { DateValue } from "./date.model";
+
+export interface GroupEventType {
+  eventType: string;
+  area: string;
+  description: string;
+}
+
+export const GroupEventTypes: { [image: string]: GroupEventType } = {
+  WALK: {
+    area: "walks",
+    eventType: "walk",
+    description: "Walk"
+  },
+  SOCIAL: {
+    area: "social",
+    eventType: "socialEvent",
+    description: "Social Event"
+  },
+  COMMITTEE: {
+    area: "committee",
+    eventType: "AGM & Committee",
+    description: "Committee Event"
+  }
+};
+
+export function groupEventTypeFor(item: string): GroupEventType {
+  return map(GroupEventTypes, (item) => item).find((eventType: GroupEventType) => eventType.description === item || eventType.area === item || eventType.eventType === item);
+}
 
 export interface CommitteeFile extends Identifiable {
   eventDate?: number;
@@ -17,8 +46,7 @@ export interface CommitteeFileApiResponse extends ApiResponse {
 
 export interface GroupEvent extends Identifiable {
   selected: boolean;
-  eventType: string;
-  area: string;
+  eventType: GroupEventType;
   eventDate: number;
   eventTime?: string;
   distance?: string;

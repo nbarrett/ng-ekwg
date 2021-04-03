@@ -10,18 +10,18 @@ const ContentMetadataItem = mongoose.Schema({
   tags: [{type: Number}]
 });
 
-const imageTagSchema = mongoose.Schema({
+const imageTag = {
   key: {type: Number},
   sortIndex: {type: Number},
   subject: {type: String},
   excludeFromRecent: {type: Boolean}
-});
+};
 
 const ContentMetadataSchema = mongoose.Schema({
   baseUrl: {type: String, required: true},
   contentMetaDataType: {type: String, required: true},
   files: [ContentMetadataItem],
-  imageTags: [imageTagSchema]
+  imageTags: [imageTag]
 }, {collection: "contentMetaData"});
 
 ContentMetadataSchema.plugin(uniqueValidator);

@@ -1,10 +1,5 @@
 import { ApiResponse, WithMongoId } from "./api-response.model";
 
-export enum EventType {
-  WALK = "walk",
-  SOCIAL = "social"
-}
-
 export interface ContentMetadata {
   id: string;
   baseUrl: string;
@@ -17,6 +12,11 @@ export interface S3Metadata {
   key: string;
   lastModified: number;
   size: number;
+}
+
+export interface ContentMetadataItemWithIndex {
+  item: ContentMetadataItem;
+  index?: number;
 }
 
 export interface ContentMetadataItem extends WithMongoId {
