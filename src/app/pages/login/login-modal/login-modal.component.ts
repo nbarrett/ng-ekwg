@@ -59,7 +59,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
             animated: false,
             show: true,
             initialState: {
-              member: this.memberLoginService.loggedInMember().memberId
+              memberId: this.memberLoginService.loggedInMember().memberId
             }
           });
         }

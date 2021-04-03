@@ -16,13 +16,14 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, MemberUpdateAuditTableFilter, MemberTableFilter } from "../../../models/table-filtering.model";
+import { ASCENDING, DESCENDING, MemberTableFilter, MemberUpdateAuditTableFilter } from "../../../models/table-filtering.model";
+import { EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MemberBulkLoadAuditService } from "../../../services/member/member-bulk-load-audit.service";
@@ -201,7 +202,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
       class: "modal-lg",
       show: true,
       initialState: {
-        memberEditMode: "Add New",
+        editMode: EditMode.ADD_NEW,
         member,
         members: this.members,
       }

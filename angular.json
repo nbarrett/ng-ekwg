@@ -60,15 +60,18 @@
               "./node_modules/popper.js/dist/umd/popper.min.js",
               "./node_modules/jquery/dist/jquery.slim.min.js",
               "./node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ],
-            "es5BrowserSupport": true
+            ]
           },
           "configurations": {
             "production": {
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "hidden": true,
+                "vendor": true
+              },
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,

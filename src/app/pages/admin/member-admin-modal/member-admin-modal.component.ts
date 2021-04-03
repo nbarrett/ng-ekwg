@@ -30,12 +30,9 @@ import { StringUtilsService } from "../../../services/string-utils.service";
 export class MemberAdminModalComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  member: Member;
-  editMode: EditMode;
   lastLoggedIn: number;
   membershipExpiryDate: DateValue;
   private logger: Logger;
-  members: Member[] = [];
   memberUpdateAudits: MemberUpdateAudit[] = [];
   public allowEdits: boolean;
   public allowDelete: boolean;
@@ -43,6 +40,9 @@ export class MemberAdminModalComponent implements OnInit {
   public allowConfirmDelete = false;
   public saveInProgress: boolean;
   private duplicate: boolean;
+  public member: Member;
+  public editMode: EditMode;
+  public members: Member[] = [];
 
   constructor(private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,

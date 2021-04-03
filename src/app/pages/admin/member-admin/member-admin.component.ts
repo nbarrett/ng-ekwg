@@ -9,7 +9,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, SELECT_ALL } from "../../../models/table-filtering.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -198,17 +198,16 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.notify.clearBusy();
   }
 
-  showMemberDialog(member, memberEditMode) {
-    this.logger.debug("showMemberDialog:", memberEditMode, member);
-    const config: ModalOptions = {
+  showMemberDialog(member: Member, editMode: EditMode) {
+    this.logger.debug("showMemberDialog:", editMode, member);
+    this.modalService.show(MemberAdminModalComponent, {
       class: "modal-lg",
       animated: false,
       show: true,
       initialState: {
-        memberEditMode, member, members: this.members
+        editMode, member, members: this.members
       }
-    };
-    this.modalService.show(MemberAdminModalComponent, config);
+    });
   }
 
   showArea(area) {
@@ -261,11 +260,11 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.mailchimpListService.defaultMailchimpSettings(member, true);
     member.groupMember = true;
     member.socialMember = true;
-    this.showMemberDialog(member, "Add New");
+    this.showMemberDialog(member, EditMode.ADD_NEW);
   }
 
   editMember(member) {
-    this.showMemberDialog(member, "Edit Existing");
+    this.showMemberDialog(member, EditMode.EDIT);
   }
 
   refreshMembers(memberFilter?: any) {

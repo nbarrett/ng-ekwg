@@ -18,13 +18,13 @@ import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-pa
 })
 export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  private message;
   private notify: AlertInstance;
   private subscription: Subscription;
   public newPassword: string;
   public newPasswordConfirm: string;
   public notifyTarget: AlertTarget = {};
   public userName;
+  public message: string;
 
   constructor(public bsModalRef: BsModalRef,
               private modalService: BsModalService,
@@ -58,7 +58,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
             animated: false,
             show: true,
             initialState: {
-              member: this.memberLoginService.loggedInMember().memberId
+              memberId: this.memberLoginService.loggedInMember().memberId
             }
           });
           this.bsModalRef.hide();
