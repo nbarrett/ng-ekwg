@@ -1,3 +1,4 @@
+import { ScrollingModule } from "@angular/cdk/scrolling";
 import { CommonModule } from "@angular/common";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { ModuleWithProviders, NgModule } from "@angular/core";
@@ -91,6 +92,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     TagifyModule.forRoot(),
     TooltipModule.forRoot(),
     UiSwitchModule,
+    ScrollingModule,
   ],
     declarations: [
         TagEditorComponent,

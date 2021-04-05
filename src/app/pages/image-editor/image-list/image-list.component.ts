@@ -152,7 +152,9 @@ export class ImageListComponent implements OnInit {
 
   applyFiltersFromTag() {
     this.logger.debug("applyFiltersFromTag:this.selectedTag", this.selectedTag);
-    this.updateQueryParams({story: this.selectedTag.key});
+    if (this.filterType !== "all") {
+      this.updateQueryParams({story: this.selectedTag.key});
+    }
     this.applyFilters();
   }
 
@@ -336,8 +338,12 @@ export class ImageListComponent implements OnInit {
     } else {
       this.selectedTag = this.selectableTags()[0];
     }
+    this.logger.debug("filtering based on filterType:", this.filterType);
     this.applyFilters();
-    this.updateQueryParams({story: this.selectedTag.key});
+    if (this.filterType !== "all") {
+      this.updateQueryParams({story: this.selectedTag.key});
+    }
+
   }
 
   private selectTag() {

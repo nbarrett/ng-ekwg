@@ -125,17 +125,20 @@
         uploading {{uploader.progress}}%
       </div>
     </div>
-    <div class="thumbnail" *ngFor="let imageMetaDataItem of filesFiltered(); let index = index; trackBy: metadataItemTracker">
-      <app-edit-image [index]="index"
-                      [filteredFiles]="filesFiltered()"
-                      [fileElement]="fileElement"
-                      [item]="imageMetaDataItem"
-                      (imageInsert)="imageInsert($event)"
-                      (imageChange)="imageChange($event)"
-                      (delete)="delete($event)"
-                      (moveUp)="moveUp($event)"
-                      (moveDown)="moveDown($event)">
-      </app-edit-image>
-    </div>
+    <cdk-virtual-scroll-viewport itemSize="50" class="visible-viewport">
+      <div *cdkVirtualFor="let imageMetaDataItem of filesFiltered();"
+           class="thumbnail">
+        <app-edit-image [index]="0"
+                        [filteredFiles]="filesFiltered()"
+                        [fileElement]="fileElement"
+                        [item]="imageMetaDataItem"
+                        (imageInsert)="imageInsert($event)"
+                        (imageChange)="imageChange($event)"
+                        (delete)="delete($event)"
+                        (moveUp)="moveUp($event)"
+                        (moveDown)="moveDown($event)">
+        </app-edit-image>
+      </div>
+    </cdk-virtual-scroll-viewport>
   </div>
 </app-page>
