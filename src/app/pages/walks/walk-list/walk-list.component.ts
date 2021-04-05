@@ -181,7 +181,7 @@ export class WalkListComponent implements OnInit {
         });
     } else {
       const criteria = this.walksCriteriaObject();
-      this.logger.info("walksCriteriaObject:this.filterParameters.criteria", criteria);
+      this.logger.debug("walksCriteriaObject:this.filterParameters.criteria", criteria);
       return this.walksService.all({criteria, sort: this.walksSortObject()});
     }
   }

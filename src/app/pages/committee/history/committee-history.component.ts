@@ -65,7 +65,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit");
+    this.logger.debug("ngOnInit");
     this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });

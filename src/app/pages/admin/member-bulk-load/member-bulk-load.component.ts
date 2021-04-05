@@ -101,7 +101,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");
-      this.logger.info("tab is", tab);
+      this.logger.debug("tab is", tab);
     });
 
     this.searchChangeObservable = new Subject<string>();
@@ -118,7 +118,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
         this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
       } else {
         const memberBulkLoadAuditApiResponse: MemberBulkLoadAuditApiResponse = JSON.parse(response);
-        this.logger.info("received response", memberBulkLoadAuditApiResponse);
+        this.logger.debug("received response", memberBulkLoadAuditApiResponse);
         this.memberBulkUploadService.processResponse(memberBulkLoadAuditApiResponse, this.members, this.notify)
           .then(() => this.refreshMemberBulkLoadAudit())
           .then(() => this.refreshMemberUpdateAudit())
@@ -190,7 +190,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(searchEntry: string) {
-    this.logger.info("received searchEntry:" + searchEntry);
+    this.logger.debug("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
   }
 
@@ -376,7 +376,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
 
   bulkUploadRamblersDataStart() {
     const elementById: HTMLElement = this.document.getElementById("browse-to-file");
-    this.logger.info("bulkUploadRamblersDataStart:elementById", elementById);
+    this.logger.debug("bulkUploadRamblersDataStart:elementById", elementById);
     elementById.click();
   }
 }

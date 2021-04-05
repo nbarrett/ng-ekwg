@@ -1,30 +1,25 @@
 <div class="row" (mouseenter)="refreshGroupEventsIfRequired()">
   <div class="col-sm-7">
     <div class="form-group">
-      <label [for]="'image-' + index">Image {{index + 1}} of {{imageCount}}</label>
-      <img loading="lazy" [id]="'image-' + index" class="img-responsive" [src]="item.image" alt=""/>
+      <label [for]="'image-' + index">Image {{index + 1}} of {{filteredFiles?.length}}</label>
+      <img loading="lazy" [id]="'image-' + index" class="img-responsive" [src]="item?.image" alt=""/>
     </div>
     <div class="form-group">
-      <input type="submit" value="Replace" (click)="replace(fileElement)"
+      <input type="button" value="Replace" (click)="replace(fileElement)"
              title="Replace this image"
              class="button-form"/>
-      <input type="submit" value="Delete" (click)="callDelete()" title="Delete this image"
+      <input type="button" value="Delete" (click)="callDelete()" title="Delete this image"
              class="button-form"/>
-      <input type="submit" value="Insert" (click)="callInsert(fileElement)"
+      <input type="button" value="Insert" (click)="callInsert(fileElement)"
              title="Insert new image before this one" class="button-form"/>
-      <input type="submit" value="Move up" (click)="callMoveUp()"
-             title="move this image up of the sequence" class="button-form"/>
-      <input type="submit" value="Move down" (click)="callMoveDown()"
-             title="move this image down of the sequence" class="button-form"/>
-      <input #fileElement [id]="'browse-to-file-' + index" name="attachment" class="hidden-input"
-             type="file" value="Upload"
-             ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader"/>
-      <div *ngIf="false" ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-           (fileOver)="fileOver(index)"
-           (onFileDrop)="fileDropped($event)"
-           [uploader]="uploader"
-           class="well drop-zone">Or drop file here
-      </div>
+      <input [disabled]="!canMoveUp" type="button" value="Move up"
+             (click)="callMoveUp()"
+             title="move this image up in the sequence"
+             [ngClass]="canMoveUp ? 'button-form': 'disabled-button-form'"/>
+      <input [disabled]="!canMoveDown" type="button"
+             value="Move down" (click)="callMoveDown()"
+             title="move this image down in the sequence"
+             [ngClass]="canMoveDown ? 'button-form': 'disabled-button-form'"/>
     </div>
   </div>
   <div class="col-sm-5">
@@ -34,41 +29,40 @@
                 rows="2" [id]="'image-title-' + index" placeholder="Enter title for image"></textarea>
     </div>
     <div class="row">
-      <div class="col-sm-6">
+      <div class="col-sm-5">
         <div class="form-group">
           <label [for]="'dateSource-' + index">Date Source:</label>
           <select [(ngModel)]="item.dateSource" [id]="'dateSource-' + index" class="form-control"
-                  (ngModelChange)="filterEventsBySourceAndDate($event, item.date)">
+                  (ngModelChange)="filterEventsBySourceAndDate($event, item?.date)">
             <option *ngFor="let dateSource of dateSources()"
                     [ngValue]="dateSource.area">{{dateSource.description}}</option>
           </select>
         </div>
       </div>
-      <div class="col-sm-6 no-left-padding">
+      <div class="col-sm-7 no-left-padding">
         <div class="form-group no-left-padding">
           <app-date-picker [label]="'Image Date'"
                            [size]="'md'"
                            (dateChange)="onImageDateChange($event)"
-                           [value]="item.date">
+                           [value]="item?.date">
           </app-date-picker>
         </div>
       </div>
     </div>
     <div class="form-group">
-      <app-tag-editor [tags]="item.tags"
-                      [text]="item.text"
+      <app-tag-editor [tags]="item?.tags"
+                      [text]="item?.text"
                       (tagsChange)="tagsChange($event)"></app-tag-editor>
     </div>
   </div>
 </div>
-<div class="row" *ngIf="item.dateSource!=='upload'">
+<div class="row" *ngIf="item?.dateSource!=='upload'">
   <div class="col-sm-12">
-    <label>Link to {{item.dateSource}} event</label>
+    <label>Link to {{item?.dateSource}} event</label>
     <ng-select #select [items]="groupEvents"
                bindLabel="description"
                bindValue="id"
-               [placeholder]="'Select a ' + item.dateSource"
-               [disabled]="notifyTarget.busy"
+               [placeholder]="'Select a ' + item?.dateSource"
                [dropdownPosition]="'bottom'"
                [closeOnSelect]="true"
                [(ngModel)]="item.eventId"
@@ -76,8 +70,8 @@
                (change)="onChange()"
                (click)="selectClick(select)">
       <ng-template ng-optgroup-tmp let-item="item">
-        <span class="group-header">{{item.name}} {{item.dateSource}} </span>
-        <span class="ml-1 badge badge-secondary badge-group"> {{item.total}} </span>
+        <span class="group-header">{{item?.name}} {{item?.dateSource}} </span>
+        <span class="ml-1 badge badge-secondary badge-group"> {{item?.total}} </span>
       </ng-template>
     </ng-select>
   </div>
@@ -90,9 +84,3 @@
     </div>
   </div>
 </div>
-<div class="progress mt-6" *ngIf="notifyTarget.busy">
-  <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
-    uploading {{uploader.progress}}%
-  </div>
-</div>
-

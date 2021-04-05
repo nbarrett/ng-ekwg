@@ -183,7 +183,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(searchEntry: string) {
-    this.logger.info("received searchEntry:" + searchEntry);
+    this.logger.debug("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
   }
 
@@ -191,10 +191,10 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.notify.setBusy();
     const filter = this.memberFilter.selectedFilter.filter;
     const sort = this.memberFilter.sortFunction;
-    this.logger.info("applyFilterToMembers:filter:", filter, "sort:", sort, "reverseSort:", this.memberFilter.reverseSort);
+    this.logger.debug("applyFilterToMembers:filter:", filter, "sort:", sort, "reverseSort:", this.memberFilter.reverseSort);
     const members = sortBy(this.searchFilterPipe.transform(this.members.filter(filter), this.quickSearch), sort);
     this.memberFilter.results = this.memberFilter.reverseSort ? members.reverse() : members;
-    this.logger.info("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.members.length, "members ->", this.memberFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.memberFilter.reverseSort);
+    this.logger.debug("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.members.length, "members ->", this.memberFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.memberFilter.reverseSort);
     this.notify.clearBusy();
   }
 
@@ -268,7 +268,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   refreshMembers(memberFilter?: any) {
-    this.logger.info("refreshMembers:this.memberFilter.filterSelection", this.memberFilter.selectedFilter, "passed memberFilter:", memberFilter);
+    this.logger.debug("refreshMembers:this.memberFilter.filterSelection", this.memberFilter.selectedFilter, "passed memberFilter:", memberFilter);
     if (memberFilter) {
       this.memberFilter.selectedFilter = memberFilter;
     }
@@ -277,7 +277,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       return this.memberService.all()
         .then(refreshedMembers => {
           this.members = refreshedMembers;
-          this.logger.info("refreshMembers:found", refreshedMembers.length, "members");
+          this.logger.debug("refreshMembers:found", refreshedMembers.length, "members");
           this.applyFilterToMembers();
           return this.members;
         });

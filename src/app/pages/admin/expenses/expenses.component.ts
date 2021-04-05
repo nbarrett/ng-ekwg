@@ -158,7 +158,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
         showOnlyMine: !this.display.allowAdminFunctions(),
         filter: this.filters[!!this.expenseId ? 0 : 1]
       };
-      this.logger.info("ngOnInit - expense-id:", this.expenseId, "this.filters:", this.filters, "this.selected:", this.selected);
+      this.logger.debug("ngOnInit - expense-id:", this.expenseId, "this.filters:", this.filters, "this.selected:", this.selected);
       this.refreshMembers()
         .then(() => this.refreshExpenses())
         .then(() => this.notify.setReady())
@@ -173,7 +173,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   private applyExpensesToView(apiResponse: ApiResponse) {
     const expenseClaims: ExpenseClaim[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
-    this.logger.info("Received", expenseClaims.length, "expense", apiResponse.action, "notification(s)");
+    this.logger.debug("Received", expenseClaims.length, "expense", apiResponse.action, "notification(s)");
     if (apiResponse.action === ApiAction.QUERY) {
       this.unfilteredExpenseClaims = expenseClaims;
     } else {
@@ -452,13 +452,13 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   changeFilter($event?: ExpenseFilter) {
-    this.logger.info("changeFilter fired with", $event);
+    this.logger.debug("changeFilter fired with", $event);
     this.selected.filter = $event;
     this.refreshExpenses();
   }
 
   query(): void {
-    this.logger.info("expenseFilter.description", this.selected.filter.description, "expenseId", this.expenseId);
+    this.logger.debug("expenseFilter.description", this.selected.filter.description, "expenseId", this.expenseId);
     try {
       if (this.selected.filter.description === SELECTED_EXPENSE && this.expenseId) {
         this.expenseClaimService.getById(this.expenseId);

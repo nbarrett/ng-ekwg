@@ -88,12 +88,12 @@ export class MailchimpListSubscriptionService {
           merge_fields: this.mailchimpListService.toMergeVariables(member)
         };
       });
-    this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
+    this.logger.debug("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
     if (subscriptionRequests.length > 0) {
-      this.logger.info("sending", subscriptionRequests.length, listType, "subscriptions to mailchimp", subscriptionRequests);
+      this.logger.debug("sending", subscriptionRequests.length, listType, "subscriptions to mailchimp", subscriptionRequests);
       return this.mailchimpListService.batchSubscribe(listType, subscriptionRequests)
         .then((response: MailchimpBatchSubscriptionResponse) => {
-          this.logger.info("createBatchSubscriptionForList response", response);
+          this.logger.debug("createBatchSubscriptionForList response", response);
           const savePromises = [];
           this.processValidResponses(listType, response.updated_members.concat(response.new_members), batchedMembers, savePromises);
           this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);

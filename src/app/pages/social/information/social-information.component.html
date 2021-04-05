@@ -12,9 +12,9 @@
         <div class="carousel-wrapper">
           <div class="slider-container">
             <div class="sc-inner">
-              <carousel interval="interval">
+              <carousel [interval]="slideInterval">
                 <slide *ngFor="let slide of slides" active="slide.active">
-                  <img [src]="slide.image" class="carousel-image">
+                  <img class="img-responsive center-block carousel-image" loading="lazy" [src]="slide.image">
                   <div class="carousel-caption d-none d-md-block">
                     <h4>{{slide.text}}</h4>
                   </div>

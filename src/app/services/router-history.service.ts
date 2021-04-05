@@ -26,7 +26,7 @@ export class RouterHistoryService {
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(({urlAfterRedirects}: NavigationEnd) => {
         this.pageHistory = [...this.pageHistory, urlAfterRedirects];
-        this.logger.info("constructed: pageHistory:urlAfterRedirects", urlAfterRedirects, "history now:", this.pageHistory);
+        this.logger.debug("constructed: pageHistory:urlAfterRedirects", urlAfterRedirects, "history now:", this.pageHistory);
       });
   }
 

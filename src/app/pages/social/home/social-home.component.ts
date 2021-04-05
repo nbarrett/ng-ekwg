@@ -54,7 +54,7 @@ export class SocialHomeComponent implements OnInit {
     this.allow.edits = this.memberLoginService.allowSocialAdminEdits();
     this.allow.copy = this.memberLoginService.allowSocialAdminEdits();
     this.allow.contentEdits = this.siteEditService.active() && this.memberLoginService.allowContentEdits();
-    this.logger.info("permissions:", this.allow);
+    this.logger.debug("permissions:", this.allow);
   }
 
 }

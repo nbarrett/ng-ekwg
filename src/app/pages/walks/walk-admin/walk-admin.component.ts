@@ -39,7 +39,7 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
 
   private setPrivileges(loginResponse?: LoginResponse) {
     this.allowAdminEdits = this.memberLoginService.allowWalkAdminEdits();
-    this.logger.info("setPrivileges:allowAdminEdits", this.allowAdminEdits);
+    this.logger.debug("setPrivileges:allowAdminEdits", this.allowAdminEdits);
   }
 
   selectWalksForExport() {

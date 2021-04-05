@@ -30,6 +30,10 @@ export class ImageTagDataService {
     this.publishChanges();
   }
 
+  imageTags(): Observable<ImageTag[]> {
+    return this.tagSubjects.asObservable();
+  }
+
   private publishChanges() {
     this.tagSubjects.next(this.imageTagData);
   }
@@ -62,10 +66,6 @@ export class ImageTagDataService {
     const sorted = this.imageTagData.sort(sortBy("sortIndex", "subject"));
     this.logger.debug("imageTagsSorted:", sorted);
     return sorted;
-  }
-
-  imageTags(): Observable<ImageTag[]> {
-    return this.tagSubjects.asObservable();
   }
 
   isActive(tag: ImageTag): boolean {

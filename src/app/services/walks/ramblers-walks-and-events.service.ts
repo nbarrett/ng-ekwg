@@ -90,30 +90,30 @@ export class RamblersWalksAndEventsService {
 
   updateWalksWithRamblersWalkData(ramblersWalksResponses: RamblersWalkResponse[], walks: Walk[]) {
     let unreferencedList = this.collectExistingRamblersIdsFrom(walks);
-    this.logger.info(unreferencedList.length, " existing ramblers walk(s) found", unreferencedList);
+    this.logger.debug(unreferencedList.length, " existing ramblers walk(s) found", unreferencedList);
     const savePromises = [];
     ramblersWalksResponses.forEach(ramblersWalksResponse => {
       const foundWalk = walks.find(walk => this.dateUtils.asString(walk.walkDate, undefined, "dddd, Do MMMM YYYY") === ramblersWalksResponse.ramblersWalkDate);
       if (!foundWalk) {
-        this.logger.info("no match found for ramblersWalksResponse", ramblersWalksResponse);
+        this.logger.debug("no match found for ramblersWalksResponse", ramblersWalksResponse);
       } else {
         unreferencedList = without(unreferencedList, ramblersWalksResponse.ramblersWalkId);
         if (foundWalk && foundWalk.ramblersWalkId !== ramblersWalksResponse.ramblersWalkId) {
-          this.logger.info("updating walk from", foundWalk.ramblersWalkId || "empty", "->", ramblersWalksResponse.ramblersWalkId, "on", this.displayDate.transform(foundWalk.walkDate));
+          this.logger.debug("updating walk from", foundWalk.ramblersWalkId || "empty", "->", ramblersWalksResponse.ramblersWalkId, "on", this.displayDate.transform(foundWalk.walkDate));
           foundWalk.ramblersWalkId = ramblersWalksResponse.ramblersWalkId;
           savePromises.push(this.walksService.createOrUpdate(foundWalk));
         } else {
-          this.logger.info("no update required for walk", foundWalk.ramblersWalkId, foundWalk.walkDate, this.dateUtils.displayDay(foundWalk.walkDate));
+          this.logger.debug("no update required for walk", foundWalk.ramblersWalkId, foundWalk.walkDate, this.dateUtils.displayDay(foundWalk.walkDate));
         }
       }
     });
 
     if (unreferencedList.length > 0) {
-      this.logger.info("removing old ramblers walk(s)", unreferencedList, "from existing walks");
+      this.logger.debug("removing old ramblers walk(s)", unreferencedList, "from existing walks");
       unreferencedList.map(ramblersWalkId => {
         const walk = findWhere(walks, {ramblersWalkId});
         if (walk) {
-          this.logger.info("removing ramblers walk", walk.ramblersWalkId, "from walk on", this.displayDate.transform(walk.walkDate));
+          this.logger.debug("removing ramblers walk", walk.ramblersWalkId, "from walk on", this.displayDate.transform(walk.walkDate));
           walk.ramblersWalkId = "";
           savePromises.push(this.walksService.createOrUpdate(walk));
         }
@@ -137,7 +137,7 @@ export class RamblersWalksAndEventsService {
 
   uploadToRamblers(walkExports, members: Member[], notify): Promise<string> {
     notify.setBusy();
-    this.logger.info("sourceData", walkExports);
+    this.logger.debug("sourceData", walkExports);
     const walkIdDeletionList: string[] = this.exportableWalks(walkExports).map(walkExport => walkExport.walk)
       .filter(walk => walk.ramblersWalkId).map(walk => walk.ramblersWalkId);
     const rows = this.walkUploadRows(walkExports, members);
@@ -149,7 +149,7 @@ export class RamblersWalksAndEventsService {
       walkIdDeletionList,
       ramblersUser: this.memberLoginService.loggedInMember().firstName
     };
-    this.logger.info("exporting", walksUploadRequest);
+    this.logger.debug("exporting", walksUploadRequest);
     notify.warning({
       title: "Ramblers walks upload",
       message: "Uploading " + rows.length + " walk(s) to Ramblers..."
@@ -160,12 +160,12 @@ export class RamblersWalksAndEventsService {
           title: "Ramblers walks upload",
           message: "Upload of " + rows.length + " walk(s) to Ramblers has been submitted. Monitor the Walk upload audit tab for progress"
         });
-        this.logger.info("success response data", response);
+        this.logger.debug("success response data", response);
         notify.clearBusy();
         return fileName;
       })
       .catch(response => {
-        this.logger.info("error response data", response);
+        this.logger.debug("error response data", response);
         return notify.error({
           title: "Ramblers walks upload failed",
           message: response
@@ -196,8 +196,11 @@ export class RamblersWalksAndEventsService {
       if (isEmpty(walk.longerDescription)) {
         validationMessages.push("description is missing");
       }
-      if (isEmpty(walk.postcode) && isEmpty(walk.gridReference)) {
-        validationMessages.push("both postcode and grid reference are missing");
+      if (isEmpty(walk.postcode)) {
+        validationMessages.push("postcode is missing");
+      }
+      if (isEmpty(walk.gridReference)) {
+        validationMessages.push("grid reference is missing");
       }
       if (isEmpty(walk.contactId)) {
         const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "this can be supplied for this walk on Walk Leader tab" : "this will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
@@ -249,7 +252,7 @@ export class RamblersWalksAndEventsService {
     } else {
       const member = members.find(member => member.id === walk.walkLeaderMemberId);
       const returnValue = member && member.contactId;
-      this.logger.info("contactId: for walkLeaderMemberId", walk.walkLeaderMemberId, "->", returnValue);
+      this.logger.debug("contactId: for walkLeaderMemberId", walk.walkLeaderMemberId, "->", returnValue);
       return returnValue;
     }
   }

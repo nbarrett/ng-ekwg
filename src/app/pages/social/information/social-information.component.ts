@@ -22,7 +22,7 @@ export class SocialInformationComponent implements OnInit {
   @Input()
   public notifyTarget: AlertTarget;
   public slides: ContentMetadataItem[];
-
+  public slideInterval = 5000;
   constructor(private contentMetadataService: ContentMetadataService,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,

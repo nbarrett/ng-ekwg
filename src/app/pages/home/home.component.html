@@ -2,13 +2,13 @@
   <div class="slider-container">
     <div class="sc-inner">
       <app-carousel-story-navigator></app-carousel-story-navigator>
-      <carousel (mouseenter)="mouseEnter($event)" (mouseleave)="mouseLeave($event)" [isAnimated]="true"
+      <carousel (mouseenter)="mouseEnter()" (mouseleave)="mouseLeave()" [isAnimated]="true"
                 [interval]="slideInterval"
-                [pauseOnFocus]="true"
                 [showIndicators]="false"
-                (activeSlideChange)="activeSlideChange()">
+                [(activeSlide)]="activeSlideIndex"
+                (activeSlideChange)="activeSlideChange(false, $event)">
         <slide *ngFor="let slide of viewableSlides; let index = index;">
-          <img *ngIf="slide" [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
+          <img class="img-responsive center-block" loading="lazy" *ngIf="slide" [src]="slide.image" [alt]="slide.text" style="display: block; width: 100%;">
           <div class="carousel-caption form-inline">
             <h4>{{slide.text}}
             </h4>

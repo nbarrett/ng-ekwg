@@ -86,7 +86,7 @@ export class HowToModalComponent implements OnInit {
           const uploadResponse = JSON.parse(response);
           this.memberResource.data.fileNameData = uploadResponse.response.fileNameData;
           this.memberResource.data.fileNameData.title = this.existingTitle;
-          this.logger.info("JSON response:", uploadResponse, "memberResource:", this.memberResource);
+          this.logger.debug("JSON response:", uploadResponse, "memberResource:", this.memberResource);
           this.notify.clearBusy();
           this.notify.success({title: "New file added", message: this.memberResource.data.fileNameData.title});
         }
@@ -114,7 +114,7 @@ export class HowToModalComponent implements OnInit {
   }
 
   fileDropped($event: File[]) {
-    this.logger.info("fileDropped:", $event);
+    this.logger.debug("fileDropped:", $event);
   }
 
   onFileSelect($file: File[]) {

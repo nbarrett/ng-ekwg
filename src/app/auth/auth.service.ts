@@ -65,7 +65,7 @@ export class AuthService {
   private async performAuthPost(url: string, body: object, postType: string, broadcastEvent?: NamedEventType): Promise<LoginResponse> {
     const shared: Observable<AuthResponse> = this.http.post<any>(url, body).pipe(share());
     shared.subscribe((authResponse: AuthResponse) => {
-      this.logger.info(postType, "- authResponse", authResponse);
+      this.logger.debug(postType, "- authResponse", authResponse);
       if (authResponse?.tokens) {
         this.storeTokens(authResponse.tokens);
       }
@@ -142,7 +142,7 @@ export class AuthService {
           } else {
             const base64 = base64Url.replace("-", "+").replace("_", "/");
             const jsonPayload = JSON.parse(atob(base64));
-            this.logger.info("authPayload:", jsonPayload);
+            this.logger.debug("authPayload:", jsonPayload);
             this.authPayload = jsonPayload;
           }
         }

@@ -59,7 +59,7 @@ export class SendEmailsModalComponent implements OnInit {
   }
 
   selectClick(select: NgSelectComponent) {
-    this.logger.info("selectClick:select.isOpen", select.isOpen);
+    this.logger.debug("selectClick:select.isOpen", select.isOpen);
   }
 
   onChange(event?: any) {
@@ -200,7 +200,7 @@ export class SendEmailsModalComponent implements OnInit {
   calculateMemberFilterDate() {
     const dateFilter = this.dateUtils.momentNowNoTime().subtract(this.helpInfo && this.emailType.monthsInPast, "months");
     this.memberFilterDate = this.dateUtils.asDateValue(dateFilter);
-    this.logger.info("calculateMemberFilterDate:", this.memberFilterDate);
+    this.logger.debug("calculateMemberFilterDate:", this.memberFilterDate);
   }
 
   clearSelectedMembers() {

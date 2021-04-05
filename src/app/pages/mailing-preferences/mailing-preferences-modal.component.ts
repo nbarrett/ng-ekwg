@@ -46,7 +46,7 @@ export class MailingPreferencesModalComponent implements OnInit {
     this.logger.debug("constructed");
     this.memberService.getById(this.memberId)
       .then(member => {
-        this.logger.info("memberId ->", this.memberId, "member ->", member);
+        this.logger.debug("memberId ->", this.memberId, "member ->", member);
         this.member = member;
       });
 

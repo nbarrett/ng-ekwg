@@ -50,7 +50,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
       });
     }
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
-      this.logger.info("subscribe:reset password", loginResponse);
+      this.logger.debug("subscribe:reset password", loginResponse);
       if (loginResponse.memberLoggedIn) {
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
           this.modalService.show(MailingPreferencesModalComponent, {

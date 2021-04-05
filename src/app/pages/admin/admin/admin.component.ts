@@ -48,7 +48,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private setPrivileges(loginResponse?: LoginResponse) {
     this.allowAdminEdits = this.memberLoginService.allowMemberAdminEdits();
     this.loggedIn = this.memberLoginService.memberLoggedIn();
-    this.logger.info(loginResponse, "setPrivileges:allowAdminEdits", this.allowAdminEdits, "this.loggedIn", this.loggedIn);
+    this.logger.debug(loginResponse, "setPrivileges:allowAdminEdits", this.allowAdminEdits, "this.loggedIn", this.loggedIn);
   }
 
   memberAdmin() {

@@ -8,7 +8,6 @@ import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
-import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -19,7 +18,6 @@ export class UrlService {
   private logger: Logger;
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
-              private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
@@ -29,17 +27,13 @@ export class UrlService {
     return "/" + first(url.pathname.substring(1).split("/"));
   }
 
-  navigateTo(page?: string, area?: string, alwaysNavigate?: boolean): Promise<boolean> {
-    if (!alwaysNavigate && this.siteEdit.active()) {
-      this.logger.info(`site edit active - not navigating to ${page} > ${area}`);
-    } else {
-      const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
-      this.logger.debug("navigating to page:", page, "area:", area, "->", url);
-      return this.router.navigate([url], {relativeTo: this.route}).then((activated: boolean) => {
-        this.logger.debug("activated:", activated, "area is now:", this.area());
-        return activated;
-      });
-    }
+  navigateTo(page?: string, area?: string): Promise<boolean> {
+    const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
+    this.logger.debug("navigating to page:", page, "area:", area, "->", url);
+    return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"},).then((activated: boolean) => {
+      this.logger.debug("activated:", activated, "area is now:", this.area());
+      return activated;
+    });
   }
 
   absUrl(): string {

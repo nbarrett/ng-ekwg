@@ -122,7 +122,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
 
   private addAuditItemsToView(apiResponse: ApiResponse) {
     const authAudits: MemberAuthAudit[] = isArray(apiResponse.response) ? apiResponse.response : [apiResponse.response];
-    this.logger.info("Received", authAudits.length, "member auth audit", apiResponse.action, "notification(s)");
+    this.logger.debug("Received", authAudits.length, "member auth audit", apiResponse.action, "notification(s)");
     if (apiResponse.action === ApiAction.QUERY) {
       this.memberAudits = authAudits;
     } else {
@@ -130,14 +130,14 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
         const existingMemberAuthAudit: MemberAuthAudit = this.memberAudits.find(member => member.id === notifiedMemberAuthAudit.id);
         if (existingMemberAuthAudit) {
           if (apiResponse.action === ApiAction.DELETE) {
-            this.logger.info("deleting", notifiedMemberAuthAudit);
+            this.logger.debug("deleting", notifiedMemberAuthAudit);
             this.memberAudits = this.memberAudits.filter(member => member.id !== notifiedMemberAuthAudit.id);
           } else {
-            this.logger.info("replacing", notifiedMemberAuthAudit);
+            this.logger.debug("replacing", notifiedMemberAuthAudit);
             this.memberAudits[(this.memberAudits.indexOf(existingMemberAuthAudit))] = notifiedMemberAuthAudit;
           }
         } else {
-          this.logger.info("adding", notifiedMemberAuthAudit);
+          this.logger.debug("adding", notifiedMemberAuthAudit);
           this.memberAudits.push(notifiedMemberAuthAudit);
         }
       });
@@ -146,17 +146,17 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(searchEntry: string) {
-    this.logger.info("received searchEntry:" + searchEntry);
+    this.logger.debug("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
   }
 
   applyFilterToAudits(searchTerm?: string) {
     this.notify.setBusy();
     const sort = this.auditFilter.sortField;
-    this.logger.info("applyFilterToAudits:sort:", sort, "reverseSort:", this.auditFilter.reverseSort);
+    this.logger.debug("applyFilterToAudits:sort:", sort, "reverseSort:", this.auditFilter.reverseSort);
     const filteredAudits = sortBy(this.searchFilterPipe.transform(this.memberAudits, this.quickSearch), sort);
     this.auditFilter.results = this.auditFilter.reverseSort ? filteredAudits.reverse() : filteredAudits;
-    this.logger.info("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.memberAudits.length, "members ->", this.auditFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.auditFilter.reverseSort);
+    this.logger.debug("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.memberAudits.length, "members ->", this.auditFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.auditFilter.reverseSort);
     this.notifyProgress(`showing ${this.auditFilter.results.length} records`);
     this.notify.clearBusy();
   }
@@ -192,7 +192,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     this.memberService.publicFields()
       .then(refreshedMembers => {
         this.members = refreshedMembers;
-        this.logger.info("refreshMembers:found", refreshedMembers.length, "members");
+        this.logger.debug("refreshMembers:found", refreshedMembers.length, "members");
       });
   }
 

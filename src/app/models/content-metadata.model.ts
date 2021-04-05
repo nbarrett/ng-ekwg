@@ -14,9 +14,9 @@ export interface S3Metadata {
   size: number;
 }
 
-export interface ContentMetadataItemWithIndex {
-  item: ContentMetadataItem;
-  index?: number;
+export interface S3MetadataApiResponse extends ApiResponse {
+  request: any;
+  response?: S3Metadata[];
 }
 
 export interface ContentMetadataItem extends WithMongoId {
@@ -45,4 +45,4 @@ export interface ImageTag {
 }
 
 export const RECENT_PHOTOS: ImageTag = {key: 0, sortIndex: 0, subject: "Recent Photos"};
-export const ALL_TAGS: ImageTag = {key: 0, subject: "Anything"};
+export const ALL_TAGS: ImageTag = {key: -1, subject: "Anything"};

@@ -45,7 +45,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
-      this.logger.info("subscribe:loginResponse", loginResponse);
+      this.logger.debug("subscribe:loginResponse", loginResponse);
       if (!loginResponse) {
         this.notify.error({
           continue: true,

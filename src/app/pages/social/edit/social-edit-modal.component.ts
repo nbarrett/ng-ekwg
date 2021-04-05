@@ -98,7 +98,7 @@ export class SocialEditModalComponent implements OnInit {
           const uploadResponse = JSON.parse(response);
           this.socialEvent.attachment = uploadResponse.response.fileNameData;
           this.socialEvent.attachment.title = this.existingTitle;
-          this.logger.info("JSON response:", uploadResponse, "socialEvent:", this.socialEvent);
+          this.logger.debug("JSON response:", uploadResponse, "socialEvent:", this.socialEvent);
           this.notify.clearBusy();
           this.notify.success({title: "New file added", message: this.socialEvent.attachment.title});
         }
@@ -132,7 +132,7 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   fileDropped($event: File[]) {
-    this.logger.info("fileDropped:", $event);
+    this.logger.debug("fileDropped:", $event);
   }
 
   cancelFileChange() {

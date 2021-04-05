@@ -85,7 +85,7 @@ export class ExpenseDetailModalComponent implements OnInit {
           const uploadResponse = JSON.parse(response);
           this.expenseItem.receipt = uploadResponse.response.fileNameData;
           this.expenseItem.receipt.title = this.expenseItem.receipt.originalFileName;
-          this.logger.info("JSON response:", uploadResponse, "receipt:", this.expenseItem.receipt);
+          this.logger.debug("JSON response:", uploadResponse, "receipt:", this.expenseItem.receipt);
           this.notify.clearBusy();
           this.notify.success({title: "New receipt added", message: this.expenseItem.receipt.title});
         }
@@ -149,7 +149,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   }
 
   fileDropped($event: File[]) {
-    this.logger.info("fileDropped:", $event);
+    this.logger.debug("fileDropped:", $event);
   }
 
   confirmDeleteExpenseItem(expenseClaim: ExpenseClaim, expenseItem: ExpenseItem, expenseItemIndex: number) {

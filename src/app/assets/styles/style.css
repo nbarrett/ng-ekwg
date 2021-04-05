@@ -4552,14 +4552,9 @@ input[type="radio"]:checked + label {
 
 .inline-radio-label input[type="radio"] + label {
   display: inline;
-  padding: 3px 13px 5px 26px;
+  padding: 2px 12px 4px 30px;
   margin: 9px 4px 0px 0;
-  font-weight: normal;
   cursor: pointer;
-}
-
-.radio-inline-no-padding {
-  padding-left: 0px;
 }
 
 .input-sm {
@@ -4658,6 +4653,10 @@ input[type="radio"]:checked + label {
 
 .mb-12 {
   margin-bottom: 12px;
+}
+
+.pl-0 {
+  padding-left: 0;
 }
 
 .pb-6 {

@@ -26,7 +26,7 @@ export class CarouselStoryNavigatorComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe(params => {
       const story = params["story"];
-      this.logger.info("story:", story);
+      this.logger.debug("story:", story);
       this.imageTagDataService.select(story);
     });
   }

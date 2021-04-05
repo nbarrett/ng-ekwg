@@ -59,7 +59,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
-      this.logger.info("subscribe:forgot password", loginResponse);
+      this.logger.debug("subscribe:forgot password", loginResponse);
       if (loginResponse.member) {
         this.forgottenPasswordMember = loginResponse.member as Member;
         this.sendForgottenPasswordEmailToMember();

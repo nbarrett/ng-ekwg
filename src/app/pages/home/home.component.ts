@@ -2,10 +2,9 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { take } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { groupEventTypeFor } from "../../models/committee.model";
-import { ContentMetadataItem, RECENT_PHOTOS } from "../../models/content-metadata.model";
+import { ContentMetadataItem } from "../../models/content-metadata.model";
 import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
-import { DateUtilsService } from "../../services/date-utils.service";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -23,20 +22,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   public feeds: { facebook: {}; instagram: { recentMedia: InstagramMediaPost[] } };
   public viewableSlides: ContentMetadataItem[] = [];
   private allSlides: ContentMetadataItem[] = [];
-  private selectedSlides: ContentMetadataItem[] = [];
+  public selectedSlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
-  private lastTransition: number;
-  private addNewSlideInterval: number;
   public hoverActive: boolean;
   private paused = false;
+  activeSlideIndex = 0;
 
   constructor(
     public imageTagDataService: ImageTagDataService,
-    private  memberLoginService: MemberLoginService,
-    private  contentMetadataService: ContentMetadataService,
-    private  siteEditService: SiteEditService,
-    private  dateUtils: DateUtilsService,
-    private  instagramService: InstagramService,
+    private memberLoginService: MemberLoginService,
+    private contentMetadataService: ContentMetadataService,
+    private siteEditService: SiteEditService,
+    private instagramService: InstagramService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
     this.feeds = {instagram: {recentMedia: []}, facebook: {}};
@@ -44,7 +41,6 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.logger.debug("ngOnDestroy fired");
-    this.clearInterval();
   }
 
   ngOnInit() {
@@ -52,19 +48,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.imageTagDataService.selectedTag().subscribe(tag => {
       if (tag) {
         this.viewableSlides = [];
-        const showRecent: boolean = tag === RECENT_PHOTOS;
-        if (showRecent) {
-          const excludeFromRecentKeys: number[] = this.imageTagDataService.imageTagsSorted().filter(tag => tag.excludeFromRecent).map(tag => tag.key);
-          const sinceDate = this.dateUtils.momentNow().add(-6, "months");
-          this.selectedSlides = this.allSlides.filter(file => file.date >= sinceDate.valueOf() && !(file.tags.length === 1 && file.tags.find(tag => excludeFromRecentKeys.includes(tag))));
-          this.logger.debug(this.selectedSlides.length, "photos selected from", tag.subject, "since", this.dateUtils.displayDate(sinceDate), "excludeFromRecentKeys:", excludeFromRecentKeys.join(", "));
-        } else {
-          this.selectedSlides = this.allSlides.filter(file => file?.tags?.includes(tag.key));
-          this.logger.debug(this.selectedSlides.length, "slides selected from tag:", tag.subject);
-        }
-        this.addNewSlideInterval = setInterval(() => this.addNewSlideIfValid(), this.slideInterval);
-        this.logger.debug("created add new slide interval:", this.addNewSlideInterval);
-        this.addNewSlideIfValid();
+        this.activeSlideIndex = 0;
+        this.selectedSlides = this.contentMetadataService.filterSlides(this.allSlides, tag);
+        this.logger.debug("clearing existing slides to display", tag.subject, "allSlides:", this.allSlides.length, "this.selectedSlides:", this.selectedSlides.length);
+        this.addNewSlide();
       }
     });
 
@@ -73,7 +60,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.allSlides = contentMetaData.files;
         this.imageTagDataService.populateFrom(contentMetaData.imageTags);
         this.logger.debug("initialised with", this.allSlides.length, "slides in total");
-        this.addNewSlideIfValid();
       });
     this.instagramService.recentMedia()
       .then((recentMedia: InstagramRecentMediaData) => {
@@ -102,24 +88,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     return "Show details of this " + (groupEventTypeFor(slide.dateSource)?.description || slide.dateSource).toLowerCase();
   }
 
-  addNewSlideIfValid(force?: boolean) {
-    this.logger.debug("addNewSlideIfValid called");
-    if (force) {
-      this.addNewSlide();
-    } else if (this.paused) {
-      this.logger.debug("paused - not adding new slide");
-    } else if (this.viewableSlides.length === 0) {
-      this.addNewSlide();
-    } else if (this.viewableSlides.length < this.selectedSlides.length) {
-      if (this.dateUtils.momentNow().valueOf() - this.slideInterval <= this.lastTransition) {
-        this.logger.debug("this.viewableSlides.length", this.viewableSlides.length, "not adding new slide as previous one added ", this.dateUtils.displayDateAndTime(this.lastTransition));
-      } else {
-        this.addNewSlide();
-      }
-    } else {
-      this.logger.debug("addNewSlide:all", this.viewableSlides.length, "slides added to carousel");
-      this.clearInterval();
-    }
+  activeSlideChange(force: boolean, $event: number) {
+    this.logger.debug("activeSlideChange:force", force, "$event:", $event, "activeSlideIndex:", this.activeSlideIndex);
+    this.addNewSlide();
   }
 
   private addNewSlide() {
@@ -127,28 +98,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (slide) {
       this.logger.debug("addNewSlide:adding slide", this.viewableSlides.length + 1, "of", this.selectedSlides.length, slide.text, slide.image);
       this.viewableSlides.push(slide);
-      this.lastTransition = this.dateUtils.momentNow().valueOf();
+    } else {
+      this.logger.debug("addNewSlide:no slides selected from", this.selectedSlides.length, "available");
     }
   }
 
-  private clearInterval() {
-    this.logger.debug("clearing slide interval:", this.addNewSlideInterval);
-    clearInterval(this.addNewSlideInterval);
-    this.addNewSlideInterval = 0;
-  }
-
-  activeSlideChange() {
-    this.logger.debug("activeSlideChange");
-    this.addNewSlideIfValid(true);
-  }
-
-  mouseEnter($event: MouseEvent) {
-    this.logger.debug("mouseEnter", $event);
+  mouseEnter() {
     this.paused = true;
   }
 
-  mouseLeave($event: MouseEvent) {
-    this.logger.debug("mouseLeave", $event);
+  mouseLeave() {
     this.paused = false;
   }
 

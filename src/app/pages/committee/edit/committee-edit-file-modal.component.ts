@@ -92,7 +92,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
           const uploadResponse = JSON.parse(response);
           this.committeeFile.fileNameData = uploadResponse.response.fileNameData;
           this.committeeFile.fileNameData.title = this.existingTitle;
-          this.logger.info("JSON response:", uploadResponse, "committeeFile:", this.committeeFile);
+          this.logger.debug("JSON response:", uploadResponse, "committeeFile:", this.committeeFile);
           this.notify.clearBusy();
           this.notify.success({title: "New file added", message: this.committeeFile.fileNameData.title});
         }
@@ -105,7 +105,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   fileDropped($event: File[]) {
-    this.logger.info("fileDropped:", $event);
+    this.logger.debug("fileDropped:", $event);
   }
 
   cancelFileChange() {

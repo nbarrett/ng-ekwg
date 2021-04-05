@@ -1,15 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { NgSelectComponent } from "@ng-select/ng-select";
-import first from "lodash-es/first";
+import { keys } from "lodash-es";
 import isArray from "lodash-es/isArray";
 import map from "lodash-es/map";
-import { FileUploader } from "ng2-file-upload";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
-import { AlertTarget } from "../../../models/alert-target.model";
 import { GroupEvent, GroupEventsFilter, GroupEventType, groupEventTypeFor, GroupEventTypes } from "../../../models/committee.model";
-import { ContentMetadataItem, ContentMetadataItemWithIndex, ImageTag } from "../../../models/content-metadata.model";
+import { ContentMetadataItem, ImageTag } from "../../../models/content-metadata.model";
 import { DateValue } from "../../../models/date.model";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
@@ -18,7 +16,7 @@ import { FileUploadService } from "../../../services/file-upload.service";
 import { ImageDuplicatesService } from "../../../services/image-duplicates-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
-import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { NotifierService } from "../../../services/notifier.service";
 import { RouterHistoryService } from "../../../services/router-history.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -27,26 +25,25 @@ import { UrlService } from "../../../services/url.service";
   selector: "app-edit-image",
   templateUrl: "./image-edit.component.html"
 })
-export class ImageEditComponent implements OnInit {
+export class ImageEditComponent implements OnInit, OnChanges {
   private logger: Logger;
-  public hasFileOver = false;
   public groupEvents: GroupEvent[] = [];
   @Input() item: ContentMetadataItem;
   @Input() index: number;
-  @Input() imageCount: number;
-  @Input() uploader: FileUploader;
-  @Input() notify: AlertInstance;
-  @Input() notifyTarget: AlertTarget;
-  @Output() imageChange: EventEmitter<ContentMetadataItemWithIndex> = new EventEmitter();
-  @Output() moveUp: EventEmitter<ContentMetadataItemWithIndex> = new EventEmitter();
-  @Output() moveDown: EventEmitter<ContentMetadataItemWithIndex> = new EventEmitter();
-  @Output() delete: EventEmitter<ContentMetadataItemWithIndex> = new EventEmitter();
-  @Output() insert: EventEmitter<ContentMetadataItemWithIndex> = new EventEmitter();
+  @Input() filteredFiles: ContentMetadataItem[];
+  @Input() fileElement: HTMLInputElement;
+  @Output() imageChange: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  @Output() moveUp: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  @Output() moveDown: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  @Output() delete: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  @Output() imageInsert: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  public canMoveUp: boolean;
+  public canMoveDown: boolean;
 
   constructor(private stringUtils: StringUtilsService,
               public imageDuplicatesService: ImageDuplicatesService,
               private committeeQueryService: CommitteeQueryService,
-              private contentMetadataService: ContentMetadataService,
+              public contentMetadataService: ContentMetadataService,
               private authService: AuthService,
               private notifierService: NotifierService,
               private fileUploadService: FileUploadService,
@@ -62,9 +59,30 @@ export class ImageEditComponent implements OnInit {
     this.logger.debug("ngOnInit:item", this.item, "index:", this.index);
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.item) {
+      this.item = changes.item.currentValue;
+      this.logger.debug("ngOnChanges:item", this.item, "(index is", this.index, ")");
+    } else if (changes.index) {
+      this.index = changes.index.currentValue;
+      this.logger.debug("ngOnChanges:index", this.index);
+    } else if (changes.filteredFiles) {
+      this.filteredFiles = changes.filteredFiles.currentValue;
+      this.logger.debug("ngOnChanges:filteredFiles", this.filteredFiles);
+    } else {
+      keys(changes).forEach(key => {
+        if (!changes[key].firstChange) {
+          this.logger.debug("ngOnChanges:untracked changes in:", key, "currentValue:", changes[key].currentValue);
+        }
+      });
+    }
+    this.canMoveUp = this.contentMetadataService.canMoveUp(this.filteredFiles, this.item);
+    this.canMoveDown = this.contentMetadataService.canMoveDown(this.filteredFiles, this.item);
+  }
+
   onImageDateChange(dateValue: DateValue) {
     if (dateValue) {
-      this.logger.debug("from:", this.dateUtils.asDate(this.item.date), "to", dateValue.date);
+      this.logger.debug("date changed from:", this.dateUtils.displayDateAndTime(this.item.date), "to", this.dateUtils.displayDateAndTime(dateValue.date));
       this.item.date = dateValue.value;
       this.filterEventsBySourceAndDate(this.item.dateSource, this.item.date);
     }
@@ -87,6 +105,7 @@ export class ImageEditComponent implements OnInit {
   }
 
   replace(fileElement: HTMLInputElement) {
+    this.imageChange.emit(this.emitValue());
     this.browseToFile(fileElement);
   }
 
@@ -106,29 +125,17 @@ export class ImageEditComponent implements OnInit {
     this.delete.emit(this.emitValue());
   }
 
-  private emitValue(): ContentMetadataItemWithIndex {
-    return {item: this.item, index: this.index};
+  private emitValue(): ContentMetadataItem {
+    return this.item;
   }
 
   callInsert(fileElement: HTMLInputElement) {
-    this.item = {};
-    this.insert.emit(this.emitValue());
+    this.logger.debug("callInsert:", fileElement);
+    this.item = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: []};
+    this.imageInsert.emit(this.emitValue());
     this.replace(fileElement);
   }
 
-  onFileSelect($file: File[]) {
-    this.notify.setBusy();
-    this.notify.progress({title: "Image upload", message: `uploading ${first($file).name} - please wait...`});
-  }
-
-  public fileOver(index: number): void {
-    this.hasFileOver = index === this.index;
-    this.logger.debug("hasFileOver:", this.hasFileOver);
-  }
-
-  fileDropped($event: File[]) {
-    this.logger.debug("fileDropped:", $event);
-  }
 
   filterEventsBySourceAndDate(dateSource: string, date: number) {
     this.logger.debug("eventsFilteredFrom:", dateSource, "date:", date);
@@ -193,4 +200,5 @@ export class ImageEditComponent implements OnInit {
   refreshGroupEvents() {
     this.filterEventsBySourceAndDate(this.item.dateSource, this.item.date);
   }
+
 }

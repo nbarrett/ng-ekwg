@@ -164,7 +164,7 @@ export class HowToComponent implements OnInit, OnDestroy {
   authChanges() {
     this.allow.committee = this.memberLoginService.allowCommittee();
     this.applyFilterToMemberResources();
-    this.logger.info("permissions:", this.allow);
+    this.logger.debug("permissions:", this.allow);
   }
 
   isActive(memberResource) {

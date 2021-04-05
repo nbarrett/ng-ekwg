@@ -41,9 +41,9 @@ export class ImageDuplicatesService {
   }
 
   populateFrom(contentMetadata: ContentMetadata, filteredFiles: ContentMetadataItem[]) {
-    this.contentMetadata = contentMetadata;
-    this.filteredFiles = filteredFiles;
-    if (this.contentMetadata) {
+    if (contentMetadata && filteredFiles) {
+      this.contentMetadata = contentMetadata;
+      this.filteredFiles = filteredFiles;
       this.logger.debug("populateFrom total number:", contentMetadata.files.length, "filtered number:", filteredFiles.length);
       this.duplicateImages = groupBy(this.contentMetadata.files, "image");
       this.logger.debug("duplicateImages pre-clean:", cloneDeep(this.duplicateImages));
