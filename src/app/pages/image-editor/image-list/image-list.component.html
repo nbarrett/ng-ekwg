@@ -125,7 +125,7 @@
         uploading {{uploader.progress}}%
       </div>
     </div>
-    <cdk-virtual-scroll-viewport itemSize="50" class="visible-viewport">
+    <cdk-virtual-scroll-viewport *ngIf="ready" [itemSize]="50" class="visible-viewport">
       <div *cdkVirtualFor="let imageMetaDataItem of filesFiltered();let index = index; trackBy: metadataItemTracker;"
            class="thumbnail">
         <app-edit-image [index]="index"

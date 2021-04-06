@@ -53,6 +53,7 @@ export class ImageListComponent implements OnInit {
   public hasFileOver = false;
   public currentImageIndex: number;
   private searchChangeObservable = new Subject<string>();
+  ready = false;
 
   constructor(private stringUtils: StringUtilsService,
               public imageTagDataService: ImageTagDataService,
@@ -70,7 +71,7 @@ export class ImageListComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -165,10 +166,13 @@ export class ImageListComponent implements OnInit {
   }
 
   applyFilters() {
-    this.filteredFiles = [];
+    this.ready = false;
     this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.selectedTag, this.showDuplicates, this.filterText);
     this.imageDuplicatesService.populateFrom(this.contentMetadata, this.filteredFiles);
     this.logger.debug("applyFilters:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files");
+    setTimeout(() => {
+      this.ready = true;
+    }, 0);
   }
 
   refreshImageMetaData(imageSource: string) {
@@ -338,12 +342,8 @@ export class ImageListComponent implements OnInit {
     } else {
       this.selectedTag = this.selectableTags()[0];
     }
-    this.logger.debug("filtering based on filterType:", this.filterType);
     this.applyFilters();
-    if (this.filterType !== "all") {
-      this.updateQueryParams({story: this.selectedTag.key});
-    }
-
+    this.updateQueryParams({story: this.selectedTag.key});
   }
 
   private selectTag() {
