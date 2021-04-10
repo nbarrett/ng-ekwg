@@ -9,8 +9,11 @@ export class WalksTargets {
   public static chatWindow = Target.the("chat window")
     .located(by.id("launcher"));
 
-  public static loginTab = Target.the("login tab")
+  public static loginTabText = Target.the("login tab")
     .located(by.linkText("Log In"));
+
+  public static loginTab = Target.the("login tab")
+    .located(by.css(".auth0-lock-tabs-current"));
 
   public static userName = Target.the("user name")
     .located(by.css("input[type=email][name=email]"));

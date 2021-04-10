@@ -196,12 +196,11 @@ export class RamblersWalksAndEventsService {
       if (isEmpty(walk.longerDescription)) {
         validationMessages.push("description is missing");
       }
-      if (isEmpty(walk.postcode)) {
-        validationMessages.push("postcode is missing");
+
+      if (isEmpty(walk.postcode) && isEmpty(walk.gridReference)) {
+        validationMessages.push("both postcode and grid reference are missing");
       }
-      if (isEmpty(walk.gridReference)) {
-        validationMessages.push("grid reference is missing");
-      }
+
       if (isEmpty(walk.contactId)) {
         const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "this can be supplied for this walk on Walk Leader tab" : "this will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
         validationMessages.push("walk leader has no Ramblers contact Id setup on their member record (" + contactIdMessage + ")");

@@ -52,7 +52,7 @@ exports.uploadWalks = (req, res) => {
   process.env["RAMBLERS_FEATURE"] = req.body.feature || "walks-upload.ts";
   const spawn = require("child_process").spawn;
   debug("running feature", process.env["RAMBLERS_FEATURE"]);
-  const subprocess = spawn("npm", ["run", "protractor"], {
+  const subprocess = spawn("npm", ["run", "serenity"], {
     detached: true,
     stdio: ["pipe"],
   });
