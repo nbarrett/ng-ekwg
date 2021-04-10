@@ -1,5 +1,6 @@
 const {envConfig} = require("../env-config/env-config");
 const debug = require("debug")(envConfig.logNamespace("instagram:refresh-token"));
+debug.enabled = false;
 const messageHandlers = require("../shared/message-handlers");
 exports.refreshToken = (req, res) => {
   return messageHandlers.httpRequest({

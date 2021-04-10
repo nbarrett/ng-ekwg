@@ -2,6 +2,7 @@ const {envConfig} = require("../env-config/env-config");
 const moment = require("moment-timezone");
 const {first, isObject, map} = require("lodash");
 const debug = require("debug")(envConfig.logNamespace("aws"));
+debug.enabled = false;
 const AWS = require("aws-sdk");
 const http = require("http");
 const crypto = require("crypto");

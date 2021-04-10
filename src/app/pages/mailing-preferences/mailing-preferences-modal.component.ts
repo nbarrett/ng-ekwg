@@ -64,7 +64,7 @@ export class MailingPreferencesModalComponent implements OnInit {
   save() {
     this.profileConfirmationService.confirmProfile(this.member);
     this.memberService.update(this.member)
-      .then(() => close())
+      .then(() => this.close())
       .catch((error) => this.saveOrUpdateUnsuccessful(error));
   }
 

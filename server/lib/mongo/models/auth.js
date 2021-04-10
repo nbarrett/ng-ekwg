@@ -19,7 +19,8 @@ const authSchema = mongoose.Schema({
   postcode: {type: String},
   lastName: {type: String, required: true},
   profileSettingsConfirmed: {type: Boolean},
-  email: {type: String}
+  email: {type: String},
+  passwordResetId: {type: String}
 }, {collection: "members"});
 
 authSchema.plugin(uniqueValidator);

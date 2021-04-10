@@ -17,6 +17,7 @@
     "report": "serenity-bdd run",
     "postinstall": "tsc",
     "server-live": "nodemon -q ts-gen/server/lib/server",
+    "preserver-live": "tsc",
     "server": "node ts-gen/server/lib/server",
     "test": "failsafe protractor report",
     "tsc": "tsc  --project ./tsconfig.json",

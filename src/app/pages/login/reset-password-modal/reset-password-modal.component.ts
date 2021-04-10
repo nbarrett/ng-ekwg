@@ -23,7 +23,8 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   public newPassword: string;
   public newPasswordConfirm: string;
   public notifyTarget: AlertTarget = {};
-  public userName;
+  public userName: string;
+  public invalidPasswordLink: boolean;
   public message: string;
 
   constructor(public bsModalRef: BsModalRef,
@@ -32,7 +33,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -43,7 +44,14 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
-    if (this.message) {
+    if (this.invalidPasswordLink) {
+      this.notify.showContactUs(true);
+      this.notify.error({
+        title: "Reset password failed",
+        message: "The password reset link you followed has either expired or is invalid. Click Restart Forgot Password to try again or "
+      });
+    } else if (this.message) {
+      this.notify.showContactUs(false);
       this.notify.progress({
         title: "Reset password",
         message: this.message
@@ -51,7 +59,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
     }
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:reset password", loginResponse);
-      if (loginResponse.memberLoggedIn) {
+      if (loginResponse?.memberLoggedIn) {
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
           this.modalService.show(MailingPreferencesModalComponent, {
             class: "modal-lg",
@@ -72,7 +80,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
         this.notify.error({
           continue: true,
           title: "Reset password failed",
-          message: loginResponse.alertMessage
+          message: loginResponse?.alertMessage
         });
       }
     });
@@ -85,7 +93,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   submittable() {
     const userNamePopulated = this.fieldPopulated(this.newPassword);
     const passwordPopulated = this.fieldPopulated(this.newPasswordConfirm);
-    return !this.notifyTarget.busy && passwordPopulated && userNamePopulated;
+    return !this.notifyTarget.busy && passwordPopulated && userNamePopulated && !this.invalidPasswordLink;
   }
 
   forgotPassword() {
@@ -107,6 +115,20 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
       title: "Reset password",
       message: "Attempting reset of password for " + this.userName
     });
-    this.authService.resetPassword(this.userName, this.newPassword, this.newPasswordConfirm);
+    this.authService.resetPassword(this.userName, this.newPassword, this.newPasswordConfirm)
+      .then((response) => {
+        this.logger.debug("reponse:", response);
+        if (response?.showResetPassword) {
+          this.notify.showContactUs(true);
+          this.notify.error({
+            title: "Reset password",
+            message: response.alertMessage
+          });
+        } else {
+          return this.close();
+        }
+
+      })
+      .catch((error) => this.notify.error(error));
   }
 }

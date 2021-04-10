@@ -48,13 +48,14 @@ exports.updateEmailSubscription = (req, res) => {
 };
 
 
-function findByConditions(conditions, res, req) {
-  member.findOne(conditions)
+function findByConditions(conditions, fields, res, req) {
+  debug("findByConditions - conditions:", conditions, "fields:", fields)
+  member.findOne(conditions, fields)
     .then(member => {
       if (member) {
         res.status(200).json({
           action: "query",
-          response: transforms.toObjectWithId(member)
+          response: fields ? member : transforms.toObjectWithId(member)
         });
       } else {
         res.status(404).json({
@@ -75,13 +76,13 @@ function findByConditions(conditions, res, req) {
 exports.findByPasswordResetId = (req, res) => {
   debug("find - password-reset-id:", req.params.id)
   const conditions = {passwordResetId: req.params.id};
-  findByConditions(conditions, res, req);
+  findByConditions(conditions, "userName", res, req);
 };
 
 exports.findOne = (req, res) => {
   const conditions = querystring.parse(req.query);
   debug("find - by conditions", req.query, "conditions:", conditions)
-  findByConditions(req.query, res, req);
+  findByConditions(req.query, undefined, res, req);
 };
 
 exports.create = (req, res, next) => {

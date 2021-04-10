@@ -31,6 +31,7 @@ exports.resetPassword = (req, res) => {
           debug("saveNewPassword.loginResponse:", loginResponse, "password:", newPassword, "-> hash:", member.password);
           member.save()
             .then(updatedMember => {
+              debug("updated member following password-reset:", updatedMember);
               const memberPayload = authCommon.toMemberPayload(updatedMember);
               loginResponse.alertMessage = `The password for ${memberPayload.userName} was changed successfully`;
               loginResponse.memberLoggedIn = true;

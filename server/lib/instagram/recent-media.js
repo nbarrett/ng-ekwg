@@ -1,6 +1,7 @@
 const {envConfig} = require("../env-config/env-config");
 const refreshToken = require("./refresh-token");
 const debug = require("debug")(envConfig.logNamespace("instagram:recent-media"));
+debug.enabled = false;
 const messageHandlers = require("../shared/message-handlers");
 const refreshOnEachCall = true;
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { BsModalService } from "ngx-bootstrap/modal";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../auth/auth.service";
 import { AlertTarget } from "../models/alert-target.model";
@@ -38,16 +38,18 @@ export class SetPasswordComponent implements OnInit {
           this.logger.debug("for password-reset-id", passwordResetId, "member", member);
           this.modalService.show(ResetPasswordModalComponent, {
             animated: false,
-            initialState: {userName: member.userName}
+            initialState: {userName: member.userName, invalidPasswordLink: false}
           });
         })
-        .catch(() => {
-          this.notify.error({
-            continue: true,
-            title: "Reset password failed",
-            message: "The password reset link you followed has either expired or is invalid. Click Restart Forgot Password to try again"
+        .catch((error) => {
+          this.logger.debug("error", error);
+          this.modalService.show(ResetPasswordModalComponent, {
+            animated: false,
+            initialState: {invalidPasswordLink: true}
           });
         });
+    }, (error) => {
+      this.logger.debug("error", error);
     });
   }
 }
