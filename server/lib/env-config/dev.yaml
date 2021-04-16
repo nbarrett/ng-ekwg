@@ -4,4 +4,4 @@ mailchimp:
     walks:  33dc7f1d48
     socialEvents: a88f6a4f44
 aws:
-  bucket: ekwg-testing
+  bucket: ekwg-prod
