@@ -3,7 +3,6 @@ import { PerformsActivities, Task } from "@serenity-js/core";
 import { isPresent } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";
-import { Hide } from "../../common/hide";
 import { Log } from "../../common/log";
 import { WaitFor } from "../common/waitFor";
 
@@ -21,7 +20,6 @@ export class FilterWalksToShowAll implements Task {
     return actor.attemptsTo(
       Check.whether(WalksTargets.selectAll, isPresent())
         .andIfSo(
-          Hide.target(WalksTargets.chatWindow),
           ClickWhenReady.on(WalksTargets.itemsPerPagePopup),
           ClickWhenReady.on(WalksTargets.showAllWalks),
           WaitFor.ramblersToFinishProcessing())
