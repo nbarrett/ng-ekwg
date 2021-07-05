@@ -58,9 +58,11 @@ export class ContentMetadataService {
 
   transformFiles(contentMetaData: ContentMetadataApiResponse, contentMetaDataType: string): ContentMetadata {
     return {
-      ...contentMetaData.response, files: contentMetaData.response.files.map(file => ({
-        ...file, image: `${this.S3_BASE_URL}/${contentMetaDataType}/${last(file.image.split("/"))}`
-      }))
+      ...contentMetaData?.response, files: contentMetaData?.response?.files
+        .filter(file => file?.image)
+        .map(file => ({
+          ...file, image: `${this.S3_BASE_URL}/${contentMetaDataType}/${last(file?.image?.split("/"))}`
+        }))
     };
   }
 
@@ -92,7 +94,7 @@ export class ContentMetadataService {
     this.logger.debug("items:criteria:params", params.toString());
     const apiResponse: ContentMetadataApiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<ContentMetadataApiResponse>(this.BASE_URL, {params}), this.contentMetadataSubject);
     const response = this.transformFiles(apiResponse, contentMetaDataType);
-    this.logger.debug("items:transformed apiResponse", response);
+    this.logger.info("items:transformed apiResponse", response);
     return response;
   }
 
