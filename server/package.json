@@ -67,7 +67,7 @@
     "js-yaml": "3.13.1",
     "json2csv": "3.11.5",
     "jsonwebtoken": "8.5.1",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "lodash-es": "4.17.15",
     "mailchimp-api": "2.0.4",
     "matchdep": "0.3.0",
