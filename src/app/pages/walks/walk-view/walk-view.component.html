@@ -204,7 +204,7 @@
           </div>
           <div class="col-sm-6">
                                                 <span *ngIf="displayedWalk.walk.gridReference">Grid Ref: <a
-                                                  [href]="'http://gridreferencefinder.com/?gr=' + displayedWalk.walk.gridReference"
+                                                  [href]="display.gridReferenceLink(displayedWalk.walk)"
                                                   target="_blank">
                                             <span tooltip-placement="left"
                                                   tooltip="Click to locate grid reference {{displayedWalk.walk.gridReference}} on UK Grid Reference Finder">

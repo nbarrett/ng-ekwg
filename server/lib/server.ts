@@ -34,6 +34,7 @@ import ramblers = require("./ramblers/ramblers");
 import { install } from "source-map-support";
 import { envConfig } from "./env-config/env-config";
 import { mailchimpRoutes } from "./mailchimp/mailchimp";
+import { addresses } from "./addresses/addresses";
 
 install();
 const debugLog = debug(envConfig.logNamespace("server"));
@@ -57,6 +58,7 @@ app.use("/api/aws", aws);
 app.use("/api/google-maps", googleMaps);
 app.use("/api/instagram", instagram);
 app.use("/api/mailchimp", mailchimpRoutes);
+app.use("/api/addresses", addresses);
 app.use("/api/meetup", meetup);
 app.use("/api/database/auth", auth);
 app.use("/api/database/content-text", contentText);

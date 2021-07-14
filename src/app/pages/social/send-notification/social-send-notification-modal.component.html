@@ -14,7 +14,7 @@
                 <div class="form-group">
                   <div class="radio">
                     <input (click)="clearRecipients()" id="all-ekwg-social" type="radio"
-                           [(ngModel)]="socialEvent.notification.content.destinationType"
+                           [(ngModel)]="socialEvent?.notification?.content.destinationType"
                            name="send-to"
                            value="all-ekwg-social"/>
                     <label for="all-ekwg-social">{{memberFilterSelections?.length}}

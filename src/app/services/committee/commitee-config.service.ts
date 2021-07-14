@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, ReplaySubject} from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { CommitteeConfig } from "../../models/committee.model";
-import { CommitteeReferenceData } from "./committee-reference-data";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { CommitteeReferenceData } from "./committee-reference-data";
 
 @Injectable({
   providedIn: "root"

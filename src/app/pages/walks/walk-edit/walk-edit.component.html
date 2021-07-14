@@ -70,7 +70,7 @@
                  id="longer-description-formatted"></p>
               <textarea *ngIf="!longerDescriptionPreview"
                         [disabled]="!allowEdits()"
-                        (ngBlur)="previewLongerDescription()"
+                        (blur)="previewLongerDescription()"
                         [(ngModel)]="displayedWalk.walk.longerDescription" type="text"
                         class="form-control input-sm" rows="5" id="longer-description"
                         placeholder="Enter Longer Description here"></textarea>
@@ -344,16 +344,25 @@
                 <div class="form-group">
                   <label for="post-code">Postcode</label>
                   <input [disabled]="!allowEdits()" [(ngModel)]="displayedWalk.walk.postcode"
+                         (ngModelChange)="postcodeChange($event)"
                          type="text" class="form-control input-sm" id="post-code"
                          placeholder="Enter Postcode here">
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="input-group">
                   <label for="grid-reference">Grid Reference</label>
                   <input [disabled]="!allowEdits()" [(ngModel)]="displayedWalk.walk.gridReference"
                          type="text" class="form-control input-sm" id="grid-reference"
                          placeholder="Enter Grid Reference here">
+                  <div class="input-group-btn">
+                    <button id="view-grid-reference" (click)="viewGridReference()" class="btn btn-default btn-sm grid-ref-btn">
+                      <span tooltipPlacement="top"
+                            tooltip="View grid reference position in gridreferencefinder.com">
+                    <img src="../../../assets/images/local/grid-reference-finder.ico"/>
+                    </span>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div class="col-sm-6">

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { CommitteeConfig, CommitteeMember } from "../../../models/committee.model";
+import { CommitteeMember } from "../../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { SocialDisplayService } from "../../../pages/social/social-display.service";
@@ -42,10 +42,16 @@ export class SocialNotificationDetailsComponent implements OnInit {
   }
 
   replyTo(): CommitteeMember {
-    return this.display?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.replyTo?.value === member.memberId);
+    return this.display?.committeeMembersPlusOrganiser(this.socialEvent, this.members)?.find(member => this.socialEvent?.notification?.content?.replyTo?.value === member.memberId);
+  }
+
+  committeeReferenceDataSource(): CommitteeReferenceData {
+    return this.committeeReferenceData.createFrom(this.display?.committeeMembersPlusOrganiser(this.socialEvent, this.members))
   }
 
   signoffAs(): CommitteeMember {
-    return this.display?.committeeMembersPlusOrganiser(this.socialEvent)?.find(member => this.socialEvent?.notification?.content?.signoffAs?.value === member.memberId);
+    const signoffAs = this.display?.committeeMembersPlusOrganiser(this.socialEvent, this.members)?.find(member => this.socialEvent?.notification?.content?.signoffAs?.value === member.memberId);
+    this.logger.info("signoffAs:", this.members, signoffAs);
+    return signoffAs;
   }
 }

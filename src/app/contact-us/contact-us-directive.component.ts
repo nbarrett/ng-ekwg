@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
+import { CommitteeMember } from "../models/committee.model";
 import { CommitteeConfigService } from "../services/committee/commitee-config.service";
 import { CommitteeReferenceData } from "../services/committee/committee-reference-data";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
@@ -19,6 +20,7 @@ export class ContactUsDirective implements OnInit, OnDestroy {
   @Input() text: string;
   @Input() role: string;
   @Input() heading: string;
+  @Input() committeeReferenceDataOverride: CommitteeReferenceData;
   private logger: Logger;
   private dataSub: Subscription;
   private committeeReferenceData: CommitteeReferenceData;
@@ -39,12 +41,16 @@ export class ContactUsDirective implements OnInit, OnDestroy {
     }
   }
 
-  committeeMembers() {
-    return this.role ? this.committeeReferenceData?.committeeMembersForRole(this.role) : this.committeeReferenceData?.committeeMembers();
+  committeeReferenceDataSource() {
+    return this.committeeReferenceDataOverride || this.committeeReferenceData;
+  }
+
+  committeeMembers(): CommitteeMember[] {
+    return this.role ? this.committeeReferenceDataSource()?.committeeMembersForRole(this.role) : this.committeeReferenceDataSource()?.committeeMembers();
   }
 
   email() {
-    return this.committeeReferenceData?.contactUsField(this.role, "email");
+    return this.committeeReferenceDataSource()?.contactUsField(this.role, "email");
   }
 
 }

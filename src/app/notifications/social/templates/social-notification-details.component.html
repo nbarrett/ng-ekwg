@@ -64,8 +64,10 @@
   </p>
   <p *ngIf="socialEvent.notification.content.text.include"
      [textContent]="socialEvent.notification.content.text.value"></p>
-  <p *ngIf="socialEvent.notification.content.signoffText.include">
-    {{socialEvent.notification.content.signoffText.value}}</p>
-  <app-contact-us *ngIf="socialEvent.notification.content.signoffAs.include" [format]="'list'"
+  <p *ngIf="socialEvent.notification.content.signoffText.include"
+     markdown [data]="socialEvent.notification.content.signoffText.value"></p>
+  <app-contact-us *ngIf="socialEvent.notification.content.signoffAs.include"
+                  [committeeReferenceDataOverride]="committeeReferenceDataSource()"
+                  [format]="'list'"
                   [role]="signoffAs()?.type"></app-contact-us>
 </div>

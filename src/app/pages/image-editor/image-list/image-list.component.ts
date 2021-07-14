@@ -71,7 +71,7 @@ export class ImageListComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -63,7 +63,7 @@ export interface CommitteeMember {
   email: string;
   fullName: string;
   memberId?: string;
-  nameAndDescription: string;
+  nameAndDescription?: string;
   type: string;
 }
 

@@ -1,4 +1,3 @@
-import get from "lodash-es/get";
 import map from "lodash-es/map";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
 import { MemberLoginService } from "../member/member-login.service";
@@ -6,10 +5,17 @@ import { FileType } from "./committee-file-type.model";
 
 export class CommitteeReferenceData {
 
-  constructor(private committeeConfig: CommitteeConfig,
+  constructor(private injectedCommitteeMembers: CommitteeMember[],
+              private injectedFileTypes: FileType[],
               private memberLoginService: MemberLoginService) {
-    this.localFileTypes = this.committeeConfig.committee.fileTypes;
-    this.localCommitteeMembers = map(this.committeeConfig.committee.contactUs, (data, type) => ({
+  }
+
+  static create(committeeConfig: CommitteeConfig, memberLoginService: MemberLoginService) {
+    return new CommitteeReferenceData(CommitteeReferenceData.toCommitteeMembers(committeeConfig), committeeConfig.committee.fileTypes, memberLoginService);
+  }
+
+  public static toCommitteeMembers(committeeConfig: CommitteeConfig): CommitteeMember[] {
+    return map(committeeConfig.committee.contactUs, (data, type) => ({
       type,
       fullName: data.fullName,
       memberId: data.memberId,
@@ -19,15 +25,12 @@ export class CommitteeReferenceData {
     }));
   }
 
-  private localFileTypes: FileType[] = [];
-  private localCommitteeMembers: CommitteeMember[] = [];
-
-  static create(referenceData: CommitteeConfig, memberLoginService: MemberLoginService) {
-    return new CommitteeReferenceData(referenceData, memberLoginService);
+  createFrom(injectedCommitteeMembers: CommitteeMember[]) {
+    return new CommitteeReferenceData(injectedCommitteeMembers, this.injectedFileTypes, this.memberLoginService);
   }
 
   committeeMembers(): CommitteeMember[] {
-    return this.localCommitteeMembers;
+    return this.injectedCommitteeMembers;
   }
 
   loggedOnRole(): CommitteeMember {
@@ -38,7 +41,7 @@ export class CommitteeReferenceData {
   }
 
   fileTypes(): FileType[] {
-    return this.localFileTypes;
+    return this.injectedFileTypes;
   }
 
   committeeMembersForRole(role): CommitteeMember[] {
@@ -47,7 +50,8 @@ export class CommitteeReferenceData {
   }
 
   contactUsField(role, field): string {
-    return get(this.committeeConfig.committee.contactUs, [role, field]);
+    const committeeMember = this.committeeMembers().find(member => member.type === role);
+    return committeeMember && committeeMember[field];
   }
 
   memberId(role): string {

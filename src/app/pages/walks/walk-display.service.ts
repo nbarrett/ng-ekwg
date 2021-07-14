@@ -189,6 +189,10 @@ export class WalkDisplayService {
     return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
   }
 
+  gridReferenceLink(walk: Walk): string {
+    return `https://gridreferencefinder.com/?gr=${walk.gridReference}`;
+  }
+
   toWalkAccessMode(walk: Walk): WalkAccessMode {
     let returnValue = WalksReferenceService.walkAccessModes.view;
     if (this.memberLoginService.memberLoggedIn()) {

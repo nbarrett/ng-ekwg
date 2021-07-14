@@ -24,7 +24,6 @@ const mockData: CommitteeConfig = {
   committee: {
     contactUs: {
       chairman: {
-        nameAndDescription: "Chairman (Kerry O'Grady)",
         type: "chairman",
         description: "Chairman",
         fullName: "Kerry O'Grady",
@@ -33,7 +32,6 @@ const mockData: CommitteeConfig = {
       },
       secretary: NIC,
       treasurer: {
-        nameAndDescription: "Treasurer (Jon Inglett)",
         type: "treasurer",
         description: "Treasurer",
         fullName: "Jon Inglett",
@@ -41,7 +39,6 @@ const mockData: CommitteeConfig = {
         memberId: "5a22f683bd966f3d367dbd80"
       },
       membership: {
-        nameAndDescription: "Membership (Jenny Brown)",
         type: "membership",
         description: "Membership",
         fullName: "Jenny Brown",
@@ -49,15 +46,13 @@ const mockData: CommitteeConfig = {
         memberId: "5318ce73a08549a65a4a2899"
       },
       social: {
-        nameAndDescription: "Social (Andrew Goh)",
-        type: "secretary",
+        type: "social",
         description: "Social Co-ordinator",
         fullName: "Andrew Goh",
         email: "social@ekwg.co.uk",
         memberId: "5a281ddec2ef160584439b1f"
       },
       walks: {
-        nameAndDescription: "Walks (Stuart Maisner)",
         type: "walks",
         description: "Walks Co-ordinator",
         fullName: "Stuart Maisner",
@@ -65,7 +60,6 @@ const mockData: CommitteeConfig = {
         memberId: "55470ac1e4b0996846fa82ba"
       },
       support: {
-        nameAndDescription: "Technical Support (Nick Barrett)",
         type: "support",
         description: "Technical Support",
         fullName: "Nick Barrett",
@@ -79,13 +73,21 @@ const mockData: CommitteeConfig = {
 
 describe("CommitteeReferenceData", () => {
 
-  it("should return members for role", waitForAsync(() => {
+  it("should return members for role", () => {
     const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembersForRole("secretary")).toEqual([EXPECTED_NIC]);
-  }));
+  });
 
-  it("should return committee members", waitForAsync(() => {
+  it("should return committee members", () => {
     const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
     expect(service.committeeMembers()[1]).toEqual(EXPECTED_NIC);
-  }));
+  });
+
+  it("contactUsField should data based on supplied role and field", () => {
+    const service: CommitteeReferenceData = CommitteeReferenceData.create(mockData, null);
+    expect(service.contactUsField("support", "memberId")).toEqual("52ab5d94e4b0f92ce9a5caee");
+    expect(service.contactUsField("membership", "fullName")).toEqual("Jenny Brown");
+    expect(service.contactUsField("walks", "nameAndDescription")).toEqual("Walks Co-ordinator (Stuart Maisner)");
+    expect(service.contactUsField("social", "nameAndDescription")).toEqual("Social Co-ordinator (Andrew Goh)");
+  });
 });

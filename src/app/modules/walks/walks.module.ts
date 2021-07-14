@@ -33,6 +33,7 @@ import { VenueIconPipe } from "../../pipes/venue-icon.pipe";
 import { WalkEventTypePipe } from "../../pipes/walk-event-type.pipe";
 import { WalkSummaryPipe } from "../../pipes/walk-summary.pipe";
 import { WalkValidationsListPipe } from "../../pipes/walk-validations.pipe";
+import { AddressQueryService } from "../../services/walks/address-query.service";
 import { WalkNotificationService } from "../../services/walks/walk-notification.service";
 import { WalksService } from "../../services/walks/walks.service";
 import { SharedModule } from "../../shared-module";
@@ -80,6 +81,7 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
   providers: [
     AuditDeltaChangedItemsPipePipe,
     AuditDeltaValuePipe,
+    AddressQueryService,
     VenueIconPipe,
     WalkDisplayService,
     WalkEventTypePipe,

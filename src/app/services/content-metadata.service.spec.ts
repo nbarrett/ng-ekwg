@@ -6,6 +6,7 @@ import { ContentMetadata, ContentMetadataApiResponse } from "../models/content-m
 import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
+import { SearchFilterPipe } from "../pipes/search-filter.pipe";
 
 import { ContentMetadataService } from "./content-metadata.service";
 import { StringUtilsService } from "./string-utils.service";
@@ -13,7 +14,7 @@ import { StringUtilsService } from "./string-utils.service";
 describe("ContentMetadataService", () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule, HttpClientTestingModule],
-    providers: [StringUtilsService, MemberIdToFullNamePipe, FullNamePipe, FullNameWithAliasPipe]
+    providers: [StringUtilsService, MemberIdToFullNamePipe, FullNamePipe, FullNameWithAliasPipe, SearchFilterPipe]
 
   }));
 

@@ -5,6 +5,7 @@ import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
+import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
@@ -32,6 +33,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { AddressQueryService } from "../../../services/walks/address-query.service";
 import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalkEventService } from "../../../services/walks/walk-event.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
@@ -39,7 +41,7 @@ import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
-import { WalkDisplayService} from "../walk-display.service";
+import { WalkDisplayService } from "../walk-display.service";
 
 interface DisplayMember {
   memberId: string;
@@ -77,6 +79,7 @@ export class WalkEditComponent implements OnInit {
 
   constructor(
     private walksService: WalksService,
+    private addressQueryService: AddressQueryService,
     private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private memberLoginService: MemberLoginService,
     public route: ActivatedRoute,
@@ -251,7 +254,7 @@ export class WalkEditComponent implements OnInit {
       }
       this.confirmAction = ConfirmType.NONE;
       this.sendNotifications = true;
-      this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
+      this.updateGoogleMapsUrl();
       this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
@@ -284,6 +287,10 @@ export class WalkEditComponent implements OnInit {
     }
     this.populateCopySourceFromWalkLeaderMemberId();
     this.populateWalkTemplates();
+  }
+
+  private updateGoogleMapsUrl() {
+    this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk, false, this.displayedWalk.walk.postcode);
   }
 
   populateCopySourceFromWalkLeaderMemberId() {
@@ -676,4 +683,26 @@ export class WalkEditComponent implements OnInit {
     return this.display.walkMode(this.displayedWalk.walk) === WalkViewMode.EDIT;
   }
 
+  async postcodeChange($event: any) {
+    this.displayedWalk.walk.postcode = this.displayedWalk.walk.postcode.toUpperCase().trim();
+    this.notify.hide();
+    this.logger.debug("postcodeChange:", $event, this.displayedWalk.walk.postcode);
+    if (this.displayedWalk.walk.postcode) {
+      const gridReferenceLookupResponse: GridReferenceLookupResponse = await this.addressQueryService.gridReferenceLookup(this.displayedWalk.walk.postcode);
+      if (gridReferenceLookupResponse.error) {
+        this.notify.error({
+          continue: true,
+          title: "Postcode error",
+          message: `Lookup of postcode ${gridReferenceLookupResponse.postcode} failed due to '${gridReferenceLookupResponse.error}' error`
+        });
+      } else {
+        this.displayedWalk.walk.gridReference = gridReferenceLookupResponse.gridReference;
+        this.updateGoogleMapsUrl();
+      }
+    }
+  }
+
+  viewGridReference() {
+    return window.open(this.display.gridReferenceLink(this.displayedWalk.walk));
+  }
 }

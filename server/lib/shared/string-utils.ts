@@ -1,15 +1,15 @@
+import escapeRegExp = require("lodash/escapeRegExp");
+import isNumber = require("lodash/isNumber");
 
-const {escapeRegExp, isNumber} = require("lodash");
-
-exports.generateUid = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+export const generateUid = () => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, value => {
     const r = Math.random() * 16 | 0;
-    const v = c === "x" ? r : (r & 0x3 | 0x8);
+    const v = value === "x" ? r : (r & 0x3 | 0x8);
     return v.toString(16);
   });
-}
+};
 
-exports.replaceAll = (find, replace, str) => {
+export const replaceAll = (find: string, replace: string, str: string): string | number => {
   let replacedValue;
   let initialValue = "" + str;
   while (true) {
@@ -21,4 +21,4 @@ exports.replaceAll = (find, replace, str) => {
     }
   }
   return isNumber(str) ? +replacedValue : replacedValue;
-}
+};

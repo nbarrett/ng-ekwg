@@ -7,6 +7,7 @@ import { CommitteeMember } from "../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../models/member.model";
 import { SocialEvent } from "../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
+import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { sortBy } from "../../services/arrays";
 import { ClipboardService } from "../../services/clipboard.service";
@@ -37,6 +38,7 @@ export class SocialDisplayService {
     private urlService: UrlService,
     private valueOrDefault: ValueOrDefaultPipe,
     private fullNameWithAlias: FullNameWithAliasPipe,
+    private memberIdToFullNamePipe: MemberIdToFullNamePipe,
     private dateUtils: DateUtilsService,
     private clipboardService: ClipboardService,
     private committeeConfig: CommitteeConfigService,
@@ -46,28 +48,31 @@ export class SocialDisplayService {
     this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
   }
 
-  committeeMembersPlusOrganiser(socialEvent: SocialEvent): CommitteeMember[] {
-    return socialEvent.eventContactMemberId ?
-      [this.committeeMemberFromSocialEvent(socialEvent)].concat(this.committeeReferenceData.committeeMembers()) : this.committeeReferenceData.committeeMembers();
+  committeeMembersPlusOrganiser(socialEvent: SocialEvent, members: Member[]): CommitteeMember[] {
+    const committeeMembers = socialEvent.eventContactMemberId ?
+      [this.committeeMemberFromSocialEvent(socialEvent, members)].concat(this.committeeReferenceData.committeeMembers()) : this.committeeReferenceData.committeeMembers();
+    this.logger.debug("committeeMembersPlusOrganiser:", committeeMembers);
+    return committeeMembers;
   }
 
   committeeMembers(): CommitteeMember[] {
     return this.committeeReferenceData.committeeMembers();
   }
 
-  committeeMemberFromSocialEvent(socialEvent: SocialEvent): CommitteeMember {
+  committeeMemberFromSocialEvent(socialEvent: SocialEvent, members: Member[]): CommitteeMember {
+    const fullName = this.memberIdToFullNamePipe.transform(socialEvent.eventContactMemberId, members);
     return {
       type: "organiser",
-      fullName: socialEvent.displayName,
+      fullName,
       memberId: socialEvent.eventContactMemberId,
       description: "Organiser",
-      nameAndDescription: "Organiser (" + socialEvent.displayName + ")",
+      nameAndDescription: `Organiser (${fullName})`,
       email: socialEvent.contactEmail
     };
   }
 
   attachmentTitle(socialEvent: SocialEvent) {
-    return socialEvent?.attachment ? (socialEvent.attachment.title || "Attachment: " + socialEvent.attachment.originalFileName) : "";
+    return socialEvent?.attachment ? (socialEvent.attachment.title || `Attachment: ${socialEvent.attachment.originalFileName}`) : "";
   }
 
   socialEventLink(socialEvent: SocialEvent) {
@@ -82,7 +87,7 @@ export class SocialDisplayService {
   }
 
   attachmentUrl(socialEvent) {
-    return socialEvent && socialEvent.attachment ? this.attachmentBaseUrl + "/" + socialEvent.attachment.awsFileName : "";
+    return socialEvent && socialEvent.attachment ? `${this.attachmentBaseUrl}/${socialEvent.attachment.awsFileName}` : "";
   }
 
   attendeeList(socialEvent: SocialEvent, members: MemberFilterSelection[]) {

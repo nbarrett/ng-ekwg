@@ -4,6 +4,7 @@ import { RouterTestingModule } from "@angular/router/testing";
 import { LoggerTestingModule } from "ngx-logger/testing";
 
 import { FileUtilsService } from "./file-utils.service";
+import { SearchFilterPipe } from "./pipes/search-filter.pipe";
 import { ContentMetadataService } from "./services/content-metadata.service";
 
 describe("FileUtilsService", () => {
@@ -14,7 +15,7 @@ describe("FileUtilsService", () => {
       RouterTestingModule,
     ],
     providers: [
-      ContentMetadataService,
+      ContentMetadataService, SearchFilterPipe
     ],
   }));
 

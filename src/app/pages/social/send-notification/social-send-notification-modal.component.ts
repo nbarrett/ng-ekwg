@@ -45,7 +45,10 @@ export class SocialSendNotificationModalComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
 
-  public roles: { replyTo: CommitteeMember[]; signoff: CommitteeMember[]; } = {replyTo: [], signoff: []};
+  public roles: {
+    replyTo: CommitteeMember[];
+    signoff: CommitteeMember[];
+  } = {replyTo: [], signoff: []};
   public campaigns: MailchimpCampaignListResponse;
   destinationType = "";
   committeeFiles = [];
@@ -78,13 +81,13 @@ export class SocialSendNotificationModalComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.memberFilterSelections);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.initialiseRoles();
+    this.memberService.all().then(members => this.initialiseRoles(members));
     this.initialiseNotification();
     this.confirm.type = ConfirmType.SEND_NOTIFICATION;
   }
 
   notReady(): boolean {
-    return this.roles.replyTo.length === 0 || this.notifyTarget.busy || (this.socialEvent.notification.content.selectedMemberIds.length === 0 && this.socialEvent.notification.content.destinationType === "custom");
+    return this.roles.replyTo.length === 0 || this.notifyTarget.busy || (this.socialEvent?.notification?.content.selectedMemberIds.length === 0 && this.socialEvent?.notification?.content.destinationType === "custom");
   }
 
   initialiseNotification() {
@@ -96,9 +99,9 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.defaultNotificationField(["description"], {include: true});
     this.defaultNotificationField(["attendees"], {include: this.socialEvent.attendees.length > 0});
     this.defaultNotificationField(["attachment"], {include: !!this.socialEvent.attachment});
-    this.defaultNotificationField(["replyTo"], {include: true, value: this.roleForType(this.socialEvent.displayName ? "organiser" : "social").memberId});
+    this.defaultNotificationField(["replyTo"], {include: true, value: this.roleForType(this.socialEvent.displayName ? "organiser" : "social")?.memberId});
     this.defaultNotificationField(["signoffText"], {include: true, value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,"});
-    this.defaultNotificationField(["signoffAs"], {include: true, value: this.roleForType("social").memberId});
+    this.defaultNotificationField(["signoffAs"], {include: true, value: this.roleForType("social")?.memberId});
     this.logger.debug("onFirstNotificationOnly - creating this.socialEvent.notification ->", this.socialEvent.notification);
   }
 
@@ -117,14 +120,14 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   defaultNotificationField(path: string[], value: any) {
-    if (!this.socialEvent.notification.content) {
+    if (!this.socialEvent?.notification?.content) {
       this.socialEvent.notification.content = {};
       this.logger.debug("creating notification content");
     }
-    const target = get(this.socialEvent.notification.content, path);
+    const target = get(this.socialEvent?.notification?.content, path);
     if (isUndefined(target)) {
       this.logger.debug("existing target:", target, "setting path:", path, "to value:", value,);
-      set(this.socialEvent.notification.content, path, value);
+      set(this.socialEvent?.notification?.content, path, value);
     } else {
       this.logger.debug("path", path, "already", target);
     }
@@ -142,9 +145,9 @@ export class SocialSendNotificationModalComponent implements OnInit {
     return role;
   }
 
-  initialiseRoles() {
-    this.roles.replyTo = this.display.committeeMembersPlusOrganiser(this.socialEvent);
-    this.roles.signoff = this.display.committeeMembers();
+  initialiseRoles(members: Member[]) {
+    this.roles.replyTo = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
+    this.roles.signoff = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
   }
 
   attachmentTitle(socialEvent) {
@@ -156,7 +159,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   editAllSocialRecipients() {
-    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent.notification.content.selectedMemberIds);
+    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent?.notification?.content.selectedMemberIds);
     this.socialEvent.notification.content.destinationType = "custom";
     this.socialEvent.notification.content.selectedMemberIds = this.memberFilterSelections.map(attendee => attendee.id);
   }
@@ -164,16 +167,16 @@ export class SocialSendNotificationModalComponent implements OnInit {
   editAttendeeRecipients() {
     this.socialEvent.notification.content.destinationType = "custom";
     this.socialEvent.notification.content.selectedMemberIds = this.socialEvent.attendees.map(attendee => attendee.id);
-    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent.notification.content.selectedMemberIds);
+    this.logger.debug("editAllSocialRecipients - after:", this.socialEvent?.notification?.content.selectedMemberIds);
   }
 
   clearRecipients() {
-    this.logger.debug("clearRecipients: pre clear - recipients:", this.socialEvent.notification.content.selectedMemberIds);
+    this.logger.debug("clearRecipients: pre clear - recipients:", this.socialEvent?.notification?.content.selectedMemberIds);
     this.socialEvent.notification.content.selectedMemberIds = [];
   }
 
   formattedSignoffText() {
-    return this.socialEvent.notification.content.signoffText.value;
+    return this.socialEvent?.notification?.content.signoffText.value;
   }
 
   memberGrouping(member) {
@@ -247,7 +250,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
         .then((response) => this.writeSegmentResponseDataToEvent(response))
         .catch((error) => this.handleError(error));
     } else {
-      this.logger.debug("not saving segment data as destination type is whole mailing list ->", this.socialEvent.notification.content.destinationType);
+      this.logger.debug("not saving segment data as destination type is whole mailing list ->", this.socialEvent?.notification?.content.destinationType);
       return Promise.resolve();
     }
   }
@@ -257,19 +260,19 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   querySegmentMembers(): Identifiable[] {
-    switch (this.socialEvent.notification.content.destinationType) {
+    switch (this.socialEvent?.notification?.content.destinationType) {
       case "attendees":
         return this.socialEvent.attendees;
       case "custom":
-        return this.socialEvent.notification.content.selectedMemberIds.map(item => this.memberService.toIdentifiable(item));
+        return this.socialEvent?.notification?.content.selectedMemberIds.map(item => this.memberService.toIdentifiable(item));
       default:
         return [];
     }
   }
 
   sendEmailCampaign(contentSections, dontSend: boolean, campaignName: string) {
-    const replyToRole = this.socialEvent.notification.content.replyTo.value ? this.roleForMemberId(this.socialEvent.notification.content.replyTo.value) : this.roleForType("social");
-    const otherOptions = (this.socialEvent.notification.content.replyTo.include && replyToRole) ? {
+    const replyToRole = this.socialEvent?.notification?.content.replyTo.value ? this.roleForMemberId(this.socialEvent?.notification?.content.replyTo.value) : this.roleForType("social");
+    const otherOptions = (this.socialEvent?.notification?.content.replyTo.include && replyToRole) ? {
       from_name: replyToRole.fullName,
       from_email: replyToRole.email
     } : {};
@@ -278,7 +281,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
     return this.mailchimpConfig.getConfig()
       .then((config) => {
         const campaignId = config.mailchimp.campaigns.socialEvents.campaignId;
-        switch (this.socialEvent.notification.content.destinationType) {
+        switch (this.socialEvent?.notification?.content.destinationType) {
           case "all-ekwg-social":
             this.logger.debug("about to replicateAndSendWithOptions to all-ekwg-social with campaignName", campaignName, "campaign Id", campaignId);
             return this.mailchimpCampaignService.replicateAndSendWithOptions({
@@ -326,11 +329,11 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   onChange($event: any) {
-    this.logger.debug("$event", $event, "socialEvent.notification.content.selectedMemberIds:", this.socialEvent.notification.content.selectedMemberIds);
-    if (this.socialEvent.notification.content.selectedMemberIds.length > 0) {
+    this.logger.debug("$event", $event, "socialEvent.notification.content.selectedMemberIds:", this.socialEvent?.notification?.content.selectedMemberIds);
+    if (this.socialEvent?.notification?.content.selectedMemberIds.length > 0) {
       this.notify.warning({
         title: "Member selection",
-        message: `${this.socialEvent.notification.content.selectedMemberIds.length} members manually selected`
+        message: `${this.socialEvent?.notification?.content.selectedMemberIds.length} members manually selected`
       });
     } else {
       this.notify.hide();
