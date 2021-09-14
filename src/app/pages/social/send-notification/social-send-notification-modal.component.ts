@@ -81,8 +81,10 @@ export class SocialSendNotificationModalComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.memberFilterSelections);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.memberService.all().then(members => this.initialiseRoles(members));
-    this.initialiseNotification();
+    this.memberService.all().then(members => {
+      this.initialiseRoles(members);
+      this.initialiseNotification();
+    });
     this.confirm.type = ConfirmType.SEND_NOTIFICATION;
   }
 
@@ -146,8 +148,9 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   initialiseRoles(members: Member[]) {
-    this.roles.replyTo = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
-    this.roles.signoff = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
+    const roles = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
+    this.roles.replyTo = roles;
+    this.roles.signoff = roles;
   }
 
   attachmentTitle(socialEvent) {
