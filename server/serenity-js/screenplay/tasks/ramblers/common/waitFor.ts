@@ -17,12 +17,12 @@ export class WaitFor {
       Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(WalksTargets.loaderIndicator, not(isVisible())));
   }
 
-  static selectedWalksToReachStatus(status: string) {
-    return Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(WalksWithStatus.matching(status), equals(true));
+  static selectedWalksToReachStatus(...statuses: string[]) {
+    return Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(WalksWithStatus.matching(...statuses), equals(true));
   }
 
-  static noSelectedWalksToHaveStatus(status: string) {
-    return Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(SelectedWalksWithStatus.notMatching(status), equals(true));
+  static noSelectedWalksToHaveStatus(...statuses: string[]) {
+    return Wait.upTo(Duration.ofSeconds(TIMEOUT_IN_SECONDS)).until(SelectedWalksWithStatus.notMatching(...statuses), equals(true));
   }
 
   static errorOrCountOfWalksToBe(walkCount: number) {

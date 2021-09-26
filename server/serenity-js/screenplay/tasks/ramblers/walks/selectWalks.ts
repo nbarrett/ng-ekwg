@@ -6,23 +6,23 @@ import { SelectCheckbox } from "../../common/selectCheckbox";
 import { WaitFor } from "../common/waitFor";
 
 export const WalkFilters = {
-  withStatus: (walk: RamblersWalkSummary, status: string) => walk.status === status,
-  withIds: (walk: RamblersWalkSummary, walkIds: number[]) => walkIds.includes(walk.walkId),
+  withStatus: (walk: RamblersWalkSummary, ...statuses: string[]) => statuses.includes(walk.status),
+  withIds: (walk: RamblersWalkSummary, ...walkIds: number[]) => walkIds.includes(walk.walkId),
   currentlySelected: (walk: RamblersWalkSummary) => walk.currentlySelected,
 };
 
 export class SelectWalks {
 
   static notPublishedOrWithIds(walkIds: number[]) {
-    return new SelectWalksNotPublishedOrWithIds(walkIds);
+    return new SelectWalksNotPublishedCancelledOrWithIds(walkIds);
   }
 
   static withIds(...walkIds: number[]) {
     return new SelectWalksWithIds(walkIds);
   }
 
-  static withStatus(status: string) {
-    return new SelectWalksWithStatus(status);
+  static withStatus(...statuses: string[]) {
+    return new SelectWalksWithStatus(statuses);
   }
 
   static all() {
@@ -64,27 +64,27 @@ export class DeselectAllWalks implements Task {
 
 export class SelectWalksWithStatus implements Task {
 
-  constructor(private status: string) {
+  constructor(private statuses: string[]) {
   }
 
   performAs(actor: PerformsActivities & UsesAbilities & AnswersQuestions): Promise<any> {
-    console.log(`selecting walks of status "${this.status}"`);
+    console.log(`selecting walks of status "${this.statuses}"`);
     return RamblersWalkSummaries.displayed().answeredBy(actor)
       .then(walks => actor.attemptsTo(
         SelectWalks.none(),
         ...walks
-          .filter(walk => WalkFilters.withStatus(walk, this.status))
+          .filter(walk => WalkFilters.withStatus(walk, ...this.statuses))
           .map(walk => SelectCheckbox.checked().from(walk.checkboxTarget)),
         WaitFor.ramblersToFinishProcessing()));
   }
 
   toString() {
-    return `#actor selects walks with status ${this.status}`;
+    return `#actor selects walks with status ${this.statuses}`;
   }
 
 }
 
-export class SelectWalksNotPublishedOrWithIds implements Task {
+export class SelectWalksNotPublishedCancelledOrWithIds implements Task {
 
   constructor(private walkIds: number[]) {
   }
@@ -94,7 +94,7 @@ export class SelectWalksNotPublishedOrWithIds implements Task {
       .then(walks => actor.attemptsTo(
         SelectWalks.none(),
         ...walks
-          .filter(walk => !WalkFilters.withStatus(walk, "Published") || WalkFilters.withIds(walk, this.walkIds))
+          .filter(walk => (!WalkFilters.withStatus(walk, "Published", "Cancelled")) || WalkFilters.withIds(walk, ...this.walkIds))
           .map(walk => SelectCheckbox.checked().from(walk.checkboxTarget)),
         WaitFor.ramblersToFinishProcessing()));
   }
@@ -115,7 +115,7 @@ export class SelectWalksWithIds implements Task {
       .then(walks => actor.attemptsTo(
         SelectWalks.none(),
         ...walks
-          .filter(walk => WalkFilters.withIds(walk, this.walkIds))
+          .filter(walk => WalkFilters.withIds(walk, ...this.walkIds))
           .map(walk => SelectCheckbox.checked().from(walk.checkboxTarget)),
         WaitFor.ramblersToFinishProcessing()));
   }

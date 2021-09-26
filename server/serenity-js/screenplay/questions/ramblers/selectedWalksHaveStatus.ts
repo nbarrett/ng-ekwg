@@ -5,14 +5,14 @@ import { RamblersWalkSummaries } from "./ramblersWalksFound";
 
 export class SelectedWalksWithStatus {
 
-  static matching = (status: string) => new SelectedWalksWithStatusMatching(status);
-  static notMatching = (status: string) => new SelectedWalksWithStatusNotMatching(status);
+  static matching = (...statuses: string[]) => new SelectedWalksWithStatusMatching(statuses);
+  static notMatching = (...statuses: string[]) => new SelectedWalksWithStatusNotMatching(statuses);
 
 }
 
 export class SelectedWalksWithStatusMatching implements Question<Promise<boolean>> {
 
-  constructor(private status: string) {
+  constructor(private status: string[]) {
   }
 
   toString = () => `selected walks to all have status of "${this.status}"`;
@@ -20,14 +20,14 @@ export class SelectedWalksWithStatusMatching implements Question<Promise<boolean
   answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<boolean> {
     return RamblersWalkSummaries.displayed().answeredBy(actor)
       .then(walks => walks.filter(walk => WalkFilters.currentlySelected(walk)))
-      .then(walks => every(walks, walk => WalkFilters.withStatus(walk, this.status)));
+      .then(walks => every(walks, walk => WalkFilters.withStatus(walk, ...this.status)));
   }
 
 }
 
 export class SelectedWalksWithStatusNotMatching implements Question<Promise<boolean>> {
 
-  constructor(private status: string) {
+  constructor(private status: string[]) {
   }
 
   toString = () => `no selected walks to have status of "${this.status}"`;
@@ -35,7 +35,7 @@ export class SelectedWalksWithStatusNotMatching implements Question<Promise<bool
   answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<boolean> {
     return RamblersWalkSummaries.displayed().answeredBy(actor)
       .then(walks => walks.filter(walk => WalkFilters.currentlySelected(walk)))
-      .then(walks => every(walks, walk => !WalkFilters.withStatus(walk, this.status)));
+      .then(walks => every(walks, walk => !WalkFilters.withStatus(walk, ...this.status)));
   }
 
 }

@@ -21,7 +21,7 @@ export class PublishSelectedWalks implements Task {
   performAs(actor: PerformsActivities): Promise<void> {
     return actor.attemptsTo(
       Click.on(WalksTargets.publishSelected),
-      WaitFor.selectedWalksToReachStatus("Published"));
+      WaitFor.selectedWalksToReachStatus("Published", "Cancelled"));
   }
   toString() {
     return "#actor publishes selected walks";
