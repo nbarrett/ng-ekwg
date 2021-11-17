@@ -1,0 +1,37 @@
+<div class="col-sm-12">
+  <div class="thumbnail thumbnail-walk-edit mt-22">
+    <div class="thumbnail-heading">{{riskAssessmentSection}}</div>
+    <div class="row">
+      <div class="col-sm-12 green-bullets-no-rule">
+        <app-markdown-editor [category]="'risk-assessments'" [name]="'risk-assessments-' +riskAssessmentKey"
+                             [description]="riskAssessmentSection"></app-markdown-editor>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+                <textarea [disabled]="!allowEdits()"
+                          #input (input)="confirmParameterText(input.value)"
+                          [value]="riskAssessmentConfirmationText()" type="text"
+                          class="form-control input-sm" rows="2"
+                          [id]="'risk-assessment-text-' + riskAssessmentKey"
+                          [placeholder]="'Optional: Enter any free text related to ' + riskAssessmentSection + ' section here'"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="form-group">
+          <div class="checkbox-group form-inline">
+            <label [ngClass]="{'ui-state-active': riskAssessmentConfirmed()}"
+                   [for]="'risk-assessment-' + riskAssessmentKey">{{confirmLabel()}}
+              <input #checkbox (change)="confirmParameter(checkbox.checked)"
+                     [checked]="riskAssessmentConfirmed()" type="checkbox"
+                     [id]="'risk-assessment-' + riskAssessmentKey">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

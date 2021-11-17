@@ -25,6 +25,8 @@ import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.compone
 import { WalkMeetupConfigParametersComponent } from "../../pages/walks/walk-meetup-config-parameters/walk-meetup-config-parameters.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
 import { WalkMeetupComponent } from "../../pages/walks/walk-meetup/walk-meetup.component";
+import { WalkRiskAssessmentSectionComponent } from "../../pages/walks/walk-risk-assessment/section/walk-risk-assessment-section.component";
+import { WalkRiskAssessmentComponent } from "../../pages/walks/walk-risk-assessment/walk-risk-assessment.component";
 import { WalkVenueComponent } from "../../pages/walks/walk-venue/walk-venue.component";
 import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view.component";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
@@ -70,6 +72,8 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     WalkNotificationLeaderDeletedComponent,
     WalkNotificationLeaderRequestedComponent,
     WalkNotificationLeaderUpdatedComponent,
+    WalkRiskAssessmentComponent,
+    WalkRiskAssessmentSectionComponent,
     WalkSummaryPipe,
     WalkValidationsListPipe,
     WalkVenueComponent,

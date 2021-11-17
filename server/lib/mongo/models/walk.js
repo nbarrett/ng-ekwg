@@ -1,6 +1,14 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
+const riskAssessmentRecord = {
+  confirmationText: {type: String},
+  memberId: {type: String},
+  confirmed: {type: Boolean},
+  confirmationDate: {type: Number},
+  riskAssessmentKey: {type: String},
+}
+
 const walkEvent = {
   data: {type: Object},
   eventType: {type: String},
@@ -58,7 +66,8 @@ const walkSchema = mongoose.Schema({
   startTime: {type: String},
   walkDate: {type: Number},
   walkLeaderMemberId: {type: String},
-  venue: walkVenue
+  venue: walkVenue,
+  riskAssessment: [riskAssessmentRecord],
 }, {collection: "walks"});
 
 walkSchema.plugin(uniqueValidator);

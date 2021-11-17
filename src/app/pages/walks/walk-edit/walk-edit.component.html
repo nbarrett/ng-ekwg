@@ -20,7 +20,7 @@
                        placeholder="enter date of walk"
                        #dp="bsDatepicker"
                        bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
-                               containerClass: 'theme-ramblers'}"
+                             containerClass: 'theme-ramblers'}"
                        type="text" class="form-control input-sm"
                        id="walk-date"/>
                 <div class="input-group-btn">
@@ -79,6 +79,9 @@
         </div>
       </div>
     </tab>
+    <tab *ngIf="allowEdits()" [heading]="'Risk Assessment'">
+      <app-walk-risk-assessment [displayedWalk]="displayedWalk"></app-walk-risk-assessment>
+    </tab>
     <tab [heading]="'Related links'">
       <div class="thumbnail thumbnail-admin-edit">
         <div class="row">
@@ -127,10 +130,10 @@
                            alt="Click to view on Ramblers Walks and Events Manager"/>
                       <a target="_blank"
                          [href]="display.ramblersLink(displayedWalk.walk)">
-                        <span class="related-links-title"
-                              tooltip-placement="left"
-                              tooltip="Click to view on Ramblers Walks and Events Manager">View walk on Ramblers
-                        </span>
+                      <span class="related-links-title"
+                            tooltip-placement="left"
+                            tooltip="Click to view on Ramblers Walks and Events Manager">View walk on Ramblers
+                      </span>
                       </a></label>
                   </div>
                 </div>
@@ -188,11 +191,11 @@
                            alt=""/>
                       <a target="_blank"
                          [href]="displayedWalk.walk.osMapsRoute" class="text1">
-                        <span class="related-links-title"
-                              tooltip-placement="left"
-                              tooltip="Click to view the route for this walk on Ordnance Survey Maps">
-                          View map on OS Maps
-                        </span>
+                      <span class="related-links-title"
+                            tooltip-placement="left"
+                            tooltip="Click to view the route for this walk on Ordnance Survey Maps">
+                        View map on OS Maps
+                      </span>
                       </a>
                     </div>
                   </div>
@@ -356,11 +359,12 @@
                          type="text" class="form-control input-sm" id="grid-reference"
                          placeholder="Enter Grid Reference here">
                   <div class="input-group-btn">
-                    <button id="view-grid-reference" (click)="viewGridReference()" class="btn btn-default btn-sm grid-ref-btn">
-                      <span tooltipPlacement="top"
-                            tooltip="View grid reference position in gridreferencefinder.com">
-                    <img src="../../../assets/images/local/grid-reference-finder.ico"/>
-                    </span>
+                    <button id="view-grid-reference" (click)="viewGridReference()"
+                            class="btn btn-default btn-sm grid-ref-btn">
+                    <span tooltipPlacement="top"
+                          tooltip="View grid reference position in gridreferencefinder.com">
+                  <img src="../../../assets/images/local/grid-reference-finder.ico"/>
+                  </span>
                     </button>
                   </div>
                 </div>
@@ -427,59 +431,59 @@
         </div>
       </div>
     </tab>
-      <tab *ngIf="displayedWalk.walk.walkLeaderMemberId" [heading]="'Copy from previous walk'">
-        <div class="thumbnail thumbnail-admin-edit"
-             *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
-          <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="radio-inline map-radio-group map-radio-label">
+    <tab *ngIf="displayedWalk.walk.walkLeaderMemberId" [heading]="'Copy from...'">
+      <div class="thumbnail thumbnail-admin-edit"
+           *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
+        <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="radio-inline map-radio-group map-radio-label">
 
-                <input [disabled]="false"
-                       id="copy-selected-walk-leader" type="radio"
-                       [(ngModel)]="copySource"
-                       (change)="populateWalkTemplates()"
-                       value="copy-selected-walk-leader"/>
-                <label for="copy-selected-walk-leader">Previously led by: <select
-                  class="form-control input-sm input-led-by"
-                  [(ngModel)]="copySourceFromWalkLeaderMemberId"
-                  (change)="selectCopySelectedLeader()"
-                  id="copy-member-walks">
-                  <option value="">(no walk leader selected)</option>
-                  <option *ngFor="let member of membersWithAliasOrMe()"
-                          [ngValue]="member.memberId"
-                          [textContent]="member.name">
-                  </option>
-                </select>
-                </label>
-
-                <input id="copy-with-os-maps-route-selected" type="radio"
-                       [(ngModel)]="copySource"
-                       (change)="populateWalkTemplates()"
-                       value="copy-with-os-maps-route-selected"/>
-                <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
-
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-12 mt-8">
-              <label for="copy-walks-list">
-                Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
-              <select
-                [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
-                [(ngModel)]="copyFrom.walkTemplate"
-                (change)="populateCurrentWalkFromTemplate()"
-                id="copy-walks-list">
-                <option value="">(none selected)</option>
-                <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
-                        [ngValue]="walkTemplate"
-                        [textContent]="walkTemplate | walkSummary"></option>
+              <input [disabled]="false"
+                     id="copy-selected-walk-leader" type="radio"
+                     [(ngModel)]="copySource"
+                     (change)="populateWalkTemplates()"
+                     value="copy-selected-walk-leader"/>
+              <label for="copy-selected-walk-leader">Previously led by: <select
+                class="form-control input-sm input-led-by"
+                [(ngModel)]="copySourceFromWalkLeaderMemberId"
+                (change)="selectCopySelectedLeader()"
+                id="copy-member-walks">
+                <option value="">(no walk leader selected)</option>
+                <option *ngFor="let member of membersWithAliasOrMe()"
+                        [ngValue]="member.memberId"
+                        [textContent]="member.name">
+                </option>
               </select>
+              </label>
+
+              <input id="copy-with-os-maps-route-selected" type="radio"
+                     [(ngModel)]="copySource"
+                     (change)="populateWalkTemplates()"
+                     value="copy-with-os-maps-route-selected"/>
+              <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
+
             </div>
           </div>
         </div>
-      </tab>
+        <div class="row">
+          <div class="col-sm-12 mt-8">
+            <label for="copy-walks-list">
+              Copy from {{copyFrom.walkTemplates.length || 0}} available walk(s): </label>
+            <select
+              [disabled]="!allowEdits()" class="form-control input-sm fit-to-contents"
+              [(ngModel)]="copyFrom.walkTemplate"
+              (change)="populateCurrentWalkFromTemplate()"
+              id="copy-walks-list">
+              <option value="">(none selected)</option>
+              <option *ngFor="let walkTemplate of copyFrom.walkTemplates"
+                      [ngValue]="walkTemplate"
+                      [textContent]="walkTemplate | walkSummary"></option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </tab>
   </tabset>
   <div class="form-group">
     <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">

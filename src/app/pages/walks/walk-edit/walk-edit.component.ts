@@ -70,7 +70,7 @@ export class WalkEditComponent implements OnInit {
   private priorStatus: EventType;
   protected logger: Logger;
   public notifyTarget: AlertTarget = {};
-  protected notify: AlertInstance;
+  public notify: AlertInstance;
   public saveInProgress = false;
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;

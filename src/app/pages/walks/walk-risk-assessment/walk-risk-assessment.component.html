@@ -1,0 +1,33 @@
+<div class="thumbnail thumbnail-admin-edit">
+<!--  <div class="col-sm-12 green-bullets-no-rule">-->
+    <app-markdown-editor [category]="'risk-assessments'" [name]="'risk-assessments-heading'"
+                         [description]="'Risk Assessments Heading'"></app-markdown-editor>
+<!--  </div>-->
+  <div class="row">
+    <app-walk-risk-assessment-section [displayedWalk]="displayedWalk"
+                                      [riskAssessmentSection]="'Traffic'">
+
+    </app-walk-risk-assessment-section>
+    <app-walk-risk-assessment-section [displayedWalk]="displayedWalk"
+                                      [riskAssessmentSection]="'Path surface and obstacles'">
+
+    </app-walk-risk-assessment-section>
+    <app-walk-risk-assessment-section [displayedWalk]="displayedWalk"
+                                      [riskAssessmentSection]="'Animals'">
+
+    </app-walk-risk-assessment-section>
+    <app-walk-risk-assessment-section [displayedWalk]="displayedWalk"
+                                      [riskAssessmentSection]="'Communications'">
+
+    </app-walk-risk-assessment-section>
+    <app-walk-risk-assessment-section [displayedWalk]="displayedWalk"
+                                      [riskAssessmentSection]="'Other'">
+    </app-walk-risk-assessment-section>
+  </div>
+  <div class="form-group">
+    <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+      <i class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong> {{notifyTarget.alertTitle}}: </strong>
+      {{notifyTarget.alertMessage}}
+    </div>
+  </div>
+</div>

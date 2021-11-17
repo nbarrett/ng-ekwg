@@ -39,6 +39,16 @@ export interface Walk extends Identifiable {
   walkDate?: number;
   walkLeaderMemberId?: string;
   venue?: WalkVenue;
+  riskAssessment?: RiskAssessmentRecord[]
+}
+
+export interface RiskAssessmentRecord {
+  confirmationText?: string;
+  memberId: string;
+  confirmed: boolean;
+  confirmationDate: number;
+  riskAssessmentSection: string;
+  riskAssessmentKey: string;
 }
 
 export interface WalkExport {
