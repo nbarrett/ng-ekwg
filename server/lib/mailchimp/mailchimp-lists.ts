@@ -45,7 +45,7 @@ async function mailchimpListMembers(req, res) {
         "members.last_changed"],
       status: "subscribed",
       offset: 0,
-      count: 100
+      count: 300
     }).then(responseData => {
       messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
     }).catch(error => {

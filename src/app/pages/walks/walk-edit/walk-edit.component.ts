@@ -425,7 +425,7 @@ export class WalkEditComponent implements OnInit {
 
   isWalkReadyForStatusChangeTo(eventType: WalkEventType): boolean {
     this.notify.hide();
-    this.logger.debug("isWalkReadyForStatusChangeTo ->", eventType);
+    this.logger.info("isWalkReadyForStatusChangeTo ->", eventType);
     const walkValidations = this.validateWalk().validationMessages;
     if (eventType.mustHaveLeader && !this.displayedWalk.walk.walkLeaderMemberId) {
       this.notify.warning(
@@ -433,7 +433,7 @@ export class WalkEditComponent implements OnInit {
           title: "Walk leader needed",
           message: "This walk cannot be changed to " + eventType.description + " yet."
         });
-      this.logger.debug("isWalkReadyForStatusChangeTo:false - this.displayedWalk.status ->", this.displayedWalk.status);
+      this.logger.info("isWalkReadyForStatusChangeTo:false - this.displayedWalk.status ->", this.displayedWalk.status);
       return false;
     } else if (eventType.mustPassValidation && walkValidations.length > 0) {
       this.notify.warning(
@@ -456,10 +456,10 @@ export class WalkEditComponent implements OnInit {
   }
 
   setStatus(status: EventType) {
-    this.logger.debug("setting status =>", status);
+    this.logger.info("setting status =>", status);
     this.displayedWalk.status = status;
     this.priorStatus = cloneDeep(this.displayedWalk.status);
-    this.logger.debug("setting status =>", status, "this.priorStatus", this.priorStatus);
+    this.logger.info("setting status =>", status, "this.priorStatus", this.priorStatus);
   }
 
   async confirmDeleteWalkDetails() {
@@ -550,9 +550,9 @@ export class WalkEditComponent implements OnInit {
     });
   }
 
-  walkStatusChange(newStatus: Event) {
+  walkStatusChange() {
     this.notify.hide();
-    this.logger.debug("walkStatusChange - previous status:", this.displayedWalk.status, "new status:", newStatus);
+    this.logger.info("walkStatusChange - previous status:", this.displayedWalk.status);
     const eventType = this.walksReferenceService.toWalkEventType(this.displayedWalk.status);
     if (this.isWalkReadyForStatusChangeTo(eventType)) {
       this.setStatus(eventType.eventType);

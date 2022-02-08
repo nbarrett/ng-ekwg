@@ -140,7 +140,7 @@
               </div>
             </div>
           </div>
-          <app-walk-venue [displayedWalk]="displayedWalk"></app-walk-venue>
+          <app-walk-venue *ngIf="displayedWalk.walk.venue" [displayedWalk]="displayedWalk"></app-walk-venue>
           <app-walk-meetup [displayedWalk]="displayedWalk" [saveInProgress]="saveInProgress"></app-walk-meetup>
           <div class="col-sm-12">
             <div class="row thumbnail thumbnail-walk-edit">
@@ -214,7 +214,7 @@
               <label for="walk-status">Walk Status</label>
               <select [disabled]="!allowAdminEdits()"
                       [(ngModel)]="displayedWalk.status"
-                      (change)="walkStatusChange($event)"
+                      (change)="walkStatusChange()"
                       class="form-control input-sm" id="walk-status">
                 <option *ngFor="let status of walkStatuses()"
                         [ngValue]="status.eventType"

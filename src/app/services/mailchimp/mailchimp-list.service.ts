@@ -148,11 +148,11 @@ export class MailchimpListService {
   subscriberToMember(listType: string, members: Member[], mailchimpListMember: MailchimpMemberIdentifiers | MailchimpEmailWithError | MailchimpSubscriptionMember): Member {
     return members.find(member => {
       this.logger.off("subscriberToMember:member", member, "mailchimpListMember:", mailchimpListMember);
-      const matchedOnListWebId = mailchimpListMember["unique_email_id"] === member.mailchimpLists[listType]?.unique_email_id;
-      const matchedOnListSubscriberId = mailchimpListMember["web_id"] === member.mailchimpLists[listType]?.web_id;
-      const matchedOnLastReturnedEmail = mailchimpListMember?.email_address?.toLowerCase() === member.mailchimpLists[listType]?.email?.toLowerCase();
-      const matchedOnCurrentEmail = mailchimpListMember?.email_address?.toLowerCase() === member?.email?.toLowerCase();
-      const matched = matchedOnListWebId || matchedOnListSubscriberId || matchedOnLastReturnedEmail || matchedOnCurrentEmail;
+      const matchedOnUniqueEmailId = mailchimpListMember["unique_email_id"] && mailchimpListMember["unique_email_id"] === member.mailchimpLists[listType]?.unique_email_id;
+      const matchedOnWebId = mailchimpListMember["web_id"] && mailchimpListMember["web_id"] === member.mailchimpLists[listType]?.web_id;
+      const matchedOnLastReturnedEmail = mailchimpListMember?.email_address && mailchimpListMember?.email_address?.toLowerCase() === member.mailchimpLists[listType]?.email?.toLowerCase();
+      const matchedOnCurrentEmail = mailchimpListMember?.email_address && mailchimpListMember?.email_address?.toLowerCase() === member?.email?.toLowerCase();
+      const matched = matchedOnUniqueEmailId || matchedOnWebId || matchedOnLastReturnedEmail || matchedOnCurrentEmail;
       this.logger.off("subscriberToMember:member:matched", matched);
       return matched;
     });
@@ -178,8 +178,9 @@ export class MailchimpListService {
         member.mailchimpLists[listType].unique_email_id = mailchimpMember.unique_email_id;
       }
       member.mailchimpLists[listType].lastUpdated = this.dateUtils.nowAsValue();
+      this.logger.info("Updated member:", member, "from:", mailchimpMember);
     } else {
-      this.logger.debug(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(mailchimpMember)}`);
+      this.logger.info(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(mailchimpMember)}`);
     }
     return member;
   }
@@ -191,7 +192,7 @@ export class MailchimpListService {
       member.mailchimpLists[listType].lastUpdated = this.dateUtils.nowAsValue();
       member.mailchimpLists[listType].email = member.email;
     } else {
-      this.logger.debug(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(emailWithError)}`);
+      this.logger.info(`From ${batchedMembers.length} members, could not find any member related to subscriber ${JSON.stringify(emailWithError)}`);
     }
     return member;
   }

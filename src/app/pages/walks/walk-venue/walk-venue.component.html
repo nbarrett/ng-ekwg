@@ -10,7 +10,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="type">Type</label>
-          <select [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish" class="form-control input-sm"
+          <select *ngIf="venueTypes" [disabled]="disabledInput" class="form-control input-sm"
                   [(ngModel)]="displayedWalk.walk.venue.type"
                   class="form-control"
                   id="type">
@@ -24,7 +24,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="name">Name</label>
-          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+          <input [disabled]="disabledInput"
                  [(ngModel)]="displayedWalk.walk.venue.name"
                  type="text" class="form-control input-sm"
                  id="name"
@@ -34,7 +34,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="address1">Address 1</label>
-          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+          <input [disabled]="disabledInput"
                  [(ngModel)]="displayedWalk.walk.venue.address1"
                  type="text" class="form-control input-sm"
                  id="address1"
@@ -46,7 +46,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="address2">Address 2</label>
-          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+          <input [disabled]="disabledInput"
                  [(ngModel)]="displayedWalk.walk.venue.address2"
                  type="text" class="form-control input-sm"
                  id="address2"
@@ -56,7 +56,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="postcode">Postcode</label>
-          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+          <input [disabled]="disabledInput"
                  [(ngModel)]="displayedWalk.walk.venue.postcode"
                  type="text" class="form-control input-sm"
                  id="postcode"
@@ -66,7 +66,7 @@
       <div class="col-sm-4">
         <div class="form-group">
           <label for="url">Web address</label>
-          <input [disabled]="!allowEdits() && !displayedWalk.walk.venue.venuePublish"
+          <input [disabled]="disabledInput"
                  [(ngModel)]="displayedWalk.walk.venue.url"
                  type="text" class="form-control input-sm"
                  id="url"
@@ -88,11 +88,11 @@
       <div class="col-sm-8" *ngIf="allowEdits()">
         <div class="form-group" *ngIf="displayedWalk.walk.venue.url">
           <label>Link preview:
-            <i class="glyphicon {{displayedWalk.walk.venue.type | toVenueIcon}} glyphicon-icon fa-lg">
+            <i class="glyphicon {{displayedWalk.walk.venue?.type | toVenueIcon}} glyphicon-icon fa-lg">
             </i>
             <a [href]="displayedWalk.walk.venue.url" target="_blank">
             <span class="related-links-title" tooltip-placement="left"
-                  tooltip="Click to visit {{displayedWalk.walk.venue.name}}"></span>{{displayedWalk.walk.venue.name}}
+                  tooltip="Click to visit {{displayedWalk.walk.venue?.name}}"></span>{{displayedWalk.walk.venue?.name}}
             </a>
           </label>
         </div>

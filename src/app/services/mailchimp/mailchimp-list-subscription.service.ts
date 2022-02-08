@@ -88,20 +88,20 @@ export class MailchimpListSubscriptionService {
           merge_fields: this.mailchimpListService.toMergeVariables(member)
         };
       });
-    this.logger.debug("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
+    this.logger.info("createBatchSubscriptionForList:", listType, "for", subscriptionRequests.length, "members");
     if (subscriptionRequests.length > 0) {
-      this.logger.debug("sending", subscriptionRequests.length, listType, "subscriptions to mailchimp", subscriptionRequests);
+      this.logger.info("sending", subscriptionRequests.length, listType, "subscriptions to mailchimp", subscriptionRequests);
       return this.mailchimpListService.batchSubscribe(listType, subscriptionRequests)
         .then((response: MailchimpBatchSubscriptionResponse) => {
-          this.logger.debug("createBatchSubscriptionForList response", response);
+          this.logger.info("createBatchSubscriptionForList response", response);
           const savePromises = [];
           this.processValidResponses(listType, response.updated_members.concat(response.new_members), batchedMembers, savePromises);
           this.processErrorResponses(listType, response.errors, batchedMembers, savePromises);
           const totalResponseCount = response.total_created + response.total_updated + response.error_count;
-          this.logger.debug(`Send of ${subscriptionRequests.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
+          this.logger.info(`Send of ${subscriptionRequests.length} ${listType} members completed - processing ${totalResponseCount} Mailchimp response(s)`);
           return Promise.all(savePromises).then(() => {
             return this.refreshMembersIfAdmin().then(refreshedMembers => {
-              this.logger.debug(`Send of ${subscriptionRequests.length} members to ${listType} list completed with ${response.total_created} member(s) added, ${response.total_updated} updated and ${response.error_count} error(s)`);
+              this.logger.info(`Send of ${subscriptionRequests.length} members to ${listType} list completed with ${response.total_created} member(s) added, ${response.total_updated} updated and ${response.error_count} error(s)`);
               return refreshedMembers;
             });
           });

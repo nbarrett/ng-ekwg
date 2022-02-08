@@ -129,6 +129,8 @@ export class MemberBulkLoadService {
       } else {
         memberAction = "created";
         member = {
+          groupMember: true,
+          socialMember: true,
           userName: this.memberNamingService.createUniqueUserName(ramblersMember, members),
           displayName: this.memberNamingService.createUniqueDisplayName(ramblersMember, members),
           expiredPassword: true
