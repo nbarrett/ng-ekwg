@@ -1,5 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { cloneDeep } from "lodash-es";
 import extend from "lodash-es/extend";
+import groupBy from "lodash-es/groupBy";
+import map from "lodash-es/map";
 import sortBy from "lodash-es/sortBy";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -7,7 +10,7 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { Member } from "../../../models/member.model";
+import { DuplicateMember, Member } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, SELECT_ALL } from "../../../models/table-filtering.model";
 import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
@@ -37,6 +40,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
+  private apiResponseProcessorlogger: Logger;
   private memberAdminBaseUrl: string;
   private today: number;
   public members: Member[] = [];
@@ -68,12 +72,13 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.ERROR);
+    this.apiResponseProcessorlogger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 
   ngOnInit() {
     this.logoutSubscription = this.profileService.subscribeToLogout(this.logger);
-    this.logger.debug("ngOnInit");
+    this.logger.off("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.memberAdminBaseUrl = this.contentMetadata.baseUrl("memberAdmin");
@@ -164,12 +169,12 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       ]
     };
     this.memberFilter.selectedFilter = this.memberFilter.availableFilters[0];
-    this.logger.debug("this.memberFilter:", this.memberFilter);
+    this.logger.off("this.memberFilter:", this.memberFilter);
     this.subscription = this.memberService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
-        this.members = this.apiResponseProcessor.processResponse(this.logger, this.members, apiResponse);
+        this.members = this.apiResponseProcessor.processResponse(this.apiResponseProcessorlogger, this.members, apiResponse);
         this.applyFilterToMembers();
       }
     });
@@ -177,13 +182,13 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
+    this.logger.off("unsubscribing");
     this.subscription.unsubscribe();
     this.logoutSubscription.unsubscribe();
   }
 
   onSearchChange(searchEntry: string) {
-    this.logger.debug("received searchEntry:" + searchEntry);
+    this.logger.off("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
   }
 
@@ -191,21 +196,21 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.notify.setBusy();
     const filter = this.memberFilter.selectedFilter.filter;
     const sort = this.memberFilter.sortFunction;
-    this.logger.debug("applyFilterToMembers:filter:", filter, "sort:", sort, "reverseSort:", this.memberFilter.reverseSort);
+    this.logger.off("applyFilterToMembers:filter:", filter, "sort:", sort, "reverseSort:", this.memberFilter.reverseSort);
     const members = sortBy(this.searchFilterPipe.transform(this.members.filter(filter), this.quickSearch), sort);
     this.memberFilter.results = this.memberFilter.reverseSort ? members.reverse() : members;
-    this.logger.debug("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.members.length, "members ->", this.memberFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.memberFilter.reverseSort);
+    this.logger.off("applyFilterToMembers:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.quickSearch, "filtered", this.members.length, "members ->", this.memberFilter.results.length, "sort", sort, "this.memberFilter.reverseSort", this.memberFilter.reverseSort);
     this.notify.clearBusy();
   }
 
   showMemberDialog(member: Member, editMode: EditMode) {
-    this.logger.debug("showMemberDialog:", editMode, member);
+    this.logger.off("showMemberDialog:", editMode, member);
     this.modalService.show(MemberAdminModalComponent, {
       class: "modal-lg",
       animated: false,
       show: true,
       initialState: {
-        editMode, member, members: this.members
+        editMode, member: cloneDeep(member), members: this.members
       }
     });
   }
@@ -234,12 +239,12 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   applySortTo(field, filterSource) {
-    this.logger.debug("sorting by field", field, "current value of filterSource", filterSource);
+    this.logger.off("sorting by field", field, "current value of filterSource", filterSource);
     filterSource.sortField = field;
     filterSource.sortFunction = field === "memberName" ? MEMBER_SORT : field;
     filterSource.reverseSort = !filterSource.reverseSort;
     filterSource.sortDirection = filterSource.reverseSort ? DESCENDING : ASCENDING;
-    this.logger.debug("sorting by field", field, "new value of filterSource", filterSource);
+    this.logger.off("sorting by field", field, "new value of filterSource", filterSource);
     this.applyFilterToMembers();
   }
 
@@ -268,7 +273,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   refreshMembers(memberFilter?: any) {
-    this.logger.debug("refreshMembers:this.memberFilter.filterSelection", this.memberFilter.selectedFilter, "passed memberFilter:", memberFilter);
+    this.logger.off("refreshMembers:this.memberFilter.filterSelection", this.memberFilter.selectedFilter, "passed memberFilter:", memberFilter);
     if (memberFilter) {
       this.memberFilter.selectedFilter = memberFilter;
     }
@@ -277,11 +282,24 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       return this.memberService.all()
         .then(refreshedMembers => {
           this.members = refreshedMembers;
-          this.logger.debug("refreshMembers:found", refreshedMembers.length, "members");
+          this.analyseDuplicates("mailchimpLists.general.web_id");
+          this.analyseDuplicates("mailchimpLists.social.web_id");
+          this.analyseDuplicates("mailchimpLists.walks.web_id");
+          this.logger.off("refreshMembers:found", refreshedMembers.length, "members");
           this.applyFilterToMembers();
           return this.members;
         });
     }
+  }
+
+  private analyseDuplicates(fieldName: string) {
+    const groupedByField: { [key: string]: Member[] } = groupBy(this.members, fieldName);
+    const mapped: DuplicateMember[] = map(groupedByField, (duplicates, fieldValue) => ({
+      fieldName,
+      fieldValue,
+      duplicates
+    })).filter(item => item.fieldValue && item.fieldValue !== "undefined" && item.duplicates.length > 1);
+    this.logger.info("analyseDuplicates for:", fieldName, mapped.length === 0 ? "no duplicates found" : mapped);
   }
 
   updateMailchimpLists() {

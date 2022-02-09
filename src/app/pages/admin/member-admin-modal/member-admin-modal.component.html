@@ -263,7 +263,7 @@
                       <label
                         [ngClass]="{'ui-state-active': member?.mailchimpLists?.walks?.subscribed}"
                         for="subscribe-walks-emails">Walks emails
-                        <input [(ngModel)]="member.mailchimpLists.walks.subscribed"
+                        <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
                                type="checkbox" id="subscribe-walks-emails">
                       </label>
                     </div>
@@ -282,7 +282,7 @@
                       <label
                         [ngClass]="{'ui-state-active': member?.mailchimpLists?.socialEvents?.subscribed}"
                         for="subscribe-social-events-emails">Social events emails
-                        <input
+                        <input (change)="changeSubscribed('socialEvents')"
                           [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
                           type="checkbox" id="subscribe-social-events-emails">
                       </label>
@@ -302,7 +302,7 @@
                       <label
                         [ngClass]="{'ui-state-active': member?.mailchimpLists?.general.subscribed}"
                         for="subscribe-general-emails">General emails
-                        <input
+                        <input (change)="changeSubscribed('general')"
                           [(ngModel)]="member.mailchimpLists.general.subscribed"
                           type="checkbox" id="subscribe-general-emails">
                       </label>

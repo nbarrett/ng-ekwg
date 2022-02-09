@@ -218,3 +218,9 @@ export interface MemberBulkLoadAuditApiResponse extends ApiResponse {
   request: any;
   response?: MemberBulkLoadAudit | MemberBulkLoadAudit[];
 }
+
+export interface DuplicateMember {
+  fieldName: string;
+  fieldValue: string;
+  duplicates: Member[];
+}

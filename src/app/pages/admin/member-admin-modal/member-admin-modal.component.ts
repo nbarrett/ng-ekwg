@@ -5,6 +5,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
+import { MailchimpSubscription } from "../../../models/mailchimp.model";
 import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { EditMode } from "../../../models/ui-actions";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -188,6 +189,19 @@ export class MemberAdminModalComponent implements OnInit {
     this.member = copiedMember;
     this.editMode = EditMode.COPY_EXISTING;
     this.notify.success("Existing Member copied! Make changes here and save to create new member.");
+  }
+
+  changeSubscribed(listType: string) {
+    const subscription: MailchimpSubscription = this.member.mailchimpLists[listType];
+    this.logger.info("listType", listType, "subscribed:", subscription.subscribed);
+    if (!subscription.subscribed) {
+      subscription.leid = null;
+      subscription.unique_email_id = null;
+      subscription.email = null;
+      subscription.web_id = null;
+      subscription.updated = false;
+      this.logger.info("listType", listType, "subscription now:", subscription);
+    }
   }
 
 }
