@@ -23,7 +23,6 @@ exports.create = function (req, res) {
     .catch(error => res.json(error));
 };
 
-// this doesn't work yet and is not used
 exports.list = function (req, res) {
   const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   messageHandlers.httpRequest({

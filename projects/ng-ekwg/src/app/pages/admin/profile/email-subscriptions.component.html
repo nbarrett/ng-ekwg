@@ -1,0 +1,68 @@
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="admin"pageTitle="Email subscriptions">
+  <div class="row thumbnail" *ngIf="member">
+    <div class="col-sm-3">
+      <div class="item-panel-heading">
+        <fa-icon [icon]="faEnvelopeOpenText" class="fa-5x ramblers"></fa-icon>
+        <h5>Email subscriptions</h5>
+      </div>
+    </div>
+    <div class="col col-sm-9">
+      <div class="row">
+        <div class="col col-sm-12">
+          <div class="checkbox-group">
+
+            <p>You can change your emailing preferences at any time using the subscription checkboxes
+              below:</p>
+
+            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.walks?.subscribed}"
+                   for="prof-subscribe-walks-emails">Walks emails
+              <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox"
+                     name="walks-subscribed"
+                     id="prof-subscribe-walks-emails">
+            </label>
+            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.socialEvents?.subscribed}"
+                   for="prof-subscribe-social-events-emails">Social events emails
+              <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox"
+                     name="social-events-subscribed"
+                     id="prof-subscribe-social-events-emails">
+            </label>
+            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.general?.subscribed}"
+                   for="prof-subscribe-general-emails">General emails
+              <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox"
+                     name="general-subscribed"
+                     id="prof-subscribe-general-emails">
+            </label>
+
+            <p>If you have any other queries about your mailing preferences, please email our
+              <app-contact-us role="membership"
+                              text="Membership Secretary"></app-contact-us>
+            </p>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-sm-12">
+          <input type="submit" [disabled]="false" value="Back to admin" (click)="profileService.backToAdmin()"
+                 class="button-form button-form-left">
+          <input type="submit" [disabled]="!member || notifyTarget.busy" value="Save Changes" (click)="saveContactPreferences()"
+                 [ngClass]="member && !notifyTarget.busy? 'button-form button-form-left': 'disabled-button-form button-form-left'">
+          <input type="submit" [disabled]="!member || notifyTarget.busy" value="Undo Changes" (click)="undoContactPreferences()"
+                 [ngClass]="member && !notifyTarget.busy? 'button-form button-form-left': 'disabled-button-form button-form-left'">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col col-sm-12">
+        <div class="alert {{notifyTarget.alertClass}} mt-12" *ngIf="notifyTarget.showAlert"><i
+          class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+          {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+          <div *ngIf="notifyTarget.showContactUs"> contact our
+            <app-contact-us class="alert-link" role="membership"
+                            text="Membership Administrator"></app-contact-us>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-page>

@@ -1,0 +1,80 @@
+<app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Admin">
+  <div *ngIf="!loggedIn">
+    <div class="well"><img src="assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in
+      to view this page. Click the link above to login.
+    </div>
+  </div>
+
+  <div *ngIf="loggedIn" class="row">
+    <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+      <div (click)="contactDetails()" class="item-icon">
+        <fa-icon [icon]="faIdCard" class="fa-3x ramblers"></fa-icon>
+        <h5>Contact details</h5>
+        <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+          <app-markdown-editor category="admin" name="personal-details-help"
+                               description="Personal details help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+      <div (click)="changePassword()" class="item-icon">
+        <fa-icon [icon]="faUnlockAlt" class="fa-3x ramblers"></fa-icon>
+        <h5>Change password</h5>
+        <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+          <app-markdown-editor category="admin" name="login-details-help"
+                               description="Login details help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+      <div (click)="emailSubscriptions()" class="item-icon">
+        <fa-icon [icon]="faEnvelopeOpenText" class="fa-3x ramblers"></fa-icon>
+        <h5>Email subscriptions</h5>
+        <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+          <app-markdown-editor category="admin" name="contact-preferences-help"
+                               description="Contact preferences help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div class="item-panel" [ngClass]="allowAdminEdits ? 'col-sm-4': 'col-sm-6'">
+      <div (click)="expensese()" class="item-icon">
+        <fa-icon [icon]="faCashRegister" class="fa-3x ramblers"></fa-icon>
+        <h5>Expenses</h5>
+        <p class="green-bullets-no-rule item-text" [ngClass]="{'extra-padding': !allowAdminEdits}">
+          <app-markdown-editor category="admin" name="expenses-help"
+                               description="Expenses help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
+      <div (click)="memberAdmin()" class="item-icon">
+        <fa-icon [icon]="faUsersCog" class="fa-3x ramblers"></fa-icon>
+        <h5>Member admin</h5>
+        <p class="green-bullets-no-rule item-text">
+          <app-markdown-editor category="admin" name="member-admin-help"
+                               description="Member admin help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
+      <div (click)="bulkLoadAudit()" class="item-icon">
+        <fa-icon [icon]="faMailBulk" class="fa-3x ramblers"></fa-icon>
+        <h5>Member bulk load</h5>
+        <p class="green-bullets-no-rule item-text">
+          <app-markdown-editor category="admin" name="bulk-load-help"
+                               description="Member bulk load audit help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+    <div *ngIf="allowAdminEdits" class="col-sm-4 item-panel">
+      <div (click)="memberLoginAudit()" class="item-icon">
+        <fa-icon [icon]="faBook" class="fa-3x ramblers"></fa-icon>
+        <h5>Member login audit</h5>
+        <p class="green-bullets-no-rule item-text">
+          <app-markdown-editor category="admin" name="member-login-audit-help"
+                               description="Member login audit help"></app-markdown-editor>
+        </p>
+      </div>
+    </div>
+  </div>
+</app-page>

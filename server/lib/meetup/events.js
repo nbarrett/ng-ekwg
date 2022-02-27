@@ -4,7 +4,7 @@ const moment = require("moment-timezone");
 const messageHandlers = require("../shared/message-handlers");
 const requestDefaults = require("./request-defaults");
 
-exports.all = function (req, res) {
+exports.all = (req, res) => {
   const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   const detail = req.query.detail && (req.query.detail === "true");
   const status = req.query.status || "upcoming";
@@ -26,7 +26,7 @@ exports.all = function (req, res) {
     .catch(error => res.json(error));
 };
 
-exports.single = function (req, res) {
+exports.single = (req, res) => {
   const defaultOptions = requestDefaults.createApiRequestOptions(req.body)
   messageHandlers.httpRequest({
     apiRequest: {
@@ -44,12 +44,10 @@ exports.single = function (req, res) {
     .catch(error => res.json(error));
 };
 
-const momentInTimezone = function (time, format) {
-  return moment(time, format).tz("Europe/London");
-};
+const momentInTimezone = (time, format) => moment(time, format).tz("Europe/London");
 
 function toConciseResponse(jsonData) {
-  return jsonData.map(function (result) {
+  return jsonData.map(result => {
     const returnedResult = {
       id: result.id,
       link: result.link,

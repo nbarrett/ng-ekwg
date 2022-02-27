@@ -1,0 +1,13 @@
+<div class="pull-right">
+  <div [ngClass]="display.walkMode(walk)">
+    <span *ngIf="expandable" class="markdown-preview-icon" tooltip-placement="left"
+          tooltip="Click to {{expandAction}}" (click)="expand()">
+      <fa-icon [icon]="faCaretUp" class="fa-2x"></fa-icon>
+    </span>
+    <span *ngIf="collapsable" class="markdown-preview-icon" tooltip-placement="left"
+          tooltip="Click to {{collapseAction}}" (click)="collapse()">
+      <fa-icon [icon]="faCaretDown" class="fa-2x"></fa-icon>
+    </span>
+  </div>
+</div>
+

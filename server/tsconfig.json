@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "target": "es5",
+    "target": "es2015",
     "downlevelIteration": true,
     "lib": [
       "es5",
@@ -18,11 +18,12 @@
     "allowSyntheticDefaultImports": true
   },
   "exclude": [
+    "..node_modules",
     "node_modules"
   ],
   "include": [
     "serenity-js/**/*.ts",
     "lib/**/*.*",
-    "../src/app/models/**/*.*"
+    "../projects/ng-ekwg/src/app/models/**/*.*"
   ]
 }

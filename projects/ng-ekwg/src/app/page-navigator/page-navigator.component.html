@@ -1,0 +1,5 @@
+    <li ramblers-list *ngFor="let page of pages()">
+      <a ramblers-list [ngClass]="{'active' : isOnPage(page.href)}"
+         [routerLink]="'/' + page.href"
+         [textContent]="page.title" title="{{page.title}}"></a>
+    </li>
