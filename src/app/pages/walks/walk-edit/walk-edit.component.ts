@@ -29,6 +29,7 @@ import { CommitteeConfigService } from "../../../services/committee/commitee-con
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -78,6 +79,7 @@ export class WalkEditComponent implements OnInit {
   private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
+    public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private addressQueryService: AddressQueryService,
     private ramblersWalksAndEventsService: RamblersWalksAndEventsService,

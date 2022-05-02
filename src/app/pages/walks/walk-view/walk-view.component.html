@@ -91,11 +91,12 @@
         </div>
       </div>
       <div class="row related-links-row"
-           *ngIf="displayedWalk.walk.venue && displayedWalk.walk.venue.venuePublish && displayedWalk.walk.venue.url">
+           *ngIf="displayedWalk?.walk?.venue?.venuePublish && (displayedWalk?.walk?.venue?.url||displayedWalk?.walk?.venue?.postcode)">
         <div class="col-sm-12">
           <i class="glyphicon {{displayedWalk.walk.venue.type | toVenueIcon}} glyphicon-icon fa-lg">
           </i>
-          <a [href]="displayedWalk.walk.venue.url" target="_blank">
+          <a [href]="displayedWalk.walk.venue.url || googleMapsService.urlForPostcode(displayedWalk.walk.venue.postcode)"
+             target="_blank">
             <span class="related-links-gylph-title" tooltip-placement="left"
                   tooltip="Click to visit {{displayedWalk.walk.venue.name}}"></span>
             {{displayedWalk.walk.venue.type}}: {{displayedWalk.walk.venue.name}}
@@ -108,7 +109,7 @@
             tooltip-placement="left"
             tooltip="Click to copy link to clipboard"></span></i>
           <a popover="Link has been copied to clipboard"
-             class="related-links-gylph-title" href="#"
+             class="related-links-gylph-title"
              triggers="" #pop="bs-popover"
              (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
              [outsideClick]="true"
@@ -195,7 +196,7 @@
         <div class="row">
           <div class="col-sm-6">Postcode:
             <span [textContent]="displayedWalk.walk.location" name="location"></span>
-            <a [href]="'http://maps.google.co.uk/maps?q=' + displayedWalk.walk.postcode"
+            <a [href]="googleMapsService.urlForPostcode(displayedWalk.walk.postcode)"
                target="_blank">
                                                 <span tooltip-placement="left"
                                                       tooltip="Click to locate postcode {{displayedWalk.walk.postcode}} on Google Maps">

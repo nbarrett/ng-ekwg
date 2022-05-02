@@ -22,4 +22,8 @@ export class GoogleMapsService {
     return apiResponse;
   }
 
+  public urlForPostcode(postcode:string){
+    return `https://maps.google.co.uk/maps?q=${postcode}`;
+  }
+
 }

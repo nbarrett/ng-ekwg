@@ -7,6 +7,7 @@ import { SocialEvent } from "../../../models/social-events.model";
 import { SocialDisplayService } from "../../../pages/social/social-display.service";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 
 @Component({
@@ -25,6 +26,7 @@ export class SocialNotificationDetailsComponent implements OnInit {
   private dataSub: Subscription;
 
   constructor(
+    public googleMapsService: GoogleMapsService,
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     public display: SocialDisplayService,

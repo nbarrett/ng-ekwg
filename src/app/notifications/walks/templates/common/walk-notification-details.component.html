@@ -43,7 +43,7 @@
   <tr>
     <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Postcode:</td>
     <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
-      <a [href]="'http://maps.google.co.uk/maps?q=' + walk.postcode" target="_blank"><span
+      <a [href]="googleMapsService.urlForPostcode(walk.postcode)" target="_blank"><span
         [textContent]="walk.postcode | valueOrDefault"></span></a></td>
   </tr>
   <tr>

@@ -16,6 +16,7 @@ import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe"
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { FileUploadService } from "../../../services/file-upload.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
@@ -67,6 +68,7 @@ export class SocialEditModalComponent implements OnInit {
               private fullNameWithAlias: FullNameWithAliasPipe,
               private lineFeedsToBreaks: LineFeedsToBreaksPipe,
               private modalService: BsModalService,
+              public googleMapsService: GoogleMapsService,
               private mailchimpLinkService: MailchimpLinkService,
               private socialEventsService: SocialEventsService,
               private memberLoginService: MemberLoginService,

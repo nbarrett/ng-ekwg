@@ -13,6 +13,7 @@ import { DisplayDayPipe } from "../../../pipes/display-day.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { BroadcastService, NamedEventType } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -43,6 +44,7 @@ export class WalkListComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
 
   constructor(
+    public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private memberService: MemberService,
     private authService: AuthService,

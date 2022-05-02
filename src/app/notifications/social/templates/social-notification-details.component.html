@@ -18,7 +18,7 @@
         <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Location:</td>
         <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
           <span [textContent]="socialEvent.location"></span>
-          <a style="margin-left: 6px;" [href]="'http://maps.google.co.uk/maps?q=' +socialEvent.postcode"
+          <a style="margin-left: 6px;" [href]="googleMapsService.urlForPostcode(socialEvent.postcode)"
              target="_blank"><span
             [textContent]="socialEvent.postcode"></span></a></td>
       </tr>

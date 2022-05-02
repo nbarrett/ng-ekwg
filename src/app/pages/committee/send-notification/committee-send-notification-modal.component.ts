@@ -25,6 +25,7 @@ import { CommitteeConfigService } from "../../../services/committee/commitee-con
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
@@ -69,6 +70,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
               private notifierService: NotifierService,
               public display: CommitteeDisplayService,
               private stringUtils: StringUtilsService,
+              public googleMapsService: GoogleMapsService,
               private memberService: MemberService,
               private fullNameWithAlias: FullNameWithAliasPipe,
               private lineFeedsToBreaks: LineFeedsToBreaksPipe,

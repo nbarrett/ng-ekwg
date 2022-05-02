@@ -7,6 +7,7 @@ import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk, Walk } from "../../../models/walk.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -35,6 +36,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(
+    public googleMapsService: GoogleMapsService,
     private authService: AuthService,
     private memberLoginService: MemberLoginService,
     public display: WalkDisplayService,

@@ -59,7 +59,7 @@ export class UrlService {
   }
 
   refresh(): void {
-    location.reload(true);
+    location.reload();
   }
 
   notificationHref(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): string {

@@ -86,7 +86,7 @@
                             <span tooltipPlacement="left" tooltip="Click to show walk detail"
                                   [textContent]="viewWalkField(displayedWalk, 'distance')" name="distance"></span></td>
               <td width="8%" id="postcode-{{index}}">
-                <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(displayedWalk, 'postcode')"
+                <a [href]="googleMapsService.urlForPostcode(displayedWalk.walk.postcode)"
                    target="_blank">
                                 <span tooltipPlacement="left"
                                       tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"

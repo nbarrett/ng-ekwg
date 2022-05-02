@@ -39,7 +39,7 @@
         <span *ngIf="event.contactPhone"> ({{event.contactPhone}})</span>
       </span>
       <span *ngIf="notification.groupEventsFilter.includeLocation && event.postcode">
-        • Location: <a [href]="'http://maps.google.co.uk/maps?q=' + event.postcode"
+        • Location: <a [href]="googleMapsService.urlForPostcode(event.postcode)"
                        target="_blank">
         <span [textContent]="event.postcode"></span>
       </a></span>

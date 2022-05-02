@@ -492,7 +492,7 @@
     </div>
   </div>
   <div *ngIf="display.walkLink(displayedWalk.walk)">
-    <label><a href="#" popover="Link has been copied to clipboard"
+    <label><a popover="Link has been copied to clipboard"
               triggers="" #pop="bs-popover"
               (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
               [outsideClick]="true">

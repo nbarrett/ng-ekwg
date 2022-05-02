@@ -3,6 +3,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeFile, GroupEvent, Notification } from "../../../models/committee.model";
 import { Member } from "../../../models/member.model";
 import { CommitteeDisplayService } from "../../../pages/committee/committee-display.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 
 @Component({
@@ -22,6 +23,7 @@ export class CommitteeNotificationDetailsComponent implements OnInit {
 
   constructor(
     private changeDetectorRef: ChangeDetectorRef,
+    public googleMapsService: GoogleMapsService,
     public display: CommitteeDisplayService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeNotificationDetailsComponent, NgxLoggerLevel.OFF);

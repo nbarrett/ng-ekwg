@@ -90,13 +90,13 @@
         <div class="event-panel round">
           <h1>Location</h1>
           <p><span [textContent]="socialEvent.location"></span> <a class="ml-6"
-                                                                   [href]="'http://maps.google.co.uk/maps?q=' + socialEvent.postcode"
+                                                                   [href]="googleMapsService.urlForPostcode(socialEvent.postcode)"
                                                                    target="_blank"><span tooltipPlacement="left"
                                                                                          tooltip="Click to locate postcode {{socialEvent.postcode}} on Google Maps">{{socialEvent.postcode}}</span></a>
           </p>
           <div class="row related-links-row" *ngIf="display.socialEventLink(socialEvent)">
             <div class="col-sm-12">
-              <label><a href="#" popover="Link has been copied to clipboard"
+              <label><a popover="Link has been copied to clipboard"
                         triggers="" #pop="bs-popover"
                         (click)="display.copyToClipboard(socialEvent, pop)">
                 <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg">

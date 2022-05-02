@@ -16,6 +16,7 @@ import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -42,7 +43,8 @@ export class SocialListComponent implements OnInit {
   public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: 1};
   public memberFilterSelections: MemberFilterSelection[];
 
-  constructor(private authService: AuthService,
+  constructor(public googleMapsService: GoogleMapsService,
+              private authService: AuthService,
               private stringUtils: StringUtilsService,
               private searchFilterPipe: SearchFilterPipe,
               private memberService: MemberService,

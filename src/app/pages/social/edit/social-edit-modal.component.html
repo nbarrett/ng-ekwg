@@ -261,7 +261,7 @@
         </div>
       </div>
       <div *ngIf="display.socialEventLink(socialEvent)">
-        <label> <a href="#" popover="Link has been copied to clipboard"
+        <label> <a popover="Link has been copied to clipboard"
                    triggers="" #pop="bs-popover"
                    (click)="display.copyToClipboard(socialEvent, pop)">
           <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
