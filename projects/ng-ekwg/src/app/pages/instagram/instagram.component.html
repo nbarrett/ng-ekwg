@@ -1,0 +1,13 @@
+<app-card-container>
+  <h5 class="card-title cta-button cta-instagram round"><a href="https://www.instagram.com/eastkentwalking/">
+    <img style="height: 27px; margin-left: 5px;"
+         src="assets/images/local/instagram.png"></a>
+  </h5>
+  <p class="card-text">
+    <a *ngFor="let media of recentMedia" [href]="media.permalink" target="_blank"
+       delay="500" [tooltip]="dateUtils.displayDate( media.timestamp) + ' - ' + media.caption" [placement]="'right'">
+      <img [src]="media?.media_url" [alt]="media?.caption" class="rounded img-thumbnail"
+           [style]="'width:' + imageWidth(media)+'; height: '+ imageHeight(media)"/>
+    </a>
+  </p>
+</app-card-container>

@@ -64,18 +64,18 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumError": "5mb"
                 }
               ],
               "fileReplacements": [
                 {
                   "replace": "projects/ng-ekwg/src/environments/environment.ts",
-                  "with": "projects/ng-ekwg/src/environments/environment.prod.ts"
+                  "with": "projects/ng-ekwg/src/environments/environment.production.ts"
                 }
               ],
               "outputHashing": "all"

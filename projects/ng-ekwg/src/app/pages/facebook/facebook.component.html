@@ -1,0 +1,17 @@
+<app-card-container>
+  <h5 class="card-title cta-button cta-facebook-blue round"><a
+    href="https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649"
+    title="Visit Our Facebook Page"> Facebook</a>
+  </h5>
+  <!--    <div class="fb-page"-->
+  <!--         data-href="'url'"-->
+  <!--         data-width="380"-->
+  <!--         data-hide-cover="false"-->
+  <!--         data-show-facepile="false"></div>-->
+  <p class="card-text">
+    <iframe class="text-center" *ngIf="url"
+            [src]="url"
+            [style]="'border:none;overflow:hidden;' + dimensions()" scrolling="no" frameborder="0"
+            allowTransparency="true" allow="encrypted-media"></iframe>
+  </p>
+</app-card-container>

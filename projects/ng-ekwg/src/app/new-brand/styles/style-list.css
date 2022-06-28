@@ -83,6 +83,10 @@ a:focus {
   background-size: 100% 2px
 }
 
+a.active[ramblers-list] {
+  background: linear-gradient(#fe7a42, #fe7a42) 0 67% / 100% 0.25rem no-repeat;
+}
+
 .font-family-sans-serif {
   font-family: "Assistant", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important
 }

@@ -101,7 +101,6 @@ body {
   margin-bottom: 24px;
   float: left;
   clear: both;
-  width: 940px;
 }
 
 .walk-item {
@@ -168,7 +167,6 @@ body {
   font-weight: bold;
   height: 16px;
   line-height: 16px;
-  width: 940px;
 }
 
 .input-postcode {
@@ -1529,7 +1527,6 @@ table.tbl-brown-e td {
    ========================================================================== */
 
 .wrapper {
-  width: 940px;
   margin: 0 auto;
 }
 
@@ -1768,13 +1765,11 @@ a:hover {
 }
 
 .wide {
-  width: 940px;
   float: left;
   margin: 0;
 }
 
 .header-inner {
-  width: 940px;
   margin: 0 auto;
   height: 156px;
 }
@@ -1831,7 +1826,6 @@ a.svg:after {
 }
 
 .narrow {
-  width: 940px;
 }
 
 .home-lower {
@@ -1843,7 +1837,6 @@ a.svg:after {
 }
 
 .home-lower .home-lower-inner {
-  width: 940px;
   margin: 0 auto;
 }
 
@@ -1925,7 +1918,6 @@ footer .footer-inner {
 }
 
 footer .footer-inner .footer-content {
-  width: 940px;
   margin: 0 auto;
   color: #fff;
   overflow: hidden;
@@ -2016,7 +2008,6 @@ footer .footer-inner .footer-content {
 
 .slider {
   width: 100%;
-  height: 300px;
   overflow: hidden;
 }
 
@@ -4104,11 +4095,6 @@ ul.sbOptions li.last a {
   float: right;
 }
 
-.content-footer {
-  clear: both;
-  padding-top: 20px;
-}
-
 .content-header {
   float: left;
   width: 100%;
@@ -4151,7 +4137,6 @@ ul.sbOptions li.last a {
 }
 
 .cookie-notice p {
-  width: 940px;
   margin: 0 auto;
 }
 

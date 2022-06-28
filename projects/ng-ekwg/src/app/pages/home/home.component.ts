@@ -1,12 +1,9 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { take } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { groupEventTypeFor } from "../../models/committee.model";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
-import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
-import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { UrlService } from "../../services/url.service";
@@ -19,24 +16,23 @@ import { SiteEditService } from "../../site-edit/site-edit.service";
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  public feeds: { facebook: {}; instagram: { recentMedia: InstagramMediaPost[] } };
+  public feeds: { facebook: {} };
   public viewableSlides: ContentMetadataItem[] = [];
   private allSlides: ContentMetadataItem[] = [];
   public selectedSlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
   public hoverActive: boolean;
-  private paused = false;
   activeSlideIndex = 0;
+  public showIndicators: boolean;
 
   constructor(
     public imageTagDataService: ImageTagDataService,
     private memberLoginService: MemberLoginService,
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
-    private instagramService: InstagramService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
-    this.feeds = {instagram: {recentMedia: []}, facebook: {}};
+    this.feeds = {facebook: {}};
   }
 
   ngOnDestroy(): void {
@@ -60,11 +56,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.allSlides = contentMetaData.files;
         this.imageTagDataService.populateFrom(contentMetaData.imageTags);
         this.logger.debug("initialised with", this.allSlides.length, "slides in total");
-      });
-    this.instagramService.recentMedia()
-      .then((recentMedia: InstagramRecentMediaData) => {
-        this.feeds.instagram.recentMedia = take(recentMedia.data, 14);
-        this.logger.debug("Refreshed social media", this.feeds.instagram.recentMedia, "count =", this.feeds.instagram.recentMedia.length);
       });
   }
 
@@ -98,17 +89,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (slide) {
       this.logger.debug("addNewSlide:adding slide", this.viewableSlides.length + 1, "of", this.selectedSlides.length, slide.text, slide.image);
       this.viewableSlides.push(slide);
+      this.showIndicators = this.viewableSlides.length <= 20;
     } else {
       this.logger.debug("addNewSlide:no slides selected from", this.selectedSlides.length, "available");
     }
-  }
-
-  mouseEnter() {
-    this.paused = true;
-  }
-
-  mouseLeave() {
-    this.paused = false;
   }
 
   hoverEvent(hoverActive: boolean) {

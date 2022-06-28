@@ -3,7 +3,7 @@
     <li *ngFor="let tag of imageTagDataService.imageTagsSorted()">
       <span tooltipPlacement="bottom"
             [tooltip]="'Show ' + tag.subject">
-      <a [ngClass]="{'active' : imageTagDataService.isActive(tag)}" (click)="showTag(tag)" [textContent]="tag.subject"></a></span>
+      <a ramblers-list [ngClass]="{'active' : imageTagDataService.isActive(tag)}" (click)="showTag(tag)" [textContent]="tag.subject"></a></span>
     </li>
   </ul>
 </div>
