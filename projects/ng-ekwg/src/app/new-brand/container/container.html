@@ -2,26 +2,20 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Home page Ramblers</title>
+  <title>EKWG home page</title>
+  <link rel="shortcut icon" href="favicon.ico">
   <meta data-n-head="ssr" name="viewport" content="width=device-width, initial-scale=1">
   <link data-n-head="ssr" rel="icon" type="image/x-icon" href="favicon.ico">
   <link data-n-head="ssr" rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link data-n-head="ssr" rel="shortcut icon" sizes="192x192" href="/android-chrome-192x192.png">
   <link data-n-head="ssr" rel="shortcut icon" sizes="512x512" href="/android-chrome-512x512.png">
-  <link data-n-head="ssr" rel="icon" sizes="16x16" href="/favicon-16x16.png">
-  <link data-n-head="ssr" rel="icon" sizes="32x32" href="/favicon-32x32.png">
-  <script async="" src="/gtm.js"></script>
+  <link data-n-head="ssr" rel="icon" sizes="16x16" href="/favicon.ico">
+  <link data-n-head="ssr" rel="icon" sizes="32x32" href="/favicon.ico">
   <script src="https://kit.fontawesome.com/bf48d4f86f.js" crossorigin="anonymous"></script>
-<!--  <script id="mcjs">!function (c, h, i, m, p) {-->
-<!--    m = c.createElement(h), p = c.getElementsByTagName(h)[0], m.async = 1, m.src = i, p.parentNode.insertBefore(m, p)-->
-<!--  }(document, "script", "https://chimpstatic.com/mcjs-connected/js/users/eb351c07c2eefa45d9472dda1/0879552a5b157aab4105dbb0c.js");</script>-->
 </head>
 <body>
 <script async defer crossorigin="anonymous"
         src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v7.0&appId=643977439755625&autoLogAppEvents=1"></script>
-<div id="__nuxt">
-  <div id="__layout">
-    <div>
       <div class="container-fluid">
         <div class="row d-none d-lg-block">
           <div class="px-0 bg-dark col">
@@ -29,144 +23,24 @@
               <div
                 class="row mx-auto py-5 py-sm-4 py-md-2 w-100 align-items-center justify-content-between d-none bg-dark d-lg-flex"
                 ramblers-header-footer>
-                <div class="d-block d-sm-flex
-    align-items-center
-    justify-content-center justify-content-lg-end
-    col-md-10 order-sm-3 col-12 order-3" ramblers-header-footer>
+                <div
+                  class="d-block d-sm-flex align-items-center justify-content-center justify-content-lg-end col-md-10 order-sm-3 col-12 order-3"
+                  ramblers-header-footer>
                   <div class="text-center text-sm-right d-block d-sm-flex" ramblers-header-footer>
+                    <app-site-navigator></app-site-navigator>
                     <app-login-panel></app-login-panel>
-<!--                                        <button type="button"-->
-<!--                                                class="btn mx-auto mb-3 mb-sm-0 mr-sm-3 d-block d-sm-inline-block btn-primary text-black"-->
-<!--                                                ramblers-header-footer>-->
-<!--                                          Join the Ramblers-->
-<!--                                        </button>-->
-<!--                                        <button type="button"-->
-<!--                                                class="btn mx-auto mb-4 mb-sm-0 d-block d-sm-inline-block btn-primary text-black"-->
-<!--                                                ramblers-header-footer>-->
-<!--                                          Make a donation-->
-<!--                                        </button>-->
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="px-0 col">
-            <div class="container">
-              <div class="row">
-                <div class="px-0 px-lg-3 col">
-                  <nav class="navbar px-0 navbar-light navbar-expand-lg">
-                    <div class="mobile-nav d-flex align-items-center justify-content-between"
-                    ><a href="https://beta.ramblers.org.uk/" aria-current="page" target="_self"
-                        class="navbar-brand nuxt-link-exact-active active"
-                    ><img
-                      src="/horiz-colour.8829dc8.svg" alt="Ramblers"
-                      class="d-inline-block align-top"></a>
-                      <button type="button" aria-label="Toggle navigation"
-                              class="navbar-toggler border-0 rounded-0 collapsed"
-                              data-toggle="collapse" data-target="#nav-collapse" aria-controls="nav-collapse"
-                              aria-expanded="false"
-                              style="overflow-anchor: none;">
-                        <svg (click)="toggleNavBar()" width="27px" height="27px" xmlns="http://www.w3.org/2000/svg"
-                             class="text-dark icon sprite-icons">
-                          <use [attr.xlink:href]="'/svg-icons.svg#'+ icon()"
-                          ></use>
-                        </svg>
-                      </button>
-                    </div>
-                    <div id="nav-collapse" class="navbar-collapse collapse" xstyle="display:none;">
-                      <div class="container px-0" ramblers-list>
-                        <div class="row mx-auto mr-lg-0 ml-lg-auto" ramblers-list>
-                          <div class="px-0 col navigation" ramblers-list>
-                            <ul class="mx-auto text-center ml-lg-auto mr-lg-0" ramblers-list>
-                              <app-page-navigator></app-page-navigator>
-                            </ul>
-                          </div>
-                        </div>
-                        <div
-                          class="row mx-auto py-5 py-sm-4 py-md-2 w-100 align-items-center justify-content-between bg-dark d-flex d-lg-none"
-                          ramblers-header-footer ramblers-list>
-                          <div id="dropdown-flag-1"
-                               class="d-block d-sm-flex col-md-2 text-md-left text-center col-12 order-1"
-                               data-v-6bbb7689="" ramblers-header-footer>
-                            <div class="dropdown b-dropdown btn-group" data-v-6bbb7689=""
-                                 id="__BVID__33">
-                              <button aria-haspopup="true" aria-expanded="false"
-                                      type="button"
-                                      class="btn dropdown-toggle btn-secondary"
-                                      id="__BVID__33__BV_toggle_"><img
-                                src="/GB.acf6730.png"
-                                width="25" height="auto" data-v-6bbb7689=""> <span
-                                class="flagName" data-v-6bbb7689="">
-      GB
-    </span></button>
-                              <ul role="menu" tabindex="-1" class="dropdown-menu"
-                                  aria-labelledby="__BVID__33__BV_toggle_">
-                                <li role="presentation" class="drop-item"
-                                    data-v-6bbb7689=""><a
-                                  href="https://beta.ramblers.org.uk/"
-                                  aria-current="page" role="menuitem"
-                                  target="_self"
-                                  class="dropdown-item nuxt-link-exact-active active"><img
-                                  src="/GB.acf6730.png"
-                                  width="25" height="auto" data-v-6bbb7689="">
-                                  <span class="flagName" data-v-6bbb7689="">GB</span></a>
-                                </li>
-                                <li role="presentation" class="drop-item"
-                                    data-v-6bbb7689=""><a
-                                  href="https://beta.ramblers.org.uk/scotland"
-                                  role="menuitem" target="_self"
-                                  class="dropdown-item"><img
-                                  src="/scotland.693eac7.png"
-                                  width="25" height="auto" data-v-6bbb7689="">
-                                  <span class="flagName"
-                                        data-v-6bbb7689="">Scotland</span></a></li>
-                                <li role="presentation" class="drop-item"
-                                    data-v-6bbb7689=""><a
-                                  href="https://beta.ramblers.org.uk/wales"
-                                  role="menuitem" target="_self"
-                                  class="dropdown-item"><img
-                                  src="/wales.1fe190f.png"
-                                  width="25" height="auto" data-v-6bbb7689="">
-                                  <span class="flagName"
-                                        data-v-6bbb7689="">Wales</span></a></li>
-                              </ul>
-                            </div>
-                          </div>
-                          <div class="d-block d-sm-flex      align-items-center     justify-content-center justify-content-lg-end
-    col-md-10 order-sm-3 col-12 order-3" ramblers-header-footer>
-                            <div class="text-center text-sm-right d-block d-sm-flex"
-                                 ramblers-header-footer>
-                              <button type="button"
-                                      class="btn mx-auto mb-3 mb-sm-0 mr-sm-3 d-block d-sm-inline-block btn-primary text-black"
-                                      ramblers-header-footer>
-                                Join the Ramblers
-                              </button>
-                              <button type="button"
-                                      class="btn mx-auto mb-4 mb-sm-0 d-block d-sm-inline-block btn-primary text-black"
-                                      ramblers-header-footer>
-                                Make a donation
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-navigator></app-navigator>
       </div>
       <div class="container">
         <router-outlet></router-outlet>
       </div>
-    </div>
     <app-new-brand-footer></app-new-brand-footer>
-  </div>
-</div>
 <script type="text/javascript" id="" src="/cookieControl-9.x.min.js"></script>
 </body>
 </html>

@@ -32,15 +32,14 @@ import { LetterheadTitleOutputComponent } from "../../pages/letterhead/letterhea
 import { LetterheadTitlePartConfigComponent } from "../../pages/letterhead/letterhead-title-part-config.component";
 import { LetterheadComponent } from "../../pages/letterhead/letterhead.component";
 import { LoginModalComponent } from "../../pages/login/login-modal/login-modal.component";
-import { LegacyRootComponent } from "../../pages/root/legacy/legacy-root.component";
-import { NewBrandRootComponent } from "../../pages/root/new-brand/new-brand-root.component";
-import { RootSelectorComponent } from "../../pages/root/root-selector/root-selector.component";
 import { ChangedItemsPipe } from "../../pipes/changed-items.pipe";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SharedModule } from "../../shared-module";
 import { SiteEditComponent } from "../../site-edit/site-edit.component";
 import { SiteNavigatorComponent } from "../../site-navigator/site-navigator.component";
-import { CardContainerComponent } from './card-container/card-container.component';
+import { CardContainerComponent } from "./card-container/card-container.component";
+import { MobileMenuComponent } from "./mobile-menu/mobile-menu";
+import { NavigatorComponent } from "./navigator/navigator";
 
 @NgModule({
   declarations: [
@@ -56,7 +55,6 @@ import { CardContainerComponent } from './card-container/card-container.componen
     HowToModalComponent,
     JoinUsComponent,
     HomeComponent,
-    LegacyRootComponent,
     LetterheadComponent,
     LetterheadTitleConfigComponent,
     LetterheadTitleOutputComponent,
@@ -69,17 +67,17 @@ import { CardContainerComponent } from './card-container/card-container.componen
     MainTitleComponent,
     MeetupDescriptionComponent,
     NewBrandFooterComponent,
-    NewBrandRootComponent,
     PageNavigatorComponent,
     PageTitleComponent,
+    MobileMenuComponent,
     PrivacyPolicyComponent,
-    RootSelectorComponent,
     SetPasswordComponent,
     SiteEditComponent,
     SiteNavigatorComponent,
     InstagramComponent,
     FacebookComponent,
     CardContainerComponent,
+    NavigatorComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -88,7 +86,7 @@ import { CardContainerComponent } from './card-container/card-container.componen
     SharedModule.forRoot(),
   ],
   entryComponents: [
-    RootSelectorComponent,
+    ContainerComponent,
   ]
 })
 
@@ -96,11 +94,11 @@ export class AppModule implements DoBootstrap {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(RootSelectorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(AppModule, NgxLoggerLevel.OFF);
   }
 
   ngDoBootstrap(appRef: ApplicationRef) {
-    appRef.bootstrap(RootSelectorComponent);
+    appRef.bootstrap(ContainerComponent);
   }
 
 }

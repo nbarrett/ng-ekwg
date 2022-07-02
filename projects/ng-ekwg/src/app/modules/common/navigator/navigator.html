@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="px-0 col">
+    <div class="container">
+      <div class="row">
+        <div class="px-0 px-lg-3 col">
+          <nav class="navbar px-0 navbar-light navbar-expand-lg">
+            <div class="mobile-nav d-flex align-items-center justify-content-between">
+              <a href="https://www.ekwg.co.uk" aria-current="page" target="_self"
+                 class="navbar-brand nuxt-link-exact-active active"><img
+                src="../../assets/images/local/ekwg/horizontal-ekwg.png" alt="EKWG"
+                class="d-inline-block align-top main-logo"></a>
+              <button type="button" aria-label="Toggle navigation"
+                      class="navbar-toggler border-0 rounded-0 collapsed"
+                      data-toggle="collapse" data-target="#nav-collapse" aria-controls="nav-collapse"
+                      aria-expanded="false"
+                      style="overflow-anchor: none;">
+                <svg (click)="toggleNavBar()" width="27px" height="27px" xmlns="http://www.w3.org/2000/svg"
+                     class="text-dark icon sprite-icons">
+                  <use [attr.xlink:href]="'/svg-icons.svg#'+ icon()"></use>
+                </svg>
+              </button>
+            </div>
+            <app-mobile-menu></app-mobile-menu>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

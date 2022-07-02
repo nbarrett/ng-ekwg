@@ -14,7 +14,7 @@ export class SiteNavigatorComponent implements OnInit {
   public sites = [
     {href: "#", title: "EKWG", active: true},
     {href: "http://www.kentramblers.org.uk", title: "Kent Ramblers"},
-    {href: "http://www.ramblers.org.uk/", title: "National Ramblers"}];
+    {href: "https://beta.ramblers.org.uk", title: "National Ramblers"}];
 
   constructor(loggerFactory: LoggerFactory,
               private urlService: UrlService) {
