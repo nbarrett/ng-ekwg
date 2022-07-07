@@ -26,7 +26,7 @@ export class FacebookComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.OFF);
   }
 
   imageWidth(media: InstagramMediaPost): string {

@@ -1,9 +1,8 @@
-<div class="col-sm-12">
-  <ui-switch [checked]="active()"
-             (change)="onChange($event)"
-             [uncheckedTextColor]="'#A8B400'"
-             [defaultBgColor]="'#333'"
-             class="edit-site pull-right" size="small" checkedLabel="on" uncheckedLabel="off"></ui-switch>
-  <span (click)="toggle()" class="edit-site pull-right" [textContent]="caption()"></span>
-</div>
+<div (click)="toggle()" class="edit-site" [textContent]="caption()"></div>
+<ui-switch [checked]="active()"
+           (change)="onChange($event)"
+             [uncheckedTextColor]="'var(--pink)'"
+             [defaultBgColor]="'$ramblers-colour-legacy-black'"
+           class="edit-site" size="small" checkedLabel="on" uncheckedLabel="off"></ui-switch>
+
 

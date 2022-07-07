@@ -1,14 +1,21 @@
-<div class="login-panel">
-  <div class="vertical-center">
-    <ul>
-      <li class="pull-right">
-        <span class="pointer" (click)="loginOrLogout()"
-              [textContent]="memberLoginStatus()"
-              title="{{memberLoginStatus()}}"></span>
-        <span *ngIf="!memberLoggedIn()"> • <span
-          class="pointer" (click)="forgotPassword()">Forgot Password</span></span>
-      </li>
-    </ul>
-    <app-site-edit class="row" *ngIf="allowEdits()"></app-site-edit>
-  </div>
-</div>
+<ul class="list-group list-group-horizontal text-left">
+  <li>
+    <a class="login-text" ramblers-list (click)="loginOrLogout()">
+      <img *ngIf="memberLoggedIn()" class="home-logo"
+           src="/images/ramblers/icons/ramblers_icon_11_home_rgb.png"
+           [alt]="memberLoginStatus()">
+      <img *ngIf="!memberLoggedIn()" class="home-logo"
+           src="/images/ramblers/icons/ramblers_icon_2_arrow_forward_rgb.png"
+           [alt]="memberLoginStatus()">
+      {{memberLoginStatus()}}
+    </a></li>
+  <li *ngIf="!memberLoggedIn()"><a class="login-text">
+    <img *ngIf="!memberLoggedIn()" class="home-logo" src="/images/ramblers/icons/ramblers_icon_25_rain_rgb.png"
+         alt="Forgot Password"><span
+    class="pointer" (click)="forgotPassword()">Forgot Password</span>
+  </a></li>
+  <li>
+    <app-site-edit class="form-inline" *ngIf="allowEdits()"></app-site-edit>
+  </li>
+</ul>
+

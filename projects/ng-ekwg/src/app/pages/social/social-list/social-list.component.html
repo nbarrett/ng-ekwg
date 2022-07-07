@@ -36,7 +36,7 @@
       <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy"
              value="Add New Social Event"
              (click)="addSocialEvent()"
-             class="button-form pull-right mt-2"
+             class="button-form float-right mt-2"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
     </form>
     <div class="mt-12" *ngIf="notifyTarget.showAlert">

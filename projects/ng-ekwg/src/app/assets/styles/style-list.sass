@@ -1,0 +1,100 @@
+ul[ramblers-list]
+  display: block
+  margin: 3rem 0
+
+
+li[ramblers-list], ul[ramblers-list]
+  padding: 0
+
+
+li[ramblers-list]
+  margin: .5rem 0
+  list-style: none
+  text-align: center
+
+
+ul li a[ramblers-list]
+  position: relative
+  font-size: 1.5rem
+  padding: .75rem .375rem
+  font-family: "Rucksack", serif
+
+
+@media (min-width: 576px)
+  ul li a[ramblers-list]
+    font-size: 2rem
+
+
+
+@media (min-width: 992px)
+  ul[ramblers-list]
+    display: flex
+    margin: 0
+
+
+  li[ramblers-list]
+    margin: 0 10px 0 0
+    display: inline-flex
+
+
+  ul li a[ramblers-list]
+    font-size: inherit
+
+
+
+.navigation[ramblers-list] a.active:after
+  content: ""
+  position: absolute
+  bottom: 1rem
+  left: 0
+  right: 0
+  top: auto
+  height: .25rem
+  background: $ramblers-colour-sunset
+  z-index: -1
+
+
+a.active[ramblers-list]
+  background-color: transparent
+  color: #000
+  text-decoration: none
+
+
+a
+  color: $ramblers-colour-granite
+
+
+
+a
+  position: relative
+
+
+a.active:focus
+  background-image: none
+
+
+a:focus
+  background: $ramblers-colour-sunrise
+  outline: 0
+  text-decoration: none
+  background-image: linear-gradient(#000, #000)
+  background-position: 0 100%
+  background-repeat: no-repeat
+  background-size: 100% 2px
+
+
+a.active[ramblers-list]
+  background: linear-gradient($ramblers-colour-rosycheeks) 0 67% / 100% 0.25rem no-repeat
+
+
+.font-family-sans-serif
+  font-family: "Assistant", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important
+
+
+.border-5
+  border-width: 1ex !important
+
+
+.rich-content a
+  text-decoration: underline
+

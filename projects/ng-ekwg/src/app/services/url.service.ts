@@ -1,5 +1,5 @@
 import { DOCUMENT } from "@angular/common";
-    import { Inject, Injectable } from "@angular/core";
+import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
@@ -19,7 +19,7 @@ export class UrlService {
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
-    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
   }
 
   relativeUrlFirstSegment(optionalUrl?: string): string {
@@ -30,10 +30,15 @@ export class UrlService {
   navigateTo(page?: string, area?: string): Promise<boolean> {
     const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
     this.logger.debug("navigating to page:", page, "area:", area, "->", url);
-    return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"},).then((activated: boolean) => {
+    return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
       this.logger.debug("activated:", activated, "area is now:", this.area());
       return activated;
     });
+  }
+
+  navigateToUrl(url: string) {
+    this.logger.info("navigateToUrl:", url);
+    this.document.location.href = url;
   }
 
   absUrl(): string {

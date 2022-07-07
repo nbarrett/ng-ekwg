@@ -8,14 +8,14 @@ import { UrlService } from "../services/url.service";
 @Component({
   selector: "app-page-navigator",
   templateUrl: "./page-navigator.component.html",
-  styleUrls: ["../new-brand/styles/style-1.css", "../new-brand/styles/style-btn.css", "../new-brand/styles/style-bg.css", "../new-brand/styles/style-text.css", "../new-brand/styles/style-list.css"]
+  styleUrls: ["./page-navigator.component.sass"]
 
 })
 export class PageNavigatorComponent {
   private logger: Logger;
 
   constructor(private pageService: PageService, private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.DEBUG);
   }
 
   isOnPage(page: string) {

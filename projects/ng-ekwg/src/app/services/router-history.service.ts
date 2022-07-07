@@ -3,7 +3,6 @@ import { NavigationEnd, Router } from "@angular/router";
 import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { filter } from "rxjs/operators";
-import { LoginResponse } from "../models/member.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { PageService } from "./page.service";
 import { UrlService } from "./url.service";

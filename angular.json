@@ -25,32 +25,17 @@
             "main": "projects/ng-ekwg/src/main.ts",
             "polyfills": "projects/ng-ekwg/src/polyfills.ts",
             "tsConfig": "projects/ng-ekwg/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
+            "inlineStyleLanguage": "sass",
             "assets": [
               "projects/ng-ekwg/src/favicon.ico",
               {
                 "input": "projects/ng-ekwg/src/app/assets",
                 "glob": "**/**/*.*",
-                "output": "/assets"
-              },
-              {
-                "input": "projects/ng-ekwg/src/app/new-brand",
-                "glob": "**/**/*.*",
                 "output": "/"
               }
             ],
             "styles": [
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "projects/ng-ekwg/src/app/assets/styles/bs-datepicker.css",
-              "projects/ng-ekwg/src/app/assets/styles/ui-switch.component.scss",
-              "./node_modules/ngx-tagify/styles/tagify.scss",
-              "projects/ng-ekwg/src/app/assets/styles/style.css",
-              "projects/ng-ekwg/src/styles.sass",
-              "projects/ng-ekwg/src/app/new-brand/styles/style-1.css",
-              "projects/ng-ekwg/src/app/new-brand/styles/style-btn.css",
-              "projects/ng-ekwg/src/app/new-brand/styles/style-bg.css",
-              "projects/ng-ekwg/src/app/new-brand/styles/style-text.css",
-              "projects/ng-ekwg/src/app/new-brand/styles/style-list.css"
+              "projects/ng-ekwg/src/app/assets/styles/styles.sass"
             ],
             "scripts": [
               "./node_modules/popper.js/dist/umd/popper.js",
@@ -64,12 +49,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "5mb"
+                  "maximumError": "8mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
-                  "maximumError": "5mb"
+                  "maximumError": "8mb"
                 }
               ],
               "fileReplacements": [

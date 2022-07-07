@@ -12,10 +12,10 @@ import { SetPasswordComponent } from "../../login/set-password.component";
 import { LogoutComponent } from "../../logout/logout.component";
 import { MainLogoComponent } from "../../main-logo/main-logo.component";
 import { MainTitleComponent } from "../../main-title/main-title.component";
-import { ContainerComponent } from "../../new-brand/container/container";
-import { FooterIconsComponent } from "../../new-brand/footer/icons/footer-icons";
-import { NewBrandFooterComponent } from "../../new-brand/footer/new-brand-footer";
-import { NewBrandHomeComponent } from "../../new-brand/home-page/new-brand-home";
+import { ContainerComponent } from "../../container/container";
+import { FooterIconsComponent } from "../../footer/icons/footer-icons";
+import { NewBrandFooterComponent } from "../../footer/new-brand-footer";
+import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { MeetupDescriptionComponent } from "../../notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "../../page-navigator/page-navigator.component";
 import { PageTitleComponent } from "../../page-title/page-title.component";
@@ -36,9 +36,9 @@ import { ChangedItemsPipe } from "../../pipes/changed-items.pipe";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SharedModule } from "../../shared-module";
 import { SiteEditComponent } from "../../site-edit/site-edit.component";
-import { SiteNavigatorComponent } from "../../site-navigator/site-navigator.component";
+import { HeaderButtonsComponent } from "../../site-navigator/header-buttons.component";
 import { CardContainerComponent } from "./card-container/card-container.component";
-import { MobileMenuComponent } from "./mobile-menu/mobile-menu";
+import { NavbarComponent } from "./mobile-menu/navbar-content";
 import { NavigatorComponent } from "./navigator/navigator";
 
 @NgModule({
@@ -69,11 +69,11 @@ import { NavigatorComponent } from "./navigator/navigator";
     NewBrandFooterComponent,
     PageNavigatorComponent,
     PageTitleComponent,
-    MobileMenuComponent,
+    NavbarComponent,
     PrivacyPolicyComponent,
     SetPasswordComponent,
     SiteEditComponent,
-    SiteNavigatorComponent,
+    HeaderButtonsComponent,
     InstagramComponent,
     FacebookComponent,
     CardContainerComponent,

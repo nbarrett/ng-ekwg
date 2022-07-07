@@ -1,3 +1,5 @@
+@import "colours";
+
 $sw-sm-knob-size: 15px !default;
 $sw-md-knob-size: 30px !default;
 $sw-lg-knob-size: 40px !default;
@@ -99,8 +101,8 @@ $sw-lg-min-width: 60px;
   );
 
   &.checked {
-    background: #A8B400;
-    color:#333;
+    background: $ramblers-colour-rosycheeks;
+    color:$ramblers-colour-granite;
     small {
       right: 0;
       left: auto;
@@ -120,6 +122,28 @@ $sw-lg-min-width: 60px;
       }
     }
   }
+  //&.unchecked {
+  //  background: $ramblers-colour-mintcake;
+  //  color:$ramblers-colour-granite;
+  //  small {
+  //    right: 0;
+  //    left: auto;
+  //  }
+  //  .switch-pane {
+  //    top: 0;
+  //    .switch-label {
+  //      &-checked {
+  //        // opacity: 1;
+  //        display: block;
+  //      }
+  //
+  //      &-unchecked {
+  //        // opacity: 0;
+  //        display: none;
+  //      }
+  //    }
+  //  }
+  //}
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -142,14 +166,14 @@ $sw-lg-min-width: 60px;
     }
 
     .switch-label {
-      color:#333;
+      color:$ramblers-colour-granite;
       &-checked {
-        // opacity: 0;
         display: none;
       }
 
       &-unchecked {
-        // opacity: 1;
+        color:$ramblers-colour-mintcake;
+        opacity: 1;
         display: block;
       }
     }

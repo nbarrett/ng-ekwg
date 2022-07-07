@@ -1,4 +1,4 @@
-@import "~bootstrap"
+@import "../../assets/styles/styles"
 
 .carousel-wrapper
   width: 100%
@@ -23,35 +23,11 @@
   color: white
   font-weight: normal
 
-.cta-instagram
-  background: url("../../assets/images/local/instagram.ico") 12px 15px no-repeat #f2f2f2
-  background-size: 19px
+.carousel-inner
+//height: 350px
 
-.instagram-pics li:nth-child(1), .instagram-pics li:nth-child(2)
-  width: 50%
-
-.instagram-pics ul
-  margin: 0
-  padding: 0
-  list-style: none
-
-.instagram-pics li
-  padding: 3px
-  width: 25%
-  float: left
-  height: 100%
-
-.instagram-pics li img
-  display: block
-  width: 100%
-
-.instagram-pics li:nth-child(n+3)
-  width: 115.5px
-  height: 115.5px
-
-.social-media-thumbnail
-  padding: 14px 11px 9px 9px
-  margin: 12px 0px
+.carousel-caption h4
+  color: $ramblers-colour-cloudy
 
 .badge
   font-size: 16px
@@ -64,12 +40,15 @@
 .event-date-badge
   position: relative
   font-weight: normal
-  color: #fff
-  background: #A8B400
+  color: $ramblers-colour-cloudy
+  background: $ramblers-colour-mintcake
 
 .card-columns
   @include media-breakpoint-only(lg)
     column-count: 2
+
+  @include media-breakpoint-only(md)
+    column-count: 1
 
   @include media-breakpoint-only(xl)
     column-count: 2
