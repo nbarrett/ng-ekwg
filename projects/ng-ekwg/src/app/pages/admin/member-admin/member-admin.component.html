@@ -1,6 +1,6 @@
 <app-page lastBreadcrumb="admin" pageTitle="Member Admin">
-  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame round" *ngIf="memberFilter">
-    <div class="admin-header-background round">
+  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame rounded" *ngIf="memberFilter">
+    <div class="admin-header-background rounded">
       <div class="admin-header-container">
         <div class="form-inline" role="form">
           <div class="form-group">
@@ -11,12 +11,12 @@
               <input id="quick-search" [(ngModel)]="quickSearch"
                      (ngModelChange)="onSearchChange($event)"
                      name="quickSearch"
-                     class="form-control input-sm round"
+                     class="form-control input-sm rounded"
                      type="text" placeholder="Quick Search">
             </div>
           </div>
           <div class="form-group">
-            <label class="spaced-label mr-6" for="filter-members">Filter:</label>
+            <label class="spaced-label mr-2" for="filter-members">Filter:</label>
             <select class="form-control input-sm"
                     [(ngModel)]="memberFilter.selectedFilter"
                     (ngModelChange)="refreshMembers($event)"
@@ -28,7 +28,7 @@
             </select>
           </div>
           <div class="form-group">
-            <p class="search-results round">Showing {{memberFilter.results.length}} member(s)</p>
+            <p class="search-results rounded">Showing {{memberFilter.results.length}} member(s)</p>
           </div>
           <div class="form-group admin-header-buttons">
             <input [disabled]="notifyTarget.busy" type="submit" value="Add New Member"

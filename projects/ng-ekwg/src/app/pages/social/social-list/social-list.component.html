@@ -4,13 +4,13 @@
     <form class="form-inline">
       <div class="form-group">
         <div class="input-group">
-          <div class="input-group-addon round"><i class="glyphicon glyphicon-search"></i>
+          <div class="input-group-addon rounded"><i class="glyphicon glyphicon-search"></i>
           </div>
 
           <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
                  (ngModelChange)="onSearchChange($event)"
                  name="quickSearch"
-                 class="form-control input-md inline-label round"
+                 class="form-control input-md inline-label rounded"
                  type="text" placeholder="Quick Search">
         </div>
       </div>
@@ -18,7 +18,7 @@
         <label class="inline-label" for="selectType">Show:</label>
         <select [(ngModel)]="filterParameters.selectType"
                 (ngModelChange)="refreshSocialEvents()" name="selectType" id="selectType"
-                class="form-control input-md round">
+                class="form-control input-md rounded">
           <option selected="selected" value="1">Future Social Events</option>
           <option value="2">Past Social Events</option>
           <option value="3">All Social Events</option>
@@ -28,7 +28,7 @@
         <label class="inline-label" for="sortOrder">Sort By:</label>
         <select [(ngModel)]="filterParameters.fieldSort"
                 (ngModelChange)="refreshSocialEvents()" name="sortOrder" id="sortOrder"
-                class="form-control input-md round">
+                class="form-control input-md rounded">
           <option selected value="1">Date Ascending</option>
           <option value="-1">Date Descending</option>
         </select>
@@ -41,7 +41,7 @@
     </form>
     <div class="mt-12" *ngIf="notifyTarget.showAlert">
       <div class="alert {{notifyTarget.alertClass}}"><i class="glyphicon {{notifyTarget.alert.icon}}"></i>
-        <strong class="ml-6">{{notifyTarget.alertTitle}}</strong>
+        <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
         {{notifyTarget.alertMessage}}
       </div>
     </div>
@@ -87,9 +87,9 @@
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <div class="event-panel round">
+        <div class="event-panel rounded">
           <h1>Location</h1>
-          <p><span [textContent]="socialEvent.location"></span> <a class="ml-6"
+          <p><span [textContent]="socialEvent.location"></span> <a class="ml-2"
                                                                    [href]="googleMapsService.urlForPostcode(socialEvent.postcode)"
                                                                    target="_blank"><span tooltipPlacement="left"
                                                                                          tooltip="Click to locate postcode {{socialEvent.postcode}} on Google Maps">{{socialEvent.postcode}}</span></a>
@@ -108,12 +108,12 @@
         </div>
       </div>
       <div class="col-sm-6">
-        <div class="event-panel round">
+        <div class="event-panel rounded">
           <h1>Contact Details</h1>
           <p><a [href]="'mailto: ' + socialEvent.contactEmail">
                                 <span tooltipPlacement="left"
                                       tooltip="Click to email {{socialEvent.displayName}} at {{socialEvent.contactEmail}}">{{socialEvent.displayName}}</span></a>
-            <a class="ml-6" [href]="'tel: ' + socialEvent.contactPhone"><span tooltipPlacement="left"
+            <a class="ml-2" [href]="'tel: ' + socialEvent.contactPhone"><span tooltipPlacement="left"
                                                                               tooltip="Click to ring {{socialEvent.displayName}} on {{socialEvent.contactPhone}} (mobile devices only)">{{socialEvent.contactPhone}}</span></a>
           </p>
         </div>

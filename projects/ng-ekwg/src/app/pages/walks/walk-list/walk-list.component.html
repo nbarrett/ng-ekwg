@@ -31,7 +31,7 @@
     </div>
   </form>
   <div *ngFor="let displayedWalk of filteredWalks; let index = index; trackBy: walkTracker">
-    <div *ngIf="display.isExpanded(displayedWalk.walk)" class="thumbnail event-thumbnail">
+    <div *ngIf="display.isExpanded(displayedWalk.walk)" class="img-thumbnail event-thumbnail">
       <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
                      [displayedWalk]="displayedWalk"></app-walk-view>
       <app-walk-edit *ngIf="display.isEdit(displayedWalk.walk)"

@@ -5,7 +5,7 @@
         <tabset>
           <tab [heading]="'Help'">
             <div class="admin-frame round-except-top-left">
-              <div class="admin-header-white-background round">
+              <div class="admin-header-white-background rounded">
                 <div class="row">
                   <div class="col-sm-3">
                     <div class="item-panel-heading">
@@ -48,7 +48,7 @@
           </tab>
           <tab active [heading]="'New upload'">
             <div class="admin-frame round-except-top-left">
-              <div class="admin-header-white-background round">
+              <div class="admin-header-white-background rounded">
                 <div class="row">
                   <div class="col-md-3">
                     <input type="submit" [disabled]="notifyTarget.busy"
@@ -115,7 +115,7 @@
           </tab>
           <tab [heading]="'Upload history'">
             <div class="admin-frame round-except-top-left">
-              <div class="admin-header-background round">
+              <div class="admin-header-background rounded">
                 <div class="admin-header-container-with-tabs">
                   <div *ngIf="!uploadSession" class="admin-session-loading">
                     <div class="col-sm-12 text-center mt-12">
@@ -133,7 +133,7 @@
                         <input id="quick-search" [(ngModel)]="quickSearch"
                                (ngModelChange)="onSearchChange($event)"
                                name="quickSearch"
-                               class="form-control input-sm round"
+                               class="form-control input-sm rounded"
                                type="text" placeholder="Quick Search">
                       </div>
                     </div>

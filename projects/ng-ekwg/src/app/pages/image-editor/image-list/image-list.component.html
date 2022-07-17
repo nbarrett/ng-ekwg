@@ -1,6 +1,6 @@
 <app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Edit Images">
   <div *ngIf="!allow.edit">
-    <div class="well"><img src="assets/images/ramblers/icon-members.png"
+    <div class="img-thumbnail"><img src="/images/ramblers/icon-members.png"
                            alt="members area"/>
       You need to be logged of with the correct administration privileges to view this page. Click the link above to
       login.
@@ -17,7 +17,7 @@
       <div class="col-sm-6">
         <div class="form-group">
           <label for="imageSource">Edit images from</label>
-          <select [(ngModel)]="imageSource" id="imageSource" class="form-control round"
+          <select [(ngModel)]="imageSource" id="imageSource" class="form-control rounded"
                   (ngModelChange)="refreshImageMetaData(imageSource)">
             <option selected="selected" value="imagesHome">Home Page</option>
             <option value="imagesSocialEvents">Social Events</option>

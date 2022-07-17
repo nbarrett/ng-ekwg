@@ -1,6 +1,6 @@
 <app-page lastBreadcrumb="admin" pageTitle="Member Admin">
-  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame round" *ngIf="auditFilter">
-    <div class="admin-header-background round">
+  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame rounded" *ngIf="auditFilter">
+    <div class="admin-header-background rounded">
       <div class="admin-header-container pb-6">
         <div class="form-inline">
           <div class="form-group">
@@ -26,19 +26,19 @@
           <div class="form-group">
             <input type="submit" *ngIf="confirm.noneOutstanding()" [disabled]="notifyTarget.busy" value="Back to admin"
                    (click)="backToAdmin()"
-                   class="button-form ml-6 mr-6"
+                   class="button-form ml-2 mr-2"
                    [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
             <input type="submit" *ngIf="confirm.noneOutstanding()"
                    [disabled]="notifyTarget.busy || auditFilter.results.length==0"
                    value="Delete displayed audit"
                    (click)="deleteSelectedMemberAudit()"
-                   class="button-form mr-6"
+                   class="button-form mr-2"
                    [ngClass]="{'disabled-button-form': notifyTarget.busy || auditFilter.results.length==0 }">
             <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
                    [disabled]="notifyTarget.busy"
                    value="Confirm delete of {{auditFilter.results.length}} audit records"
                    (click)="deleteSelectedMemberAuditConfirm()"
-                   class="button-form button-confirm ml-6 mr-6" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
+                   class="button-form button-confirm ml-2 mr-2" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
             <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
                    [disabled]="notifyTarget.busy"
                    value="Cancel"
