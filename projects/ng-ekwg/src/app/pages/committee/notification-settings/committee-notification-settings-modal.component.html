@@ -380,8 +380,8 @@
       </tabset>
       <div *ngIf="notifyTarget.showAlert" class="row">
         <div class="col-sm-12 mb-10">
-          <div class="alert {{notifyTarget.alert.class}}"><i
-            class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+          <div class="alert {{notifyTarget.alert.class}}">
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
             {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
           </div>
         </div>

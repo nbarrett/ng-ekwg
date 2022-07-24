@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { faCircleCheck, faEraser, faMagnifyingGlass, faPencil, faRemove, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
@@ -30,7 +31,6 @@ export enum DataAction {
   templateUrl: "./markdown-editor.component.html",
   styleUrls: ["./markdown-editor.component.sass"]
 })
-
 export class MarkdownEditorComponent implements OnInit, OnChanges {
   private logger: Logger;
   private originalContent: ContentText;
@@ -52,6 +52,12 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() previewInitiallyActive: boolean;
   @Input() description: string;
   private initialised: boolean;
+  faSpinner = faSpinner;
+  faMagnifyingGlass = faMagnifyingGlass;
+  faPencil = faPencil;
+  faCircleCheck = faCircleCheck;
+  faRemove = faRemove;
+  faEraser = faEraser;
 
   constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService,

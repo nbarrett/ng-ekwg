@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "./images.model";
+
 export interface AlertTarget {
   alertMessage?: string;
   showAlert?: boolean;
@@ -10,9 +12,7 @@ export interface AlertTarget {
   ready?: boolean;
 }
 
-export interface AlertType {
-  class: string;
-  icon: string;
+export interface AlertType extends FontAwesomeIcon {
   failure?: boolean;
 }
 

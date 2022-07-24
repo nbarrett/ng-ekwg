@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { cloneDeep } from "lodash-es";
 import extend from "lodash-es/extend";
 import groupBy from "lodash-es/groupBy";
@@ -53,6 +54,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private logoutSubscription: Subscription;
   public confirm = new Confirm();
+  faSearch = faSearch;
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,

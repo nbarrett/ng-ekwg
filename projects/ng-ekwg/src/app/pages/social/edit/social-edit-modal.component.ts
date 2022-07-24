@@ -31,6 +31,7 @@ import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { SocialSendNotificationModalComponent } from "../send-notification/social-send-notification-modal.component";
 import { SocialDisplayService } from "../social-display.service";
+import { faCopy, faEye } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "app-social-edit-modal",
@@ -54,6 +55,8 @@ export class SocialEditModalComponent implements OnInit {
   public longerDescriptionPreview = true;
   public memberFilterSelections: MemberFilterSelection[];
   public selectedMemberIds: string[] = [];
+  faCopy = faCopy;
+  faEye = faEye;
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,

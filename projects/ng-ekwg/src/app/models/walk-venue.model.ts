@@ -1,3 +1,5 @@
+import { IconDefinition } from "@fortawesome/fontawesome-common-types";
+
 export interface WalkVenue {
   venuePublish?: boolean;
   type?: string;
@@ -12,6 +14,6 @@ export interface WalkVenue {
 
 export interface VenueType {
   type: string;
-  icon: string;
+  icon: IconDefinition;
 }
 

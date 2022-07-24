@@ -1,17 +1,18 @@
 import { Injectable } from "@angular/core";
+import { faPencil, faExclamation, faCircleInfo, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget, AlertType } from "../models/alert-target.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { StringUtilsService } from "./string-utils.service";
 
-const ALERT_ERROR: AlertType = {class: "alert-danger", icon: "glyphicon-exclamation-sign", failure: true};
-const ALERT_WARNING: AlertType = {class: "alert-warning", icon: "glyphicon-info-sign"};
-const ALERT_INFO: AlertType = {class: "alert-success", icon: "glyphicon-info-sign"};
-const ALERT_SUCCESS: AlertType = {class: "alert-success", icon: "glyphicon-ok"};
+const ALERT_ERROR: AlertType = {class: "alert-danger", icon: faExclamation, failure: true};
+const ALERT_WARNING: AlertType = {class: "alert-warning", icon: faCircleCheck};
+const ALERT_INFO: AlertType = {class: "alert-success", icon: faCircleInfo};
+const ALERT_SUCCESS: AlertType = {class: "alert-success", icon: faCircleCheck};
 
 export class AlertInstance {
   private logger: Logger;
-
+  faPencil = faPencil;
   constructor(private alertTarget: AlertTarget, level: NgxLoggerLevel, loggerFactory: LoggerFactory, private stringUtils: StringUtilsService) {
     this.logger = loggerFactory.createLogger(AlertInstance, level || NgxLoggerLevel.ERROR);
     this.alertTarget.alertClass = ALERT_SUCCESS.class;

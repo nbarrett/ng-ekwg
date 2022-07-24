@@ -15,8 +15,8 @@
           <tab active="true" [heading]="'Walk upload selection'">
             <div class="thumbnail thumbnail-admin-edit">
               <div class="form-group">
-                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}"><i
-                  class="glyphicon {{walkExportTarget.alert.icon}}"> </i><strong *ngIf="walkExportTarget.alertTitle">
+                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}">
+                  <i class="glyphicon {{walkExportTarget.alert.icon}}"></i><strong *ngIf="walkExportTarget.alertTitle">
                   {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
                 </div>
               </div>
@@ -71,8 +71,8 @@
           <tab [heading]="'Walk upload audit'">
             <div class="thumbnail thumbnail-admin-edit">
               <div class="form-group">
-                <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}"><i
-                  class="glyphicon {{auditTarget.alert.icon}}"> </i><strong *ngIf="auditTarget.alertTitle">
+                <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}">
+                  <i class="glyphicon {{auditTarget.alert.icon}}"></i><strong *ngIf="auditTarget.alertTitle">
                   {{auditTarget.alertTitle}}: </strong> {{auditTarget.alertMessage}}
                 </div>
               </div>
@@ -130,7 +130,7 @@
                         <i [ngClass]="finalStatusError ? 'glyphicon glyphicon glyphicon-remove red-icon':
                           'glyphicon glyphicon-ok green-icon'"></i>
                       <td *ngIf="audit.status==='success'">
-                        <i class="glyphicon glyphicon-ok-circle green-icon"></i>
+                      <fa-icon [icon]="faEye" class=" green-icon"></fa-icon>
                       <td *ngIf="audit.status==='info'">
                         <i class="glyphicon glyphicon-info-sign blue-icon"></i>
                       <td *ngIf="audit.status==='error'">

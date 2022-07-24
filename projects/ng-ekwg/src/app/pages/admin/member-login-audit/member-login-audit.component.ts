@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import isArray from "lodash-es/isArray";
 import sortBy from "lodash-es/sortBy";
 import { BsModalService } from "ngx-bootstrap/modal";
@@ -42,6 +43,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   public confirm = new Confirm();
   filterDateValue: DateValue;
   private logoutSubscription: Subscription;
+  faSearch = faSearch;
 
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,

@@ -15,7 +15,7 @@ export class PageNavigatorComponent {
   private logger: Logger;
 
   constructor(private pageService: PageService, private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);
   }
 
   isOnPage(page: string) {

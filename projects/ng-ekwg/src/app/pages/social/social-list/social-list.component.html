@@ -4,9 +4,9 @@
     <form class="form-inline">
       <div class="form-group">
         <div class="input-group">
-          <div class="input-group-addon rounded"><i class="glyphicon glyphicon-search"></i>
+          <div class="input-group-prepend rounded">
+            <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
           </div>
-
           <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
                  (ngModelChange)="onSearchChange($event)"
                  name="quickSearch"
@@ -40,7 +40,8 @@
              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
     </form>
     <div class="mt-12" *ngIf="notifyTarget.showAlert">
-      <div class="alert {{notifyTarget.alertClass}}"><i class="glyphicon {{notifyTarget.alert.icon}}"></i>
+      <div class="alert {{notifyTarget.alertClass}}">
+        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
         <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
         {{notifyTarget.alertMessage}}
       </div>
@@ -99,9 +100,10 @@
               <label><a popover="Link has been copied to clipboard"
                         triggers="" #pop="bs-popover"
                         (click)="display.copyToClipboard(socialEvent, pop)">
-                <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg">
+                <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
                   <span tooltipPlacement="left"
-                        tooltip="Click to copy link to clipboard"></span></i> copy link </a> to this <a
+                        tooltip="Click to copy link to clipboard"></span></fa-icon>
+                copy link </a> to this <a
                 [href]="display.socialEventLink(socialEvent)" target="_blank">social event</a></label>
             </div>
           </div>

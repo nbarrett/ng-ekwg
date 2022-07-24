@@ -79,7 +79,7 @@
           <label for="tag-filter" class="bold">Show images tagged with:</label>
           <select [disabled]="filterType!=='choose'" [(ngModel)]="selectedTag"
                   id="filterByTag"
-                  class="form-control round mr-12"
+                  class="form-control rounded mr-12"
                   (ngModelChange)="applyFiltersFromTag()">
             <option *ngFor="let imageTag of selectableTags(); trackBy: tagTracker"
                     [ngValue]="imageTag"
@@ -95,7 +95,7 @@
       <div class="col-sm-6 form-inline mt-22">
         <label for="search">Search for:</label>
         <input autofocus [(ngModel)]="filterText" type="text"
-               (ngModelChange)="onSearchChange($event)" class="form-control input-md round ml-8 w-100" id="search"
+               (ngModelChange)="onSearchChange($event)" class="form-control input-md rounded ml-8 w-100" id="search"
                placeholder="any text">
       </div>
       <div class="col-sm-6 mt-8">
@@ -109,7 +109,7 @@
       </div>
     </div>
     <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-      <i class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
       {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
     </div>
     <input #fileElement id="browse-to-file" name="browse-to-file" class="hidden-input"

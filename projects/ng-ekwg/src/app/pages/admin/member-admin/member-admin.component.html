@@ -5,8 +5,8 @@
         <div class="form-inline" role="form">
           <div class="form-group">
             <div class="input-group">
-              <div class="input-group-addon">
-                <i class="glyphicon glyphicon-search"></i>
+              <div class="input-group-prepend">
+                <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
               </div>
               <input id="quick-search" [(ngModel)]="quickSearch"
                      (ngModelChange)="onSearchChange($event)"
@@ -57,8 +57,8 @@
                      [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab button-confirm'">
             </span>
             <div *ngIf="notifyTarget.showAlert">
-              <div class="alert {{notifyTarget.alertClass}}"><i
-                class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+              <div class="alert {{notifyTarget.alertClass}}">
+                <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
                 {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
               </div>
             </div>

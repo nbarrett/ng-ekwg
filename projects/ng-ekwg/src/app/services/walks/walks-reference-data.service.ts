@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { faCutlery, faMapMarker } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
@@ -107,7 +108,7 @@ export class WalksReferenceService {
   }
 
   venueTypes(): VenueType[] {
-    return [{type: "Pub", icon: "glyphicon-cutlery"}, {type: "Meeting place", icon: "glyphicon-map-marker"}];
+    return [{type: "Pub", icon: faCutlery}, {type: "Meeting place", icon: faMapMarker}];
   }
 
   toWalkEventType(eventType: EventType | string): WalkEventType {

@@ -425,8 +425,8 @@
           <pre>{{member | json}}</pre>
         </tab>
       </tabset>
-      <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}"><i
-        class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+      <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
         {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
       </div>
     </div>

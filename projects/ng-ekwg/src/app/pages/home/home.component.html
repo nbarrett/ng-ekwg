@@ -30,7 +30,7 @@
   <div class="col-sm-12">
     <a *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"
        [queryParams]="{story: imageTagDataService.currentTag()?.key}"><span class="badge">
-  <i class="glyphicon glyphicon-pencil badge-icon"></i> edit images</span></a>
+      <fa-icon [icon]="faPencil" class="badge-icon"></fa-icon> edit images</span></a>
     <app-markdown-editor [editCaptionText]="'edit content'" class="green-bullets-no-rule"
                          name="welcome"></app-markdown-editor>
   </div>

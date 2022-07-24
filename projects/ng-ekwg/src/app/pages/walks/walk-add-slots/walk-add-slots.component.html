@@ -93,9 +93,7 @@
             </div>
           </div>
         </div>
-        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}} mb-12"><i
-          class="glyphicon {{notifyTarget.alert.icon}}">
-        </i> <strong> {{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}} mb-12"><fa-icon [icon]="notifyTarget.alert.icon"></fa-icon> <strong> {{notifyTarget.alertTitle}}</strong> {{notifyTarget.alertMessage}}
         </div>
         <div class="mt-12">
         <span *ngIf="selectionMade && bulk">

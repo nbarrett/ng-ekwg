@@ -85,7 +85,7 @@
                        (ngModelChange)="setExpenseItemFields()"
                        class="form-control input-sm" id="miles"
                        placeholder="Enter miles here">
-                <span class="input-group-addon">miles</span>
+                <span class="input-group-prepend">miles</span>
               </div>
             </div>
           </div>
@@ -111,7 +111,7 @@
             <label for="cost">Cost</label>
 
             <div class="input-group">
-              <span class="input-group-addon">£</span>
+              <span class="input-group-prepend">£</span>
               <input [disabled]="!editable || expenseItem.expenseType.travel"
                      placeholder="Enter cost here" [(ngModel)]="expenseItem.cost" id="cost"
                      type="text" class="form-control input-sm"
@@ -160,7 +160,7 @@
         <div class="col-sm-12">
           <div *ngIf="notifyTarget.showAlert">
             <div class="alert {{notifyTarget.alertClass}}">
-              <i class="glyphicon {{notifyTarget.alert.icon}}"> </i> <strong
+              <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon> <strong
               *ngIf="notifyTarget.alertTitle">{{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
             </div>
           </div>

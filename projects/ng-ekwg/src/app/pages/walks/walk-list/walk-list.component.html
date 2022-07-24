@@ -4,13 +4,13 @@
       <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
              (ngModelChange)="onSearchChange($event)"
              name="quickSearch"
-             class="form-control round spaced-controls"
+             class="form-control rounded spaced-controls"
              type="text" placeholder="Quick Search">
     </div>
     <div class="form-group">
       <select [(ngModel)]="filterParameters.selectType"
               (change)="refreshWalks('change filterParameters.selectType')" name="selectType"
-              class="form-control round spaced-controls">
+              class="form-control rounded spaced-controls">
         <option *ngFor="let filter of walksFilter()" [ngValue]="filter.value"
                 [selected]="filter.selected">{{filter.description}}</option>
       </select>
@@ -18,14 +18,13 @@
     <div class="form-group">
       <select [(ngModel)]="filterParameters.ascending"
               (change)="refreshWalks('change filterParameters.ascending')" name="ascending"
-              class="form-control round spaced-controls">
+              class="form-control rounded spaced-controls">
         <option selected value="true">Sort (date ascending)</option>
         <option value="false">Sort (date descending)</option>
       </select>
     </div>
     <div class="form-group">
-      <div *ngIf="notifyTarget.showAlert" class="alert walks-programme-alert {{notifyTarget.alertClass}}"><i
-        class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong>{{notifyTarget.alertTitle}}</strong>
+      <div *ngIf="notifyTarget.showAlert" class="alert walks-programme-alert {{notifyTarget.alertClass}}"><fa-icon [icon]="notifyTarget.alert.icon"></fa-icon> <strong>{{notifyTarget.alertTitle}}</strong>
         {{notifyTarget.alertMessage}}
       </div>
     </div>

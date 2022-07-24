@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -47,6 +48,7 @@ export class HowToComponent implements OnInit, OnDestroy {
   public filterParameters: FilterParameters = {quickSearch: ""};
   private addingNew = false;
   public allow: MemberResourcesPermissions = {};
+  faSearch = faSearch;
 
   constructor(
     private contentMetadataService: ContentMetadataService,

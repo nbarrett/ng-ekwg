@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
+import { faCopy, faPencil } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
@@ -77,6 +78,8 @@ export class WalkEditComponent implements OnInit {
   public longerDescriptionPreview: boolean;
   public meetupConfig: MeetupConfig;
   private committeeReferenceData: CommitteeReferenceData;
+  faCopy = faCopy;
+  faPencil = faPencil;
 
   constructor(
     public googleMapsService: GoogleMapsService,

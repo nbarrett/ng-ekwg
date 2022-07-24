@@ -90,9 +90,12 @@
                           </div>
                         </td>
                         <td class="text-center">
-                          <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                          <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                          <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                          <span *ngIf="item.isSuccess"><fa-icon [icon]="toFontAwesomeIcon('success').icon"
+                                                                [class]="toFontAwesomeIcon('success').class"></fa-icon></span>
+                          <span *ngIf="item.isCancel"><fa-icon [icon]="toFontAwesomeIcon('cancelled').icon"
+                                                               [class]="toFontAwesomeIcon('success').class"></fa-icon></span>
+                          <span *ngIf="item.isError"><fa-icon [icon]="toFontAwesomeIcon('error').icon"
+                                                              [class]="toFontAwesomeIcon('success').class"></fa-icon></span>
                         </td>
                       </tr>
                       </tbody>
@@ -102,8 +105,8 @@
                 <div *ngIf="notifyTarget.showAlert" class="row">
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <div class="alert {{notifyTarget.alertClass}}"><i
-                        class="glyphicon {{notifyTarget.alert.icon}}"> </i>
+                      <div class="alert {{notifyTarget.alertClass}}">
+                        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
                         <strong *ngIf="notifyTarget.alertTitle"> {{notifyTarget.alertTitle}}: </strong>
                         {{notifyTarget.alertMessage}}
                       </div>
@@ -127,8 +130,8 @@
                   <div *ngIf="uploadSession" class="form-inline quick-search">
                     <div class="form-group">
                       <div class="input-group">
-                        <div class="input-group-addon">
-                          <i class="glyphicon glyphicon-search"></i>
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
                         </div>
                         <input id="quick-search" [(ngModel)]="quickSearch"
                                (ngModelChange)="onSearchChange($event)"
@@ -205,8 +208,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr *ngFor="let auditLog of uploadSession.auditLog">
-                          <td><i class="glyphicon {{toGlyphicon(auditLog.status)}}"></i></td>
+                        <tr *ngFor="let auditLog of uploadSession.auditLog;">
+                          <td>
+                            <fa-icon [icon]="toFontAwesomeIcon(auditLog.status).icon"
+                                     [class]="toFontAwesomeIcon(auditLog.status).class"></fa-icon>
+                          </td>
                           <td [textContent]="auditLog.message"></td>
                         </tr>
                         </tbody>
@@ -318,7 +324,10 @@
                         <tbody>
                         <tr *ngFor="let memberUpdateAudit of filters.memberUpdateAudit.results">
                           <td class="text-nowrap">{{memberUpdateAudit.updateTime | displayDateAndTime}}</td>
-                          <td><i class="glyphicon {{toGlyphicon(memberUpdateAudit.memberAction)}}"></i></td>
+                          <td>
+                            <fa-icon [icon]="toFontAwesomeIcon(memberUpdateAudit.memberAction).icon"
+                                     [class]="toFontAwesomeIcon(memberUpdateAudit.memberAction).class"></fa-icon>
+                          </td>
                           <td>{{memberUpdateAudit.rowNumber}}</td>
                           <td>{{memberUpdateAudit.memberId || (memberUpdateAudit.member && memberUpdateAudit.member.id) | memberIdToFullName : members : '': true}}</td>
                           <td>{{memberUpdateAudit.changes}}</td>

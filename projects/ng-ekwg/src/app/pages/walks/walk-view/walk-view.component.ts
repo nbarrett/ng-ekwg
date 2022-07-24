@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
+import { faCopy, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -13,7 +14,6 @@ import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkDisplayService } from "../walk-display.service";
-import { faMinusCircle, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 const SHOW_START_POINT = "show-start-point";
 const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
@@ -36,6 +36,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   public loggedIn: boolean;
   private subscription: Subscription;
   faCopy = faCopy;
+  faEnvelope = faEnvelope;
 
   constructor(
     public googleMapsService: GoogleMapsService,

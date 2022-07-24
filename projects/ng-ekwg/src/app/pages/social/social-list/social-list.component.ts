@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import { faCopy, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { cloneDeep, isNumber, isObject } from "lodash-es";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -42,6 +43,7 @@ export class SocialListComponent implements OnInit {
   private logger: Logger;
   public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: 1};
   public memberFilterSelections: MemberFilterSelection[];
+  faCopy = faCopy;
 
   constructor(public googleMapsService: GoogleMapsService,
               private authService: AuthService,
@@ -72,6 +74,7 @@ export class SocialListComponent implements OnInit {
   public notifyTarget: AlertTarget;
   @Input()
   public socialEventId: string;
+  faSearch = faSearch;
 
   ngOnInit() {
     this.authService.authResponse().subscribe(() => this.authChanges());

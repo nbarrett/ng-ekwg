@@ -76,9 +76,9 @@
                       <div class="form-group">
                         <label for="longer-description">Description
                           <a *ngIf="!longerDescriptionPreview" (click)="previewLongerDescription()" [href]="">
-                            <i class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i>preview</a>
+                            <fa-icon [icon]="faEye" class="markdown-preview-icon"></fa-icon>preview</a>
                           <a *ngIf="longerDescriptionPreview" (click)="editLongerDescription()" [href]="">
-                            <i class="glyphicon glyphicon-pencil markdown-preview-icon"></i>edit</a>
+                            <fa-icon [icon]="faPencil" class="markdown-preview-icon"></fa-icon>edit</a>
                         </label>
                         <div class="green-bullets-no-rule">
                           <p *ngIf="longerDescriptionPreview"
@@ -149,7 +149,7 @@
                     <option *ngFor="let selection of memberFilterSelections"
                             [ngValue]="selection.id"
                             [textContent]="selection.member | fullNameWithAlias"
-                            class="form-control round spaced-controls" id="contact-member">
+                            class="form-control rounded spaced-controls" id="contact-member">
                   </select>
                 </div>
                 <div class="form-group">
@@ -256,7 +256,7 @@
       </tabset>
       <div class="form-group">
         <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-          <i class="glyphicon {{notifyTarget.alert.icon}}"> </i><strong *ngIf="notifyTarget.alertTitle">
+          <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
           {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
         </div>
       </div>
@@ -264,8 +264,8 @@
         <label> <a popover="Link has been copied to clipboard"
                    triggers="" #pop="bs-popover"
                    (click)="display.copyToClipboard(socialEvent, pop)">
-          <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg"><span
-            tooltipPlacement="left" tooltip="Click to copy link to clipboard"></span> </i> copy link </a> to this
+          <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg"><span
+            tooltipPlacement="left" tooltip="Click to copy link to clipboard"></span> </fa-icon> copy link </a> to this
           <a [href]="display.socialEventLink(socialEvent)"
              target="_blank">social event</a> </label>
       </div>

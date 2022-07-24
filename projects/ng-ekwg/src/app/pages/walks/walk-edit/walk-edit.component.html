@@ -58,12 +58,10 @@
             <div class="form-group">
               <label for="longer-description">Longer Description <a
                 [hidden]="longerDescriptionPreview"
-                (click)="previewLongerDescription()" [href]=""><i
-                class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i> preview</a>
+                (click)="previewLongerDescription()" [href]=""><i class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i> preview</a>
                 <a *ngIf="longerDescriptionPreview"
-                   (click)="editLongerDescription()" [href]=""><i
-                  class="glyphicon glyphicon-pencil markdown-preview-icon"></i>
-                  edit</a> </label>
+                   (click)="editLongerDescription()" [href]="">
+                  <fa-icon [icon]="faPencil" class="markdown-preview-icon"></fa-icon> edit</a> </label>
               <p *ngIf="longerDescriptionPreview"
                  (click)="editLongerDescription()"
                  markdown [data]="displayedWalk.walk.longerDescription" type="text"
@@ -487,7 +485,7 @@
   </tabset>
   <div class="form-group">
     <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-      <i class="glyphicon {{notifyTarget.alert.icon}}"></i> <strong> {{notifyTarget.alertTitle}}: </strong>
+      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon> <strong> {{notifyTarget.alertTitle}}: </strong>
       {{notifyTarget.alertMessage}}
     </div>
   </div>
@@ -496,10 +494,10 @@
               triggers="" #pop="bs-popover"
               (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
               [outsideClick]="true">
-      <i class="glyphicon glyphicon-copy markdown-preview-icon fa-lg">
+      <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
         <div tooltip-placement="left"
              tooltip="Click to copy link to clipboard"></div>
-      </i>
+      </fa-icon>
       copy link </a> to this <a [href]="display.walkLink(displayedWalk.walk)"
                                 target="_blank">walk</a></label>
   </div>

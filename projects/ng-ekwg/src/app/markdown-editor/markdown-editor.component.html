@@ -9,24 +9,21 @@
 <span *ngIf="editorState.editActive" class="markdown-links">
     <a *ngIf="!editorState.preview"
        (click)="preview() && !saving()"><span class="badge">
-      <i [ngClass]="querying() ? 'fa fa-spinner fa-spin':
-      'glyphicon glyphicon-zoom-in badge-icon'"></i> {{previewCaption}}</span></a>
+      <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass" class="badge-icon"></fa-icon>
+      {{previewCaption}}</span></a>
     <a *ngIf="editorState.preview" [title]="'Edit content for ' + description"
        (click)="edit()"><span class="badge">
-      <i [ngClass]="querying() ? 'fa fa-spinner fa-spin':
-      'glyphicon glyphicon-pencil badge-icon'"></i> {{editCaption}}</span></a>
+      <fa-icon [icon]="querying() ? faSpinner: faPencil" class="badge-icon"></fa-icon>
+      {{editCaption}}</span></a>
     <a *ngIf="dirty() && canSave()"
        (click)="save()"><span class="badge">
-      <i [ngClass]="saving() ? 'fa fa-spinner fa-spin':'glyphicon glyphicon-ok badge-icon'"></i>
-      save</span></a>
+      <fa-icon [icon]="saving() ? faSpinner: faCircleCheck" class="badge-icon"></fa-icon> save</span></a>
     <a *ngIf="dirty() && !saving()"
        (click)="revert()"><span class="badge">
-      <i [ngClass]="reverting() ? 'fa fa-spinner fa-spin':
-      'glyphicon glyphicon-remove badge-icon'"></i> revert</span></a>
+      <fa-icon [icon]="reverting() ? faSpinner: faRemove" class="badge-icon"></fa-icon> revert</span></a>
     <a *ngIf="canDelete() && !saving()"
        (click)="delete()"><span class="badge">
-      <i [ngClass]="reverting() ? 'fa fa-spinner fa-spin':
-      'glyphicon glyphicon-erase badge-icon'"></i> delete</span></a>
+      <fa-icon [icon]="reverting() ? faSpinner: faEraser" class="badge-icon"></fa-icon> delete</span></a>
 </span>
 <span *ngIf="canPreview()"
       (click)="edit()"

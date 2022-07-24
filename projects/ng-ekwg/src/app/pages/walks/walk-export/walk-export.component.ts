@@ -22,6 +22,7 @@ import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
+import { faCopy, faEye } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "app-walk-export",
@@ -51,6 +52,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private finalStatusError: any;
   private exportInProgress = false;
+  faEye = faEye;
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private ramblersWalksAndEventsService: RamblersWalksAndEventsService,

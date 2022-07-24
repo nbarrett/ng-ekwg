@@ -88,8 +88,7 @@
       <div class="col-sm-8" *ngIf="allowEdits()">
         <div class="form-group" *ngIf="displayedWalk.walk.venue.url">
           <label>Link preview:
-            <i class="glyphicon {{displayedWalk.walk.venue?.type | toVenueIcon}} glyphicon-icon fa-lg">
-            </i>
+            <fa-icon [icon]="displayedWalk.walk.venue?.type | toVenueIcon" class="glyphicon-icon fa-lg"></fa-icon>
             <a [href]="displayedWalk.walk.venue.url" target="_blank">
             <span class="related-links-title" tooltip-placement="left"
                   tooltip="Click to visit {{displayedWalk.walk.venue?.name}}"></span>{{displayedWalk.walk.venue?.name}}

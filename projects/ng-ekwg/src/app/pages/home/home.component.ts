@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { groupEventTypeFor } from "../../models/committee.model";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
@@ -24,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public hoverActive: boolean;
   activeSlideIndex = 0;
   public showIndicators: boolean;
-
+  faPencil = faPencil;
   constructor(
     public imageTagDataService: ImageTagDataService,
     private memberLoginService: MemberLoginService,

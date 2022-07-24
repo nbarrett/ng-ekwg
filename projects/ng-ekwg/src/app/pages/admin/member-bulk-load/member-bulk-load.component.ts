@@ -2,7 +2,7 @@ import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { faEnvelopesBulk, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faCircleCheck, faCirclePlus, faEnvelopesBulk, faInfo, faPencil, faRemove, faSearch, faSpinner, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import groupBy from "lodash-es/groupBy";
@@ -16,6 +16,7 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { FontAwesomeIcon } from "../../../models/images.model";
 import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MemberTableFilter, MemberUpdateAuditTableFilter } from "../../../models/table-filtering.model";
 import { EditMode } from "../../../models/ui-actions";
@@ -72,6 +73,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   faEnvelopesBulk = faEnvelopesBulk;
   faSpinner = faSpinner;
+  faSearch = faSearch;
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private mailchimpListService: MailchimpListService,
@@ -232,27 +234,30 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
     return this.auditSummaryFormatted(this.auditSummary());
   }
 
-  toGlyphicon(status) {
+  toFontAwesomeIcon(status): FontAwesomeIcon {
+    if (status === "cancelled") {
+      return {icon: faBan, class: "red-icon"};
+    }
     if (status === "created") {
-      return "glyphicon glyphicon-plus green-icon";
+      return {icon: faCirclePlus, class: "green-icon"};
     }
     if (status === "complete" || status === "summary") {
-      return "glyphicon-ok green-icon";
+      return {icon: faCircleCheck, class: "green-icon"};
     }
     if (status === "success") {
-      return "glyphicon-ok-circle green-icon";
+      return {icon: faCircleCheck, class: "green-icon"};
     }
     if (status === "info") {
-      return "glyphicon-info-sign blue-icon";
+      return {icon: faInfo, class: "blue-icon"};
     }
     if (status === "updated") {
-      return "glyphicon glyphicon-pencil green-icon";
+      return {icon: faPencil, class: "green-icon"};
     }
     if (status === "error") {
-      return "glyphicon-remove-circle red-icon";
+      return {icon: faRemove, class: "red-icon"};
     }
     if (status === "skipped") {
-      return "glyphicon glyphicon-thumbs-up green-icon";
+      return {icon: faThumbsUp, class: "green-icon"};
     }
   }
 
