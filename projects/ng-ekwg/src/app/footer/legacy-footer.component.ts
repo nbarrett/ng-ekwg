@@ -5,17 +5,17 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
 @Component({
   selector: "app-footer",
-  templateUrl: "./footer.component.html",
-  styleUrls: ["./footer.component.sass"]
+  templateUrl: "./legacy-footer.component.html",
+  styleUrls: ["./legacy-footer.component.sass"]
 
 })
-export class FooterComponent implements OnInit {
+export class LegacyFooterComponent implements OnInit {
   private logger: Logger;
   public year: string;
 
   constructor(private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FooterComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(LegacyFooterComponent, NgxLoggerLevel.OFF);
     this.logger.debug("constructed");
   }
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
-import { faCopy, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -37,6 +37,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   faCopy = faCopy;
   faEnvelope = faEnvelope;
+  faPhone = faPhone;
 
   constructor(
     public googleMapsService: GoogleMapsService,

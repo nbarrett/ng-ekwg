@@ -16,8 +16,9 @@
             <div class="thumbnail thumbnail-admin-edit">
               <div class="form-group">
                 <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}">
-                  <i class="glyphicon {{walkExportTarget.alert.icon}}"></i><strong *ngIf="walkExportTarget.alertTitle">
-                  {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
+                  <fa-icon [icon]="walkExportTarget.alert.icon"></fa-icon>
+                  <strong *ngIf="walkExportTarget.alertTitle">
+                    {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
                 </div>
               </div>
               <div class="row mb-12">
@@ -72,8 +73,9 @@
             <div class="thumbnail thumbnail-admin-edit">
               <div class="form-group">
                 <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}">
-                  <i class="glyphicon {{auditTarget.alert.icon}}"></i><strong *ngIf="auditTarget.alertTitle">
-                  {{auditTarget.alertTitle}}: </strong> {{auditTarget.alertMessage}}
+                  <fa-icon [icon]="auditTarget.alert.icon"></fa-icon>
+                  <strong *ngIf="auditTarget.alertTitle">
+                    {{auditTarget.alertTitle}}: </strong> {{auditTarget.alertMessage}}
                 </div>
               </div>
               <div class="row">
@@ -127,14 +129,14 @@
                     <tr *ngFor="let audit of ramblersUploadAuditData">
                       <td class="nowrap">{{audit.auditTime | displayDateAndTime}}</td>
                       <td *ngIf="audit.status==='complete'">
-                        <i [ngClass]="finalStatusError ? 'glyphicon glyphicon glyphicon-remove red-icon':
-                          'glyphicon glyphicon-ok green-icon'"></i>
+                        <fa-icon [icon]="finalStatusError ? faRemove : faCircleInfo" [ngClass]="finalStatusError ? 'red-icon':
+                          'green-icon'"></fa-icon>
                       <td *ngIf="audit.status==='success'">
-                      <fa-icon [icon]="faEye" class=" green-icon"></fa-icon>
+                        <fa-icon [icon]="faEye" class="green-icon"></fa-icon>
                       <td *ngIf="audit.status==='info'">
-                        <i class="glyphicon glyphicon-info-sign blue-icon"></i>
+                        <fa-icon [icon]="faCircleInfo" class="blue-icon"></fa-icon>
                       <td *ngIf="audit.status==='error'">
-                        <i class="glyphicon glyphicon-remove-circle red-icon"></i>
+                        <fa-icon [icon]="faRemove" class="red-icon"></fa-icon>
                       <td>{{audit.message}}<span *ngIf="audit.errorResponse">: {{audit.errorResponse | valueOrDefault}}</span></td>
                     </tr>
                     </tbody>

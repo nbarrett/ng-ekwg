@@ -166,12 +166,10 @@
             {{displayedWalk.walk.displayName}}</span>
         </p>
         <p *ngIf="displayedWalk.latestEventType.showDetails">
-          <i class="glyphicon glyphicon-phone glyphicon-icon fa-lg"></i>
-          <a [href]="'tel:' + displayedWalk.walk.contactPhone" name="contactPhone">
-                                        <span tooltip-placement="left"
-                                              tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{displayedWalk.walk.contactPhone}} (mobile devices only)">
-                                            {{displayedWalk.walk.contactPhone}}
-                                        </span>
+          <fa-icon [icon]="faPhone" class="glyphicon-icon"></fa-icon>
+          <a [href]="'tel:' + displayedWalk.walk.contactPhone" name="contactPhone" tooltip-placement="left"
+             tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{displayedWalk.walk.contactPhone}} (mobile devices only)">
+            {{displayedWalk.walk.contactPhone}}
           </a>
         </p>
       </div>

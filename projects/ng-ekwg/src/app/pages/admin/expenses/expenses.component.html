@@ -198,7 +198,7 @@
                         <span *ngIf="allowApproveExpenseClaim()">
                           <div *ngIf="notifyConfirmTarget.showAlert" class="mb-10">
                             <div class="alert {{notifyConfirmTarget.alertClass}}">
-                              <i class="glyphicon {{notifyConfirmTarget.alert.icon}}"></i>
+                              <fa-icon [icon]="notifyConfirmTarget.alert.icon"></fa-icon>
                               <strong
                                 *ngIf="notifyConfirmTarget.alertTitle">{{notifyConfirmTarget.alertTitle}}
                                 : </strong> {{notifyConfirmTarget.alertMessage}} </div>

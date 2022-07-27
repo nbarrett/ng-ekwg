@@ -4,7 +4,10 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AppRoutingModule } from "../../app-routing.module";
 import { CarouselStoryNavigatorComponent } from "../../carousel-story-navigator/carousel-story-navigator.component";
-import { FooterComponent } from "../../footer/footer.component";
+import { ContainerComponent } from "../../container/container";
+import { FooterComponent } from "../../footer/footer";
+import { FooterIconsComponent } from "../../footer/icons/footer-icons";
+import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { LoginPanelComponent } from "../../login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "../../login/forgot-password.component";
 import { LoginComponent } from "../../login/login.component";
@@ -12,10 +15,6 @@ import { SetPasswordComponent } from "../../login/set-password.component";
 import { LogoutComponent } from "../../logout/logout.component";
 import { MainLogoComponent } from "../../main-logo/main-logo.component";
 import { MainTitleComponent } from "../../main-title/main-title.component";
-import { ContainerComponent } from "../../container/container";
-import { FooterIconsComponent } from "../../footer/icons/footer-icons";
-import { NewBrandFooterComponent } from "../../footer/new-brand-footer";
-import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { MeetupDescriptionComponent } from "../../notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "../../page-navigator/page-navigator.component";
 import { PageTitleComponent } from "../../page-title/page-title.component";
@@ -47,7 +46,6 @@ import { NavigatorComponent } from "./navigator/navigator";
     ChangedItemsPipe,
     ContactUsComponent,
     ContainerComponent,
-    FooterComponent,
     FooterIconsComponent,
     ForgotPasswordComponent,
     NewBrandHomeComponent,
@@ -66,7 +64,7 @@ import { NavigatorComponent } from "./navigator/navigator";
     MainLogoComponent,
     MainTitleComponent,
     MeetupDescriptionComponent,
-    NewBrandFooterComponent,
+    FooterComponent,
     PageNavigatorComponent,
     PageTitleComponent,
     NavbarComponent,

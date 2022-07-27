@@ -1,3 +1,4 @@
+@use "sass:math";
 @import "colours";
 
 $sw-sm-knob-size: 15px !default;
@@ -54,11 +55,11 @@ $sw-lg-min-width: 60px;
         .switch-label {
           &-checked {
             padding-right: nth($i, 2) + 5px;
-            padding-left: (nth($i, 2) / 3) * 1.5;
+            padding-left: math.div(nth($i, 2), 3) * 1.5;
           }
           &-unchecked {
             padding-left: nth($i, 2) + 5px;
-            padding-right: (nth($i, 2) / 3) * 1.5;
+            padding-right: math.div(nth($i, 2), 3) * 1.5;
           }
         }
       }
@@ -92,7 +93,6 @@ $sw-lg-min-width: 60px;
     align-items: center;
     justify-content: center;
   }
-  // populate &.small, &.medium, &.large classes
   @include config-switch-sizes(
     'switch-',
     'small' $sw-sm-knob-size,

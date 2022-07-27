@@ -1,5 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { faCircleInfo, faEye, faRemove } from "@fortawesome/free-solid-svg-icons";
 import find from "lodash-es/find";
 import get from "lodash-es/get";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -22,7 +23,6 @@ import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { WalkDisplayService } from "../walk-display.service";
-import { faCopy, faEye } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "app-walk-export",
@@ -53,6 +53,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private finalStatusError: any;
   private exportInProgress = false;
   faEye = faEye;
+  faRemove = faRemove;
+  faCircleInfo = faCircleInfo;
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
