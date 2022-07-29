@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { kebabCase } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DateValue } from "../models/date.model";
@@ -21,6 +22,7 @@ export class DatePickerComponent implements OnInit, OnChanges {
   @Output() dateChange: EventEmitter<DateValue> = new EventEmitter();
   public id: string;
   private logger: Logger;
+  faCalendar = faCalendar;
 
   constructor(
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {

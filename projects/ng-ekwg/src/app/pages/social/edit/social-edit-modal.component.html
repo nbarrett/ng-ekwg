@@ -8,7 +8,7 @@
     <div class="modal-body">
       <tabset>
         <tab [heading]="'Date and Location'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col col-sm-6">
                 <div class="form-group">
@@ -58,7 +58,7 @@
           </div>
         </tab>
         <tab [heading]="'Descriptions'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col col-sm-12">
                 <div class="form-group">
@@ -110,11 +110,11 @@
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <label for="thumbnail">Thumbnail</label>
+                      <label for="img-thumbnail">Thumbnail</label>
                       <input [disabled]="!allow.edits"
                              [(ngModel)]="socialEvent.thumbnail"
                              type="text" value="" class="form-control input-sm"
-                             id="thumbnail"
+                             id="img-thumbnail"
                              placeholder="Enter a thumbnail image">
                     </div>
                   </div>
@@ -137,7 +137,7 @@
           </div>
         </tab>
         <tab [heading]="'Organiser'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col col-sm-12">
                 <div class="form-group">
@@ -175,7 +175,7 @@
           </div>
         </tab>
         <tab [heading]="'Attendees'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="form-group" #tooltip2="bs-tooltip" placement="bottom"
                    [tooltip]="attendeeCaption()">
@@ -204,7 +204,7 @@
           </div>
         </tab>
         <tab *ngIf="allow.edits" [heading]="'Attachment'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-md-12">
                 <input type="submit" [disabled]="notifyTarget.busy"

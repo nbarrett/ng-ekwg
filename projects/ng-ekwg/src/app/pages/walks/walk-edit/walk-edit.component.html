@@ -7,27 +7,28 @@
   </div>
   <tabset *ngIf="displayedWalk.walk">
     <tab [heading]="'Main details'">
-      <div class="thumbnail thumbnail-admin-edit">
+      <div class="img-thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
               <label for="walk-date">Walk Date</label>
-
-              <div class="input-group">
-                <input [ngModel]="walkDate"
-                       (ngModelChange)="onDateChange($event)"
-                       [disabled]="!allowAdminEdits() || !allowEdits()"
-                       placeholder="enter date of walk"
-                       #dp="bsDatepicker"
-                       bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
+              <div class="form-group">
+                <div class="input-group">
+                  <input [ngModel]="walkDate"
+                         (ngModelChange)="onDateChange($event)"
+                         [disabled]="!allowAdminEdits() || !allowEdits()"
+                         placeholder="enter date of walk"
+                         #dp="bsDatepicker"
+                         bsDatepicker [bsConfig]="{ isDisabled: !allowAdminEdits(), isAnimated: true, dateInputFormat: 'ddd DD-MMM-YYYY',
                              containerClass: 'theme-ramblers'}"
-                       type="text" class="form-control input-sm"
-                       id="walk-date"/>
-                <div class="input-group-btn">
-                  <button [disabled]="!allowAdminEdits() || !allowEdits()"
-                          class="btn btn-default btn-sm"
-                          (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
-                    class="glyphicon glyphicon-calendar"></i></button>
+                         type="text" class="form-control input-sm"
+                         id="walk-date"/>
+                  <div class="input-group-append rounded">
+                    <span class="input-group-text">
+                      <fa-icon (click)="(allowAdminEdits() || allowEdits())? dp.toggle():null"
+                               [attr.aria-expanded]="dp.isOpen" [icon]="faCalendar" class="glyphicon-icon"></fa-icon>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -81,10 +82,10 @@
       <app-walk-risk-assessment [displayedWalk]="displayedWalk"></app-walk-risk-assessment>
     </tab>
     <tab [heading]="' Related links'">
-      <div class="thumbnail thumbnail-admin-edit">
+      <div class="img-thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-12">
-            <div class="thumbnail thumbnail-walk-edit">
+            <div class="img-thumbnail thumbnail-walk-edit">
               <div class="thumbnail-heading">Ramblers</div>
               <div class="form-group">
                 <p *ngIf="!insufficientDataToUploadToRamblers() && !ramblersWalkExists()">
@@ -205,7 +206,7 @@
       </div>
     </tab>
     <tab [heading]="'Walk leader'">
-      <div class="thumbnail thumbnail-admin-edit">
+      <div class="img-thumbnail thumbnail-admin-edit">
         <div *ngIf="allowAdminEdits()" class="row">
           <div class="col-sm-12">
             <div class="form-group">
@@ -305,7 +306,7 @@
       </div>
     </tab>
     <tab [heading]="'Walk details'">
-      <div class="thumbnail thumbnail-admin-edit">
+      <div class="img-thumbnail thumbnail-admin-edit">
         <div class="row">
           <div class="col-sm-6">
             <h1>Walk details</h1>
@@ -401,7 +402,7 @@
       </div>
     </tab>
     <tab *ngIf="allowHistoryView()" heading="History">
-      <div class="thumbnail thumbnail-admin-edit">
+      <div class="img-thumbnail thumbnail-admin-edit">
         <div class="form-group">
           <table
             class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
@@ -430,7 +431,7 @@
       </div>
     </tab>
     <tab *ngIf="displayedWalk.walk.walkLeaderMemberId" [heading]="'Copy from...'">
-      <div class="thumbnail thumbnail-admin-edit"
+      <div class="img-thumbnail thumbnail-admin-edit"
            *ngIf="allowEdits() && displayedWalk.walk && displayedWalk.walk.walkLeaderMemberId">
         <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
         <div class="row">

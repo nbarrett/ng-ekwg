@@ -13,7 +13,7 @@
       <div *ngIf="true">
         <tabset>
           <tab active="true" [heading]="'Walk upload selection'">
-            <div class="thumbnail thumbnail-admin-edit">
+            <div class="img-thumbnail thumbnail-admin-edit">
               <div class="form-group">
                 <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}">
                   <fa-icon [icon]="walkExportTarget.alert.icon"></fa-icon>
@@ -70,7 +70,7 @@
             </div>
           </tab>
           <tab [heading]="'Walk upload audit'">
-            <div class="thumbnail thumbnail-admin-edit">
+            <div class="img-thumbnail thumbnail-admin-edit">
               <div class="form-group">
                 <div *ngIf="auditTarget.showAlert" class="alert {{auditTarget.alertClass}}">
                   <fa-icon [icon]="auditTarget.alert.icon"></fa-icon>

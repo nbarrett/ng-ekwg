@@ -16,6 +16,7 @@ import { Logger, LoggerFactory } from "../../../../services/logger-factory.servi
 import { AlertInstance, NotifierService } from "../../../../services/notifier.service";
 import { NumberUtilsService } from "../../../../services/number-utils.service";
 import { StringUtilsService } from "../../../../services/string-utils.service";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "app-expense-detail-modal",
@@ -37,7 +38,7 @@ export class ExpenseDetailModalComponent implements OnInit {
   public expenseItemIndex: number;
   public hasFileOver = false;
   public uploader;
-
+  faCalendar = faCalendar;
   public fileOver(e: any): void {
     this.hasFileOver = e;
   }

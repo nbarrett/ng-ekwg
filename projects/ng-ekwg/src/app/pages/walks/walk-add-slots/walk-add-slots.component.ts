@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import difference from "lodash-es/difference";
 import map from "lodash-es/map";
 import times from "lodash-es/times";
@@ -42,7 +43,7 @@ export class WalkAddSlotsComponent implements OnInit {
   public bulk: true;
   public notifyTarget: AlertTarget = {};
   public selectionMade: string;
-
+  faCalendar = faCalendar;
   constructor(
     private walksService: WalksService,
     private memberLoginService: MemberLoginService,

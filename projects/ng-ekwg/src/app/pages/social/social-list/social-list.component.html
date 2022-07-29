@@ -1,6 +1,6 @@
 <app-accordion-group *ngIf="allow.detailView" groupTitle="Social Events In Detail" initiallyOpen="true"
                      [icon]="'assets/images/ramblers/icon-getinvolved.png'">
-  <div class="thumbnail thumbnail-equal-padding" *ngIf="allow.edits">
+  <div class="img-thumbnail thumbnail-equal-padding" *ngIf="allow.edits">
     <form class="form-inline">
       <div class="form-group">
         <div class="input-group">
@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-  <div class="thumbnail event-thumbnail" *ngFor="let socialEvent of filteredSocialEvents">
+  <div class="img-thumbnail event-thumbnail" *ngFor="let socialEvent of filteredSocialEvents">
     <div class="row">
       <div class="col-sm-8">
         <h1><span [textContent]="socialEvent.eventDate | displayDay"></span></h1>
@@ -69,7 +69,7 @@
              [href]="socialEvent.link">
             <img *ngIf="socialEvent.thumbnail"
                  [src]="socialEvent.thumbnail"
-                 id="thumbnail"></a>
+                 id="img-thumbnail"></a>
           <div class="green-bullets-no-rule">
             <p markdown [data]="socialEvent.longerDescription"></p>
             <ul>

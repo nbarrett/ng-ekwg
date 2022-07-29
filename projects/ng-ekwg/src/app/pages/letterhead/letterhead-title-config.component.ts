@@ -7,7 +7,7 @@ import { TitleLine } from "./letterhead.component";
   selector: "app-letterhead-title-config",
   styleUrls: ["./letterhead.component.sass"],
   template: `
-    <div class="thumbnail ml-12">
+    <div class="img-thumbnail ml-12">
       <h4>
         <span class="checkbox-group form-inline">
       <label [ngClass]="{'ui-state-active': titleLine.include}"

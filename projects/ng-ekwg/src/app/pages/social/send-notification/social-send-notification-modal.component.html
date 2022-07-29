@@ -8,7 +8,7 @@
     <div class="modal-body" *ngIf="socialEvent?.notification?.content?.title">
       <tabset *ngIf="socialEvent?.notification?.content">
         <tab [heading]="'Recipients & Addressing'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-7"><label>Send to:</label>
                 <div class="form-group">
@@ -103,7 +103,7 @@
           </div>
         </tab>
         <tab [heading]="'Edit Content'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
@@ -245,7 +245,7 @@
           </div>
         </tab>
         <tab [heading]="'Signing Off'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
@@ -296,7 +296,7 @@
           </div>
         </tab>
         <tab [heading]="'Preview'">
-          <div class="thumbnail thumbnail-admin-edit">
+          <div class="img-thumbnail thumbnail-admin-edit">
             <div class="form-horizontal">
               <div id="preview" class="print-preview">
                 <ng-template app-social-notification-template></ng-template>

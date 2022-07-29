@@ -10,7 +10,7 @@
           </ul>
         </div>
       </div>
-      <div class="thumbnail">
+      <div class="img-thumbnail">
         <h1>Add slots to walks programme</h1>
         <div class="mb-12">
 
@@ -57,8 +57,8 @@
                          id="add-slots-until"/>
                   <div class="input-group-btn">
                     <button class="btn btn-default btn-sm"
-                            (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
-                      class="glyphicon glyphicon-calendar"></i></button>
+                            (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen">
+                      <fa-icon [icon]="faCalendar" class="glyphicon-icon"></fa-icon></button>
                   </div>
                 </div>
               </div>
@@ -84,8 +84,8 @@
                            id="add-single-slot"/>
                     <div class="input-group-btn">
                       <button class="btn btn-default btn-sm"
-                              (click)="dpSingle.toggle()" [attr.aria-expanded]="dpSingle.isOpen"><i
-                        class="glyphicon glyphicon-calendar"></i></button>
+                              (click)="dpSingle.toggle()" [attr.aria-expanded]="dpSingle.isOpen">
+                        <fa-icon [icon]="faCalendar" class="glyphicon-icon"></fa-icon></button>
                     </div>
                   </div>
                 </div>

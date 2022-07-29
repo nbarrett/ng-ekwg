@@ -6,7 +6,7 @@
       <h4 class="modal-title">{{editMode}} <em>Expense Item</em></h4>
     </div>
     <div class="modal-body">
-      <div class="thumbnail">
+      <div class="img-thumbnail">
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
@@ -21,11 +21,8 @@
                                containerClass: 'theme-ramblers'}"
                        type="text" class="form-control input-sm"
                        id="expense-date"/>
-                <div class="input-group-btn">
-                  <button class="btn btn-default btn-sm"
-                          [disabled]="!editable"
-                          (click)="dp.toggle()" [attr.aria-expanded]="dp.isOpen"><i
-                    class="glyphicon glyphicon-calendar"></i></button>
+                <div class="input-group-prepend">
+                  <span (click)="editable? dp.toggle():null" class="input-group-text"><fa-icon [icon]="faCalendar" class="glyphicon-icon"></fa-icon></span>
                 </div>
               </div>
             </div>
