@@ -5,7 +5,7 @@ import { TitleLine } from "./letterhead.component";
   selector: "app-letterhead-title-output",
   styleUrls: ["./letterhead.component.sass"],
   template: `<p *ngIf="titleLine.include" class="title"><img class="text-icon" [ngClass]="{'none': !titleLine.showIcon}"
-                     src="/images/ramblers/icon-{{titleLine.iconType}}.png"/>
+                     src="/assets/images/ramblers/icon-{{titleLine.iconType}}.png"/>
     <span class="ml-2 {{titleLine.part1.class}}">{{titleLine.part1.text}}</span>
     <span class="ml-2 {{titleLine.part2.class}}">{{titleLine.part2.text}}</span>
     <span class="ml-2 {{titleLine.part3.class}}">{{titleLine.part3.text}}</span></p>

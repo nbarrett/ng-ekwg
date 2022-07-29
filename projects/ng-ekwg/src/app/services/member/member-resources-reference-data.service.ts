@@ -48,7 +48,7 @@ export class MemberResourcesReferenceDataService {
         description: "Email",
         action: "View email",
         icon() {
-          return "/images/local/mailchimp.ico";
+          return "/assets/images/local/mailchimp.ico";
         },
         resourceUrl(memberResource: MemberResource) {
           return memberResource?.data?.campaign?.archive_url_long;
