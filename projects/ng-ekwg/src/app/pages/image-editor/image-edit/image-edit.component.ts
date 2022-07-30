@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
+import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { keys } from "lodash-es";
 import isArray from "lodash-es/isArray";
@@ -39,6 +40,7 @@ export class ImageEditComponent implements OnInit, OnChanges {
   @Output() imageInsert: EventEmitter<ContentMetadataItem> = new EventEmitter();
   public canMoveUp: boolean;
   public canMoveDown: boolean;
+  faExclamation = faExclamation;
 
   constructor(private stringUtils: StringUtilsService,
               public imageDuplicatesService: ImageDuplicatesService,

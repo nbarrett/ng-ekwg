@@ -79,7 +79,7 @@
 <div class="row mt-0" *ngIf="imageDuplicatesService.duplicatedContentMetadataItems(item).length>0">
   <div class="col-sm-12">
     <div class="alert alert-warning">
-      <i class="glyphicon glyphicon-exclamation-sign"></i><strong>
+      <fa-icon [icon]="faExclamation" class="markdown-preview-icon"></fa-icon><strong>
       {{imageDuplicatesService.duplicateCount(item)}} </strong> {{imageDuplicatesService.duplicates(item)}}
     </div>
   </div>

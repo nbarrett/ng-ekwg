@@ -26,7 +26,7 @@
                   <div class="input-group-append rounded">
                     <span class="input-group-text">
                       <fa-icon (click)="(allowAdminEdits() || allowEdits())? dp.toggle():null"
-                               [attr.aria-expanded]="dp.isOpen" [icon]="faCalendar" class="glyphicon-icon"></fa-icon>
+                               [attr.aria-expanded]="dp.isOpen" [icon]="faCalendar" class="fa-icon"></fa-icon>
                     </span>
                   </div>
                 </div>
@@ -59,7 +59,7 @@
             <div class="form-group">
               <label for="longer-description">Longer Description <a
                 [hidden]="longerDescriptionPreview"
-                (click)="previewLongerDescription()" [href]=""><i class="glyphicon glyphicon-ok-circle markdown-preview-icon"></i> preview</a>
+                (click)="previewLongerDescription()" [href]=""><fa-icon [icon]="faMagnifyingGlass" class="markdown-preview-icon"></fa-icon> preview</a>
                 <a *ngIf="longerDescriptionPreview"
                    (click)="editLongerDescription()" [href]="">
                   <fa-icon [icon]="faPencil" class="markdown-preview-icon"></fa-icon> edit</a> </label>

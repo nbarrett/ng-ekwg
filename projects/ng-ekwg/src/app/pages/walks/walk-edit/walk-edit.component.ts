@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
-import { faCalendar, faCopy, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCopy, faMagnifyingGlass, faPencil } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
@@ -80,6 +80,7 @@ export class WalkEditComponent implements OnInit {
   private committeeReferenceData: CommitteeReferenceData;
   faCopy = faCopy;
   faPencil = faPencil;
+  faMagnifyingGlass = faMagnifyingGlass;
   faCalendar = faCalendar;
 
   constructor(

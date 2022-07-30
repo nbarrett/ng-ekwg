@@ -93,7 +93,7 @@
           <a tooltip="Click to visit {{displayedWalk.walk.venue.name}}"
              [href]="displayedWalk.walk.venue.url || googleMapsService.urlForPostcode(displayedWalk.walk.venue.postcode)"
              target="_blank">
-            <fa-icon [icon]="displayedWalk.walk.venue.type | toVenueIcon" class="glyphicon-icon"></fa-icon>
+            <fa-icon [icon]="displayedWalk.walk.venue.type | toVenueIcon" class="fa-icon"></fa-icon>
             {{displayedWalk.walk.venue.type}}: {{displayedWalk.walk.venue.name}}
           </a>
         </div>
@@ -106,7 +106,7 @@
              (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
              [outsideClick]="true"
              placement="bottom">
-            <fa-icon [icon]="faCopy" class="glyphicon-icon"><span
+            <fa-icon [icon]="faCopy" class="fa-icon"><span
               tooltipPlacement="left"
               tooltip="Click to copy link to clipboard"></span></fa-icon>
             Copy link</a> to this <a [href]="displayedWalk.walkLink " target="_blank">walk</a>
@@ -156,7 +156,7 @@
         <p *ngIf="displayedWalk.walk.contactEmail">
           <a *ngIf="loggedIn" [href]="'mailto:' + displayedWalk.walk.contactEmail"
              tooltip="Click to email {{displayedWalk.walk.displayName}} at {{displayedWalk.walk.contactEmail}}">
-            <fa-icon [icon]="faEnvelope" class="glyphicon-icon"></fa-icon>
+            <fa-icon [icon]="faEnvelope" class="fa-icon"></fa-icon>
             {{displayedWalk.walk.displayName}}
           </a>
           <span *ngIf="!loggedIn" class="tooltip-link span-margin"
@@ -166,7 +166,7 @@
             {{displayedWalk.walk.displayName}}</span>
         </p>
         <p *ngIf="displayedWalk.latestEventType.showDetails">
-          <fa-icon [icon]="faPhone" class="glyphicon-icon"></fa-icon>
+          <fa-icon [icon]="faPhone" class="fa-icon"></fa-icon>
           <a [href]="'tel:' + displayedWalk.walk.contactPhone" name="contactPhone"
              tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{displayedWalk.walk.contactPhone}} (mobile devices only)">
             {{displayedWalk.walk.contactPhone}}
