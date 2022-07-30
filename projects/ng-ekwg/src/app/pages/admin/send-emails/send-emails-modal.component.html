@@ -25,7 +25,7 @@
           <div class="col-sm-3 panel-toggle">
             <a *ngIf="!helpInfo.showHelp"
                (click)="toggleHelp(true, [tooltip1, tooltip2])" [href]="">
-              <i class="glyphicon glyphicon-question-sign markdown-preview-icon"></i> show help</a>
+              <fa-icon [icon]="faQuestion" class="markdown-preview-icon"></fa-icon> show help</a>
             <a *ngIf="helpInfo.showHelp" (click)="toggleHelp(false,[tooltip1, tooltip2])" [href]="">
               <i class="glyphicon glyphicon-question-sign"></i> hide help</a>
           </div>

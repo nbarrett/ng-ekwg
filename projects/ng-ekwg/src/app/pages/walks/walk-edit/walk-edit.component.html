@@ -130,7 +130,7 @@
                       <a target="_blank"
                          [href]="display.ramblersLink(displayedWalk.walk)">
                       <span class="related-links-title"
-                            tooltip-placement="left"
+
                             tooltip="Click to view on Ramblers Walks and Events Manager">View walk on Ramblers
                       </span>
                       </a></label>
@@ -191,7 +191,7 @@
                       <a target="_blank"
                          [href]="displayedWalk.walk.osMapsRoute" class="text1">
                       <span class="related-links-title"
-                            tooltip-placement="left"
+
                             tooltip="Click to view the route for this walk on Ordnance Survey Maps">
                         View map on OS Maps
                       </span>
@@ -421,7 +421,7 @@
                   [textContent]="event.member"></td>
               <td style="width: 20%"
                   [textContent]="event.eventType"></td>
-              <td style="width: 40%"><span tooltip-placement="left"
+              <td style="width: 40%"><span
                                            tooltip="Details: {{event.changedItems}}">{{event.notes}}</span>
               </td>
             </tr>
@@ -496,7 +496,7 @@
               (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
               [outsideClick]="true">
       <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
-        <div tooltip-placement="left"
+        <div
              tooltip="Click to copy link to clipboard"></div>
       </fa-icon>
       copy link </a> to this <a [href]="display.walkLink(displayedWalk.walk)"

@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { map } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
@@ -40,6 +41,7 @@ export class SendEmailsModalComponent implements OnInit {
   public emailTypes: MemberEmailType[] = [];
   public emailType: MemberEmailType;
   public helpInfo: { monthsInPast: number; showHelp: boolean };
+  faQuestion = faQuestion;
 
   constructor(private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
