@@ -22,7 +22,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   private allSlides: ContentMetadataItem[] = [];
   public selectedSlides: ContentMetadataItem[] = [];
   public slideInterval = 5000;
-  public hoverActive: boolean;
   activeSlideIndex = 0;
   public showIndicators: boolean;
   faPencil = faPencil;
@@ -96,7 +95,4 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  hoverEvent(hoverActive: boolean) {
-    this.hoverActive = hoverActive;
-  }
 }

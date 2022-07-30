@@ -1,10 +1,10 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
+      <h4 class="modal-title">{{editMode}} <em>Member</em> Details</h4>
       <button type="button" class="close" data-dismiss="modal" (click)="this.bsModalRef.hide();"
               aria-hidden="true">&times;
       </button>
-      <h4 class="modal-title">{{editMode}} <em>Member</em> Details</h4>
     </div>
     <div class="modal-body">
       <tabset>
@@ -400,7 +400,7 @@
             <div class="row">
               <div class="col col-sm-12">
                 <table
-                  class="round tbl-green-f table-striped table-hover table-condensed table-pointer">
+                  class="round tbl-green-f table-striped table-hover table-sm table-pointer">
                   <thead>
                   <tr>
                     <th>Update Time</th>

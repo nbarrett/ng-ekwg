@@ -1,20 +1,19 @@
 <div class="carousel-wrapper">
 <div class="slider-container">
 <div class="sc-inner">
-  <app-carousel-story-navigator></app-carousel-story-navigator>
   <carousel [noPause]="false" [isAnimated]="true"
             [interval]="slideInterval"
             [showIndicators]="showIndicators"
             [(activeSlide)]="activeSlideIndex"
             (activeSlideChange)="activeSlideChange(false, $event)">
+    <app-carousel-story-navigator></app-carousel-story-navigator>
     <slide *ngFor="let slide of viewableSlides; let index = index;">
       <img class="img-responsive center-block" loading="lazy" *ngIf="slide" [src]="slide.image" [alt]="slide.text"
            style="display: block; width: 100%;">
       <div class="carousel-caption">
         <h4>{{slide.text}}</h4>
         <div>
-          <a (mouseenter)="hoverEvent(true)"
-             (mouseleave)="hoverEvent(false)" delay="500" [ngClass]="{'badge event-date-badge' : hoverActive}"
+          <a delay="500" class="event-date"
              *ngIf="slide.eventId" tooltipPlacement="right" [tooltip]="eventTooltip(slide)"
              [adaptivePosition]="false" [placement]="'right'" [href]="eventUrl(slide)">
             on {{slide.date | displayDate}}  </a>
@@ -39,3 +38,5 @@
   <app-facebook></app-facebook>
   <app-instagram></app-instagram>
 </div>
+
+<!--             (mouseleave)="hoverEvent(false)" delay="500" [ngClass]="{'badge event-date-badge' : hoverActive}"-->

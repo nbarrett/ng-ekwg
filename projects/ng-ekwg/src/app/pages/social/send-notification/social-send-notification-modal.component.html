@@ -1,9 +1,8 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
-      <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
-      </button>
       <h4 class="modal-title">Send <em>Social Event</em> Notification</h4>
+      <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     </div>
     <div class="modal-body" *ngIf="socialEvent?.notification?.content?.title">
       <tabset *ngIf="socialEvent?.notification?.content">

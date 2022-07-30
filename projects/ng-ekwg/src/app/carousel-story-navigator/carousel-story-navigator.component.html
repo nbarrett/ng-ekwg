@@ -1,9 +1,9 @@
 <div class="stories d-none d-md-block">
   <ul>
     <li *ngFor="let tag of imageTagDataService.imageTagsSorted()">
-      <span tooltipPlacement="bottom"
-            [tooltip]="'Show ' + tag.subject">
-      <a ramblers-list [ngClass]="{'active' : imageTagDataService.isActive(tag)}" (click)="showTag(tag)" [textContent]="tag.subject"></a></span>
+      <a ramblers-list tooltipPlacement="bottom" [tooltip]="'Show images for ' + tag.subject"
+         [ngClass]="{'active' : imageTagDataService.isActive(tag)}" (click)="showTag(tag)"
+         [textContent]="tag.subject"></a>
     </li>
   </ul>
 </div>

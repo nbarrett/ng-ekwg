@@ -50,31 +50,22 @@
 
 .carousel-caption h4
   color: $ramblers-colour-cloudy
-
-//@media (max-width: 900px)
-//  .carousel-caption h4
-//    font-size: 10px
-
-.badge
-  //font-size: 16px
+  @extend .drop-shadow
 
 .badge-icon
   color: #656565
   display: inline-block
   text-align: center
 
-.event-date-badge
-  position: relative
+.event-date
+  @extend .drop-shadow
   font-weight: normal
   color: $ramblers-colour-cloudy
-  background: $ramblers-colour-mintcake
-
-.badge
-  font-weight: normal
-  color: $ramblers-colour-cloudy
-  background: $ramblers-colour-mintcake
   padding: 4px 10px 6px 8px
   margin: -4px 4px 6px 0px
+  &:hover
+    background: $ramblers-colour-hover
+    opacity: 90%
 
 .card-columns
   @include media-breakpoint-only(lg)

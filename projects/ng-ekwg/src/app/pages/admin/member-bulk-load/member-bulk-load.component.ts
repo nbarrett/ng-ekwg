@@ -3,6 +3,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faBan, faCircleCheck, faCirclePlus, faEnvelopesBulk, faInfo, faPencil, faRemove, faSearch, faSpinner, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import groupBy from "lodash-es/groupBy";
@@ -248,7 +249,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
       return {icon: faCircleCheck, class: "green-icon"};
     }
     if (status === "info") {
-      return {icon: faInfo, class: "blue-icon"};
+      return {icon: faCircleInfo, class: "blue-icon"};
     }
     if (status === "updated") {
       return {icon: faPencil, class: "green-icon"};

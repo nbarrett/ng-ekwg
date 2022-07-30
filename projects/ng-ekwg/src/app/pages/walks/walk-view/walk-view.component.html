@@ -115,11 +115,13 @@
     </div>
   </div>
   <div class="col-sm-6 rounded" *ngIf="displayedWalk.latestEventType.showDetails">
-    <input type="number" min="1" max="20" *ngIf="false"
-           [ngModel]="display.googleMapsConfig.zoomLevel" name="zoomLevel">
-    <iframe *ngIf="displayedWalk.walk.postcode" class="map-thumbnail-image" frameborder="0"
-            style="border:0;border-radius: 10px;"
-            [src]="googleMapsUrl" allowfullscreen></iframe>
+    <div class="row">
+      <div class="col-sm-12">
+        <iframe *ngIf="displayedWalk.walk.postcode" class="map-thumbnail-image"
+                style="border:0;border-radius: 10px;"
+                [src]="googleMapsUrl" allowfullscreen></iframe>
+      </div>
+    </div>
     <div class="row img-thumbnail thumbnail-campaign-settings">
       <div class="map-radio-heading map-radio-group">Show Map:</div>
       <div class="radio-inline map-radio-group map-radio-label" (click)="refreshView()">
@@ -160,7 +162,6 @@
             {{displayedWalk.walk.displayName}}
           </a>
           <span *ngIf="!loggedIn" class="tooltip-link span-margin"
-
                 tooltip-trigger="mouseenter"
                 tooltip="Login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}">
             {{displayedWalk.walk.displayName}}</span>

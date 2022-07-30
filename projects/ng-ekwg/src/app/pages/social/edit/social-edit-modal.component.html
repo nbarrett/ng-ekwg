@@ -1,9 +1,9 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
   <div class="modal-content">
     <div class="modal-header">
+      <h4 class="modal-title" id="modal-title-heading">{{socialEventEditMode}} <em>Social Event</em> Details</h4>
       <button (click)="bsModalRef.hide()" type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;
       </button>
-      <h4 class="modal-title" id="modal-title-heading">{{socialEventEditMode}} <em>Social Event</em> Details</h4>
     </div>
     <div class="modal-body">
       <tabset>
