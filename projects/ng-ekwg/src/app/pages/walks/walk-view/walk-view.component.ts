@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { faCopy, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -13,6 +14,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { UrlService } from "../../../services/url.service";
+import { LoginModalComponent } from "../../login/login-modal/login-modal.component";
 import { WalkDisplayService } from "../walk-display.service";
 
 const SHOW_START_POINT = "show-start-point";
@@ -38,11 +40,16 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   faCopy = faCopy;
   faEnvelope = faEnvelope;
   faPhone = faPhone;
+  config: ModalOptions = {
+    animated: false,
+    initialState: {}
+  };
 
   constructor(
     public googleMapsService: GoogleMapsService,
     private authService: AuthService,
     private memberLoginService: MemberLoginService,
+    private modalService: BsModalService,
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
     public meetupService: MeetupService,
@@ -71,6 +78,10 @@ export class WalkViewComponent implements OnInit, OnDestroy {
       this.refreshHomePostcode();
     });
     this.updateGoogleMap();
+  }
+
+  login() {
+    this.modalService.show(LoginModalComponent, this.config);
   }
 
   updateGoogleMap() {

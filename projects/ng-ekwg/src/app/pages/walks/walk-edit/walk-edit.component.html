@@ -124,16 +124,13 @@
                 <div class="col-sm-8" *ngIf="ramblersWalkExists()">
                   <div class="form-group">
                     <label>Link preview:
-                      <img class="related-links-image"
+                      <img class="related-links-ramblers-image"
                            src="favicon.ico"
                            alt="Click to view on Ramblers Walks and Events Manager"/>
                       <a target="_blank"
-                         [href]="display.ramblersLink(displayedWalk.walk)">
-                      <span class="related-links-title"
-
-                            tooltip="Click to view on Ramblers Walks and Events Manager">View walk on Ramblers
-                      </span>
-                      </a></label>
+                         tooltip="Click to view on Ramblers Walks and Events Manager"
+                         [href]="display.ramblersLink(displayedWalk.walk)">View walk on Ramblers</a>
+                    </label>
                   </div>
                 </div>
               </div>

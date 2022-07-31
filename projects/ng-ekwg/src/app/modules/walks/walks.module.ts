@@ -15,6 +15,7 @@ import { WalkNotificationLeaderDeletedComponent } from "../../notifications/walk
 import { WalkNotificationLeaderRequestedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-requested.component";
 import { WalkNotificationLeaderUpdatedComponent } from "../../notifications/walks/templates/leader/walk-notification-leader-updated.component";
 import { WalkNotificationDirective } from "../../notifications/walks/walk-notification.directive";
+import { RelatedLinkComponent } from "../../pages/walks/related-link/related-link.component";
 import { WalkAddSlotsComponent } from "../../pages/walks/walk-add-slots/walk-add-slots.component";
 import { WalkAdminComponent } from "../../pages/walks/walk-admin/walk-admin.component";
 import { WalkDisplayService } from "../../pages/walks/walk-display.service";
@@ -79,7 +80,8 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     WalkSummaryPipe,
     WalkValidationsListPipe,
     WalkVenueComponent,
-    WalkViewComponent
+    WalkViewComponent,
+    RelatedLinkComponent,
   ],
   imports: [
     SharedModule

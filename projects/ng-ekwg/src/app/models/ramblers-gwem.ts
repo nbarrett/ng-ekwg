@@ -40,6 +40,41 @@ export const WalkUploadColumnHeadings: string[] = [
   "Contact display name"
 ];
 
+export const NewWalkUploadColumnHeadings: string[] = [
+  "Date",
+  "Title",
+  "Description",
+  "Walk leaders",
+  "Linear or Circular",
+  "Start time",
+  "Starting location",
+  "Starting postcode",
+  "Starting gridref",
+  "Starting location details",
+  "Meeting location",
+  "Meeting postcode",
+  "Meeting gridref",
+  "Meeting location details",
+  "Est finish time",
+  "Finishing location",
+  "Finishing postcode",
+  "Finishing gridref",
+  "Finishing location details",
+  "Difficulty",
+  "Distance km",
+  "Distance miles",
+  "Ascent metres",
+  "Ascent feet",
+  "Family friendly",
+  "Dog friendly",
+  "Assistance dog only",
+  "No stiles",
+  "Refreshments available",
+  "Toilets available",
+  "Fast pace",
+  "Slow pace"
+];
+
 export interface WalkUploadRow {
   "Date": string;
   "Title": string;
