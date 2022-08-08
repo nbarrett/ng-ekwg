@@ -2,8 +2,11 @@ import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
 import { MailchimpCampaign } from "./mailchimp.model";
 
-export interface FilterParameters {
+export interface FilterParametersSearch {
   quickSearch: string;
+}
+
+export interface FilterParameters extends FilterParametersSearch {
   filter?: AccessLevelData;
 }
 

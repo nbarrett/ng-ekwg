@@ -13,7 +13,7 @@
       <div class="carousel-caption">
         <h4>{{slide.text}}</h4>
         <div>
-          <a delay="500" class="event-date"
+          <a delay="500" class="badge event-date"
              *ngIf="slide.eventId" tooltipPlacement="right" [tooltip]="eventTooltip(slide)"
              [adaptivePosition]="false" [placement]="'right'" [href]="eventUrl(slide)">
             on {{slide.date | displayDate}}  </a>
@@ -38,5 +38,3 @@
   <app-facebook></app-facebook>
   <app-instagram></app-instagram>
 </div>
-
-<!--             (mouseleave)="hoverEvent(false)" delay="500" [ngClass]="{'badge event-date-badge' : hoverActive}"-->

@@ -1,8 +1,8 @@
 import { Component } from "@angular/core";
+import { NamedEvent } from "../models/broadcast.model";
 import { SiteEditService } from "./site-edit.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEvent } from "../services/broadcast-service";
 
 @Component({
   selector: "app-site-edit",

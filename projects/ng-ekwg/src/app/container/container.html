@@ -1,24 +1,24 @@
+<app-page-title></app-page-title>
 <script async defer crossorigin="anonymous"
         src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v7.0&appId=643977439755625&autoLogAppEvents=1"></script>
-      <div class="container-fluid">
-        <div class="row d-none d-lg-block">
-          <div class="px-0 bg-dark col">
-            <div class="container">
-              <div class="row p-2">
-                <div class="d-block d-sm-flex  align-items-center  justify-content-center justify-content-lg-end  col-md-4">
-                  <app-login-panel></app-login-panel>
-                </div>
-                <div class="d-block d-sm-flex  align-items-center  justify-content-center justify-content-lg-end  col-md-8 order-sm-3 col-12 order-3">
-                  <app-header-buttons></app-header-buttons>
-                </div>
-              </div>
-            </div>
+<div class="container-fluid">
+  <div class="row d-none d-lg-block">
+    <div class="px-0 bg-dark col">
+      <div class="container">
+        <div class="row p-2">
+          <div class="d-block d-sm-flex  align-items-center  justify-content-center justify-content-lg-end  col-md-4">
+            <app-login-panel></app-login-panel>
+          </div>
+          <div class="d-block d-sm-flex  align-items-center  justify-content-center justify-content-lg-end  col-md-8 order-sm-3 col-12 order-3">
+            <app-header-buttons></app-header-buttons>
           </div>
         </div>
-        <app-navigator></app-navigator>
       </div>
-      <div class="container">
-        <router-outlet></router-outlet>
-      </div>
-    <app-new-brand-footer></app-new-brand-footer>
-<script type="text/javascript" id="" src="/assets/images/new-brand/cookieControl-9.x.min.js"></script>
+    </div>
+  </div>
+  <app-navigator></app-navigator>
+</div>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+<app-new-brand-footer></app-new-brand-footer>

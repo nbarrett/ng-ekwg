@@ -6,7 +6,7 @@ import { UrlService } from "../services/url.service";
 @Component({
   selector: "app-header-buttons",
   templateUrl: "./header-buttons.component.html",
-  styleUrls: ["./site-navigator.component.sass"]
+  styleUrls: ["./header-buttons.component.sass"]
 
 })
 export class HeaderButtonsComponent implements OnInit {

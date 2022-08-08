@@ -94,7 +94,7 @@ body
    EKWG specific
    ========================================================================== */
 
-.tooltip-link, .tabs, .tabset, .nav, .pagination, .carousel, .panel-title a
+.tooltip-link, .tabs, .tabset, .nav, .carousel, .panel-title a
   cursor: pointer
 
 
@@ -170,13 +170,6 @@ body
   line-height: 16px
 
 
-.input-postcode
-  height: 26px
-  padding: 5px 10px
-  border-radius: 4px
-  width: 91px
-
-
 .input-campaign-search
   display: inline-block
 
@@ -221,9 +214,10 @@ body
   border-radius: 10px
   overflow: hidden
   float: right
-  margin-bottom: 14px
-  width: 423px
-  height: 300px
+  width: 100%
+  margin-top: 20px
+  margin-bottom: 0
+  height: 380px
 
 
 h3 small
@@ -384,57 +378,6 @@ img
   -ms-interpolation-mode: bicubic
 
 
-.thumbnail
-  padding: 12px 24px 12px 24px
-  margin: 12px 0px
-
-
-.thumbnail-admin-edit
-  padding: 24px 24px 12px 24px
-  margin: 0px 0px 9px 0px
-  -webkit-border-radius: 0px 0px 6px 6px
-  -moz-border-radius: 0px 6px 6px 6px
-  border-radius: 0px 0px 6px 6px
-
-.thumbnail-walk-edit
-  padding: 13px 10px 0px 15px
-  margin: 6px 0px 12px 0px
-  border-radius: 6px
-
-.thumbnail-heading
-  position: relative
-  top: -28px
-  margin-left: 0px
-  margin-bottom: -14px
-  padding-top: 2px
-  background-color: white
-  display: table
-  font-size: 17px
-  font-weight: bold
-
-
-.map-radio-heading
-  position: relative
-  top: -5px
-  margin-left: 0px
-  margin-bottom: -14px
-  padding: 0px 15px 0px 15px
-  background-color: white
-  display: table
-  font-weight: bold
-
-
-.map-radio-group
-  position: relative
-  display: inline-block
-  padding: 0px
-  margin: 0px
-  font-weight: bold
-  font-size: 15px
-  vertical-align: middle
-  cursor: pointer
-
-
 .thumbnail-equal-padding
   padding: 16px 12px 12px 19px
   margin: 6px 0px 12px
@@ -522,16 +465,6 @@ button, input
 button, input[type="button"], input[type="reset"], input[type="submit"]
   cursor: pointer
   -webkit-appearance: button
-
-
-input[type="checkbox"], input[type="radio"]
-  box-sizing: border-box
-
-
-input[type="search"]
-  -moz-box-sizing: content-box
-  -webkit-box-sizing: content-box
-  box-sizing: content-box
 
 
 button::-moz-focus-inner, input::-moz-focus-inner
@@ -2162,17 +2095,6 @@ table.inactive th
   position: relative
 
 
-.disabled
-  background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999
-  color: rgb(230, 230, 230)
-
-
-.disabled:hover
-  background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999
-  color: rgb(230, 230, 230)
-  cursor: not-allowed
-
-
 .disabled-button-form:hover
   background: url(../images/ramblers/bull-green.png) no-repeat 8px 8px #999
   cursor: not-allowed
@@ -2451,7 +2373,7 @@ table.inactive th
   padding: 10px 0
 
 
-.article-list .thumbnail .article-content
+.article-list .img-thumbnail .article-content
   margin-left: 170px
 
 
@@ -2473,7 +2395,7 @@ table.inactive th
   margin-bottom: 5px
 
 
-.small .thumbnail .article-content
+.small .img-thumbnail .article-content
   margin-left: 140px
 
 
@@ -2873,63 +2795,6 @@ img[src*="#thumbnail"]
   font-weight: bold
 
 
-.pagination
-  padding: 10px 0 0 0
-  background: url("../images/ramblers/dot-darkgrey-hor.png") repeat-x top left
-  float: left
-  width: 100%
-  margin: 0 0 20px 0
-
-
-.pagination ul
-  list-style: none
-  float: left
-  padding: 0
-  margin: 0
-
-
-.pagination ul li
-  float: left
-  display: block
-  padding: 0 3px
-  background: none
-
-
-.pagination ul li a
-  display: block
-  float: left
-  padding: 0 5px
-
-
-.pagination ul li a.page-prev,
-.pagination ul li a.page-next
-  text-indent: -99999em
-  width: 10px
-  height: 10px
-  margin-top: 4px
-  padding: 0
-
-
-.pagination ul li a.page-prev
-  background: url("../images/ramblers/pagination-prev.png") no-repeat
-
-
-.pagination ul li a.page-next
-  background: url("../images/ramblers/pagination-next.png") no-repeat
-
-
-.pagination ul li span.active
-  display: block
-  color: $ramblers-colour-cloudy
-  background: url("../images/ramblers/bg-pagination.gif") no-repeat
-  padding: 1px 6px
-
-
-.pagination .link-all
-  display: block
-  float: right
-
-
 .poll h3
   font-family: 'BitterRegular', sans-serif
   font-size: 20px
@@ -3290,19 +3155,19 @@ ul.sbOptions li.last a
   background-position: center
 
 
-.checkbox-inline input
+.custom-control-inline input
   position: absolute
   left: -9999px
 
 
-.checkbox-inline label
+.custom-control-inline label
   display: block
   margin-bottom: 0px
   padding: 0px 3px 0px 27px
   background: url(../images/ramblers/but-checkbox.png) no-repeat 3px 0px
 
 
-.checkbox-inline label.ui-state-active
+.custom-control-inline label.ui-state-active
   background: url("../images/ramblers/but-checkbox-active.png") no-repeat 3px 0px
 
 
@@ -4075,37 +3940,6 @@ div.dd-header-left
 @media only screen and (min-width: 768px)
 /* Style adjustments for viewports 768px and over go here */
 
-
-
-input[type="radio"]
-  display: none
-
-
-input[type="radio"] + label
-  display: block
-  padding: 2px 0px 0px 31px
-  margin: 9px 4px 0 0
-  background: url(../images/ramblers/but-radio.png) no-repeat
-  cursor: pointer
-
-
-input[type="radio"]:checked + label
-  background: url('../images/ramblers/but-radio-active.png') no-repeat
-
-
-.map-radio-label input[type="radio"] + label
-  display: inline
-  padding: 3px 13px 5px 26px
-  margin: 9px 4px 0px 0
-  font-weight: normal
-  cursor: pointer
-
-
-.inline-radio-label input[type="radio"] + label
-  display: inline
-  padding: 2px 12px 4px 30px
-  margin: 9px 4px 0px 0
-  cursor: pointer
 
 
 .input-sm

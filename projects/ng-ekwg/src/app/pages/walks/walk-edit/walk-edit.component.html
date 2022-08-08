@@ -139,7 +139,7 @@
           <app-walk-venue *ngIf="displayedWalk.walk.venue" [displayedWalk]="displayedWalk"></app-walk-venue>
           <app-walk-meetup [displayedWalk]="displayedWalk" [saveInProgress]="saveInProgress"></app-walk-meetup>
           <div class="col-sm-12">
-            <div class="row thumbnail thumbnail-walk-edit">
+            <div class="row img-thumbnail thumbnail-walk-edit">
               <div class="thumbnail-heading">OS Maps</div>
               <div class="row">
                 <div class="col-sm-12">
@@ -433,8 +433,7 @@
         <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
         <div class="row">
           <div class="col-sm-12">
-            <div class="radio-inline map-radio-group map-radio-label">
-
+§§            <div class="custom-control custom-radio custom-control-inline map-radio-group map-radio-label">
               <input [disabled]="false"
                      id="copy-selected-walk-leader" type="radio"
                      [(ngModel)]="copySource"

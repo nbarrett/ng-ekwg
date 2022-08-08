@@ -1,9 +1,9 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
 import { Notification } from "./committee.model";
+import { FilterParametersSearch } from "./member-resource.model";
 
-export interface FilterParameters {
-  quickSearch: string;
+export interface FilterParameters extends FilterParametersSearch {
   selectType: number;
   fieldSort: number;
 }

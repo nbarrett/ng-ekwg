@@ -1,10 +1,8 @@
-<!--<div class="col-sm-6 no-gutters">-->
-<!--  <div class="row">-->
-    <div class="col-2">
-      <ng-content select="[title]"></ng-content>
-    </div>
-    <div class="col-10">
-      <ng-content select="[content]"></ng-content>
-    </div>
-<!--  </div>-->
-<!--</div>-->
+<li class="media">
+  <div [ngStyle]="{'min-width.px': mediaWidth}">
+    <ng-content select="[title]"></ng-content>
+  </div>
+  <div class="media-body ml-3">
+    <ng-content select="[content]"></ng-content>
+  </div>
+</li>

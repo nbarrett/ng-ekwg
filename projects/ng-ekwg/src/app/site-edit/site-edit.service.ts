@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
+import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEvent, NamedEventType } from "../services/broadcast-service";
 
 @Injectable({
   providedIn: "root"

@@ -11,7 +11,7 @@ import { TitleLine, TitlePart } from "./letterhead.component";
     <div class="form-inline">
       <label class="mr-12" for="{{idPrefix}}-include">Part {{titlePart.part}}:</label>
       <input id="{{idPrefix}}-include" type="text" [(ngModel)]="titlePart.text" class="form-control">
-      <div class="radio-inline map-radio-label">
+      <div class="custom-control custom-radio custom-control-inline map-radio-label">
         <input id="{{idPrefix}}-green" type="radio"
                [(ngModel)]="titlePart.class"
                name="{{idPrefix}}colour"

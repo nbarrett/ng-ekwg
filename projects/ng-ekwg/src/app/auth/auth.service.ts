@@ -3,10 +3,11 @@ import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { share, tap } from "rxjs/operators";
+import { NamedEventType } from "../models/broadcast.model";
 import { AuthPayload, AuthResponse } from "../models/auth-data.model";
 import { AuthTokens } from "../models/auth-tokens";
 import { LoginResponse } from "../models/member.model";
-import { BroadcastService, NamedEventType } from "../services/broadcast-service";
+import { BroadcastService} from "../services/broadcast-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 

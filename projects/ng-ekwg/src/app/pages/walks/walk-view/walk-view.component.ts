@@ -28,8 +28,14 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 })
 
 export class WalkViewComponent implements OnInit, OnDestroy {
-  @Input()
-  displayedWalk: DisplayedWalk;
+
+  @Input("displayedWalk")
+  set init(displayedWalk: DisplayedWalk) {
+    this.displayedWalk = displayedWalk;
+    this.displayLinks = !!(displayedWalk.walk.meetupEventUrl || displayedWalk.walk.osMapsRoute || displayedWalk.walk.osMapsRoute || displayedWalk.walk.ramblersWalkId || displayedWalk.walkLink);
+  }
+  public displayedWalk: DisplayedWalk;
+  public displayLinks: boolean;
   fromPostcode = "";
   mapDisplay = SHOW_START_POINT;
   private logger: Logger;
@@ -44,6 +50,8 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     animated: false,
     initialState: {}
   };
+  public relatedLinksMediaWidth = 22;
+  public walkDetailsMediaWidth = 70;
 
   constructor(
     public googleMapsService: GoogleMapsService,

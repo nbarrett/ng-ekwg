@@ -15,6 +15,7 @@ import { CollapseModule } from "ngx-bootstrap/collapse";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { ModalModule } from "ngx-bootstrap/modal";
 import { PopoverModule } from "ngx-bootstrap/popover";
+import { PaginationModule } from "ngx-bootstrap/pagination";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
 import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
@@ -88,6 +89,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     ModalModule.forRoot(),
     NgSelectModule,
     PopoverModule.forRoot(),
+    PaginationModule.forRoot(),
     RouterModule,
     TabsModule.forRoot(),
     TagifyModule.forRoot(),
@@ -169,6 +171,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     PageComponent,
     PanelExpanderComponent,
     PopoverModule,
+    PaginationModule,
     RouterModule,
     SearchFilterPipe,
     SnakeCasePipe,

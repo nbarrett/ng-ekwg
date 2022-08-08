@@ -357,7 +357,6 @@
         </tab>
         <tab [heading]="'Preview'">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="form-horizontal">
               <div id="preview" class="print-preview">
                 <ng-template app-committee-notification-template></ng-template>
                 <h2 class="mb-3">{{notification.content.title.value}}</h2>
@@ -365,7 +364,6 @@
                                                     [notification]="notification">
                 </app-committee-notification-details>
               </div>
-            </div>
           </div>
         </tab>
       </tabset>

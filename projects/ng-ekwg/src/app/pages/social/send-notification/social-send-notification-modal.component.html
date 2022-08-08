@@ -296,14 +296,12 @@
         </tab>
         <tab [heading]="'Preview'">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="form-horizontal">
               <div id="preview" class="print-preview">
                 <ng-template app-social-notification-template></ng-template>
                 <h2 class="mb-3">{{socialEvent.notification.content.title.value}}</h2>
                 <app-social-notification-details [members]="toMembers()" [socialEvent]="socialEvent">
                 </app-social-notification-details>
               </div>
-            </div>
           </div>
         </tab>
       </tabset>

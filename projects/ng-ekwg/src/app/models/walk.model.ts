@@ -1,5 +1,6 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { MeetupConfigParameters } from "./meetup-config.model";
+import { FilterParametersSearch } from "./member-resource.model";
 import { WalkAccessMode } from "./walk-edit-mode.model";
 import { WalkEventType } from "./walk-event-type.model";
 import { WalkEvent } from "./walk-event.model";
@@ -96,4 +97,9 @@ export interface DisplayedWalk {
   latestEventType?: WalkEventType;
   walkLink?: string;
   ramblersLink?: string;
+}
+
+export interface FilterParameters extends FilterParametersSearch {
+  selectType: number;
+  ascending: boolean;
 }

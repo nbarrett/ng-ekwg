@@ -1,14 +1,16 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 
 @Component({
   selector: "app-related-link",
-  templateUrl: "./related-link.component.html",
-  styleUrls: ["./related-link.component.sass"]
+  templateUrl: "./related-link.component.html"
 })
 export class RelatedLinkComponent implements OnInit {
 
-  constructor() { }
+  @Input()
+  public mediaWidth: number;
 
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

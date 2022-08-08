@@ -1,12 +1,13 @@
 import { ChangeDetectorRef, Component, Inject, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import has from "lodash-es/has";
 import { NgxLoggerLevel } from "ngx-logger";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ContentText } from "../../../models/content-text.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { WalkNotification } from "../../../models/walk-notification.model";
 import { DisplayedWalk } from "../../../models/walk.model";
-import { BroadcastService, NamedEvent, NamedEventType } from "../../../services/broadcast-service";
+import { BroadcastService} from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";

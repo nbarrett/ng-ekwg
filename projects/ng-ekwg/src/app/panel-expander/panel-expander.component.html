@@ -1,11 +1,11 @@
-<div class="float-right">
+<div class="float-right pr-3">
   <div [ngClass]="display.walkMode(walk)">
     <fa-icon *ngIf="expandable" (click)="expand()"
              tooltip="Click to {{expandAction}}" [icon]="faCaretUp"
              class="markdown-preview-icon fa-2x"></fa-icon>
     <fa-icon *ngIf="collapsable" tooltip="Click to {{collapseAction}}"
              (click)="collapse()" [icon]="faCaretDown"
-             class="fa-2x markdown-preview-icon"></fa-icon>
+             class="fa-2x markdown-preview-icon ml-1"></fa-icon>
   </div>
 </div>
 
