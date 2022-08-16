@@ -18,7 +18,7 @@ import { UrlService } from "../../../services/url.service";
   selector: "app-walk-meetup-settings",
   templateUrl: "./walk-meetup-settings.component.html",
   styleUrls: ["./walk-meetup-settings.component.sass"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkMeetupSettingsComponent implements OnInit {
   private logger: Logger;

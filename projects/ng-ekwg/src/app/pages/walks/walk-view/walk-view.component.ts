@@ -24,7 +24,7 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
   selector: "app-walk-view",
   templateUrl: "./walk-view.component.html",
   styleUrls: ["./walk-view.component.sass"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 
 export class WalkViewComponent implements OnInit, OnDestroy {

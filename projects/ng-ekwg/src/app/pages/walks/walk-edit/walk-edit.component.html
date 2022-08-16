@@ -1,4 +1,4 @@
-<app-panel-expander [walk]="displayedWalk.walk" [collapsable]="true" [collapseAction]="'exit edit and return to view'"
+<app-panel-expander [walk]="displayedWalk.walk" [collapsable]="true" [collapseAction]="'exit edit'"
                     [expandAction]="'edit walk full-screen'" [expandable]="isExpandable()">
 </app-panel-expander>
 <div [ngClass]="{'busy': notifyTarget.busy}">
@@ -433,7 +433,7 @@
         <h3>Create {{myOrWalkLeader()}} walk based on an existing one:</h3>
         <div class="row">
           <div class="col-sm-12">
-§§            <div class="custom-control custom-radio custom-control-inline map-radio-group map-radio-label">
+            <div class="custom-control custom-radio custom-control-inline map-radio-group map-radio-label">
               <input [disabled]="false"
                      id="copy-selected-walk-leader" type="radio"
                      [(ngModel)]="copySource"

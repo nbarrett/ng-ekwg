@@ -9,7 +9,8 @@ export enum NamedEventType {
     WALK_SAVED = "walkSaved",
     WALK_SLOTS_CREATED = "walkSlotsCreated",
     REFRESH = "refresh",
-    APPLY_FILTER = "apply-filter"
+    APPLY_FILTER = "apply-filter",
+    SHOW_PAGINATION = "show-pagination",
 }
 
 export class NamedEvent {

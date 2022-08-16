@@ -1,32 +1,67 @@
-<div *ngIf="!currentWalkId" class="form-inline search-heading" role="form">
-  <div class="form-group">
-    <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
-           (ngModelChange)="onSearchChange($event)"
-           name="quickSearch"
-           class="form-control rounded spaced-controls"
-           type="text" placeholder="Quick Search">
+<div *ngIf="!currentWalkId">
+  <div *ngIf="showPagination">
+    <div class="d-flex pb-0">
+      <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
+             (ngModelChange)="onSearchChange($event)"
+             name="quickSearch"
+             class="form-control rounded mr-3"
+             type="text" placeholder="Quick Search">
+      <select [(ngModel)]="filterParameters.selectType"
+              (ngModelChange)="refreshWalks('change filterParameters.selectType')" name="selectType"
+              class="form-control rounded mr-3">
+        <option *ngFor="let filter of walksFilter()" [ngValue]="filter.value"
+                [selected]="filter.selected">{{filter.description}}</option>
+      </select>
+      <select [(ngModel)]="filterParameters.ascending"
+              (ngModelChange)="refreshWalks('change filterParameters.ascending')" name="ascending"
+              class="form-control rounded">
+        <option selected [value]="true">Sort (date ascending)</option>
+        <option [value]="false">Sort (date descending)</option>
+      </select>
+    </div>
+    <div class="d-flex mt-3">
+      <ng-content></ng-content>
+      <div class="form-group mb-0 flex-grow-1">
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+          <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+          <strong>{{notifyTarget.alertTitle}}</strong>
+          {{notifyTarget.alertMessage}}
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="form-group">
-    <select [(ngModel)]="filterParameters.selectType"
-            (ngModelChange)="refreshWalks('change filterParameters.selectType')" name="selectType"
-            class="form-control rounded spaced-controls">
-      <option *ngFor="let filter of walksFilter()" [ngValue]="filter.value"
-              [selected]="filter.selected">{{filter.description}}</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <select [(ngModel)]="filterParameters.ascending"
-            (ngModelChange)="refreshWalks('change filterParameters.ascending')" name="ascending"
-            class="form-control rounded spaced-controls">
-      <option selected [value]="true">Sort (date ascending)</option>
-      <option [value]="false">Sort (date descending)</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <div *ngIf="notifyTarget.showAlert" class="alert walks-programme-alert {{notifyTarget.alertClass}}">
-      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
-      <strong>{{notifyTarget.alertTitle}}</strong>
-      {{notifyTarget.alertMessage}}
+  <div *ngIf="!showPagination">
+    <div class="d-flex pb-0">
+      <div class="form-group mr-3 mb-0">
+        <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
+               (ngModelChange)="onSearchChange($event)"
+               name="quickSearch"
+               class="form-control rounded mr-3"
+               type="text" placeholder="Quick Search">
+      </div>
+      <div class="form-group mr-3 mb-0">
+        <select [(ngModel)]="filterParameters.selectType"
+                (ngModelChange)="refreshWalks('change filterParameters.selectType')" name="selectType"
+                class="form-control rounded mr-3">
+          <option *ngFor="let filter of walksFilter()" [ngValue]="filter.value"
+                  [selected]="filter.selected">{{filter.description}}</option>
+        </select>
+      </div>
+      <div class="form-group mr-3 mb-0">
+        <select [(ngModel)]="filterParameters.ascending"
+                (ngModelChange)="refreshWalks('change filterParameters.ascending')" name="ascending"
+                class="form-control rounded">
+          <option selected [value]="true">Sort (date ascending)</option>
+          <option [value]="false">Sort (date descending)</option>
+        </select>
+      </div>
+      <div class="form-group mb-0 flex-grow-1">
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+          <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+          <strong>{{notifyTarget.alertTitle}}</strong>
+          {{notifyTarget.alertMessage}}
+        </div>
+      </div>
     </div>
   </div>
 </div>

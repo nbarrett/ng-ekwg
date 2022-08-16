@@ -1,14 +1,12 @@
 <app-page [ngClass]="{'busy': notifyTarget.busy}" lastBreadcrumb="home" pageTitle="Walks">
-  <div class="img-thumbnail">blah</div>
-  <app-walks-search
-    [filterParameters]="filterParameters" [notifyTarget]="notifyTarget">
+  <app-walks-search [filterParameters]="filterParameters" [notifyTarget]="notifyTarget">
+    <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="5"
+                [totalItems]="walks?.length" [(ngModel)]="pageNumber"
+                (pageChanged)="pageChanged($event)"></pagination>
+
   </app-walks-search>
-  <div class="row">
-    <div class="col-xs-12 col-12">
-      <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="5" [totalItems]="walks?.length" [(ngModel)]="pageNumber" (pageChanged)="pageChanged($event)"></pagination>
-    </div>
-  </div>
-  <div *ngFor="let displayedWalk of filteredWalks; let index = index; trackBy: walkTracker" class="row">
+  <div *ngFor="let displayedWalk of currentPageWalks; let index = index; trackBy: walkTracker"
+       class="table-responsive">
     <div *ngIf="display.isExpanded(displayedWalk.walk)" class="img-thumbnail event-thumbnail">
       <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
                      [displayedWalk]="displayedWalk"></app-walk-view>
@@ -16,7 +14,7 @@
                      [displayedWalk]="displayedWalk"></app-walk-edit>
     </div>
     <table *ngIf="!display.isExpanded(displayedWalk.walk)"
-           class="rounded table tbl-green-f table-responsive table-striped table-hover table-sm">
+           class="rounded table tbl-green-f table-striped table-hover table-sm">
       <thead *ngIf="showTableHeader(displayedWalk)" class="tbl-green-f">
       <tr>
         <th *ngIf="memberLoginService.memberLoggedIn()" width="7%">Action</th>
@@ -41,53 +39,46 @@
         <td width="13%" (click)="display.view(displayedWalk.walk)"
             id="walkDate-{{index}}" class="nowrap">
                         <span [textContent]="displayedWalk.walk.walkDate|displayDate"
-                              name="walkDate"
-                              tooltip="Click to show walk detail" tooltipPlacement="left"></span></td>
+                              name="walkDate"></span></td>
         <td width="7%" (click)="display.view(displayedWalk.walk)"
             id="startTime-{{index}}">
                         <span [textContent]="viewWalkField(displayedWalk, 'startTime')"
-                              name="startTime"
-                              tooltip="Click to show walk detail" tooltipPlacement="left"></span>
+                              name="startTime"></span>
         </td>
-        <td width="32%" (click)="display.view(displayedWalk.walk)"
-            id="briefDescription-{{index}}">
-                        <span [textContent]="viewWalkField(displayedWalk, 'briefDescriptionAndStartPoint')"
-                              name="briefDescriptionAndStartPoint"
-                              tooltip="Click to show walk detail"
-                              tooltipPlacement="left"></span></td>
-        <td width="7%" (click)="display.view(displayedWalk.walk)" id="distance-{{index}}">
-                        <span [textContent]="viewWalkField(displayedWalk, 'distance')" name="distance"
-                              tooltip="Click to show walk detail" tooltipPlacement="left"></span></td>
+        <td width="32%" (click)="display.view(displayedWalk.walk)" name="briefDescriptionAndStartPoint"
+            id="briefDescription-{{index}}"
+            [textContent]="viewWalkField(displayedWalk, 'briefDescriptionAndStartPoint')"></td>
+        <td width="7%" (click)="display.view(displayedWalk.walk)" id="distance-{{index}}"
+            [textContent]="viewWalkField(displayedWalk, 'distance')" name="distance"></td>
         <td width="8%" id="postcode-{{index}}">
           <a [href]="'http://maps.google.co.uk/maps?q=' + viewWalkField(displayedWalk, 'postcode')"
-             target="_blank">
-                            <span [textContent]="viewWalkField(displayedWalk, 'postcode')"
-                                  name="postcode"
-                                  tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"
-                                  tooltipPlacement="left"></span></a></td>
+             target="_blank" [textContent]="viewWalkField(displayedWalk, 'postcode')"
+             name="postcode"
+             tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"
+             tooltipPlacement="left"></a></td>
         <td width="12%" id="contactEmail-{{index}}">
-          <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail">
-                            <span [textContent]="displayedWalk.walk.displayName"
-                                  name="displayName"
-                                  tooltip="Click to email {{displayedWalk.walk.displayName}} at {{viewWalkField(displayedWalk, 'contactEmail')}}"
-                                  tooltipPlacement="left"></span></a>
+          <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail"
+             [textContent]="displayedWalk.walk.displayName"
+             name="displayName"
+             tooltip="Click to email {{displayedWalk.walk.displayName}} at {{viewWalkField(displayedWalk, 'contactEmail')}}"
+             tooltipPlacement="left"></a>
           <span class="tooltip-link" *ngIf="!allowDetailView()" tooltipPlacement="left"
                 (click)="loginOrLogout()" tooltipTrigger="mouseenter"
                 tooltip="Click again to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}"
                 [textContent]="displayedWalk.walk.displayName"></span></td>
         <td width="11%" id="contactPhone-{{index}}">
-          <a *ngIf="allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
-                        <span [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
-                              name="contactPhone"
-                              tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
-                              tooltipPlacement="left"></span></a>
+          <a *ngIf="allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone"
+             [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
+             name="contactPhone"
+             tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
+             tooltipPlacement="left"></a>
           <a *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
                             <span [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                   name="contactPhone"
                                   tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                   tooltipPlacement="left"></span></a>
           <app-panel-expander [walk]="displayedWalk.walk" [expandable]="true"
-                              [expandAction]="'show full details of walk'">
+                              [expandAction]="'full details'">
           </app-panel-expander>
         </td>
       </tr>

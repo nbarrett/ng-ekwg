@@ -1,7 +1,11 @@
 import { Injectable } from "@angular/core";
-import { chain } from "../../functions/chain";
+import cloneDeep from "lodash-es/cloneDeep";
+import first from "lodash-es/first";
+import { NgxLoggerLevel } from "ngx-logger";
 import { EventType, Walk } from "../../models/walk.model";
+import { sortBy } from "../arrays";
 import { DateUtilsService } from "../date-utils.service";
+import { Logger, LoggerFactory } from "../logger-factory.service";
 import { WalkEventService } from "./walk-event.service";
 
 @Injectable({
@@ -9,9 +13,13 @@ import { WalkEventService } from "./walk-event.service";
 })
 
 export class WalksQueryService {
+  private logger: Logger;
+
   constructor(
     private walkEventsService: WalkEventService,
-    private dateUtils: DateUtilsService) {
+    private dateUtils: DateUtilsService,
+    loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(WalksQueryService, NgxLoggerLevel.INFO);
   }
 
   activeWalk(walk: Walk) {
@@ -32,8 +40,9 @@ export class WalksQueryService {
 
   nextWalkId(walks: Walk[]): string {
     const today = this.dateUtils.momentNowNoTime().valueOf();
-    const nextWalk: Walk = chain(walks).sortBy("walkDate").find((walk: Walk) => walk.walkDate === today).value();
-    return nextWalk && nextWalk.id;
+    const nextWalk: Walk = first(cloneDeep(walks).filter((walk: Walk) => walk.walkDate >= today).sort(sortBy("walkDate")));
+    this.logger.info("nextWalk:", nextWalk);
+    return nextWalk?.id;
   }
 
 }

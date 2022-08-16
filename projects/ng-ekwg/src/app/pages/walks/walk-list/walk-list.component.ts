@@ -3,9 +3,9 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEventType } from "../../../models/broadcast.model";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk, EventType, FilterParameters, Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -33,7 +33,7 @@ import { WalkDisplayService } from "../walk-display.service";
   selector: "app-walk-list",
   templateUrl: "./walk-list.component.html",
   styleUrls: ["./walk-list.component.sass"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkListComponent implements OnInit {
   public currentWalkId: string;
@@ -41,6 +41,7 @@ export class WalkListComponent implements OnInit {
   private todayValue: number;
   public walks: Walk[];
   public filteredWalks: DisplayedWalk[] = [];
+  public currentPageWalks: DisplayedWalk[] = [];
   public filterParameters: FilterParameters = {quickSearch: "", selectType: 1, ascending: true};
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
@@ -100,29 +101,32 @@ export class WalkListComponent implements OnInit {
     return walk.walk.id;
   }
 
-  paginate(walks: Walk[], pageSize, pageNumber): Walk[] {
+  paginate(walks: DisplayedWalk[], pageSize, pageNumber): DisplayedWalk[] {
     return walks.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
   }
 
   applyFilterToWalks(searchTerm?: string): void {
     this.notify.setBusy();
     this.logger.info("applyFilterToWalks:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
+    this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch)
+      .map(walk => this.display.toDisplayedWalk(walk));
     this.pageNumber = 1;
-    this.pageCount = this.numberUtils.asNumber((this.walks.length / this.pageSize), 0);
-    this.pages = range(1, this.pageCount + 1);
+    this.pageCount = this.numberUtils.asNumber((this.filteredWalks.length / this.pageSize), 0);
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SHOW_PAGINATION, this.pageCount > 1));
     this.applyPagination();
-    const walksCount = this.filteredWalks?.length || 0;
-    this.notify.progress(`Showing ${walksCount} of ${this.stringUtils.pluraliseWithCount(this.walks.length, "walk")}`);
-    if (this.filteredWalks.length > 0 && this.display.expandedWalks.length === 0) {
-      this.display.view(this.filteredWalks[0].walk);
+    if (this.currentPageWalks.length > 0 && this.display.expandedWalks.length === 0) {
+      this.display.view(this.currentPageWalks[0].walk);
     }
     this.notify.clearBusy();
   }
 
   private applyPagination() {
-    this.filteredWalks = this.paginate(this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch), this.pageSize, this.pageNumber)
-      .map(walk => this.display.toDisplayedWalk(walk));
-    this.logger.info("walks count", this.walks.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
+    this.currentPageWalks = this.paginate(this.filteredWalks, this.pageSize, this.pageNumber);
+    this.pages = range(1, this.pageCount + 1);
+    this.logger.info("total walks count", this.walks.length, "filteredWalks count", this.filteredWalks.length, "currentPageWalks count", this.currentPageWalks.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
+    const offset = (this.pageNumber - 1) * this.pageSize + 1;
+    const pageIndicator = this.pages.length > 1 ? `page ${this.pageNumber} of ${this.pageCount}` : "";
+    this.notify.progress(`Showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(this.walks.length, "walk")} ${pageIndicator}`);
   }
 
   allowAdminEdits() {
@@ -173,7 +177,7 @@ export class WalkListComponent implements OnInit {
   }
 
   walksSortObject() {
-    this.logger.info("walksSortObject:", this.filterParameters);
+    this.logger.debug("walksSortObject:", this.filterParameters);
     switch (Boolean(this.filterParameters.ascending)) {
       case true:
         return {walkDate: 1};
@@ -195,18 +199,18 @@ export class WalkListComponent implements OnInit {
     } else {
       const criteria = this.walksCriteriaObject();
       const sort = this.walksSortObject();
-      this.logger.info("walksCriteriaObject:this.filterParameters.criteria", criteria, "sort:", sort);
+      this.logger.debug("walksCriteriaObject:this.filterParameters.criteria", criteria, "sort:", sort);
       return this.walksService.all({criteria, sort});
     }
   }
 
   showTableHeader(walk: DisplayedWalk) {
-    return this.filteredWalks.indexOf(walk) === 0 ||
-      this.display.isExpanded(this.filteredWalks[this.filteredWalks.indexOf(walk) - 1].walk);
+    return this.currentPageWalks.indexOf(walk) === 0 ||
+      this.display.isExpanded(this.currentPageWalks[this.currentPageWalks.indexOf(walk) - 1].walk);
   }
 
   tableRowOdd(walk: DisplayedWalk) {
-    return this.filteredWalks.indexOf(walk) % 2 === 0;
+    return this.currentPageWalks.indexOf(walk) % 2 === 0;
   }
 
   tableRowEven(walk: DisplayedWalk) {
@@ -224,7 +228,7 @@ export class WalkListComponent implements OnInit {
   }
 
   refreshWalks(event?: any): Promise<void> {
-    this.logger.info("Refreshing walks due to", event);
+    this.logger.debug("Refreshing walks due to", event);
     this.notify.progress("Refreshing walks...", true);
     return this.query()
       .then(walks => {
@@ -238,10 +242,10 @@ export class WalkListComponent implements OnInit {
   }
 
   private logAndDetectChanges(event: any) {
-    setTimeout(() => {
-      this.logger.debug("detecting changes following", event);
-      this.changeDetectorRef.detectChanges();
-    }, 0);
+    // setTimeout(() => {
+    //   this.logger.debug("detecting changes following", event);
+    //   this.changeDetectorRef.detectChanges();
+    // }, 0);
   }
 
   loginOrLogout() {
@@ -252,12 +256,9 @@ export class WalkListComponent implements OnInit {
     return false;
   }
 
-  toggle($event) {
-    // this.logAndDetectChanges(GlobalEvent.named($event + "ooi!?"));
-  }
-
   pageChanged(event: PageChangedEvent): void {
-    this.goToPage(event.page)
+    this.logger.debug("event:", event);
+    this.goToPage(event.page);
   }
 
   previousPage() {

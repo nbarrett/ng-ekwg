@@ -55,7 +55,7 @@ interface DisplayMember {
   selector: "app-walk-edit",
   templateUrl: "./walk-edit.component.html",
   styleUrls: ["./walk-edit.component.sass"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkEditComponent implements OnInit {
 
