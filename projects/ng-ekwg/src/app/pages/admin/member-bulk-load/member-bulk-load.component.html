@@ -165,8 +165,8 @@
                     </div>
                   </div>
                   <tabset *ngIf="uploadSession">
-                    <tab [heading]="memberTabHeading">
-                      <table class="round tbl-green-g table-responsive table-striped table-hover table-sm">
+                    <tab [heading]="memberTabHeading" class="table-responsive">
+                      <table class="round tbl-green-g table-striped table-hover table-sm">
                         <thead>
                         <tr class="white-anchor">
                           <th colspan="2">File upload information</th>
@@ -199,86 +199,89 @@
                         </tr>
                         </tbody>
                       </table>
-
-                      <table class="round tbl-green-g table-responsive table-striped table-hover table-sm">
-                        <thead>
-                        <tr class="white-anchor">
-                          <th>Status</th>
-                          <th>Message</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let auditLog of uploadSession.auditLog;">
-                          <td>
-                            <fa-icon [icon]="toFontAwesomeIcon(auditLog.status).icon"
-                                     [class]="toFontAwesomeIcon(auditLog.status).class"></fa-icon>
-                          </td>
-                          <td [textContent]="auditLog.message"></td>
-                        </tr>
-                        </tbody>
-                      </table>
-                      <table class="round tbl-green-g table-responsive table-striped table-hover table-sm">
-                        <thead>
-                        <tr class="white-anchor">
-                          <th>
-                            <div (click)="sortMembersUploadedBy('membershipNumber')">Membership
-                              Number
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('membershipNumber')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                          <th>
-                            <div (click)="sortMembersUploadedBy('mobileNumber')">Mobile Number
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('mobileNumber')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                          <th>
-                            <div (click)="sortMembersUploadedBy('email')">Email
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('email')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                          <th>
-                            <div (click)="sortMembersUploadedBy('firstName')">First Name
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('firstName')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                          <th>
-                            <div (click)="sortMembersUploadedBy('lastName')">Last Number
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('lastName')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                          <th>
-                            <div (click)="sortMembersUploadedBy('postcode')">Postcode
-                              <span class="sorting-header"
-                                    *ngIf="showMembersUploadedColumn('postcode')"
-                                    [textContent]="filters.membersUploaded.sortDirection"></span>
-                            </div>
-                          </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let member of filters.membersUploaded.results">
-                          <td>{{member.membershipNumber}}</td>
-                          <td>{{member.mobileNumber}}</td>
-                          <td>{{member.email}}</td>
-                          <td>{{member.firstName}}</td>
-                          <td>{{member.lastName}}</td>
-                          <td>{{member.postcode}}</td>
-                        </tr>
-                        </tbody>
-                      </table>
+                      <div class="table-responsive">
+                        <table class="round tbl-green-g table-striped table-hover table-sm">
+                          <thead>
+                          <tr class="white-anchor">
+                            <th>Status</th>
+                            <th>Message</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr *ngFor="let auditLog of uploadSession.auditLog;">
+                            <td>
+                              <fa-icon [icon]="toFontAwesomeIcon(auditLog.status).icon"
+                                       [class]="toFontAwesomeIcon(auditLog.status).class"></fa-icon>
+                            </td>
+                            <td [textContent]="auditLog.message"></td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="round tbl-green-g table-striped table-hover table-sm">
+                          <thead>
+                          <tr class="white-anchor">
+                            <th>
+                              <div (click)="sortMembersUploadedBy('membershipNumber')">Membership
+                                Number
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('membershipNumber')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                            <th>
+                              <div (click)="sortMembersUploadedBy('mobileNumber')">Mobile Number
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('mobileNumber')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                            <th>
+                              <div (click)="sortMembersUploadedBy('email')">Email
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('email')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                            <th>
+                              <div (click)="sortMembersUploadedBy('firstName')">First Name
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('firstName')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                            <th>
+                              <div (click)="sortMembersUploadedBy('lastName')">Last Number
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('lastName')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                            <th>
+                              <div (click)="sortMembersUploadedBy('postcode')">Postcode
+                                <span class="sorting-header"
+                                      *ngIf="showMembersUploadedColumn('postcode')"
+                                      [textContent]="filters.membersUploaded.sortDirection"></span>
+                              </div>
+                            </th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr *ngFor="let member of filters.membersUploaded.results">
+                            <td>{{member.membershipNumber}}</td>
+                            <td>{{member.mobileNumber}}</td>
+                            <td>{{member.email}}</td>
+                            <td>{{member.firstName}}</td>
+                            <td>{{member.lastName}}</td>
+                            <td>{{member.postcode}}</td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </div>
                     </tab>
-                    <tab [heading]="auditTabHeading">
-                      <table class="round tbl-green-g table-responsive table-striped table-hover table-sm">
+                    <tab [heading]="auditTabHeading" class="table-responsive">
+                      <table class="round tbl-green-g table-striped table-hover table-sm">
                         <thead>
                         <tr class="white-anchor">
                           <th>

@@ -5,8 +5,7 @@
                 (pageChanged)="pageChanged($event)"></pagination>
 
   </app-walks-search>
-  <div *ngFor="let displayedWalk of currentPageWalks; let index = index; trackBy: walkTracker"
-       class="table-responsive">
+  <div class="table-responsive" *ngFor="let displayedWalk of currentPageWalks; let index = index; trackBy: walkTracker">
     <div *ngIf="display.isExpanded(displayedWalk.walk)" class="img-thumbnail event-thumbnail">
       <app-walk-view *ngIf="!display.isEdit(displayedWalk.walk)"
                      [displayedWalk]="displayedWalk"></app-walk-view>

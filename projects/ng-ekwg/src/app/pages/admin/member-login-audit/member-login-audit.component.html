@@ -55,17 +55,18 @@
           </div>
         </div>
       </div>
-      <table class="round tbl-green-g table-responsive table-striped table-hover table-sm">
-        <thead>
-        <tr class="white-anchor">
-          <th (click)="sortAuditBy('loginTime')">Time
-            <span class="sorting-header" *ngIf="showAuditColumn('loginTime')"
-                  [textContent]="auditFilter.sortDirection"></span>
-          </th>
-          <th (click)="sortAuditBy('userName')">User Name
-            <span class="sorting-header" *ngIf="showAuditColumn('userName')"
-                  [textContent]="auditFilter.sortDirection"></span>
-          </th>
+      <div class="table-responsive">
+        <table class="round tbl-green-g table-striped table-hover table-sm">
+          <thead>
+          <tr class="white-anchor">
+            <th (click)="sortAuditBy('loginTime')">Time
+              <span class="sorting-header" *ngIf="showAuditColumn('loginTime')"
+                    [textContent]="auditFilter.sortDirection"></span>
+            </th>
+            <th (click)="sortAuditBy('userName')">User Name
+              <span class="sorting-header" *ngIf="showAuditColumn('userName')"
+                    [textContent]="auditFilter.sortDirection"></span>
+            </th>
           <th (click)="sortAuditBy('member')">Full Name
             <span class="sorting-header" *ngIf="showAuditColumn('member')"
                   [textContent]="auditFilter.sortDirection"></span>
@@ -79,17 +80,18 @@
                   [textContent]="auditFilter.sortDirection"></span>
           </th>
         </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let memberAudit of auditFilter.results">
-          <td class="nowrap">{{memberAudit?.loginTime | displayDateAndTime}}</td>
-          <td>{{memberAudit?.userName}}</td>
-          <td>{{memberAudit?.member | fullNameWithAlias :''}}</td>
-          <td [ngClass]="memberAudit?.loginResponse?.memberLoggedIn ? 'checkbox-on' : 'checkbox-off'"></td>
-          <td>{{memberAudit?.loginResponse?.alertMessage}}</td>
-        </tr>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          <tr *ngFor="let memberAudit of auditFilter.results">
+            <td class="nowrap">{{memberAudit?.loginTime | displayDateAndTime}}</td>
+            <td>{{memberAudit?.userName}}</td>
+            <td>{{memberAudit?.member | fullNameWithAlias :''}}</td>
+            <td [ngClass]="memberAudit?.loginResponse?.memberLoggedIn ? 'checkbox-on' : 'checkbox-off'"></td>
+            <td>{{memberAudit?.loginResponse?.alertMessage}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </app-page>
