@@ -126,14 +126,14 @@
           <input *ngIf="expenseItem.receipt" [disabled]="notifyTarget.busy || !editable" type="submit"
                  value="Remove receipt" (click)="removeReceipt()" title="Remove Receipt"
                  [ngClass]="notifyTarget.busy || !editable ? 'disabled-button-form': 'button-form'">
-          <input #expenseFileUpload id="browse-to-file" class="hidden-input" name="receipt"
+          <input #expenseFileUpload id="browse-to-file" class="d-none" name="receipt"
                  type="file" value="Upload"
                  ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader">
           <div ng2FileDrop [ngClass]="{'file-over': hasFileOver && editable}"
                (fileOver)="fileOver($event)"
                (onFileDrop)="fileDropped($event)"
                [uploader]="uploader"
-               class="well drop-zone">
+               class="drop-zone">
             Or drop file here
           </div>
           <div class="progress" *ngIf="notifyTarget.busy">

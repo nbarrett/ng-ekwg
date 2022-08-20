@@ -61,6 +61,7 @@
     "ng-csv": "0.3.6",
     "ng2-file-upload": "1.4.0",
     "ngx-bootstrap": "8.0.0",
+    "ngx-image-cropper": "6.2.2",
     "ngx-logger": "4.1.9",
     "ngx-markdown": "13.1.0",
     "ngx-tagify": "0.7.0",

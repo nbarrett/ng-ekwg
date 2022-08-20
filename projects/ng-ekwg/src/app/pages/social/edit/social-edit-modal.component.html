@@ -215,14 +215,14 @@
                 <input [disabled]="notifyTarget.busy" type="submit"
                        value="Remove attachment" (click)="removeAttachment()" title="Remove attachment"
                        [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'"/>
-                <input #fileElement id="browse-to-file" name="attachment" class="hidden-input"
+                <input #fileElement id="browse-to-file" name="attachment" class="d-none"
                        type="file" value="Upload"
                        ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader"/>
                 <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
                      (fileOver)="fileOver($event)"
                      (onFileDrop)="fileDropped($event)"
                      [uploader]="uploader"
-                     class="well drop-zone">Or drop file here
+                     class="drop-zone">Or drop file here
                 </div>
                 <div class="progress" *ngIf="notifyTarget.busy">
                   <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">

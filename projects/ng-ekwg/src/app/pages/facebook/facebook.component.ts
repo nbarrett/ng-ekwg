@@ -1,10 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { take } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
+import { InstagramMediaPost } from "../../models/instagram.model";
 import { DateUtilsService } from "../../services/date-utils.service";
-import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { UrlService } from "../../services/url.service";
 
@@ -19,18 +17,14 @@ export class FacebookComponent implements OnInit {
   url: any;
   width = "560";
   height = "612";
-  facebookUrl = "https%3A%2F%2Fwww.facebook.com%2Feastkentwalking%2F";
+  facebookUrl = "https://www.facebook.com/eastkentwalking";
+  facebookPagesUrl = "https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649";
 
   constructor(private urlService: UrlService,
-              private instagramService: InstagramService,
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.OFF);
-  }
-
-  imageWidth(media: InstagramMediaPost): string {
-    return this.recentMedia.indexOf(media) <= 1 ? "50%" : "25%";
   }
 
   parameters() {
@@ -47,14 +41,7 @@ export class FacebookComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-
-    this.url = this.sanitiser.bypassSecurityTrustResourceUrl("https://www.facebook.com/plugins/page.php?" + this.parameters()
-    );
-    this.instagramService.recentMedia()
-      .then((recentMedia: InstagramRecentMediaData) => {
-        this.recentMedia = take(recentMedia.data, 14);
-        this.logger.debug("Refreshed instagram recent media", this.recentMedia, "count =", this.recentMedia.length);
-      });
+    this.url = this.sanitiser.bypassSecurityTrustResourceUrl("https://www.facebook.com/plugins/page.php?" + this.parameters());
   }
 
   dimensions() {

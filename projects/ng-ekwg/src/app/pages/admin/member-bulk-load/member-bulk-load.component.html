@@ -56,14 +56,13 @@
                            (click)="bulkUploadRamblersDataStart()"
                            class="button-form mb-10 w-100"
                            [ngClass]="{'disabled-button-form': notifyTarget.busy }">
-                    <span class="hidden-input">
-                    <input id="browse-to-file" name="bulkUploadRamblersDataFile"
+                    <input class="d-none" id="browse-to-file" name="bulkUploadRamblersDataFile"
                            type="file" value="Upload"
-                           ng2FileSelect [uploader]="fileUploader"></span>
+                           ng2FileSelect [uploader]="fileUploader">
                     <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
                          (fileOver)="fileOver($event)"
                          [uploader]="fileUploader"
-                         class="well drop-zone">
+                         class="drop-zone">
                       Or drop file here
                     </div>
                   </div>

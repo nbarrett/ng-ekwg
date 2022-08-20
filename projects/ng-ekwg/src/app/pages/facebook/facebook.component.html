@@ -1,7 +1,19 @@
 <app-card-container>
-  <h5 class="card-title cta-button cta-facebook-blue rounded"><a
-    href="https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649"
-    title="Visit Our Facebook Page"> Facebook</a>
+  <script>
+    window.fbAsyncInit = function() {
+      const init = FB.init({
+        appId            : '643977439755625',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v14.0'
+      });
+      console.log("fbAsyncInit", init);
+    };
+  </script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <h5 class="card-title cta-button cta-facebook-blue rounded">
+    <a [href]="facebookPagesUrl "
+       title="Visit Our Facebook Page"> Facebook</a>
   </h5>
   <p class="card-text">
     <iframe class="text-center" *ngIf="url"

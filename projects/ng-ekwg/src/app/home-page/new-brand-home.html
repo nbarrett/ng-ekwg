@@ -1,22 +1,22 @@
 <div>
   <div>
+    <app-image-cropper></app-image-cropper>
     <div class="mb-4">
       <div class="d-flex flex-column flex-md-row position-relative">
-        <div class="wrapper w-100 position-relative"><img
-          src="/1.jpg"
-          src="/1.jpg"
-          alt="&quot;null&quot;"
-          width="2560"
-          class="h-100 w-100 position-absolute target-style-xl image-style-xl">
+        <div class="wrapper w-100 position-relative">
+          <img class="crop" [src]="croppedImage"/>
+          <img/>
+          <img class="h-100 w-100 position-absolute target-style-xl image-style-xl"
+               src="/assets/images/ramblers/papercut-paths/home-page.png"
+               width="2560">
         </div>
         <div class="row position-md-absolute w-100 h-100 align-items-center">
           <div class="ml-md-4 ml-lg-5 col-md-6 col-xl-5">
             <h1 class="display-4 font-weight-bold">
-              <div>Welcome</div>
+              <div>Welcome to EKWG!</div>
             </h1>
-            <div class="body-text">We are the Ramblers. We open the way for everyone to
-              enjoy the simple pleasures of walking. And we step up to protect the places
-              we all love to wander.
+            <div class="body-text">Do you want to get fresh air, exercise, meet friendly people and see more of the
+              beautiful Kent countryside? Then come and join East Kent Walking Group on a walk.
             </div>
           </div>
         </div>
@@ -48,64 +48,59 @@
     </div>
   </div>
   <div class="mb-4">
-    <div data-v-c7f516ea="">
-      <h2 data-v-c7f516ea="">
-        <div data-v-c7f516ea="">Take your next step</div>
+    <div>
+      <h2>
+        <div>Take your next step</div>
       </h2>
-      <div class="row mb-n3" data-v-c7f516ea="">
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
+      <div class="row mb-n3">
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
             <img
-              src="https://www.ekwg.co.uk/api/aws/s3/imagesHome/f029e7e1-56aa-41dd-853a-0a8459c4fb94.jpg"
-              alt="&quot;null&quot;" height="200" class="card-img-top"
-              data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+              class="card-img-top"
+              height="200" src="/api/aws/s3/imagesHome/f029e7e1-56aa-41dd-853a-0a8459c4fb94.jpg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://www.ramblers.org.uk/go-walking/group-finder.aspx"
-              target="_blank" class="rams-text-decoration-pink external a-new"
-              data-v-3bab6c0e="">Find a group</a></h4>
-              <p class="card-text" data-v-3bab6c0e="">With 500 Ramblers groups there’s
+              target="_blank" class="rams-text-decoration-pink external a-new">Find a group</a></h4>
+              <p class="card-text">With 500 Ramblers groups there’s
                 bound to be more than one near you. </p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="https://www.ekwg.co.uk/api/aws/s3/imagesHome/fe76fd73-de42-4629-804e-a96b00ab4822.jpg"
-                 alt="&quot;null&quot;" height="200" class="card-img-top"
-                 data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
+                 height="200" src="/api/aws/s3/imagesHome/fe76fd73-de42-4629-804e-a96b00ab4822.jpg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://www.ramblers.org.uk/go-walking/find-a-walk-or-route.aspx"
               target="_blank" class="rams-text-decoration-pink external"
-              data-v-3bab6c0e="">Find a group walk</a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Ramblers group walks open up a
+            >Find a group walk</a></h4>
+              <p class="card-text">Ramblers group walks open up a
                 world of walking opportunities for everyone.</p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="https://www.ekwg.co.uk/api/aws/s3/imagesHome/f029e7e1-56aa-41dd-853a-0a8459c4fb94.jpg"
-                 alt="&quot;null&quot;" height="200" class="card-img-top"
-                 data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
+                 height="200" src="/api/aws/s3/imagesHome/f029e7e1-56aa-41dd-853a-0a8459c4fb94.jpg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://www.ramblers.org.uk/go-walking/find-a-walk-or-route.aspx"
               target="_blank" class="rams-text-decoration-pink external"
-              data-v-3bab6c0e="">Find a walking route</a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Plan your next walk with our
+            >Find a walking route</a></h4>
+              <p class="card-text">Plan your next walk with our
                 library of tried-and-tested routes. </p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="/_HSC9808-1.jpg" alt="&quot;null&quot;"
-                 height="200" class="card-img-top" data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
+                 height="200" src="/api/aws/s3/imagesSocialEvents/05ecb9fb-9e14-4584-a64f-4dac4e689a78.jpeg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://www.ramblers.org.uk/get-involved/become-a-member.aspx"
-              target="_blank" class="rams-text-decoration-pink external"
-              data-v-3bab6c0e="">Become a member today </a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Get more out of your walks when
+              target="_blank" class="rams-text-decoration-pink external">Become a member today </a></h4>
+              <p class="card-text">Get more out of your walks when
                 you join the Ramblers.</p></div>
           </div>
         </div>
@@ -115,9 +110,8 @@
   <div class="mb-4">
     <div data-v-365915ad="">
       <div class="row position-relative" data-v-365915ad="">
-        <div class="col-12 mb-5 mb-md-0" style="height:400px;" data-v-365915ad=""><img
-          src="https://www.ekwg.co.uk/api/aws/s3/imagesHome/2149b407-5910-4850-8795-d600f5ede960.jpg"
-          alt="&quot;null&quot;"
+        <div class="col-12 mb-5 mb-md-0" style="height:400px;" data-v-365915ad="">
+          <img src="/api/aws/s3/imagesHome/2149b407-5910-4850-8795-d600f5ede960.jpg"
           width="1920" class="h-100 w-100 img-fluid target-style-xl image-style-large"
           data-v-365915ad=""></div>
         <div class="position-absolute
@@ -140,67 +134,66 @@
     </div>
   </div>
   <div class="mb-4">
-    <div data-v-c7f516ea="">
-      <h2 data-v-c7f516ea="">
-        <div data-v-c7f516ea="">Discover more from the Ramblers</div>
+    <div>
+      <h2>
+        <div>Discover more from the Ramblers</div>
       </h2>
-      <div class="row mb-n3" data-v-c7f516ea="">
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="/walking-gear-buyers-guides-2_2.jpg"
-                 alt="&quot;null&quot;" height="200" class="card-img-top"
-                 data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+      <div class="row mb-n3">
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
+                 height="200" src="/api/aws/s3/imagesHome/313c9e85-4ea4-4816-8db9-8831c01c585a.jpg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://beta.ramblers.org.uk/go-walking-hub/walking-gear-buyers-guides"
-              target="_self" class="rams-text-decoration-pink" data-v-3bab6c0e="">Walking
+              class="rams-text-decoration-pink" target="_self">Walking
               Gear - Buyer’s Guides </a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Looking for new walking gear?
+              <p class="card-text">Looking for new walking gear?
                 Get independent, expert advice on everything from walking boots to
                 waterproof jackets.</p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="/Bristol-May-2021---5931.jpg"
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
                  alt="A group of people walking across and open field of wildflowers"
-                 height="200" class="card-img-top" data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+                 height="200" src="/api/aws/s3/imagesHome/b0f8b71b-573f-4d4d-bff2-f5a43692b080.jpeg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://beta.ramblers.org.uk/go-walking-hub/where-you-can-walk-england-and-wales"
-              target="_self" class="rams-text-decoration-pink" data-v-3bab6c0e="">Where
+              class="rams-text-decoration-pink" target="_self">Where
               you can walk in England and Wales</a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Helping you understand your
+              <p class="card-text">Helping you understand your
                 rights, where you’re allowed to walk, and how to find new places to
                 explore.</p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="/ramblers_scotland_out_there_award.jpg"
-                 alt="An Out There Award map reading in a woodland." height="200"
-                 class="card-img-top" data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
+                 height="200"
+                 src="/api/aws/s3/imagesHome/ef5ab939-90f2-48ba-b337-9e53c7b378b7.jpeg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://beta.ramblers.org.uk/go-walking-hub/ramblers-scotlands-out-there-award"
-              target="_self" class="rams-text-decoration-pink" data-v-3bab6c0e="">Ramblers
+              class="rams-text-decoration-pink" target="_self">Ramblers
               Scotland’s Out There Award </a></h4>
-              <p class="card-text" data-v-3bab6c0e="">Learn skills to get outdoors and
+              <p class="card-text">Learn skills to get outdoors and
                 walk in Scotland, including navigation, access rights, hillwalking,
                 what to pack and wear plus meet young walkers.</p></div>
           </div>
         </div>
-        <div class="mb-3 col-md-6 col-lg-3" data-v-c7f516ea="">
-          <div class="card shadow clickable h-100" data-v-3bab6c0e="" data-v-c7f516ea="">
-            <img src="/Cambrian-way-1-1500_0.jpg"
+        <div class="mb-3 col-md-6 col-lg-3">
+          <div class="card shadow clickable h-100">
+            <img class="card-img-top"
                  alt="Cambrian Way waymarker on a post" height="200"
-                 class="card-img-top" data-v-3bab6c0e="">
-            <div class="card-body" data-v-3bab6c0e=""><h4
-              class="card-title" data-v-3bab6c0e=""><a
+                 src="/api/aws/s3/imagesHome/3ccccd75-d78a-407d-9ab2-eb57e4329c78.jpeg">
+            <div class="card-body"><h4
+              class="card-title"><a
               href="https://beta.ramblers.org.uk/wales/cambrian-way"
-              target="_self" class="rams-text-decoration-pink" data-v-3bab6c0e="">The
+              class="rams-text-decoration-pink" target="_self">The
               Cambrian Way</a></h4>
-              <p class="card-text" data-v-3bab6c0e="">The Cambrian Way runs 298 miles
+              <p class="card-text">The Cambrian Way runs 298 miles
                 from Cardiff in south Wales to Conwy in north Wales passing through
                 some of Wales most beautiful, remote, and rugged terrain.</p></div>
           </div>
@@ -212,8 +205,7 @@
     <div data-v-365915ad="">
       <div class="row position-relative" data-v-365915ad="">
         <div class="col-12 mb-5 mb-md-0" style="height:400px;" data-v-365915ad=""><img
-          src="/Ramblers---Don&#39;t-Lose-Your-Way-2153b.jpg"
-          alt="&quot;null&quot;" width="1920"
+          src="/api/aws/s3/imagesHome/048cd04a-c27f-40d0-80bd-0e6b095e5f74.jpeg" width="1920"
           class="h-100 w-100 img-fluid target-style-xl image-style-large"
           data-v-365915ad=""></div>
         <div class="position-absolute

@@ -8,6 +8,7 @@ import { ContainerComponent } from "../../container/container";
 import { FooterComponent } from "../../footer/footer";
 import { FooterIconsComponent } from "../../footer/icons/footer-icons";
 import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
+import { ImageCropperAndResizerComponent } from "../../image-cropper/image-cropper";
 import { LoginPanelComponent } from "../../login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "../../login/forgot-password.component";
 import { LoginComponent } from "../../login/login.component";
@@ -49,6 +50,7 @@ import { NavigatorComponent } from "./navigator/navigator";
     FooterIconsComponent,
     ForgotPasswordComponent,
     NewBrandHomeComponent,
+    ImageCropperAndResizerComponent,
     HowToComponent,
     HowToModalComponent,
     JoinUsComponent,

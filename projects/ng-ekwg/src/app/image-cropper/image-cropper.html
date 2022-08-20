@@ -1,0 +1,78 @@
+<div class="row mb-n3">
+  <div class="mb-3 col-md-6">
+    <div class="card shadow clickable h-100">
+      <div class="card-body"><h4 class="card-title rams-text-decoration-pink">Resize</h4>
+        <div class="card-text">
+          <input type="file" (change)="fileChangeEvent($event)"/>
+          <br/>
+          <br/>
+          <button (click)="rotateLeft()">Rotate left</button>
+          <button (click)="rotateRight()">Rotate right</button>
+          <button (click)="flipHorizontal()">Flip horizontal</button>
+          <button (click)="flipVertical()">Flip vertical</button>
+          <button
+            (click)="toggleContainWithinAspectRatio()">{{containWithinAspectRatio ? 'Fill Aspect Ratio' : 'Contain Within Aspect Ratio'}}</button>
+          <button (click)="resetImage()">Reset image</button>
+            <div class="d-flex">
+              <label for="rotation">Rotation</label>
+              <input id="rotation" [(ngModel)]="rotation" placeholder="Rotation" type="number"
+                     (keyup)="updateRotation()"
+                     class="form-control input-sm flex-grow-1"/>
+            </div>
+          <div class="d-flex">
+            <label for="resizeToWidth">Resize to width</label>
+            <input id="resizeToWidth" [(ngModel)]="resizeToWidth" (ngModelChange)="resizeToWidthChanged($event)" placeholder="Resize to width" type="number"
+                   class="form-control input-sm flex-grow-1"/>
+          </div>
+          <button (click)="zoomOut()">Zoom -</button>
+          <button (click)="zoomIn()">Zoom +</button>
+          <div>Original Size: {{originalSize}}</div>
+          <div>Cropped Size: {{croppedSize}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3 col-md-6">
+    <div class="card shadow clickable h-100">
+      <div class="card-body"><h4
+        class="card-title"><a
+        href="https://www.ramblers.org.uk/go-walking/find-a-walk-or-route.aspx"
+        target="_blank" class="rams-text-decoration-pink external">Image</a></h4>
+        <div>
+          <image-cropper
+            [allowMoveImage]="true"
+            [imageChangedEvent]="imageChangedEvent"
+            [maintainAspectRatio]="false"
+            [containWithinAspectRatio]="containWithinAspectRatio"
+            [aspectRatio]="4 / 3"
+            [onlyScaleDown]="false"
+            [roundCropper]="false"
+            [canvasRotation]="canvasRotation"
+            [transform]="transform"
+            [resizeToWidth]="resizeToWidth"
+            (resize)="resized($event)"
+            [alignImage]="'left'"
+            [style.display]="showCropper ? null : 'none'"
+            format="png"
+            (imageCropped)="imageCropped($event)"
+            (imageLoaded)="imageLoaded($event)"
+            (cropperReady)="cropperReady($event)"
+            (loadImageFailed)="loadImageFailed()">
+          </image-cropper>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3 col-md-6 d-none">
+    <div class="card shadow clickable h-100">
+      <div class="card-body"><h4
+        class="card-title"><a
+        href="https://www.ramblers.org.uk/go-walking/find-a-walk-or-route.aspx"
+        target="_blank" class="rams-text-decoration-pink external">Preview</a></h4>
+      </div>
+      <img [src]="croppedImage"/>
+    </div>
+  </div>
+</div>
+
+

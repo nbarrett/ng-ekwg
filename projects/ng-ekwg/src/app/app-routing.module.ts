@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { NoPreloading, RouterModule, Routes } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
+import { NewBrandHomeComponent } from "./home-page/new-brand-home";
 import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
 import { LogoutComponent } from "./logout/logout.component";
@@ -28,6 +29,7 @@ const routes: Routes = [
   {path: "login", component: LoginComponent},
   {path: "logout", component: LogoutComponent},
   {path: "privacy-policy", component: PrivacyPolicyComponent},
+  {path: "new-brand", component: NewBrandHomeComponent},
   {path: "social", loadChildren: () => import("./modules/social/social-routing.module").then(module => module.SocialRoutingModule)},
   {path: "walks", loadChildren: () => import("./modules/walks/walks-routing.module").then(module => module.WalksRoutingModule)},
   {path: "**", redirectTo: "/"},
