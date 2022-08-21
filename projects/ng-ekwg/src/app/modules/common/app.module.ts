@@ -7,6 +7,7 @@ import { CarouselStoryNavigatorComponent } from "../../carousel-story-navigator/
 import { ContainerComponent } from "../../container/container";
 import { FooterComponent } from "../../footer/footer";
 import { FooterIconsComponent } from "../../footer/icons/footer-icons";
+import { HeaderButtonsComponent } from "../../header-buttons/header-buttons";
 import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { ImageCropperAndResizerComponent } from "../../image-cropper/image-cropper";
 import { LoginPanelComponent } from "../../login-panel/login-panel.component";
@@ -36,10 +37,10 @@ import { ChangedItemsPipe } from "../../pipes/changed-items.pipe";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SharedModule } from "../../shared-module";
 import { SiteEditComponent } from "../../site-edit/site-edit.component";
-import { HeaderButtonsComponent } from "../../site-navigator/header-buttons.component";
+import { HeaderBarComponent } from "../../header-bar/header-bar";
 import { CardContainerComponent } from "./card-container/card-container.component";
-import { NavbarComponent } from "./mobile-menu/navbar-content";
-import { NavigatorComponent } from "./navigator/navigator";
+import { NavbarContentComponent } from "./navbar-content/navbar-content";
+import { NavbarComponent } from "./navbar/navigator";
 
 @NgModule({
   declarations: [
@@ -73,11 +74,12 @@ import { NavigatorComponent } from "./navigator/navigator";
     PrivacyPolicyComponent,
     SetPasswordComponent,
     SiteEditComponent,
+    HeaderBarComponent,
     HeaderButtonsComponent,
     InstagramComponent,
     FacebookComponent,
     CardContainerComponent,
-    NavigatorComponent,
+    NavbarContentComponent,
   ],
   imports: [
     AppRoutingModule,

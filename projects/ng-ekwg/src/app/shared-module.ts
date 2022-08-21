@@ -77,7 +77,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     AccordionModule.forRoot(),
     AlertModule.forRoot(),
     Angular2CsvModule,
-    BsDatepickerModule,
     BsDatepickerModule.forRoot(),
     CarouselModule.forRoot(),
     CollapseModule.forRoot(),

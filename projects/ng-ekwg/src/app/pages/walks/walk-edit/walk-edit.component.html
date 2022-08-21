@@ -14,6 +14,11 @@
               <label for="walk-date">Walk Date</label>
               <div class="form-group">
                 <div class="input-group">
+                  <input type="text"
+                         placeholder="Datepicker"
+                         class="form-control"
+                         bsDatepicker
+                         [bsConfig]="{ isAnimated: true }">
                   <input [ngModel]="walkDate"
                          (ngModelChange)="onDateChange($event)"
                          [disabled]="!allowAdminEdits() || !allowEdits()"

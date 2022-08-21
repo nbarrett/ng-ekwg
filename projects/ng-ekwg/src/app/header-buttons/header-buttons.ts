@@ -5,8 +5,8 @@ import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-header-buttons",
-  templateUrl: "./header-buttons.component.html",
-  styleUrls: ["./header-buttons.component.sass"]
+  templateUrl: "./header-buttons.html",
+  styleUrls: ["./header-buttons.sass"]
 
 })
 export class HeaderButtonsComponent implements OnInit {

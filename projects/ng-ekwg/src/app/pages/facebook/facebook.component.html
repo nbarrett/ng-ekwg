@@ -1,4 +1,6 @@
 <app-card-container>
+  <script async defer crossorigin="anonymous"
+          src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v14.0&appId=643977439755625&autoLogAppEvents=1"></script>
   <script>
     window.fbAsyncInit = function() {
       const init = FB.init({
@@ -10,7 +12,7 @@
       console.log("fbAsyncInit", init);
     };
   </script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+<!--  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>-->
   <h5 class="card-title cta-button cta-facebook-blue rounded">
     <a [href]="facebookPagesUrl "
        title="Visit Our Facebook Page"> Facebook</a>
