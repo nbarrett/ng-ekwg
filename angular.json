@@ -221,7 +221,6 @@
       }
     }
   },
-  "defaultProject": "ng-ekwg",
   "schematics": {
     "@schematics/angular:component": {
       "style": "sass"
