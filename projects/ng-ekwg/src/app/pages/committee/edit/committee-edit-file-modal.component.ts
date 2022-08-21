@@ -41,7 +41,6 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public notification: Notification;
   private logger: Logger;
   public committeeFile: CommitteeFile;
-  private campaigns: MailchimpCampaignListResponse;
   private campaignSearchTerm: string;
   public hasFileOver = false;
   public eventDate: DateValue;

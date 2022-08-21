@@ -2,6 +2,7 @@ export enum NamedEventType {
     APPLY_FILTER = "apply-filter",
     EDIT_SITE = "editSite",
     IMAGE_CROP = "image-crop",
+    MENU_TOGGLE = "menu-toggle",
     MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
     MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
     MARKDOWN_CONTENT_SAVED = "markdownContentSaved",

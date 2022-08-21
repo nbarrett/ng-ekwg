@@ -40,7 +40,7 @@
             <input [disabled]="notifyTarget.busy" type="submit" value="Update Mailchimp Lists"
                    (click)="updateMailchimpLists()" title="Update Mailchimp Lists"
                    [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
-            <span *ngIf="confirm.noneOutstanding()">
+            <span *ngIf="false">
               <input [disabled]="notifyTarget.busy" type="submit"
                      [value]="'Bulk Unsubscribe ' + memberFilter.results.length + ' members'"
                      (click)="bulkUnsubscribe()"

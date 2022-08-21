@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import { faMeetup } from "@fortawesome/free-brands-svg-icons";
 import { range } from "lodash-es";
 import first from "lodash-es/first";
 import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { ContentText } from "../../../models/content-text.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
-import { BroadcastService} from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { meetupDescriptionPrefix, MeetupService } from "../../../services/meetup.service";
@@ -31,6 +32,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
   public config: MeetupConfig;
   public publishStatuses: string[] = [];
   private guestLimits: number[];
+  faMeetup = faMeetup;
 
   constructor(private urlService: UrlService,
               private contentTextService: ContentTextService,

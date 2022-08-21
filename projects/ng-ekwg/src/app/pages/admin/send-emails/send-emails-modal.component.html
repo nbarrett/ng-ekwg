@@ -1,9 +1,8 @@
 <div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}" *ngIf="emailTypes.length>0 && emailType">
   <div class="modal-content">
     <div class="modal-header">
-      <button type="button" class="close float-right" aria-label="Close" (click)="bsModalRef.hide()">
-        <h4 class="modal-title">Send <em>Emails</em> to Members</h4>
-        <span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title">Send <em>Emails</em> to Members</h4>
+      <button type="button" class="close" aria-label="Close" (click)="bsModalRef.hide()">&times;</button>
     </div>
     <div class="modal-body">
       <div class="img-thumbnail thumbnail-admin-edit">
@@ -25,9 +24,11 @@
           <div class="col-sm-3 panel-toggle">
             <a *ngIf="!helpInfo.showHelp"
                (click)="toggleHelp(true, [tooltip1, tooltip2])" [href]="">
-              <fa-icon [icon]="faQuestion" class="markdown-preview-icon"></fa-icon> show help</a>
+              <fa-icon [icon]="faQuestion" class="markdown-preview-icon"></fa-icon>
+              show help</a>
             <a *ngIf="helpInfo.showHelp" (click)="toggleHelp(false,[tooltip1, tooltip2])" [href]="">
-              <fa-icon [icon]="faQuestion" class="markdown-preview-icon"></fa-icon> hide help</a>
+              <fa-icon [icon]="faQuestion" class="markdown-preview-icon"></fa-icon>
+              hide help</a>
           </div>
         </div>
         <div class="row">
@@ -123,8 +124,9 @@
         </div>
         <div class="form-group">
           <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
-            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+            <strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
           </div>
         </div>
       </div>

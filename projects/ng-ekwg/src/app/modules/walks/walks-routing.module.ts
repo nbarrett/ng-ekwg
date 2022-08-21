@@ -8,6 +8,7 @@ import { WalkExportComponent } from "../../pages/walks/walk-export/walk-export.c
 import { WalkInformationComponent } from "../../pages/walks/walk-information/walk-information.component";
 import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
+import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view.component";
 import { WalksAuthGuard } from "../../walks-auth-guard.service";
 import { WalksModule } from "./walks.module";
 
@@ -20,7 +21,7 @@ import { WalksModule } from "./walks.module";
     {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
     {path: "admin", component: WalkAdminComponent, canActivate: [WalksAuthGuard]},
     {path: "information", component: WalkInformationComponent},
-    {path: ":walk-id", component: WalkListComponent},
+    {path: ":walk-id", component: WalkViewComponent},
     {path: "admin", component: WalkAdminComponent},
     {path: "**", component: WalkListComponent},
   ])]

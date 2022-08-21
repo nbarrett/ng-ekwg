@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
+import { ImageCroppedEvent } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadataService } from "./services/content-metadata.service";
 import { DateUtilsService } from "./services/date-utils.service";
@@ -18,6 +19,27 @@ export class FileUtilsService {
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(FileUtilsService, NgxLoggerLevel.OFF);
+  }
+
+  imageCropped(event: ImageCroppedEvent, name: string) {
+    return this.base64ToFileWithName(
+      event.base64, name,
+    );
+  }
+
+  base64ToFileWithName(data, filename) {
+
+    const arr = data.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, {type: mime});
   }
 
   basename(path) {

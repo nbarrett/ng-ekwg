@@ -1,6 +1,8 @@
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { Page } from "../models/page.model";
+import { BroadcastService } from "../services/broadcast-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { PageService } from "../services/page.service";
 import { UrlService } from "../services/url.service";
@@ -14,9 +16,12 @@ import { UrlService } from "../services/url.service";
 export class PageNavigatorComponent {
   private logger: Logger;
 
-  constructor(private pageService: PageService, private urlService: UrlService, loggerFactory: LoggerFactory) {
+  constructor(private broadcastService: BroadcastService,
+              private pageService: PageService,
+              private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);
   }
+
 
   isOnPage(page: string) {
     if (page === "") {
@@ -31,5 +36,9 @@ export class PageNavigatorComponent {
 
   pages(): Page[] {
     return this.pageService.pages;
+  }
+
+  unToggleMenu() {
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MENU_TOGGLE, false));
   }
 }

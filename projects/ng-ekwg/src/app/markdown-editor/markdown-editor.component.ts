@@ -4,11 +4,10 @@ import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import isEqual from "lodash-es/isEqual";
 import pick from "lodash-es/pick";
-import property from "lodash-es/property";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { ContentText } from "../models/content-text.model";
-import { BroadcastService} from "../services/broadcast-service";
+import { BroadcastService } from "../services/broadcast-service";
 import { ContentTextService } from "../services/content-text.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { MemberLoginService } from "../services/member/member-login.service";
@@ -38,7 +37,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   public editorState: EditorState;
   public editCaption: string;
   public previewCaption: string;
-  private content: ContentText;
+  public content: ContentText;
   private saveEnabled = false;
 
   @Input() data: ContentText;
@@ -180,10 +179,9 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     }
   }
 
-  calculateRowsFrom(data): number {
-    // @ts-ignore
-    const text: string = property(["text"])(data);
-    const rows = text ? text.split(/\r*\n/).length + 1 : 1;
+  calculateRowsFrom(data: ContentText): number {
+    const text = data?.text;
+    const rows = text ? text?.split(/\r*\n/).length + 1 : 1;
     this.logger.debug("number of rows in text ", text, "->", rows);
     return Math.max(rows, 10);
   }

@@ -8,6 +8,7 @@ import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
+import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -18,27 +19,34 @@ export class UrlService {
   private logger: Logger;
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
+              private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
+  }
+
+  navigateTo(page?: string, area?: string): Promise<boolean> {
+    if (this.siteEdit.active()) {
+      return Promise.resolve(false);
+    } else {
+      const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
+      this.logger.debug("navigating to page:", page, "area:", area, "->", url);
+      return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
+        this.logger.debug("activated:", activated, "area is now:", this.area());
+        return activated;
+      });
+    }
+  }
+
+  navigateToUrl(url: string) {
+    if (!this.siteEdit.active()) {
+      this.logger.info("navigateToUrl:", url);
+      this.document.location.href = url;
+    }
   }
 
   relativeUrlFirstSegment(optionalUrl?: string): string {
     const url = new URL(optionalUrl || this.absUrl());
     return "/" + first(url.pathname.substring(1).split("/"));
-  }
-
-  navigateTo(page?: string, area?: string): Promise<boolean> {
-    const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
-    this.logger.debug("navigating to page:", page, "area:", area, "->", url);
-    return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
-      this.logger.debug("activated:", activated, "area is now:", this.area());
-      return activated;
-    });
-  }
-
-  navigateToUrl(url: string) {
-    this.logger.info("navigateToUrl:", url);
-    this.document.location.href = url;
   }
 
   absUrl(): string {

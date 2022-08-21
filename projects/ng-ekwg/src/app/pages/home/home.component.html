@@ -26,11 +26,13 @@
 </div>
 <div class="row pt-3">
   <div class="col-sm-12">
-    <a *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"
-       [queryParams]="{story: imageTagDataService.currentTag()?.key}"><span class="badge">
-      <fa-icon [icon]="faPencil" class="badge-icon"></fa-icon> edit images</span></a>
-    <app-markdown-editor [editCaptionText]="'edit content'" class="green-bullets-no-rule"
-                         name="welcome"></app-markdown-editor>
+    <app-markdown-editor class="green-bullets-no-rule"
+                         name="welcome">
+      <div delay=500 tooltip="Edit images" class="badge-button" *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"
+           [queryParams]="{story: imageTagDataService.currentTag()?.key}">
+        <fa-icon [icon]="faPencil"></fa-icon>
+        <span>edit images</span></div>
+    </app-markdown-editor>
   </div>
 </div>
 <div class="card-columns">

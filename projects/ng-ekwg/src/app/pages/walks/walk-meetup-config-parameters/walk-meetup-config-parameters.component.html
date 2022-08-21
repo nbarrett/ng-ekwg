@@ -1,5 +1,5 @@
 <div *ngIf="config">
-  <div class="form-inline">
+  <div class="dform-inline">
     <label class="control-label" for="default-prefix">Description prefix: </label>
     <select class="form-control input-sm"
             [ngModel]="selectedContentTextItem"
@@ -31,14 +31,12 @@
               [textContent]="guestLimit">
       </option>
     </select>
-    <div class="form-group">
-      <div class="custom-control custom-radio custom-control-inline">
-        <label [ngClass]="{'ui-state-active': config.announce}"
-               for="announce">Announce
-          <input [(ngModel)]="config.announce"
-                 name="showDetail" type="checkbox" id="announce">
-        </label>
-      </div>
+    <div class="custom-control custom-checkbox custom-control-inlines">
+      <input [(ngModel)]="config.announce"
+             name="showDetail" class="custom-control-input" type="checkbox" id="announce">
+      <label class="custom-control-label"
+             for="announce">Announce
+      </label>
     </div>
   </div>
 </div>

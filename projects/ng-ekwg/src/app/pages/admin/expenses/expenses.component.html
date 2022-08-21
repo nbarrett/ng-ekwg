@@ -86,7 +86,7 @@
             <div *ngFor="let expenseClaim of expenseClaims trackBy claimTracker">
               <div *ngIf="expenseClaim" class="row" (mouseenter)="selectFirstItem(expenseClaim)">
                 <div class="col-sm-7">
-                  <table class="round table tbl-green-f table-striped table-hover table-sm">
+                  <table class="round table styled-table table-striped table-hover table-sm">
                     <thead>
                     <tr [ngClass]="{'inactive': isInactive(expenseClaim)}">
                       <th width="20%">Date</th>
@@ -220,7 +220,7 @@
                   </div>
                 </div>
                 <div class="col-sm-5 table-responsive" style="padding-left: 0px;">
-                  <table class="round table tbl-green-f table-striped table-hover table-sm">
+                  <table class="round table styled-table table-striped table-hover table-sm">
                     <thead>
                     <tr>
                       <th width="33%" [ngClass]="{'inactive': isInactive(expenseClaim)}">Date</th>

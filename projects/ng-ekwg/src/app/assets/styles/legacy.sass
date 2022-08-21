@@ -933,55 +933,6 @@ table.tbl-green-e td
   background-color: $ramblers-colour-cloudy
   color: #2B8838
 
-
-table.tbl-green-f
-  border-spacing: 0px
-  border-collapse: collapse
-  width: 100%
-  margin-bottom: 0px
-  cursor: pointer
-
-
-table.tbl-green-f th
-  border: none
-  padding: 8px
-  background-color: $ramblers-colour-legacy-black
-  color: $ramblers-colour-cloudy
-  font-weight: bold
-
-
-table.tbl-green-f td
-  padding: 8px
-  background-color: $ramblers-colour-cloudy
-
-
-table.tbl-no-background td
-  background: none
-  cursor: pointer
-
-
-table.tbl-green-f td.nowrap
-  white-space: nowrap
-
-
-table.tbl-green-f th:first-child
-  -moz-border-radius: 6px 0 0 0
-  -webkit-border-radius: 6px 0 0 0
-  border-radius: 6px 0 0 0
-
-
-table.tbl-green-f th:last-child
-  -moz-border-radius: 0 6px 0 0
-  -webkit-border-radius: 0 6px 0 0
-  border-radius: 0 6px 0 0
-
-
-table.tbl-green-f th:only-child
-  -moz-border-radius: 6px 6px 0 0
-  -webkit-border-radius: 6px 6px 0 0
-  border-radius: 6px 6px 0 0
-
-
 table.tbl-green-g
   border-spacing: 0px
   border-collapse: collapse
@@ -1337,11 +1288,11 @@ h1, h2, h3, h4, h5, h6
 
 
 /*h1 a, h2 a, h3 a, h4 a, h5 a, h6 a */
-/*  color: #782327*/
+/*  color: $ramblers-colour-legacy-red*/
 /**/
 
 /*.darkred */
-/*  color: #782327*/
+/*  color: $ramblers-colour-legacy-red*/
 /**/
 
 .accordion-image
@@ -1350,13 +1301,13 @@ h1, h2, h3, h4, h5, h6
 
 
 .accordion-title
-  color: #782327
+  color: $ramblers-colour-legacy-red
   font-weight: bold
   padding-top: 2px
 
 
 .accordion-state-image
-  color: #782327
+  color: $ramblers-colour-legacy-red
   padding-top: 6px
 
 
@@ -1906,20 +1857,8 @@ img[src~="bordered"]
 
 
 .cta-edit-more:hover
-  background: url("../images/ramblers/bull-white-trans.png") 7px 8px no-repeat #782327
+  background: url("../images/ramblers/bull-white-trans.png") 7px 8px no-repeat $ramblers-colour-legacy-red
   cursor: pointer
-
-
-.cta-add-new
-  margin: 6px 0px 6px 1px
-  float: left
-  width: 174px
-  color: $ramblers-colour-cloudy
-  display: block
-  padding: 7px 6px 7px 22px
-  font-size: 11px
-  font-weight: bold
-  background: url("../images/ramblers/bul-large-green.png") 7px 8px no-repeat $ramblers-colour-legacy-black
 
 
 .partner-pics ul
@@ -1975,10 +1914,6 @@ img[src~="bordered"]
   top: 0px
 
 
-.markdown-links
-  cursor: pointer
-
-
 .markdown-textarea
   margin-top: 6px
   margin-bottom: 12px
@@ -2021,7 +1956,7 @@ table.inactive th
 
 
 .button-form:hover
-  background: url("../images/ramblers/bull-green.png") no-repeat 8px 8px #782327
+  background: url("../images/ramblers/bull-green.png") no-repeat 8px 8px $ramblers-colour-legacy-red
   cursor: pointer
 
 
@@ -2205,7 +2140,7 @@ table.inactive th
 
 
 .cta-darkred
-  background: url("../images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327
+  background: url("../images/ramblers/bull-white-trans.png") 15px 10px no-repeat $ramblers-colour-legacy-red
 
 
 .cta-green
@@ -2244,11 +2179,11 @@ table.inactive th
 
 
 .cta-darkred a
-  background: url("../images/ramblers/bull-white-trans.png") 15px 10px no-repeat #782327
+  background: url("../images/ramblers/bull-white-trans.png") 15px 10px no-repeat $ramblers-colour-legacy-red
 
 
 .cta-darkred a.campaign-link
-  background: none 15px 10px no-repeat #782327
+  background: none 15px 10px no-repeat $ramblers-colour-legacy-red
   padding-left: 15px
 
 
@@ -2804,7 +2739,7 @@ ul.sbOptions a
 ul.sbOptions a:hover,
 ul.sbOptions a:focus,
 ul.sbOptions a.sbFocus
-  color: #782327
+  color: $ramblers-colour-legacy-red
 
 
 ul.sbOptions li.last a
@@ -2847,7 +2782,7 @@ ul.sbOptions li.last a
 
 
 .val-error-container
-  color: #782327
+  color: $ramblers-colour-legacy-red
 
 
 .val-error-container span
@@ -2974,7 +2909,7 @@ ul.sbOptions li.last a
 
 
 .ju-footer p span
-  color: #782327
+  color: $ramblers-colour-legacy-red
 
 
 .ju-footer .but-next
@@ -3001,7 +2936,7 @@ ul.sbOptions li.last a
 
 
 .member-list a.active
-  background: #782327
+  background: $ramblers-colour-legacy-red
   color: $ramblers-colour-cloudy
 
 
@@ -3173,7 +3108,7 @@ ul.sbOptions li.last a
 
 
 .comment .report-link
-  color: #782327
+  color: $ramblers-colour-legacy-red
   font-size: 11px
   display: block
   float: right

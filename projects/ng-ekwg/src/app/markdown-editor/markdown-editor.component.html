@@ -6,34 +6,48 @@
          placeholder="Enter name of content">
   <label class="mr-8 mt-12" [for]="content.name">Content for {{content.name}}</label>
 </div>
-<span *ngIf="editorState.editActive" class="markdown-links">
-    <a *ngIf="!editorState.preview"
-       (click)="preview() && !saving()"><span class="badge">
-      <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass" class="badge-icon"></fa-icon>
-      {{previewCaption}}</span></a>
-    <a *ngIf="editorState.preview" [title]="'Edit content for ' + description"
-       (click)="edit()"><span class="badge">
-      <fa-icon [icon]="querying() ? faSpinner: faPencil" class="badge-icon"></fa-icon>
-      {{editCaption}}</span></a>
-    <a *ngIf="dirty() && canSave()"
-       (click)="save()"><span class="badge">
-      <fa-icon [icon]="saving() ? faSpinner: faCircleCheck" class="badge-icon"></fa-icon> save</span></a>
-    <a *ngIf="dirty() && !saving()"
-       (click)="revert()"><span class="badge">
-      <fa-icon [icon]="reverting() ? faSpinner: faRemove" class="badge-icon"></fa-icon> revert</span></a>
-    <a *ngIf="canDelete() && !saving()"
-       (click)="delete()"><span class="badge">
-      <fa-icon [icon]="reverting() ? faSpinner: faEraser" class="badge-icon"></fa-icon> delete</span></a>
-</span>
-<span *ngIf="canPreview()"
-      (click)="edit()"
-      markdown ngPreserveWhitespaces [data]="content.text">
-  </span>
-<textarea *ngIf="canEdit()"
-          [(ngModel)]="content.text"
-          (ngModelChange)="changeText($event)"
-          class="form-control markdown-textarea" rows="{{rows}}"
-          placeholder="Enter {{description}} text here">
+<div class="row" *ngIf="editorState.editActive">
+  <div class="col-12">
+    <ng-content>
+    </ng-content>
+    <div *ngIf="!editorState.preview" (click)="preview() && !saving()" class="badge-button"
+         delay=500 [tooltip]="'Preview content for ' + description">
+      <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass"></fa-icon>
+      <span>{{previewCaption}}</span></div>
+    <div *ngIf="editorState.preview"
+         (click)="edit()"
+         delay=500 [tooltip]="'Edit content for ' + description" class="badge-button">
+      <fa-icon [icon]="querying() ? faSpinner: faPencil"></fa-icon>
+      <span>{{editCaption}}</span>
+    </div>
+    <div *ngIf="dirty() && canSave()" class="badge-button"
+         (click)="save()" [tooltip]="'Save content for ' + description">
+      <fa-icon [icon]="saving() ? faSpinner: faCircleCheck"></fa-icon>
+      <span>save</span>
+    </div>
+    <div *ngIf="dirty() && !saving()" class="badge-button" (click)="revert()"
+         delay=500 [tooltip]="'Revert content for ' + description">
+      <fa-icon [icon]="reverting() ? faSpinner: faRemove"></fa-icon>
+      <span>revert</span>
+    </div>
+    <div *ngIf="canDelete() && !saving()" class="badge-button"
+         (click)="delete()" delay=500 [tooltip]="'Delete content for ' + description">
+      <fa-icon [icon]="reverting() ? faSpinner: faEraser"></fa-icon>
+      <span>delete</span>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div *ngIf="canPreview()"
+         (click)="edit()" delay=500 [tooltip]="'Preview content for ' + description"
+         markdown ngPreserveWhitespaces [data]="content.text">
+    </div>
+    <textarea *ngIf="canEdit()"
+              [(ngModel)]="content.text"
+              (ngModelChange)="changeText($event)"
+              class="form-control markdown-textarea" rows="{{rows}}"
+              placeholder="Enter {{description}} text here">
 </textarea>
-<ng-content>
-</ng-content>
+  </div>
+</div>

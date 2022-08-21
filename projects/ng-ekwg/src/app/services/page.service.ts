@@ -11,12 +11,12 @@ export class PageService {
 
   public pages: Page[] = [
     HOME,
-    {href: "walks", title: "Walks", migrated: true},
+    {href: "walks", title: "Walks"},
     {href: "social", title: "Social"},
-    {href: "join-us", title: "Join Us", migrated: true},
+    {href: "join-us", title: "Join Us"},
     {href: "contact-us", title: "Contact Us"},
     {href: "committee", title: "Committee"},
-    {href: "admin", title: "Admin", migrated: true},
+    {href: "admin", title: "Admin"},
     {href: "how-to", title: "How-to"}];
 
   pageForArea(area: string): Page {
