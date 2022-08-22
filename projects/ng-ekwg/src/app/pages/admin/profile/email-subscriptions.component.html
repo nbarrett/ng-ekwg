@@ -9,28 +9,27 @@
     <div class="col col-sm-9">
       <div class="row">
         <div class="col col-sm-12">
-          <div class="checkbox-group">
+          <div class="custom-control custom-checkbox">
 
             <p>You can change your emailing preferences at any time using the subscription checkboxes
               below:</p>
-
-            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.walks?.subscribed}"
+            <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox" class="custom-control-input"
+                   name="walks-subscribed"
+                   id="prof-subscribe-walks-emails">
+            <label class="custom-control-label"
                    for="prof-subscribe-walks-emails">Walks emails
-              <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox"
-                     name="walks-subscribed"
-                     id="prof-subscribe-walks-emails">
             </label>
-            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.socialEvents?.subscribed}"
+            <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox" class="custom-control-input"
+                   name="social-events-subscribed"
+                   id="prof-subscribe-social-events-emails">
+            <label class="custom-control-label"
                    for="prof-subscribe-social-events-emails">Social events emails
-              <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox"
-                     name="social-events-subscribed"
-                     id="prof-subscribe-social-events-emails">
             </label>
-            <label [ngClass]="{'ui-state-active': member?.mailchimpLists?.general?.subscribed}"
+            <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox" class="custom-control-input"
+                   name="general-subscribed"
+                   id="prof-subscribe-general-emails">
+            <label class="custom-control-label"
                    for="prof-subscribe-general-emails">General emails
-              <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox"
-                     name="general-subscribed"
-                     id="prof-subscribe-general-emails">
             </label>
 
             <p>If you have any other queries about your mailing preferences, please email our

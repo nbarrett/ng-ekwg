@@ -65,11 +65,11 @@
             <div class="col-sm-6">
               <br>
 
-              <div class="form-group checkbox-group">
-                <label [ngClass]="{'ui-state-active': expenseItem.travel.returnJourney}" for="is-return">Return
-                  Journey </label>
+              <div class="form-group custom-control custom-checkbox">
                 <input [disabled]="!editable" [(ngModel)]="expenseItem.travel.returnJourney"
-                       (ngModelChange)="setExpenseItemFields()" type="checkbox" id="is-return">
+                       (ngModelChange)="setExpenseItemFields()" type="checkbox" class="custom-control-input" id="is-return">
+                <label class="custom-control-label" for="is-return">Return
+                  Journey </label>
               </div>
             </div>
 

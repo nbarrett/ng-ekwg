@@ -23,12 +23,12 @@
     <div class="row">
       <div class="col-sm-12">
         <div class="form-group">
-          <div class="checkbox-group form-inline">
-            <label [ngClass]="{'ui-state-active': riskAssessmentConfirmed()}"
+          <div class="custom-control custom-checkbox form-inline">
+            <input #checkbox (change)="confirmParameter(checkbox.checked)"
+                   [checked]="riskAssessmentConfirmed()" type="checkbox" class="custom-control-input"
+                   [id]="'risk-assessment-' + riskAssessmentKey">
+            <label class="custom-control-label"
                    [for]="'risk-assessment-' + riskAssessmentKey">{{confirmLabel()}}
-              <input #checkbox (change)="confirmParameter(checkbox.checked)"
-                     [checked]="riskAssessmentConfirmed()" type="checkbox"
-                     [id]="'risk-assessment-' + riskAssessmentKey">
             </label>
           </div>
         </div>

@@ -71,12 +71,12 @@
                 </div>
                 <div *ngIf="display.allowAdminFunctions()" class="form-group">
                   <div class="col-sm-12">
-                    <div class="checkbox-group">
-                      <label [ngClass]="{'ui-state-active': selected.showOnlyMine}"
+                    <div class="custom-control custom-checkbox">
+                      <input [(ngModel)]="selected.showOnlyMine"
+                             type="checkbox" class="custom-control-input" id="show-only-mine">
+                      <label class="custom-control-label"
                              (click)="refreshExpenses()"
                              for="show-only-mine">Show only mine
-                        <input [(ngModel)]="selected.showOnlyMine"
-                               type="checkbox" id="show-only-mine">
                       </label>
                     </div>
                   </div>

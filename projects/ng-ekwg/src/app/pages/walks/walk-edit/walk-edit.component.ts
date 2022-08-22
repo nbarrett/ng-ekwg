@@ -9,6 +9,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { DateValue } from "../../../models/date.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
 import { ConfirmType } from "../../../models/ui-actions";
@@ -679,10 +680,10 @@ export class WalkEditComponent implements OnInit {
       });
   }
 
-  onDateChange(date: Date) {
+  onDateChange(date: DateValue) {
     if (date) {
       this.logger.debug("onDateChange:date", date);
-      this.walkDate = date;
+      this.walkDate = date.date;
       this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
     }
   }

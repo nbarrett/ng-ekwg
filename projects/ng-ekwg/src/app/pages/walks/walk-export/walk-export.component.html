@@ -97,12 +97,12 @@
                         </select>
                       </div>
                       <div class="form-group">
-                        <div class="checkbox-group">
-                          <label [ngClass]="{'ui-state-active': showDetail}"
+                        <div class="custom-control custom-checkbox">
+                          <input [(ngModel)]="showDetail"
+                                 name="showDetail" type="checkbox" class="custom-control-input" id="show-detailed-audit-messages">
+                          <label class="custom-control-label"
                                  (click)="fileNameChanged()"
                                  for="show-detailed-audit-messages">Show details
-                            <input [(ngModel)]="showDetail"
-                                   name="showDetail" type="checkbox" id="show-detailed-audit-messages">
                           </label>
                         </div>
                       </div>

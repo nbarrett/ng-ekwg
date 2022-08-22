@@ -11,13 +11,13 @@
     </div>
     <div class="row">
       <div class="col-sm-12" *ngIf="allowEdits()">
-        <div class="checkbox-group">
-          <label [ngClass]="{'ui-state-active': displayedWalk.walk.meetupPublish}"
+        <div class="custom-control custom-checkbox">
+          <input [disabled]="!allowEdits() || saveInProgress"
+                 (ngModelChange)="changedPublishMeetup($event)"
+                 [(ngModel)]="displayedWalk.walk.meetupPublish"
+                 type="checkbox" class="custom-control-input" id="walk-publish-meetup">
+          <label class="custom-control-label"
                  for="walk-publish-meetup">Publish this walk to Meetup
-            <input [disabled]="!allowEdits() || saveInProgress"
-                   (ngModelChange)="changedPublishMeetup($event)"
-                   [(ngModel)]="displayedWalk.walk.meetupPublish"
-                   type="checkbox" id="walk-publish-meetup">
           </label>
         </div>
       </div>

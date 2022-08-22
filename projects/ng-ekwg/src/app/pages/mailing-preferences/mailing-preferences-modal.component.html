@@ -16,21 +16,21 @@
             <p class="well-heading">Please select how you want to be <b>emailed</b> by us using the following
               subscription checkboxes below:</p>
 
-            <div class="checkbox-group">
-              <label [ngClass]="{'ui-state-active': member.mailchimpLists.walks.subscribed}"
+            <div class="custom-control custom-checkbox">
+              <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox" class="custom-control-input"
+                     id="prefs-subscribe-walks-emails">
+              <label class="custom-control-label"
                      for="prefs-subscribe-walks-emails">Walks emails
-                <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox"
-                       id="prefs-subscribe-walks-emails">
               </label>
-              <label [ngClass]="{'ui-state-active': member.mailchimpLists.socialEvents.subscribed}"
+              <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox" class="custom-control-input"
+                     id="prefs-subscribe-social-events-emails">
+              <label class="custom-control-label"
                      for="prefs-subscribe-social-events-emails">Social events emails
-                <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox"
-                       id="prefs-subscribe-social-events-emails">
               </label>
-              <label [ngClass]="{'ui-state-active': member.mailchimpLists.general.subscribed}"
+              <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox" class="custom-control-input"
+                     id="prefs-subscribe-general-emails">
+              <label class="custom-control-label"
                      for="prefs-subscribe-general-emails">General emails
-                <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox"
-                       id="prefs-subscribe-general-emails">
               </label>
             </div>
           </div>

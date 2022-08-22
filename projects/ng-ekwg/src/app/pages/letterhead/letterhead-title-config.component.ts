@@ -9,7 +9,7 @@ import { TitleLine } from "./letterhead.component";
   template: `
     <div class="img-thumbnail ml-12">
       <h4>
-        <span class="checkbox-group form-inline">
+        <span class="custom-control custom-checkbox form-inline">
       <label [ngClass]="{'ui-state-active': titleLine.include}"
              for="show-title-{{titleLine.name}}">{{titleLine.name}}<input [(ngModel)]="titleLine.include" type="checkbox" id="show-title-{{titleLine.name}}">
       </label>
@@ -17,7 +17,7 @@ import { TitleLine } from "./letterhead.component";
       </h4>
       <div class="row">
         <div class="col-sm-12">
-          <div class="checkbox-group form-inline">
+          <div class="custom-control custom-checkbox form-inline">
             <label [ngClass]="{'ui-state-active': titleLine.showIcon}"
                    for="show-icon-{{titleLine.name}}">Prefix with <select [(ngModel)]="titleLine.iconType" class="form-control">
               <option *ngFor="let iconType of iconTypes" [ngValue]="iconType">{{iconType}}</option>

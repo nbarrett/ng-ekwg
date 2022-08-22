@@ -99,12 +99,13 @@
                placeholder="any text">
       </div>
       <div class="col-sm-6 mt-8">
-        <div class="checkbox-group">
-          <label [ngClass]="{'ui-state-active': showDuplicates}" for="show-duplicates"><input
+        <div class="custom-control custom-checkbox">
+          <input
             [(ngModel)]="showDuplicates"
             (ngModelChange)="applyFilters()"
-            type="checkbox"
-            id="show-duplicates">Show images that have duplicated images</label>
+            type="checkbox" class="custom-control-input"
+            id="show-duplicates">
+          <label class="custom-control-label" for="show-duplicates">Show images that have duplicated images</label>
         </div>
       </div>
     </div>

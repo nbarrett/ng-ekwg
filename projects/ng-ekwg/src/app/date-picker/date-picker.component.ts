@@ -17,10 +17,13 @@ export class DatePickerComponent implements OnInit, OnChanges {
 
   dateValue: DateValue;
   @Input() value: DateValue | number;
+  @Input() placeholder: string;
   @Input() size: string;
   @Input() label: string;
+  @Input() id: string;
+  @Input() disabled;
+  @Input() prependLabel;
   @Output() dateChange: EventEmitter<DateValue> = new EventEmitter();
-  public id: string;
   private logger: Logger;
   faCalendar = faCalendar;
 
@@ -35,7 +38,9 @@ export class DatePickerComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.id = `${kebabCase(this.label || "date-picker")}-${id++}`;
+    if (!this.id) {
+      this.id = `${kebabCase(this.label || "date-picker")}-${id++}`;
+    }
     this.logger.debug("ngOnInit", typeof this.value, this.value);
     this.setValue(this.value);
   }

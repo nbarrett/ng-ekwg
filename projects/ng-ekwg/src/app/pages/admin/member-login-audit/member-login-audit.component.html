@@ -16,9 +16,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="filter-audit" class="form-inline ml-12 mr-12">
-              Filter logins since:</label>
-            <app-date-picker id="filter-audit" [size]="'md round'"
+            <app-date-picker id="filter-audit" size="md"
+                             label="Filter logins since"
+                             prependLabel="true"
                              (dateChange)="onFilterDateChange($event)"
                              [value]="filterDateValue">
             </app-date-picker>
@@ -46,7 +46,7 @@
                    class="button-form green-confirm" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
           </div>
         </div>
-        <div class="row">
+        <div class="row mt-2">
           <div class="col-md-12" *ngIf="notifyTarget.showAlert">
             <div class="alert {{notifyTarget.alertClass}} mt-8">
               <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">

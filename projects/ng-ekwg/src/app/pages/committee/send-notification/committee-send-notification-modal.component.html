@@ -170,13 +170,13 @@
             </div>
             <div class="row" *ngIf="committeeFile">
               <div class="col col-sm-12"><label>Include download information for:</label>
-                <div class="checkbox-group">
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.content.includeDownloadInformation"
+                         type="checkbox" class="custom-control-input" id="include-download-information">
                   <label
-                    [ngClass]="{'ui-state-active': notification.content.includeDownloadInformation}"
+                    class="custom-control-label"
                     for="include-download-information">{{committeeFile.fileType}} -
                     {{display.fileTitle(committeeFile)}}
-                    <input [(ngModel)]="notification.content.includeDownloadInformation"
-                           type="checkbox" id="include-download-information">
                   </label>
                 </div>
               </div>
@@ -206,55 +206,55 @@
               </div>
               <div class="col-sm-4">
                 <label>Include Information:</label>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeDescription}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeDescription"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-show-description">
+                  <label class="custom-control-label"
                          for="user-events-show-description">Description:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeDescription"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-show-description">
                   </label>
                 </div>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeLocation}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeLocation"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-show-location">
+                  <label class="custom-control-label"
                          for="user-events-show-location">Location:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeLocation"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-show-location">
                   </label>
                 </div>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeContact}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeContact"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-show-contact">
+                  <label class="custom-control-label"
                          for="user-events-show-contact">Contact:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeContact"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-show-contact">
                   </label>
                 </div>
               </div>
               <div class="col-sm-4">
                 <label>Include Event Types:</label>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeWalks}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeWalks"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-include-walks">
+                  <label class="custom-control-label"
                          for="user-events-include-walks">Walks:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeWalks"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-include-walks">
                   </label>
                 </div>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeSocialEvents}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeSocialEvents"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-include-social-events">
+                  <label class="custom-control-label"
                          for="user-events-include-social-events">Social Events:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeSocialEvents"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-include-social-events">
                   </label>
                 </div>
-                <div class="checkbox-group">
-                  <label [ngClass]="{'ui-state-active': notification.groupEventsFilter.includeCommitteeEvents}"
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="notification.groupEventsFilter.includeCommitteeEvents"
+                         (ngModelChange)="populateGroupEvents()"
+                         type="checkbox" class="custom-control-input" id="user-events-include-committee-events"/>
+                  <label class="custom-control-label"
                          for="user-events-include-committee-events">Committee Events:
-                    <input [(ngModel)]="notification.groupEventsFilter.includeCommitteeEvents"
-                           (ngModelChange)="populateGroupEvents()"
-                           type="checkbox" id="user-events-include-committee-events"/>
                   </label>
                 </div>
               </div>
@@ -315,12 +315,12 @@
             <div class="row">
               <div class="col-sm-12">
                 <div class="form-group">
-                  <div class="checkbox-group">
+                  <div class="custom-control custom-checkbox">
+                    <input [(ngModel)]="notification.content.signoffText.include" type="checkbox" class="custom-control-input"
+                           id="include-signoff-text">
                     <label for="include-signoff-text"
-                           [ngClass]="{'ui-state-active': notification.content.signoffText.include}">
+                           class="custom-control-label">
                       Include Signoff text:
-                      <input [(ngModel)]="notification.content.signoffText.include" type="checkbox"
-                             id="include-signoff-text">
                     </label>
                   </div>
                   <textarea [disabled]="!notification.content.signoffText.include"
@@ -334,12 +334,12 @@
             <div class="row">
               <div class="col col-sm-12">
                 <div class="form-group">
-                  <div class="checkbox-group">
-                    <label [ngClass]="{'ui-state-active': notification.content.signoffAs.include}"
+                  <div class="custom-control custom-checkbox">
+                    <input [(ngModel)]="notification.content.signoffAs.include"
+                           type="checkbox" class="custom-control-input"
+                           id="include-signoff-as">
+                    <label class="custom-control-label"
                            for="include-signoff-as">Signoff as:
-                      <input [(ngModel)]="notification.content.signoffAs.include"
-                             type="checkbox"
-                             id="include-signoff-as">
                     </label>
                   </div>
                   <select [(ngModel)]="notification.content.signoffAs.value"

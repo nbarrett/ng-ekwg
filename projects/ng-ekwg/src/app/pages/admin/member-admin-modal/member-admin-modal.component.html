@@ -113,7 +113,6 @@
           <form>
             <div class="img-thumbnail thumbnail-admin-edit">
               <div class="row">
-                <ng-form autocomplete="false">
                   <div class="col-sm-6">
                     <div class="form-group">
                       <label for="login-user-name">Login User Name</label>
@@ -123,7 +122,6 @@
                              placeholder="Enter login user name here">
                     </div>
                   </div>
-                </ng-form>
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="new-password">Password</label>
@@ -133,8 +131,6 @@
                            placeholder="Enter password here">
                   </div>
                 </div>
-              </div>
-              <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
                     <label for="lastLogin">Last Login</label>
@@ -144,12 +140,14 @@
                            placeholder="Member has not logged in yet">
                   </div>
                 </div>
-                <div class="col-sm-6 checkbox-group">
-                  <label [ngClass]="{'ui-state-active': member.expiredPassword}"
-                         for="is-member-ex">Expired Password
+                <div class="col-sm-6">
+                  <div class="custom-control custom-checkbox">
                     <input name="expiredPassword" [disabled]="!allowEdits" [(ngModel)]="member.expiredPassword"
-                           type="checkbox" id="is-member-ex">
-                  </label>
+                           type="checkbox" class="custom-control-input" id="is-member-ex">
+                    <label class="custom-control-label"
+                           for="is-member-ex">Expired Password
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -165,70 +163,98 @@
               </div>
             </div>
             <div class="row">
-              <div class="checkbox-group">
-                <div class="col-sm-6">
-                  <label [ngClass]="{'ui-state-active': member.groupMember}"
+              <div class="col-sm-6">
+                <div class="custom-control custom-checkbox">
+                  <input name="groupMember" [disabled]="!allowEdits" [(ngModel)]="member.groupMember"
+                         type="checkbox" class="custom-control-input"
+                         id="is-approved-group-member">
+                  <label class="custom-control-label"
                          for="is-approved-group-member">Approved Group Member
-                    <input name="groupMember" [disabled]="!allowEdits" [(ngModel)]="member.groupMember"
-                           type="checkbox" id="is-approved-group-member">
-                  </label>
-                  <label name="socialMember" [ngClass]="{'ui-state-active': member.socialMember}"
-                         for="is-approved-social-member">Approved Social Member
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.socialMember"
-                           type="checkbox" id="is-approved-social-member">
-                  </label>
-                  <label name="revoked" [ngClass]="{'ui-state-active': member.revoked}"
-                         for="is-revoked-member">Revoked Member
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.revoked"
-                           type="checkbox" id="is-revoked-member">
                   </label>
                 </div>
-                <div class="col-sm-6">
-                  <label name="contentAdmin" [ngClass]="{'ui-state-active': member.contentAdmin}"
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.socialMember"
+                         type="checkbox" class="custom-control-input"
+                         id="is-approved-social-member">
+                  <label name="socialMember" class="custom-control-label"
+                         for="is-approved-social-member">Approved Social Member
+                  </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.revoked"
+                         type="checkbox" class="custom-control-input"
+                         id="is-revoked-member">
+                  <label name="revoked" class="custom-control-label"
+                         for="is-revoked-member">Revoked Member
+                  </label>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.contentAdmin"
+                         type="checkbox" class="custom-control-input"
+                         id="is-content-admin">
+                  <label name="contentAdmin" class="custom-control-label"
                          for="is-content-admin">Content Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.contentAdmin"
-                           type="checkbox" id="is-content-admin">
                   </label>
-                  <label name="walkAdmin" [ngClass]="{'ui-state-active': member.walkAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.walkAdmin"
+                         type="checkbox" class="custom-control-input" id="is-walk-admin">
+                  <label name="walkAdmin" class="custom-control-label"
                          for="is-walk-admin">Walk Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.walkAdmin"
-                           type="checkbox" id="is-walk-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.walkChangeNotifications}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits"
+                         [(ngModel)]="member.walkChangeNotifications" type="checkbox"
+                         class="custom-control-input"
+                         id="receives-walk-change-notifications">
+                  <label class="custom-control-label"
                          for="receives-walk-change-notifications">Walk Change Notifications
-                    <input [disabled]="!allowEdits"
-                           [(ngModel)]="member.walkChangeNotifications" type="checkbox"
-                           id="receives-walk-change-notifications">
+
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.socialAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.socialAdmin"
+                         type="checkbox" class="custom-control-input" id="is-social-admin">
+                  <label class="custom-control-label"
                          for="is-social-admin">Social Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.socialAdmin"
-                           type="checkbox" id="is-social-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.memberAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.memberAdmin"
+                         type="checkbox" class="custom-control-input" id="is-member-admin">
+                  <label class="custom-control-label"
                          for="is-member-admin">Member Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.memberAdmin"
-                           type="checkbox" id="is-member-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.financeAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.financeAdmin"
+                         type="checkbox" class="custom-control-input" id="is-finance-admin">
+                  <label class="custom-control-label"
                          for="is-finance-admin">Finance Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.financeAdmin"
-                           type="checkbox" id="is-finance-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.treasuryAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.treasuryAdmin"
+                         type="checkbox" class="custom-control-input" id="is-treasury-admin">
+                  <label class="custom-control-label"
                          for="is-treasury-admin">Treasury Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.treasuryAdmin"
-                           type="checkbox" id="is-treasury-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.fileAdmin}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.fileAdmin"
+                         type="checkbox" class="custom-control-input" id="is-file-admin">
+                  <label class="custom-control-label"
                          for="is-file-admin">File Admin
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.fileAdmin"
-                           type="checkbox" id="is-file-admin">
                   </label>
-                  <label [ngClass]="{'ui-state-active': member.committee}"
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!allowEdits" [(ngModel)]="member.committee"
+                         type="checkbox" class="custom-control-input" id="is-committee-member">
+                  <label class="custom-control-label"
                          for="is-committee-member">Committee Member
-                    <input [disabled]="!allowEdits" [(ngModel)]="member.committee"
-                           type="checkbox" id="is-committee-member">
                   </label>
                 </div>
               </div>
@@ -237,18 +263,18 @@
         </tab>
         <tab [heading]="'Preferences'">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="checkbox-group">
+            <div class="custom-control custom-checkbox">
               <div class="row">
                 <div class="col-sm-12">
                   <p>Please deselect the checkbox below to prompt {{member |
                     fullNameWithAlias}} to
                     confirm their profile settings on next login:</p>
-                  <label
-                    [ngClass]="{'ui-state-active': member.profileSettingsConfirmed}"
-                    for="profile-settings-confirmed">Profile settings confirmed ({{member | lastConfirmedDateDisplayed}})
-                    <input (ngModelChange)="profileSettingsConfirmedChecked($event)"
-                           [(ngModel)]="member.profileSettingsConfirmed" type="checkbox"
-                           id="profile-settings-confirmed">
+                  <input (ngModelChange)="profileSettingsConfirmedChecked($event)"
+                         [(ngModel)]="member.profileSettingsConfirmed" type="checkbox" class="custom-control-input"
+                         id="profile-settings-confirmed">
+                  <label class="custom-control-label"
+                         for="profile-settings-confirmed">Profile settings confirmed
+                    ({{member | lastConfirmedDateDisplayed}})
                   </label>
                 </div>
               </div>
@@ -260,11 +286,10 @@
 
                   <div class="row">
                     <div class="col-sm-5">
-                      <label
-                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.walks?.subscribed}"
-                        for="subscribe-walks-emails">Walks emails
-                        <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
-                               type="checkbox" id="subscribe-walks-emails">
+                      <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
+                             type="checkbox" class="custom-control-input" id="subscribe-walks-emails">
+                      <label class="custom-control-label"
+                             for="subscribe-walks-emails">Walks emails
                       </label>
                     </div>
                     <div class="col-sm-7">
@@ -279,12 +304,11 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-5">
-                      <label
-                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.socialEvents?.subscribed}"
-                        for="subscribe-social-events-emails">Social events emails
-                        <input (change)="changeSubscribed('socialEvents')"
-                          [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
-                          type="checkbox" id="subscribe-social-events-emails">
+                      <input (change)="changeSubscribed('socialEvents')"
+                             [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
+                             type="checkbox" class="custom-control-input" id="subscribe-social-events-emails">
+                      <label class="custom-control-label"
+                             for="subscribe-social-events-emails">Social events emails
                       </label>
                     </div>
                     <div class="col-sm-7">
@@ -299,12 +323,11 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-5">
-                      <label
-                        [ngClass]="{'ui-state-active': member?.mailchimpLists?.general.subscribed}"
-                        for="subscribe-general-emails">General emails
-                        <input (change)="changeSubscribed('general')"
-                          [(ngModel)]="member.mailchimpLists.general.subscribed"
-                          type="checkbox" id="subscribe-general-emails">
+                      <input (change)="changeSubscribed('general')"
+                             [(ngModel)]="member.mailchimpLists.general.subscribed"
+                             type="checkbox" class="custom-control-input" id="subscribe-general-emails">
+                      <label class="custom-control-label"
+                             for="subscribe-general-emails">General emails
                       </label>
                     </div>
                     <div class="col-sm-7">
@@ -324,11 +347,10 @@
                   <p>Please select how {{member | fullNameWithAlias}} wishes to limit
                     access to
                     their member data using the checkboxes below:</p>
-
-                  <label [ngClass]="{'ui-state-active': member.hideSurname}"
+                  <input [(ngModel)]="member.hideSurname" type="checkbox" class="custom-control-input"
+                         id="hide-surname">
+                  <label class="custom-control-label"
                          for="hide-surname">Hide surname from non-logged-in members
-                    <input [(ngModel)]="member.hideSurname" type="checkbox"
-                           id="hide-surname">
                   </label>
                 </div>
               </div>
@@ -383,11 +405,11 @@
                   </dd>
                 </dl>
               </div>
-              <div class="col-sm-4 checkbox-group input-sm">
-                <label [ngClass]="{'ui-state-active': member.receivedInLastBulkLoad}"
+              <div class="col-sm-4 custom-control custom-checkbox input-sm">
+                <input [disabled]="true" [(ngModel)]="member.receivedInLastBulkLoad"
+                       type="checkbox" class="custom-control-input" id="received-in-last-bulkload">
+                <label class="custom-control-label"
                        for="received-in-last-bulkload">Received In Last Bulk Load
-                  <input [disabled]="true" [(ngModel)]="member.receivedInLastBulkLoad"
-                         type="checkbox" id="received-in-last-bulkload">
                 </label>
               </div>
             </div>

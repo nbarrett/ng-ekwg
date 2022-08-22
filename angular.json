@@ -38,9 +38,9 @@
               "projects/ng-ekwg/src/app/assets/styles/styles.sass"
             ],
             "scripts": [
-              "./node_modules/popper.js/dist/umd/popper.js",
               "./node_modules/jquery/dist/jquery.slim.min.js",
-              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+              "./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "./node_modules/marked/marked.min.js"
             ]
           },
           "configurations": {

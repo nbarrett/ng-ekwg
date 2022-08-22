@@ -11,6 +11,16 @@
         <div class="row">
           <div class="col-sm-6">
             <div class="form-group">
+              <label for="walk-date-2">Walk Date</label>
+              <app-date-picker id="walk-date-2" size="md"
+                               placeholder="enter date of walk"
+                               [disabled]="!allowAdminEdits() || !allowEdits()"
+                               class="w-100"
+                               (dateChange)="onDateChange($event)"
+                               [value]="walkDate">
+              </app-date-picker>
+            </div>
+            <div *ngIf="false" class="form-group">
               <label for="walk-date">Walk Date</label>
               <div class="form-group">
                 <div class="input-group">
@@ -28,7 +38,7 @@
                              containerClass: 'theme-ramblers'}"
                          type="text" class="form-control input-sm"
                          id="walk-date"/>
-                  <div class="input-group-append rounded">
+                  <div class="input-group-append">
                     <span class="input-group-text">
                       <fa-icon (click)="(allowAdminEdits() || allowEdits())? dp.toggle():null"
                                [attr.aria-expanded]="dp.isOpen" [icon]="faCalendar" class="fa-icon"></fa-icon>
@@ -116,17 +126,16 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-4" *ngIf="allowEdits()">
-                  <div class="checkbox-group">
-                    <label [ngClass]="{'ui-state-active': displayedWalk.walk.ramblersPublish}"
-                           for="publish-ramblers">Publish to Ramblers
-                      <input [disabled]="!allowEdits() || saveInProgress"
-                             [(ngModel)]="displayedWalk.walk.ramblersPublish"
-                             type="checkbox" id="publish-ramblers">
+                <div class="col-sm-6" *ngIf="allowEdits()">
+                  <div class="custom-control custom-checkbox">
+                    <input [disabled]="!allowEdits() || saveInProgress"
+                           [(ngModel)]="displayedWalk.walk.ramblersPublish"
+                           type="checkbox" class="custom-control-input" id="publish-ramblers">
+                    <label class="custom-control-label" for="publish-ramblers">Publish to Ramblers
                     </label>
                   </div>
                 </div>
-                <div class="col-sm-8" *ngIf="ramblersWalkExists()">
+                <div class="col-sm-6" *ngIf="ramblersWalkExists()">
                   <div class="form-group">
                     <label>Link preview:
                       <img class="related-links-ramblers-image"
@@ -565,12 +574,12 @@
            [ngClass]="{'disabled':saveInProgress}">
     <div *ngIf="allowNotifyConfirmation() && !saveInProgress" class="row">
       <div class="col-sm-12">
-        <div class="checkbox-group checkbox-group-in-footer">
-          <label [ngClass]="{'ui-state-active': sendNotifications}"
+        <div class="custom-control custom-checkbox custom-control custom-checkbox-in-footer">
+          <input [disabled]="!allowAdminEdits() ||saveInProgress "
+                 [(ngModel)]="sendNotifications"
+                 type="checkbox" class="custom-control-input" id="send-notification">
+          <label class="custom-control-label"
                  for="send-notification">Notify {{personToNotify()}} about this change
-            <input [disabled]="!allowAdminEdits() ||saveInProgress "
-                   [(ngModel)]="sendNotifications"
-                   type="checkbox" id="send-notification">
           </label>
         </div>
       </div>
