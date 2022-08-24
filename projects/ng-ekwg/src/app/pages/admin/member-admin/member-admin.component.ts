@@ -208,7 +208,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   showMemberDialog(member: Member, editMode: EditMode) {
     this.logger.off("showMemberDialog:", editMode, member);
     this.modalService.show(MemberAdminModalComponent, {
-      class: "modal-lg",
+      class: "modal-xl",
       animated: false,
       show: true,
       initialState: {
@@ -227,7 +227,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   private createModalOptions(initialState?: any): ModalOptions {
     return {
-      class: "modal-lg",
+      class: "modal-xl",
       animated: false,
       backdrop: "static",
       ignoreBackdropClick: false,

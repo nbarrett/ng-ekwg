@@ -1,11 +1,7 @@
-input[type="radio"] + label
-  display: inline-block
-  font-weight: bold
-  background: url("../../../assets/images/ramblers/but-radio.png") left top no-repeat
-  cursor: pointer
+.scrollable
+  max-height: 500px
+  overflow: scroll
 
-input[type="radio"]:checked + label
-  background: url("../../../assets/images/ramblers/but-radio-active.png") no-repeat
-
-a
- cursor: pointer
+.group-events-ul
+  @extend .scrollable
+  list-style: none

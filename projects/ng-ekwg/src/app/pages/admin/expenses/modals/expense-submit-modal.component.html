@@ -20,17 +20,21 @@
         </div>
         <div class="mb-12">
           <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0">
-            <input [disabled]="notifyTarget.busy" id="supply-bank-details" type="radio"
+            <input [disabled]="notifyTarget.busy" id="supply-bank-details"
+                   type="radio"
+                   class="custom-control-input"
                    [(ngModel)]="supplyBankDetailsChoice"
                    (change)="supplyBankDetails(true)"
                    value="true"/>
-            <label for="supply-bank-details">I'll supply bank details now</label>
+            <label class="custom-control-label" for="supply-bank-details">I'll supply bank details now</label>
 
-            <input [disabled]="notifyTarget.busy" id="send-me-a-cheque" type="radio"
+            <input [disabled]="notifyTarget.busy" id="send-me-a-cheque"
+                   type="radio"
+                   class="custom-control-input"
                    [(ngModel)]="supplyBankDetailsChoice"
                    (change)="supplyBankDetails(false)"
                    value="false"/>
-            <label for="send-me-a-cheque">Please send me a cheque or contact me for bank details</label>
+            <label class="custom-control-label" for="send-me-a-cheque">Please send me a cheque or contact me for bank details</label>
           </div>
         </div>
         <div *ngIf="expenseClaim.bankDetails">

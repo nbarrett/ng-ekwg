@@ -205,7 +205,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
     this.mailchimpListService.defaultMailchimpSettings(member, true);
     member.groupMember = true;
     this.modalService.show(MemberAdminModalComponent, {
-      class: "modal-lg",
+      class: "modal-xl",
       show: true,
       initialState: {
         editMode: EditMode.ADD_NEW,

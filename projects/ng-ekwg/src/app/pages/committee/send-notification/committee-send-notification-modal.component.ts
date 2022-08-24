@@ -69,7 +69,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
               public display: CommitteeDisplayService,
-              private stringUtils: StringUtilsService,
+              public stringUtils: StringUtilsService,
               public googleMapsService: GoogleMapsService,
               private memberService: MemberService,
               private fullNameWithAlias: FullNameWithAliasPipe,
@@ -83,7 +83,7 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
               private bsModalRef: BsModalRef,
               private committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -571,5 +571,20 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notification.groupEventsFilter.selectAll = !this.notification.groupEventsFilter.selectAll;
     this.logger.debug("select all=", this.notification.groupEventsFilter.selectAll);
     this.notification.groupEvents.forEach(event => event.selected = this.notification.groupEventsFilter.selectAll);
+  }
+
+  idForIndex(index) {
+    const id = "select-" + index;
+    this.logger.debug("id:", id);
+    return id;
+  }
+
+  toggleEvent(groupEvent: GroupEvent) {
+    this.logger.info("toggleEvent:", groupEvent);
+    groupEvent.selected = !groupEvent.selected;
+  }
+
+  selectedCount() {
+    return this.notification.groupEvents.filter(item => item.selected).length;
   }
 }

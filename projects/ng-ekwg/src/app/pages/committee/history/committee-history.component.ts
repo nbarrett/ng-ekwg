@@ -145,7 +145,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
 
   createModalOptions(initialState?: any): ModalOptions {
     return {
-      class: "modal-lg",
+      class: "modal-xl",
       animated: false,
       backdrop: "static",
       ignoreBackdropClick: false,

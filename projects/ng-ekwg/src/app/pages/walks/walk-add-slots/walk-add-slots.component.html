@@ -18,16 +18,20 @@
             will then entice walk leaders to come forward and lead. Please choose how you would like to create the
             slots.</p>
           <div class="custom-control custom-radio custom-control-inline map-radio-label">
-            <input id="create-in-bulk" type="radio"
+            <input id="create-in-bulk"
+                   type="radio"
+                   class="custom-control-input"
                    (click)="selectBulk(true)"
                    [(ngModel)]="selectionMade"
                    value="true"/>
-            <label for="create-in-bulk">Create Sunday slots in bulk</label>
-            <input id="create-non-standard" type="radio"
+            <label class="custom-control-label" for="create-in-bulk">Create Sunday slots in bulk</label>
+            <input id="create-non-standard"
+                   type="radio"
+                   class="custom-control-input"
                    (click)="selectBulk(false)"
                    [(ngModel)]="selectionMade"
                    value="false"/>
-            <label for="create-non-standard">Create non-standard slot</label>
+            <label class="custom-control-label" for="create-non-standard">Create non-standard slot</label>
           </div>
           <input *ngIf="!selectionMade" type="submit" value="Back to walks" (click)="backToWalks()"
                  title="Back to walks"

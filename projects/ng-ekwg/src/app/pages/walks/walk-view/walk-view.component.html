@@ -143,7 +143,9 @@
       <div class="row rounded img-thumbnail map-radio-frame" (click)="refreshView()">
         <label class="ml-2 mr-2 font-weight-bold">Show Map:</label>
         <div class="custom-control custom-radio custom-control-inline">
-          <input class="custom-control-input" id="show-start-point" type="radio"
+          <input class="custom-control-input" id="show-start-point"
+                 type="radio"
+                 class="custom-control-input"
                  [ngModel]="mapDisplay" name="mapDisplay"
                  (ngModelChange)="changeShowDrivingDirections($event)"
                  value="show-start-point"/>
@@ -151,7 +153,9 @@
             point {{displayedWalk.walk.postcode}}</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-          <input class="custom-control-input" id="show-driving-directions" type="radio"
+          <input id="show-driving-directions"
+                 type="radio"
+                 class="custom-control-input"
                  (ngModelChange)="changeShowDrivingDirections($event)"
                  [ngModel]="mapDisplay" name="mapDisplay"
                  value="show-driving-directions"/>

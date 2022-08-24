@@ -52,7 +52,7 @@ export class CommitteeDisplayService {
 
   createModalOptions(initialState?: any): ModalOptions {
     return {
-      class: "modal-lg",
+      class: "modal-xl",
       animated: false,
       backdrop: "static",
       ignoreBackdropClick: false,

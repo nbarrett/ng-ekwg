@@ -62,7 +62,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
       if (loginResponse?.memberLoggedIn) {
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
           this.modalService.show(MailingPreferencesModalComponent, {
-            class: "modal-lg",
+            class: "modal-xl",
             animated: false,
             show: true,
             initialState: {

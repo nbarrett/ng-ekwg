@@ -449,11 +449,13 @@
           <div class="col-sm-12">
             <div class="custom-control custom-radio custom-control-inline map-radio-group map-radio-label">
               <input [disabled]="false"
-                     id="copy-selected-walk-leader" type="radio"
+                     id="copy-selected-walk-leader"
+                     type="radio"
+                     class="custom-control-input"
                      [(ngModel)]="copySource"
                      (change)="populateWalkTemplates()"
                      value="copy-selected-walk-leader"/>
-              <label for="copy-selected-walk-leader">Previously led by: <select
+              <label class="custom-control-label" for="copy-selected-walk-leader">Previously led by: <select
                 class="form-control input-sm input-led-by"
                 [(ngModel)]="copySourceFromWalkLeaderMemberId"
                 (change)="selectCopySelectedLeader()"
@@ -466,11 +468,13 @@
               </select>
               </label>
 
-              <input id="copy-with-os-maps-route-selected" type="radio"
+              <input id="copy-with-os-maps-route-selected"
+                     type="radio"
+                     class="custom-control-input"
                      [(ngModel)]="copySource"
                      (change)="populateWalkTemplates()"
                      value="copy-with-os-maps-route-selected"/>
-              <label for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
+              <label class="custom-control-label" for="copy-with-os-maps-route-selected">With an OS Maps route I can follow</label>
 
             </div>
           </div>

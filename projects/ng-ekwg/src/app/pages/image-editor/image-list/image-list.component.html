@@ -68,15 +68,19 @@
     <div class="row">
       <div class="col-sm-12 form-inline">
         <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0 ml-2 mt-12">
-          <input [disabled]="notifyTarget.busy" id="recent-photos-filter" type="radio"
+          <input [disabled]="notifyTarget.busy" id="recent-photos-filter"
+                 type="radio"
+                 class="custom-control-input"
                  [(ngModel)]="filterType"
                  (click)="filterFor('recent')"
                  value="recent"/>
-          <label for="recent-photos-filter" class="bold">Show recent photos</label>
-          <input [disabled]="notifyTarget.busy" id="tag-filter" type="radio"
+          <label class="custom-control-label bold" for="recent-photos-filter">Show recent photos</label>
+          <input [disabled]="notifyTarget.busy" id="tag-filter"
+                 type="radio"
+                 class="custom-control-input"
                  [(ngModel)]="filterType"
                  value="choose"/>
-          <label for="tag-filter" class="bold">Show images tagged with:</label>
+          <label class="custom-control-label" for="tag-filter" class="bold">Show images tagged with:</label>
           <select [disabled]="filterType!=='choose'" [(ngModel)]="selectedTag"
                   id="filterByTag"
                   class="form-control rounded mr-12"
@@ -85,11 +89,13 @@
                     [ngValue]="imageTag"
                     [textContent]="imageTag.subject">
           </select>
-          <input [disabled]="notifyTarget.busy" id="all-photos-filter" type="radio"
+          <input [disabled]="notifyTarget.busy" id="all-photos-filter"
+                 type="radio"
+                 class="custom-control-input"
                  [(ngModel)]="filterType"
                  (click)="filterFor('all')"
                  value="all"/>
-          <label for="all-photos-filter" class="bold">Show all photos</label>
+          <label class="custom-control-label" for="all-photos-filter" class="bold">Show all photos</label>
         </div>
       </div>
       <div class="col-sm-6 form-inline mt-22">

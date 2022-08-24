@@ -11,35 +11,39 @@
             <div class="row">
               <div class="col-sm-7"><label>Send to:</label>
                 <div class="form-group">
-                  <div class="radio">
-                    <input (click)="clearRecipients()" id="all-ekwg-social" type="radio"
+                  <div class="custom-control custom-radio">
+                    <input (click)="clearRecipients()" id="all-ekwg-social"
+                           type="radio"
+                           class="custom-control-input"
                            [(ngModel)]="socialEvent?.notification?.content.destinationType"
                            name="send-to"
                            value="all-ekwg-social"/>
-                    <label for="all-ekwg-social">{{memberFilterSelections?.length}}
+                    <label class="custom-control-label" for="all-ekwg-social">{{memberFilterSelections?.length}}
                       Social Group Members</label>
                     <a class="ml-4" *ngIf="memberFilterSelections.length>0"
                        (click)="editAllSocialRecipients()">(edit)</a>
                   </div>
-                  <div class="radio">
+                  <div class="custom-control custom-radio">
                     <input (click)="clearRecipients()"
                            [disabled]="socialEvent.attendees.length===0"
                            id="attendees"
                            name="send-to"
                            type="radio"
+                           class="custom-control-input"
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="attendees"/>
-                    <label for="attendees">{{socialEvent.attendees.length}}
+                    <label class="custom-control-label" for="attendees">{{socialEvent.attendees.length}}
                       Attendees</label><a class="ml-4" *ngIf="socialEvent.attendees.length>0"
                                           (click)="editAttendeeRecipients()">(edit)</a>
                   </div>
-                  <div class="radio">
+                  <div class="custom-control custom-radio">
                     <input id="custom"
                            type="radio"
+                           class="custom-control-input"
                            name="send-to"
                            [(ngModel)]="socialEvent.notification.content.destinationType"
                            value="custom"/>
-                    <label for="custom"><span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length===0">Choose individual recipients</span>
+                    <label class="custom-control-label" for="custom"><span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length===0">Choose individual recipients</span>
                       <span *ngIf="socialEvent?.notification?.content?.selectedMemberIds?.length>0">
                         {{socialEvent?.notification?.content?.selectedMemberIds?.length}} recipient(s) chosen</span>
                     </label>
@@ -50,26 +54,32 @@
               </div>
               <div class="col col-sm-5"><label>Address as:</label>
                 <div class="form-group">
-                  <div class="radio">
-                    <input id="addressee-first-name" type="radio"
+                  <div class="custom-control custom-radio">
+                    <input id="addressee-first-name"
+                           type="radio"
+                           class="custom-control-input"
                            name="address-as"
                            [(ngModel)]="socialEvent.notification.content.addresseeType"
                            value="Hi *|FNAME|*,"/>
-                    <label for="addressee-first-name">Hi <i>first name</i></label>
+                    <label class="custom-control-label" for="addressee-first-name">Hi <i>first name</i></label>
                   </div>
-                  <div class="radio">
-                    <input id="addressee-all" type="radio"
+                  <div class="custom-control custom-radio">
+                    <input id="addressee-all"
+                           type="radio"
+                           class="custom-control-input"
                            name="address-as"
                            [(ngModel)]="socialEvent.notification.content.addresseeType"
                            value="Hi all,"/>
-                    <label for="addressee-all">Hi all</label>
+                    <label class="custom-control-label" for="addressee-all">Hi all</label>
                   </div>
-                  <div class="radio">
-                    <input id="addressee-none" type="radio"
+                  <div class="custom-control custom-radio">
+                    <input id="addressee-none"
+                           type="radio"
+                           class="custom-control-input"
                            name="address-as"
                            [(ngModel)]="socialEvent.notification.content.addresseeType"
                            value=""/>
-                    <label for="addressee-none">No addressing</label>
+                    <label class="custom-control-label" for="addressee-none">No addressing</label>
                   </div>
                 </div>
               </div>
