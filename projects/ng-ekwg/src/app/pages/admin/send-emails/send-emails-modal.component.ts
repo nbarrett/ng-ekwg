@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { faQuestion } from "@fortawesome/free-solid-svg-icons/faQuestion";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { map } from "lodash-es";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";

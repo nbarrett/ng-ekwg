@@ -59,46 +59,53 @@
                 </div>
                 <div class="row">
                   <div class="col-sm-12">
-                    <input
-                      type="radio"
-                      class="custom-control-input"
-                      value="expired-members"
-                      [ngModel]="memberSelectorName"
-                      [disabled]="notifyTarget.busy"
-                      id="expired-members"
-                      (click)="populateMembers('expired-members')">
-                    <label class="custom-control-label" for="expired-members" class="form-inline">
-                      {{emailType.monthsInPast}} months past expiry date:
-                      <app-date-picker *ngIf="memberSelectorName==='expired-members'"
-                                       class="calendar-in-label"
-                                       (dateChange)="onMemberFilterDateChange($event)"
-                                       [value]="memberFilterDate">
-                      </app-date-picker>
-                    </label>
+                    <div class="custom-control custom-radio align-middle">
+                      <input
+                        type="radio"
+                        class="custom-control-input"
+                        value="expired-members"
+                        [ngModel]="memberSelectorName"
+                        [disabled]="notifyTarget.busy"
+                        id="expired-members"
+                        (click)="populateMembers('expired-members')">
+                      <label class="custom-control-label form-inline" for="expired-members">
+                        {{emailType.monthsInPast}} months past expiry date:
+                        <app-date-picker *ngIf="memberSelectorName==='expired-members'"
+                                         class="calendar-in-label"
+                                         (dateChange)="onMemberFilterDateChange($event)"
+                                         [value]="memberFilterDate">
+                        </app-date-picker>
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-sm-6">
-                    <input
-                      type="radio"
-                      class="custom-control-input"
-                      value="missing-from-bulk-load-members"
-                      [ngModel]="memberSelectorName"
-                      [disabled]="notifyTarget.busy"
-                      id="missing-from-bulk-load-members"
-                      (click)="populateMembers('missing-from-bulk-load-members')">
-                    <label class="custom-control-label" for="missing-from-bulk-load-members">Missing from last bulk load</label>
-                    <input
-                      type="radio"
-                      class="custom-control-input"
-                      [disabled]="notifyTarget.busy"
-                      value="Clear all"
-                      [ngModel]="memberSelectorName"
-                      id="clear-members"
-                      (click)="clearSelectedMembers()"
-                      title="Clear current selection">
-                    <label class="custom-control-label" (click)="clearSelectedMembers()" for="clear-members">Clear
-                      all and enter manually</label>
+                    <div class="custom-control custom-radio">
+                      <input
+                        type="radio"
+                        class="custom-control-input"
+                        value="missing-from-bulk-load-members"
+                        [ngModel]="memberSelectorName"
+                        [disabled]="notifyTarget.busy"
+                        id="missing-from-bulk-load-members"
+                        (click)="populateMembers('missing-from-bulk-load-members')">
+                      <label class="custom-control-label" for="missing-from-bulk-load-members">Missing from last bulk
+                        load</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                      <input
+                        type="radio"
+                        class="custom-control-input"
+                        [disabled]="notifyTarget.busy"
+                        value="Clear all"
+                        [ngModel]="memberSelectorName"
+                        id="clear-members"
+                        (click)="clearSelectedMembers()"
+                        title="Clear current selection">
+                      <label class="custom-control-label" (click)="clearSelectedMembers()" for="clear-members">Clear
+                        all and enter manually</label>
+                    </div>
                   </div>
                 </div>
               </div>

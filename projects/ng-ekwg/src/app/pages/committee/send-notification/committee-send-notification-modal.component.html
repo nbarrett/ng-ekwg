@@ -26,7 +26,7 @@
                     <label class="custom-control-label" for="send-to-committee">{{allCommitteeList().length}}
                       Committee Members
                     </label>
-                    <a class="ml-4" *ngIf="allCommitteeList().length>0"
+                    <a class="ml-1" *ngIf="allCommitteeList().length>0"
                        (click)="editCommitteeRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -40,7 +40,7 @@
                     <label class="custom-control-label" for="send-to-general">{{allGeneralSubscribedList().length}}
                       General List
                       Members </label>
-                    <a class="ml-4" *ngIf="allGeneralSubscribedList().length>0"
+                    <a class="ml-1" *ngIf="allGeneralSubscribedList().length>0"
                        (click)="editAllEKWGRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -56,7 +56,7 @@
                       List
                       Members
                     </label>
-                    <a class="ml-4" *ngIf="allWalksSubscribedList().length>0"
+                    <a class="ml-1" *ngIf="allWalksSubscribedList().length>0"
                        (click)="editAllWalksRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -71,7 +71,7 @@
                     <label class="custom-control-label" for="send-to-social">{{allSocialSubscribedList().length}}
                       Social List Members
                     </label>
-                    <a *ngIf="allSocialSubscribedList().length>0"
+                    <a class="ml-1" *ngIf="allSocialSubscribedList().length>0"
                        (click)="editAllSocialRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -88,7 +88,7 @@
                         *ngIf="notification.content.selectedMemberIds.length>0">{{this.notification.content.selectedMemberIds.length}}
                         recipient(s) chosen from {{this.notification.content.list}} list</span>
                     </label>
-                    <a (click)="clearRecipientsForCampaignOfType()"> (clear)</a>
+                    <a class="ml-1" (click)="clearRecipientsForCampaignOfType()"> (clear)</a>
                   </div>
                 </div>
               </div>

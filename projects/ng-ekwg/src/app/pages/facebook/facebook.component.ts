@@ -6,6 +6,7 @@ import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { UrlService } from "../../services/url.service";
 
+
 @Component({
   selector: "app-facebook",
   templateUrl: "./facebook.component.html",
@@ -14,11 +15,14 @@ import { UrlService } from "../../services/url.service";
 export class FacebookComponent implements OnInit {
   private logger: Logger;
   public recentMedia: InstagramMediaPost[];
-  url: any;
-  width = "560";
-  height = "612";
-  facebookUrl = "https://www.facebook.com/eastkentwalking";
+  pluginUrl: any;
+  appId = "643977439755625";
+  width = "570";
+  height = "642";
+  version = "v14.0";
+  facebookGroupUrl = "https://www.facebook.com/eastkentwalking";
   facebookPagesUrl = "https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649";
+  scriptSrcUrl = "https://connect.facebook.net/en_GB/sdk.js#xfbml=1&autoLogAppEvents=1&version=" + this.version + "&appId=" + this.appId;
 
   constructor(private urlService: UrlService,
               public dateUtils: DateUtilsService,
@@ -29,22 +33,21 @@ export class FacebookComponent implements OnInit {
 
   parameters() {
     return [
-      "href=" + this.facebookUrl,
-      "tabs=timeline&width=" + this.width + "&height=" + this.height,
+      "href=" + this.facebookGroupUrl,
+      "tabs=timeline",
+      "width=" + this.width,
+      "height=" + this.height,
       "small_header=false",
       "adapt_container_width=true",
       "hide_cover=false",
       "show_facepile=true",
-      "appId=643977439755625"
+      "appId=" + this.appId
     ].join("&");
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    this.url = this.sanitiser.bypassSecurityTrustResourceUrl("https://www.facebook.com/plugins/page.php?" + this.parameters());
+    this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl("https://www.facebook.com/plugins/page.php?" + this.parameters());
   }
 
-  dimensions() {
-    return `width: ${this.width}; height: ${this.height};`;
-  }
 }

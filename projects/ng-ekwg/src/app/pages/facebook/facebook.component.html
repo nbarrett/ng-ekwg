@@ -1,26 +1,15 @@
 <app-card-container>
   <script async defer crossorigin="anonymous"
-          src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v14.0&appId=643977439755625&autoLogAppEvents=1"></script>
-  <script>
-    window.fbAsyncInit = function() {
-      const init = FB.init({
-        appId            : '643977439755625',
-        autoLogAppEvents : true,
-        xfbml            : true,
-        version          : 'v14.0'
-      });
-      console.log("fbAsyncInit", init);
-    };
-  </script>
-<!--  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>-->
+          [src]="scriptSrcUrl"></script>
   <h5 class="card-title cta-button cta-facebook-blue rounded">
-    <a [href]="facebookPagesUrl "
+    <a [href]="facebookGroupUrl "
        title="Visit Our Facebook Page"> Facebook</a>
   </h5>
   <p class="card-text">
-    <iframe class="text-center" *ngIf="url"
-            [src]="url"
-            [style]="'border:none;overflow:hidden;' + dimensions()" scrolling="no" frameborder="0"
-            allowTransparency="true" allow="encrypted-media"></iframe>
+    <iframe class="text-center" *ngIf="pluginUrl"
+            [src]="pluginUrl"
+            [width]="width"
+            [height]="height"
+            frameborder="0"></iframe>
   </p>
 </app-card-container>

@@ -14,7 +14,7 @@ export class NavbarComponent implements OnInit {
   public navbarContentWithinCollapse: boolean;
 
   constructor(private broadcastService: BroadcastService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
   }
 
   public navBarToggled: boolean;
