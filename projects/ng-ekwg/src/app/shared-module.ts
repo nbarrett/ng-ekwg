@@ -29,6 +29,7 @@ import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
+import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
 import { ImageEditComponent } from "./pages/image-editor/image-edit/image-edit.component";
@@ -118,6 +119,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     ImageListComponent,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
+    CopyIconComponent,
     MarkdownEditorComponent,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
@@ -182,7 +184,8 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     UiSwitchModule,
     UpdatedAuditPipe,
     ValueOrDefaultPipe,
-    FontAwesomeModule
+    FontAwesomeModule,
+    CopyIconComponent
   ]
 })
 export class SharedModule {

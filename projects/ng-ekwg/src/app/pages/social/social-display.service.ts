@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
-import { PopoverDirective } from "ngx-bootstrap/popover";
+import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
 import { CommitteeMember } from "../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../models/member.model";
@@ -82,8 +82,8 @@ export class SocialDisplayService {
     }) : undefined;
   }
 
-  copyToClipboard(socialEvent: SocialEvent, pop: PopoverDirective) {
-    this.clipboardService.copyToClipboard(this.socialEventLink(socialEvent), pop);
+  copyToClipboard(socialEvent: SocialEvent, pop: TooltipDirective) {
+    // this.clipboardService.copyToClipboardWithTooltip(this.socialEventLink(socialEvent), pop);
   }
 
   attachmentUrl(socialEvent) {

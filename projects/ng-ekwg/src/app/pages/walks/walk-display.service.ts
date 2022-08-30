@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
-import { PopoverDirective } from "ngx-bootstrap/popover";
+import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
@@ -43,7 +43,7 @@ export class WalkDisplayService {
     private googleMapsService: GoogleMapsService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
-    private clipboardService: ClipboardService,
+    public clipboardService: ClipboardService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -158,8 +158,8 @@ export class WalkDisplayService {
     return existingWalk;
   }
 
-  copyWalkToClipboard(walk: Walk, pop: PopoverDirective) {
-    this.clipboardService.copyToClipboard(this.walkLink(walk), pop);
+  copyWalkToClipboard(walk: Walk, pop: TooltipDirective) {
+    // this.clipboardService.copyToClipboardWithTooltip(this.walkLink(walk), pop);
   }
 
   latestEventTypeFor(walk: Walk): WalkEventType {

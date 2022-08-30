@@ -183,5 +183,5 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.autoSelectMapDisplay();
     this.updateGoogleMap();
   }
-
+  
 }

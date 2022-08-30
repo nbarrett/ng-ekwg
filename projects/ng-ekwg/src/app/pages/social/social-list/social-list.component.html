@@ -98,7 +98,7 @@
           <div class="row related-links-row" *ngIf="display.socialEventLink(socialEvent)">
             <div class="col-sm-12">
               <label><a popover="Link has been copied to clipboard"
-                        triggers="" #pop="bs-popover"
+                        triggers="" #pop="bs-tooltip"
                         (click)="display.copyToClipboard(socialEvent, pop)">
                 <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
                   <span tooltipPlacement="left"

@@ -7,6 +7,7 @@ import { CarouselStoryNavigatorComponent } from "../../carousel-story-navigator/
 import { ContainerComponent } from "../../container/container";
 import { FooterComponent } from "../../footer/footer";
 import { FooterIconsComponent } from "../../footer/icons/footer-icons";
+import { HeaderBarComponent } from "../../header-bar/header-bar";
 import { HeaderButtonsComponent } from "../../header-buttons/header-buttons";
 import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { ImageCropperAndResizerComponent } from "../../image-cropper/image-cropper";
@@ -37,56 +38,55 @@ import { ChangedItemsPipe } from "../../pipes/changed-items.pipe";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SharedModule } from "../../shared-module";
 import { SiteEditComponent } from "../../site-edit/site-edit.component";
-import { HeaderBarComponent } from "../../header-bar/header-bar";
 import { CardContainerComponent } from "./card-container/card-container.component";
 import { NavbarContentComponent } from "./navbar-content/navbar-content";
 import { NavbarComponent } from "./navbar/navigator";
 
 @NgModule({
-    declarations: [
-        CarouselStoryNavigatorComponent,
-        ChangedItemsPipe,
-        ContactUsComponent,
-        ContainerComponent,
-        FooterIconsComponent,
-        ForgotPasswordComponent,
-        NewBrandHomeComponent,
-        ImageCropperAndResizerComponent,
-        HowToComponent,
-        HowToModalComponent,
-        JoinUsComponent,
-        HomeComponent,
-        LetterheadComponent,
-        LetterheadTitleConfigComponent,
-        LetterheadTitleOutputComponent,
-        LetterheadTitlePartConfigComponent,
-        LoginComponent,
-        LoginModalComponent,
-        LoginPanelComponent,
-        LogoutComponent,
-        MainLogoComponent,
-        MainTitleComponent,
-        MeetupDescriptionComponent,
-        FooterComponent,
-        PageNavigatorComponent,
-        PageTitleComponent,
-        NavbarComponent,
-        PrivacyPolicyComponent,
-        SetPasswordComponent,
-        SiteEditComponent,
-        HeaderBarComponent,
-        HeaderButtonsComponent,
-        InstagramComponent,
-        FacebookComponent,
-        CardContainerComponent,
-        NavbarContentComponent,
-    ],
-    imports: [
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        SharedModule.forRoot(),
-    ]
+  declarations: [
+    CarouselStoryNavigatorComponent,
+    ChangedItemsPipe,
+    ContactUsComponent,
+    ContainerComponent,
+    FooterIconsComponent,
+    ForgotPasswordComponent,
+    NewBrandHomeComponent,
+    ImageCropperAndResizerComponent,
+    HowToComponent,
+    HowToModalComponent,
+    JoinUsComponent,
+    HomeComponent,
+    LetterheadComponent,
+    LetterheadTitleConfigComponent,
+    LetterheadTitleOutputComponent,
+    LetterheadTitlePartConfigComponent,
+    LoginComponent,
+    LoginModalComponent,
+    LoginPanelComponent,
+    LogoutComponent,
+    MainLogoComponent,
+    MainTitleComponent,
+    MeetupDescriptionComponent,
+    FooterComponent,
+    PageNavigatorComponent,
+    PageTitleComponent,
+    NavbarComponent,
+    PrivacyPolicyComponent,
+    SetPasswordComponent,
+    SiteEditComponent,
+    HeaderBarComponent,
+    HeaderButtonsComponent,
+    InstagramComponent,
+    FacebookComponent,
+    CardContainerComponent,
+    NavbarContentComponent,
+  ],
+  imports: [
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    SharedModule.forRoot(),
+  ]
 })
 
 export class AppModule implements DoBootstrap {

@@ -143,7 +143,7 @@
                            alt="Click to view on Ramblers Walks and Events Manager"/>
                       <a target="_blank"
                          tooltip="Click to view on Ramblers Walks and Events Manager"
-                         [href]="display.ramblersLink(displayedWalk.walk)">View walk on Ramblers</a>
+                         [href]="display.ramblersLink(displayedWalk.walk)">Ramblers</a>
                     </label>
                   </div>
                 </div>
@@ -504,19 +504,7 @@
       {{notifyTarget.alertMessage}}
     </div>
   </div>
-  <div *ngIf="display.walkLink(displayedWalk.walk)">
-    <label><a popover="Link has been copied to clipboard"
-              triggers="" #pop="bs-popover"
-              (click)="display.copyWalkToClipboard(displayedWalk.walk, pop)"
-              [outsideClick]="true">
-      <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
-        <div
-             tooltip="Click to copy link to clipboard"></div>
-      </fa-icon>
-      copy link </a> to this <a [href]="display.walkLink(displayedWalk.walk)"
-                                target="_blank">walk</a></label>
-  </div>
-  <div *ngIf="displayedWalk.walk">
+  <div *ngIf="displayedWalk.walk" class="form-inline mb-4 align-middle">
     <input *ngIf="allowClose()" [disabled]="saveInProgress" type="submit"
            value="Close"
            (click)="closeEditView()" title="Close and go back to walks list"
@@ -576,17 +564,13 @@
            title="Cancel this action"
            class="button-form amber-confirm"
            [ngClass]="{'disabled':saveInProgress}">
-    <div *ngIf="allowNotifyConfirmation() && !saveInProgress" class="row">
-      <div class="col-sm-12">
-        <div class="custom-control custom-checkbox custom-control custom-checkbox-in-footer">
-          <input [disabled]="!allowAdminEdits() ||saveInProgress "
-                 [(ngModel)]="sendNotifications"
-                 type="checkbox" class="custom-control-input" id="send-notification">
-          <label class="custom-control-label"
-                 for="send-notification">Notify {{personToNotify()}} about this change
-          </label>
-        </div>
-      </div>
+    <div *ngIf="allowNotifyConfirmation() && !saveInProgress" class="custom-control custom-checkbox custom-control">
+      <input [disabled]="!allowAdminEdits() ||saveInProgress "
+             [(ngModel)]="sendNotifications"
+             type="checkbox" class="custom-control-input" id="send-notification">
+      <label class="custom-control-label"
+             for="send-notification">Notify {{personToNotify()}} about this change
+      </label>
     </div>
   </div>
 </div>
