@@ -6,6 +6,7 @@ import { DateValue } from "../models/date.model";
 import { Walk } from "../models/walk.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NumberUtilsService } from "./number-utils.service";
+import { isDateValue } from "./type-guards";
 
 @Injectable({
   providedIn: "root"
@@ -37,7 +38,11 @@ export class DateUtilsService {
   }
 
   asMoment(dateValue?: any, inputFormat?: string) {
-    return moment(dateValue, inputFormat).tz("Europe/London");
+    if (isDateValue(dateValue)) {
+      return moment(dateValue.value, inputFormat).tz("Europe/London");
+    } else {
+      return moment(dateValue, inputFormat).tz("Europe/London");
+    }
   }
 
   momentNow() {

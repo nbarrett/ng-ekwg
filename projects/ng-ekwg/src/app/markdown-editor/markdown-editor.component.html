@@ -1,17 +1,16 @@
 <div *ngIf="editNameEnabled">
-  <label class="mr-8 mt-12" [for]="'input_'+ content.name | snakeCase">Content name</label>
+  <label class="mt-2 mt-3" [for]="'input_'+ content.name | snakeCase">Content name</label>
   <input [(ngModel)]="content.name"
          [id]="'input_'+ content.name | snakeCase"
          type="text" class="form-control input-sm"
          placeholder="Enter name of content">
-  <label class="mr-8 mt-12" [for]="content.name">Content for {{content.name}}</label>
+  <label class="mt-2 mt-3" [for]="content.name">Content for {{content.name}}</label>
 </div>
 <div class="row" *ngIf="editorState.editActive">
   <div class="col-12">
     <ng-content>
     </ng-content>
-    <div *ngIf="!editorState.preview" (click)="preview() && !saving()" class="badge-button"
-         delay=500 [tooltip]="'Preview content for ' + description">
+    <div *ngIf="!editorState.preview" (click)="preview() && !saving()" class="badge-button">
       <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass"></fa-icon>
       <span>{{previewCaption}}</span></div>
     <div *ngIf="editorState.preview"
@@ -40,8 +39,7 @@
 <div class="row">
   <div class="col-12">
     <div *ngIf="canPreview()"
-         (click)="edit()" delay=500 [tooltip]="'Preview content for ' + description"
-         markdown ngPreserveWhitespaces [data]="content.text">
+         (click)="edit()" markdown ngPreserveWhitespaces [data]="content.text">
     </div>
     <textarea *ngIf="canEdit()"
               [(ngModel)]="content.text"

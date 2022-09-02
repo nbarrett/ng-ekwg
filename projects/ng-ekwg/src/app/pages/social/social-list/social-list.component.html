@@ -39,7 +39,7 @@
              class="button-form float-right mt-2"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
     </form>
-    <div class="mt-12" *ngIf="notifyTarget.showAlert">
+    <div class="mt-3" *ngIf="notifyTarget.showAlert">
       <div class="alert {{notifyTarget.alertClass}}">
         <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
         <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>

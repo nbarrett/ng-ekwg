@@ -67,7 +67,7 @@
     </div>
     <div class="row">
       <div class="col-sm-12 form-inline">
-        <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0 ml-2 mt-12">
+        <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0 ml-2 mt-3">
           <input [disabled]="notifyTarget.busy" id="recent-photos-filter"
                  type="radio"
                  class="custom-control-input"
@@ -127,7 +127,7 @@
          [uploader]="uploader"
          class="drop-zone">Or drop file here
     </div>
-    <div class="progress mt-12" *ngIf="notifyTarget.busy">
+    <div class="progress mt-3" *ngIf="notifyTarget.busy">
       <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
         uploading {{uploader.progress}}%
       </div>

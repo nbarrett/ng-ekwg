@@ -18,7 +18,7 @@
             </li>
           </ul>
         </div>
-        <div class="mb-12">
+        <div class="mb-2">
           <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0">
             <input [disabled]="notifyTarget.busy" id="supply-bank-details"
                    type="radio"
@@ -75,7 +75,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="notifyTarget.showAlert" class="row mb-12">
+      <div *ngIf="notifyTarget.showAlert" class="row mb-2">
         <div class="col-sm-12">
           <div class="alert {{notifyTarget.alertClass}}"><fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong
             *ngIf="notifyTarget.alertTitle">

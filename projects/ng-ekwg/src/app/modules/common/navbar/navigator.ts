@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit {
     this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
   }
 
-  public navBarToggled: boolean;
+  public navbarExpanded = false;
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
@@ -31,19 +31,19 @@ export class NavbarComponent implements OnInit {
   }
 
   toggleNavBar() {
-    this.navBarToggled = !this.navBarToggled;
+    this.navbarExpanded = !this.navbarExpanded;
   }
 
   ngOnInit(): void {
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent) => {
       this.logger.info("menu toggled with event:", event);
-      this.navBarToggled = event.data;
+      this.navbarExpanded = event.data;
     });
     this.detectWidth(window.innerWidth);
   }
 
   icon() {
-    return this.navBarToggled ? "i-cross" : "i-menu";
+    return this.navbarExpanded ? "i-cross" : "i-menu";
   }
 
 }

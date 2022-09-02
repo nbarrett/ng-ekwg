@@ -14,8 +14,12 @@
         <h4>{{slide.text}}</h4>
         <div>
           <a delay="500" class="badge event-date"
-             *ngIf="slide.eventId" tooltipPlacement="right" [tooltip]="eventTooltip(slide)"
-             [adaptivePosition]="false" [placement]="'right'" [href]="eventUrl(slide)">
+             *ngIf="showIndicators && slide.eventId" [tooltip]="eventTooltip(slide)"
+             [placement]="'right'" [href]="eventUrl(slide)">
+            on {{slide.date | displayDate}}  </a>
+          <a delay="500" class="badge event-date"
+             *ngIf="!showIndicators && slide.eventId" [tooltip]="eventTooltip(slide)"
+             [placement]="'bottom'" [href]="eventUrl(slide)">
             on {{slide.date | displayDate}}  </a>
         </div>
       </div>

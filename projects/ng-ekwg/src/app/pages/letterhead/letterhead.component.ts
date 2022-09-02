@@ -8,7 +8,7 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
   template: `
     <div class="row">
       <div class="col-sm-4">
-          <h1 class="mb-12 ml-12 mt-12">Configure letterhead</h1>
+          <h1 class="mb-2 ml-2 mt-3">Configure letterhead</h1>
           <app-letterhead-title-config [titleLine]="line1"></app-letterhead-title-config>
           <app-letterhead-title-config [titleLine]="line2"></app-letterhead-title-config>
       </div>

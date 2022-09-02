@@ -185,7 +185,7 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-4 mb-12">
+                <div class="col-sm-4 mb-2">
                   <input type="submit" value="Unlink"
                          (click)="unlinkOSMapsFromCurrentWalk()"
                          title="Remove link between this walk and OS Maps"
@@ -368,7 +368,7 @@
                   <input [disabled]="!allowEdits()" [(ngModel)]="displayedWalk.walk.gridReference"
                          type="text" class="form-control input-sm" id="grid-reference"
                          placeholder="Enter Grid Reference here">
-                  <div class="input-group-btn">
+                  <div class="input-group-append">
                     <button id="view-grid-reference" (click)="viewGridReference()"
                             class="btn btn-default btn-sm grid-ref-btn">
                     <span tooltipPlacement="top"

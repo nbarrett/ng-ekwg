@@ -1,5 +1,7 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { PlacementForBs5 } from "ngx-bootstrap/positioning";
+import { MapPlacementInToRL } from "ngx-bootstrap/positioning/models";
 import { NgxLoggerLevel } from "ngx-logger";
 import { groupEventTypeFor } from "../../models/committee.model";
 import { ContentMetadataItem } from "../../models/content-metadata.model";
@@ -25,14 +27,25 @@ export class HomeComponent implements OnInit, OnDestroy {
   activeSlideIndex = 0;
   public showIndicators: boolean;
   faPencil = faPencil;
+
+  @HostListener("window:resize", ["$event"])
+  onResize(event) {
+    this.configureBasedOnWidth(event.target.innerWidth);
+  }
+
   constructor(
     public imageTagDataService: ImageTagDataService,
     private memberLoginService: MemberLoginService,
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.INFO);
     this.feeds = {facebook: {}};
+  }
+
+  private configureBasedOnWidth(width: number) {
+    this.logger.info("configureBasedOnWidth:window.innerWidth", window.innerWidth, "provided width:", width, "setting:");
+    this.showIndicators = width > 768 && this.viewableSlides.length <= 20;
   }
 
   ngOnDestroy(): void {
@@ -89,10 +102,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (slide) {
       this.logger.debug("addNewSlide:adding slide", this.viewableSlides.length + 1, "of", this.selectedSlides.length, slide.text, slide.image);
       this.viewableSlides.push(slide);
-      this.showIndicators = this.viewableSlides.length <= 20;
+      this.configureBasedOnWidth(window.innerWidth);
     } else {
       this.logger.debug("addNewSlide:no slides selected from", this.selectedSlides.length, "available");
     }
   }
-
 }
