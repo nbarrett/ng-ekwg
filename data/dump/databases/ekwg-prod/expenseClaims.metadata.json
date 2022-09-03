@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.expenseClaims"}],"uuid":"3638319ccfae42e0bcdd708c9373f697","collectionName":"expenseClaims"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"3638319ccfae42e0bcdd708c9373f697","collectionName":"expenseClaims"}

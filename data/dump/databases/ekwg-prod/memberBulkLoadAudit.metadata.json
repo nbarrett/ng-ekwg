@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.memberBulkLoadAudit"}],"uuid":"aa086820570d492697588141d789fc1f","collectionName":"memberBulkLoadAudit"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"aa086820570d492697588141d789fc1f","collectionName":"memberBulkLoadAudit"}

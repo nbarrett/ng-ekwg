@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg.refreshTokens"}],"uuid":"945bd162720f4f8dbc1012d2e70bf69c","collectionName":"refreshTokens"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"945bd162720f4f8dbc1012d2e70bf69c","collectionName":"refreshTokens"}
