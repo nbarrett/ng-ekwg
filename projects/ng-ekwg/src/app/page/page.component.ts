@@ -2,7 +2,9 @@ import { Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Page } from "../models/page.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { HOME, PageService } from "../services/page.service";
+import { PageService } from "../services/page.service";
+import { StringUtilsService } from "../services/string-utils.service";
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-page",
@@ -12,27 +14,24 @@ import { HOME, PageService } from "../services/page.service";
 export class PageComponent implements OnInit {
 
   @Input() pageTitle: string;
-  @Input() lastBreadcrumb: string;
+  @Input() area: string;
+  @Input() relativePath: string;
 
   public open: boolean;
   private logger: Logger;
   pages: Page[] = [];
+  public pathSegments: string[];
 
   constructor(private pageService: PageService,
+              private stringUtils: StringUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit(): void {
-    this.logger.debug(this.lastBreadcrumb);
-    this.pages = this.pageService.pages.filter(page => {
-      if (page === HOME) {
-        return true;
-      } else {
-        return page.title.toLowerCase() === this.lastBreadcrumb;
-      }
-    });
-    this.logger.debug("pageTitle:", this.pageTitle, "lastBreadcrumb:", this.lastBreadcrumb, "pages:", this.pages);
+    this.logger.debug("lastBreadcrumb:", this.area, "relativePath:", this.relativePath);
+    this.pages = this.pageService.pagesFor(this.area, this.relativePath)
+    this.logger.debug("pageTitle:", this.pageTitle, "lastBreadcrumb:", this.area, "pages:", this.pages);
   }
 
 }

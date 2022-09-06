@@ -1,7 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ContentText } from "../models/content-text.model";
+import { Subject } from "rxjs";
+import { ContentText, ContentTextApiResponse } from "../models/content-text.model";
+import { CommonDataService } from "./common-data-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -10,8 +12,11 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 export class ContentTextService {
   private logger: Logger;
   private BASE_URL = "/api/database/content-text";
+  private notifications = new Subject<ContentTextApiResponse>();
 
-  constructor(private http: HttpClient, loggerFactory: LoggerFactory) {
+  constructor(private http: HttpClient,
+              private commonDataService: CommonDataService,
+              loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ContentTextService, NgxLoggerLevel.OFF);
   }
 
@@ -19,6 +24,12 @@ export class ContentTextService {
     const apiResponse = await this.http.get<{ response: ContentText[] }>(this.BASE_URL).toPromise();
     this.logger.debug("all - received", apiResponse);
     return apiResponse.response;
+  }
+
+  async getById(contentTextId: string): Promise<ContentText> {
+    this.logger.debug("getById:", contentTextId);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<ContentTextApiResponse>(`${this.BASE_URL}/${contentTextId}`), this.notifications);
+    return apiResponse.response as ContentText;
   }
 
   async findByName(name): Promise<ContentText> {

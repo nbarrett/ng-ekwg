@@ -6,6 +6,7 @@ import { DataQueryOptions } from "../../models/api-request.model";
 import { Walk, WalkApiResponse } from "../../models/walk.model";
 import { CommonDataService } from "../common-data-service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { UrlService } from "../url.service";
 
 @Injectable({
   providedIn: "root"
@@ -18,8 +19,9 @@ export class WalksService {
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
+              private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalksService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalksService, NgxLoggerLevel.DEBUG);
   }
 
   notifications(): Observable<WalkApiResponse> {
@@ -41,10 +43,20 @@ export class WalksService {
     }
   }
 
-  async getById(walkId: string): Promise<Walk>  {
+  async getById(walkId: string): Promise<Walk> {
     this.logger.debug("getById:", walkId);
     const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<WalkApiResponse>(`${this.BASE_URL}/${walkId}`), this.walkNotifications);
     return apiResponse.response as Walk;
+  }
+
+  async getByIdIfPossible(walkId: string): Promise<Walk | null> {
+    if (this.urlService.isMongoId(walkId)) {
+      this.logger.debug("getByIdIfPossible:walkId", walkId, "is valid MongoId");
+      return this.getById(walkId);
+    } else {
+      this.logger.debug("getByIdIfPossible:walkId", walkId, "is not valid MongoId - returning null");
+      return Promise.resolve(null);
+    }
   }
 
   async update(walk: Walk): Promise<Walk> {

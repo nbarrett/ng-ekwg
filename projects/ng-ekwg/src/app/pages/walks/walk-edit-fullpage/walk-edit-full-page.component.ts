@@ -23,7 +23,8 @@ export class WalkEditFullPageComponent implements OnInit {
   private notify: AlertInstance;
 
   constructor(private walksService: WalksService,
-              private route: ActivatedRoute, private dateUtils: DateUtilsService,
+              private route: ActivatedRoute,
+              private dateUtils: DateUtilsService,
               private display: WalkDisplayService,
               private notifierService: NotifierService,
               displayDate: DisplayDatePipe, loggerFactory: LoggerFactory) {

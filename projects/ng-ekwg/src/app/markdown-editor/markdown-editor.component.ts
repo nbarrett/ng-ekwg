@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { faCircleCheck, faEraser, faMagnifyingGlass, faPencil, faRemove, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
@@ -42,6 +42,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   @Input() data: ContentText;
   @Input() name: string;
+  @Input() id: string;
   @Input() category: string;
   @Input() text: string;
   @Input() rows: number;
@@ -51,6 +52,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() editInitiallyActive: boolean;
   @Input() previewInitiallyActive: boolean;
   @Input() description: string;
+  @Output() saved: EventEmitter<ContentText> = new EventEmitter();
   private initialised: boolean;
   faSpinner = faSpinner;
   faMagnifyingGlass = faMagnifyingGlass;
@@ -132,21 +134,31 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   queryContent(): Promise<ContentText> {
     this.editorState.dataAction = DataAction.QUERY;
     this.logger.debug("querying content", this.name, "editorState:", this.editorState);
-    return this.contentTextService.findByName(this.name).then((content) => {
-      if (isEmpty(content)) {
-        this.content = {category: this.category, text: this.text, name: this.name};
-      } else {
-        this.content = content;
-      }
-      this.saveEnabled = true;
-      this.originalContent = cloneDeep(this.content);
-      this.editorState.dataAction = DataAction.NONE;
-      if (!this.rows) {
-        this.rows = this.calculateRowsFrom(this.content);
-      }
-      this.logger.debug(this.name, "retrieved content:", this.content, "editor state:", this.editorState);
-      return content;
-    });
+    if (this.name) {
+      return this.contentTextService.findByName(this.name).then((content) => {
+        if (isEmpty(content)) {
+          this.content = {category: this.category, text: this.text, name: this.name};
+        } else {
+          this.content = content;
+        }
+        return this.apply(content);
+      });
+    } else if (this.id) {
+      return this.contentTextService.getById(this.id).then((content) => {
+        return this.apply(content);
+      });
+    }
+  }
+
+  private apply(content: ContentText) {
+    this.saveEnabled = true;
+    this.originalContent = cloneDeep(this.content);
+    this.editorState.dataAction = DataAction.NONE;
+    if (!this.rows) {
+      this.rows = this.calculateRowsFrom(this.content);
+    }
+    this.logger.debug(this.name, "retrieved content:", this.content, "editor state:", this.editorState);
+    return content;
   }
 
   revert(): void {
@@ -172,6 +184,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
           this.editorState.dataAction = DataAction.NONE;
           this.logger.debug("saved", this.content, "content", "this.editorState", this.editorState);
           this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_SAVED, data));
+          this.saved.emit(data);
           this.changeDetectorRef.detectChanges();
           return this.content;
         }

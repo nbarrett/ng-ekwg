@@ -15,7 +15,7 @@ export class PageTitleComponent {
   }
 
   title() {
-    return `EKWG - ${this.pageService.pageForArea(this.urlService.area()).title}`;
+    return `EKWG - ${this.pageService.pageForArea(this.urlService.area())?.title}`;
   }
 
 }

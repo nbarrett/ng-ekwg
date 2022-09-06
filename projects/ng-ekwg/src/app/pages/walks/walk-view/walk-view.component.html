@@ -1,5 +1,5 @@
 <div *ngIf="displayedWalk" class="img-thumbnail event-thumbnail">
-  <app-panel-expander *ngIf="!walkIdFromUrl" [walk]="displayedWalk.walk" [expandable]="allowWalkAdminEdits"
+  <app-panel-expander *ngIf="!displayedWalk" [walk]="displayedWalk.walk" [expandable]="allowWalkAdminEdits"
                       [collapsable]="true" [collapseAction]="'collapse'">
   </app-panel-expander>
   <div class="row">

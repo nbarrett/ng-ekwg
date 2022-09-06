@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
+import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
@@ -10,6 +11,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { isMongoId } from "./mongo-utils";
 
 @Injectable({
   providedIn: "root"
@@ -37,16 +39,21 @@ export class UrlService {
     }
   }
 
-  navigateToUrl(url: string) {
+  navigateToUrl(url: string, $event: MouseEvent) {
     if (!this.siteEdit.active()) {
-      this.logger.info("navigateToUrl:", url);
-      this.document.location.href = url;
+      const controlOrMetaKey: boolean = $event.ctrlKey || $event.metaKey;
+      this.logger.info("navigateToUrl:", url, "controlOrMetaKey:", controlOrMetaKey, "$event:", $event);
+      if (controlOrMetaKey) {
+        window.open(url, "_blank");
+      } else {
+        this.document.location.href = url;
+      }
     }
   }
 
   relativeUrlFirstSegment(optionalUrl?: string): string {
     const url = new URL(optionalUrl || this.absUrl());
-    return "/" + first(url.pathname.substring(1).split("/"));
+    return "/" + first(this.toPathSegments(url.pathname.substring(1)));
   }
 
   absUrl(): string {
@@ -60,7 +67,19 @@ export class UrlService {
   }
 
   relativeUrl(optionalUrl?: string): string {
-    return last((optionalUrl || this.absUrl()).split("/"));
+    return last((this.toPathSegments(optionalUrl || this.absUrl())));
+  }
+
+  toPathSegments(relativePath: string): string[] {
+    return relativePath?.split("/").filter(item => !isEmpty(item));
+  }
+
+  relativeUrlIsMongoId(): boolean {
+    return this.isMongoId(this.relativeUrl());
+  }
+
+  isMongoId(id: string) {
+    return isMongoId(id);
   }
 
   resourceUrl(area: string, subArea: string, id: string): string {

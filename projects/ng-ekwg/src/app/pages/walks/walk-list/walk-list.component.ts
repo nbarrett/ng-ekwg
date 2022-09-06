@@ -94,7 +94,6 @@ export class WalkListComponent implements OnInit {
     this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshWalks(NamedEventType.REFRESH));
     this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToWalks(searchTerm));
     this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
-    this.siteEditService.events.subscribe(item => this.logAndDetectChanges(item));
   }
 
   walkTracker(index: number, walk: DisplayedWalk) {
@@ -151,10 +150,6 @@ export class WalkListComponent implements OnInit {
     this.urlService.navigateTo("walks", "add");
   }
 
-  allowShowAll(): boolean {
-    return !!this.currentWalkId;
-  }
-
   showAllWalks() {
     this.urlService.navigateTo("walks");
   }
@@ -187,21 +182,10 @@ export class WalkListComponent implements OnInit {
   }
 
   query() {
-    if (this.currentWalkId) {
-      return this.walksService.getById(this.currentWalkId)
-        .then((walk: Walk) => {
-          if (!walk) {
-            this.notify.error("Walk could not be found. Try opening again from the link in the notification email, " +
-              "or choose the Show All Walks button");
-          }
-          return [walk];
-        });
-    } else {
-      const criteria = this.walksCriteriaObject();
-      const sort = this.walksSortObject();
-      this.logger.debug("walksCriteriaObject:this.filterParameters.criteria", criteria, "sort:", sort);
-      return this.walksService.all({criteria, sort});
-    }
+    const criteria = this.walksCriteriaObject();
+    const sort = this.walksSortObject();
+    this.logger.debug("walksCriteriaObject:this.filterParameters.criteria", criteria, "sort:", sort);
+    return this.walksService.all({criteria, sort});
   }
 
   showTableHeader(walk: DisplayedWalk) {
@@ -224,7 +208,6 @@ export class WalkListComponent implements OnInit {
       this.walks[(this.walks.indexOf(existingWalk))] = walk;
       this.applyFilterToWalks();
     }
-    this.logAndDetectChanges("updated walk");
   }
 
   refreshWalks(event?: any): Promise<void> {
@@ -237,15 +220,7 @@ export class WalkListComponent implements OnInit {
         this.walks = this.currentWalkId || this.filterParameters.selectType === 6 ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();
-        this.logAndDetectChanges("walks query");
       });
-  }
-
-  private logAndDetectChanges(event: any) {
-    // setTimeout(() => {
-    //   this.logger.debug("detecting changes following", event);
-    //   this.changeDetectorRef.detectChanges();
-    // }, 0);
   }
 
   loginOrLogout() {

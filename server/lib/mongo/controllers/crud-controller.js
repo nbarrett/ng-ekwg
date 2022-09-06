@@ -2,9 +2,9 @@ const {isNumber} = require("lodash");
 const {envConfig} = require("../../env-config/env-config");
 const transforms = require("./transforms");
 
-exports.create = (model) => {
+exports.create = (model, debugEnabled) => {
   const debug = require("debug")(envConfig.logNamespace(`database:${model.modelName}`));
-  debug.enabled = false;
+  debug.enabled = debugEnabled;
   return {
     create: (req, res) => {
       const document = transforms.createDocumentRequest(req);

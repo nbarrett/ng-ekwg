@@ -3,15 +3,15 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 
 @Component({
-  selector: "app-walk-information",
-  templateUrl: "./walk-information.component.html"
+  selector: "app-walk-sub-page",
+  templateUrl: "./walk-sub-page.html"
 })
-export class WalkInformationComponent {
+export class WalkSubPageComponent {
   private logger: Logger;
 
   constructor(
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkInformationComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkSubPageComponent, NgxLoggerLevel.OFF);
   }
 
 }

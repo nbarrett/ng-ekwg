@@ -110,7 +110,7 @@
               "projects/ng-ekwg/src/app/assets"
             ],
             "styles": [
-              "projects/ng-ekwg/src/styles.sass"
+              "projects/ng-ekwg/src/app/assets/styles/styles.sass"
             ],
             "scripts": []
           }

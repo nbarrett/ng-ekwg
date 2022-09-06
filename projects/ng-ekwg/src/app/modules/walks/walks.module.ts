@@ -22,7 +22,7 @@ import { WalkDisplayService } from "../../pages/walks/walk-display.service";
 import { WalkEditFullPageComponent } from "../../pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
 import { WalkEditComponent } from "../../pages/walks/walk-edit/walk-edit.component";
 import { WalkExportComponent } from "../../pages/walks/walk-export/walk-export.component";
-import { WalkInformationComponent } from "../../pages/walks/walk-information/walk-information.component";
+import { WalkDynamicContentComponent } from "../../pages/walks/walk-information/walk-dynamic-content";
 import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.component";
 import { WalkMeetupConfigParametersComponent } from "../../pages/walks/walk-meetup-config-parameters/walk-meetup-config-parameters.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
@@ -56,7 +56,7 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     WalkEventTypePipe,
     WalkExportComponent,
     WalkListComponent,
-    WalkInformationComponent,
+    WalkDynamicContentComponent,
     WalkMeetupComponent,
     WalkMeetupConfigParametersComponent,
     WalkMeetupSettingsComponent,

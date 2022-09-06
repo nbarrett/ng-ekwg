@@ -7,9 +7,7 @@
   <label class="mt-2 mt-3" [for]="content.name">Content for {{content.name}}</label>
 </div>
 <div class="row" *ngIf="editorState.editActive">
-  <div class="col-12">
-    <ng-content>
-    </ng-content>
+  <div class="col-12 form-inline">
     <div *ngIf="!editorState.preview" (click)="preview() && !saving()" class="badge-button">
       <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass"></fa-icon>
       <span>{{previewCaption}}</span></div>
@@ -34,6 +32,8 @@
       <fa-icon [icon]="reverting() ? faSpinner: faEraser"></fa-icon>
       <span>delete</span>
     </div>
+      <ng-content class="ml-1">
+      </ng-content>
   </div>
 </div>
 <div class="row">

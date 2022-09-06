@@ -1,5 +1,8 @@
 import { Injectable } from "@angular/core";
+import { last } from "lodash-es";
 import { Page } from "../models/page.model";
+import { StringUtilsService } from "./string-utils.service";
+import { UrlService } from "./url.service";
 
 export const HOME: Page = {href: "", title: "Home"};
 
@@ -8,6 +11,10 @@ export const HOME: Page = {href: "", title: "Home"};
 })
 
 export class PageService {
+
+  constructor(private stringUtils: StringUtilsService,
+              private urlService: UrlService) {
+  }
 
   public pages: Page[] = [
     HOME,
@@ -24,4 +31,23 @@ export class PageService {
     return this.pages.find(page => page.href === area) || HOME;
   }
 
+  pagesFor(area: string, relativePath: string): Page[] {
+    return this.basePagesForArea(area).concat(this.relativePages(area, this.urlService.toPathSegments(relativePath)));
   }
+
+  private basePagesForArea(area: string): Page[] {
+    return this.pages
+      .filter(page => page === HOME || page.title.toLowerCase() === area.toLowerCase());
+  }
+
+  private relativePages(area: string, pathSegments: string[]): Page[] {
+    return pathSegments
+      .filter(item => item !== last(pathSegments))
+      .map((path, index) => ({title: this.stringUtils.asTitle(path), href: this.pathSegmentsUpTo(area, pathSegments, index)}));
+  }
+
+  private pathSegmentsUpTo(area: string, pathSegments: string[], upToIndex: number): string {
+    return `${area}/${pathSegments.filter((item, index) => index <= upToIndex).join("/")}`;
+  }
+
+}

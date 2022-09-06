@@ -6,6 +6,7 @@ import isNumber from "lodash-es/isNumber";
 import isObject from "lodash-es/isObject";
 import map from "lodash-es/map";
 import startCase from "lodash-es/startCase";
+import toLower from "lodash-es/toLower";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage } from "../models/alert-target.model";
 import { DateUtilsService } from "./date-utils.service";
@@ -100,6 +101,10 @@ export class StringUtilsService {
 
   left(str, chars) {
     return str.substr(0, chars);
+  }
+
+  asTitle(str: string) {
+    return startCase(toLower(str));
   }
 
   pluraliseWithCount(count: number, text: string) {

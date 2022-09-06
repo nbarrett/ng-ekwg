@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { faCopy, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -38,7 +38,8 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.applyWalk(displayedWalk);
   }
 
-  public walkIdFromUrl: string;
+  public walkIdOrPath: string;
+  public walkIdFromUrl: boolean;
   public displayedWalk: DisplayedWalk;
   public displayLinks: boolean;
   fromPostcode = "";
@@ -86,14 +87,12 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("initialised with walk", this.displayedWalk);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      this.walkIdFromUrl = paramMap.get("walk-id");
-      this.logger.debug("walk-id from route params:", this.walkIdFromUrl);
-      this.queryIfRequired();
-    });
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
+    this.walkIdFromUrl = this.urlService.relativeUrlIsMongoId();
+    this.walkIdOrPath = this.urlService.relativeUrl()
+    this.queryIfRequired();
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.logger.debug("loginResponseObservable:", loginResponse);
       this.display.refreshMembers();
@@ -101,6 +100,26 @@ export class WalkViewComponent implements OnInit, OnDestroy {
       this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
       this.refreshHomePostcode();
     });
+    this.notify.success({
+      title: "Single walk showing",
+      message: " - "
+    });
+  }
+
+  queryIfRequired(): void {
+    if (this.walkIdFromUrl) {
+      this.walksService.getByIdIfPossible(this.walkIdOrPath)
+        .then((walk: Walk) => {
+          if (walk) {
+            this.applyWalk(this.display.toDisplayedWalk(walk));
+          } else {
+            this.notify.warning({
+              title: "Walk not found",
+              message: "Content for this walk doesnt exist"
+            });
+          }
+        });
+    } else {}
   }
 
   private applyWalk(displayedWalk: DisplayedWalk) {
@@ -108,23 +127,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
       this.displayedWalk = displayedWalk;
       this.displayLinks = !!(this.displayedWalk.walk.meetupEventUrl || this.displayedWalk.walk.osMapsRoute || this.displayedWalk.walk.osMapsRoute || this.displayedWalk.walk.ramblersWalkId || this.displayedWalk.walkLink);
       this.updateGoogleMap();
-    }
-  }
-
-  queryIfRequired(): void {
-    if (this.walkIdFromUrl && !this.displayedWalk) {
-      this.walksService.getById(this.walkIdFromUrl)
-        .then((walk: Walk) => {
-          if (!walk) {
-            this.notify.error("Walk could not be found. To see all walks click Show All Walks button");
-          } else {
-            this.applyWalk(this.display.toDisplayedWalk(walk));
-            this.notify.success({
-              title: "Single walk showing",
-              message: " - "
-            });
-          }
-        });
     }
   }
 
@@ -183,5 +185,5 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.autoSelectMapDisplay();
     this.updateGoogleMap();
   }
-  
+
 }

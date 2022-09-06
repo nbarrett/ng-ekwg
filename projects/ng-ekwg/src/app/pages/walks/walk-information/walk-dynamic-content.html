@@ -1,0 +1,74 @@
+<app-page [relativePath]="path" [area]="area" [pageTitle]="pageTitle">
+  <div *ngIf="pageContent && siteEditService.active()">
+    <div (click)="savePageContent()"
+         delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2">
+      <fa-icon [icon]="faSave"></fa-icon>
+      Save page changes
+    </div>
+    <div (click)="revertPageContent()"
+         delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
+      <fa-icon [icon]="faUndo"></fa-icon>
+      Revert page changes
+    </div>
+    <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+      <div class="thumbnail-heading">Row {{rowIndex + 1}}</div>
+      <div class="row">
+        <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
+          <div class="form-inline mb-2">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text input-sm">column {{columnIndex + 1}} width:</div>
+              </div>
+              <input #input (input)="changeColumnWidthFor(input, rowIndex, columnIndex)"
+                     [value]="pageContent.rows[rowIndex].columns[columnIndex].columns"
+                     type="number" class="form-control input-sm column-input"
+                     placeholder="Enter number of columns (1-12)">
+            </div>
+          </div>
+          <app-markdown-editor [id]="column?.contentTextId"
+                               [editInitiallyActive]="true"
+                               [description]="identifierFor(rowIndex, columnIndex, path)"
+                               [category]="path"
+                               (saved)="saveContentTextId($event, rowIndex, columnIndex)"
+                               [name]="rowColFor(rowIndex, columnIndex)">
+            <div
+              (click)="addColumn(row, columnIndex)"
+              delay=500 [tooltip]="'Insert column at position ' + (columnIndex+1)" class="badge-button">
+              <fa-icon [icon]="faPlusCircle"></fa-icon>
+            </div>
+            <div
+              (click)="deleteColumn(row, columnIndex)"
+              delay=500 [tooltip]="'Remove column at position ' + (columnIndex+1)" class="badge-button">
+              <fa-icon [icon]="faMinusCircle"></fa-icon>
+            </div>
+          </app-markdown-editor>
+        </div>
+      </div>
+    </div>
+    <div (click)="addRow()"
+         delay=500 [tooltip]="'Add Row ' + (pageContent?.rows.length+1)" class="badge-button">
+      <fa-icon [icon]="faPlusCircle"></fa-icon>
+      <span>{{'Add Row ' + (pageContent?.rows.length + 1)}}</span>
+    </div>
+  </div>
+  <div *ngIf="!pageContent">
+    <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
+      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+      <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
+      - <a (click)="createContent()" type="button"
+           class="rams-text-decoration-pink">Create content</a>
+      {{notifyTarget.alertMessage}}
+    </div>
+  </div>
+  <div *ngIf="!siteEditService.active()">
+    <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+      <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
+        <app-markdown-editor [id]="column?.contentTextId"
+                             [description]="identifierFor(rowIndex,columnIndex,path)"
+                             [category]="path"
+                             [name]="rowColFor(rowIndex, columnIndex)">
+        </app-markdown-editor>
+      </div>
+    </div>
+  </div>
+</app-page>
