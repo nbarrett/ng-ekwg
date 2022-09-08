@@ -12,6 +12,8 @@ import { ChangePasswordComponent } from "../../pages/admin/profile/change-passwo
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
 import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
+import { hasDynamicPath } from "../../services/path-matchers";
+import { DynamicContentComponent } from "../common/dynamic-content/dynamic-content";
 import { AdminModule } from "./admin.module";
 
 @NgModule({
@@ -29,6 +31,7 @@ import { AdminModule } from "./admin.module";
     {path: "member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
     {path: "member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
     {path: "set-password/:password-reset-id", component: SetPasswordComponent},
+    {matcher: hasDynamicPath, component: DynamicContentComponent},
   ])]
 })
 export class AdminRoutingModule {

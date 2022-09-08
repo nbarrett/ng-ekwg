@@ -1,7 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
-import { last, sum } from "lodash-es";
+import flatten from "lodash-es/flatten";
+import last from "lodash-es/last";
+import sum from "lodash-es/sum";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ContentText, defaultRow, PageContent, PageContentRow } from "../../../models/content-text.model";
@@ -12,16 +14,16 @@ import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
-import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
   selector: "app-dynamic-content",
-  templateUrl: "./walk-dynamic-content.html",
-  styleUrls: ["./walk-dynamic-content.sass"],
+  templateUrl: "./dynamic-content.html",
+  styleUrls: ["./dynamic-content.sass"],
 })
-export class WalkDynamicContentComponent implements OnInit {
+export class DynamicContentComponent implements OnInit {
   private logger: Logger;
-  public path: string;
+  public relativePath: string;
+  public contentPath: string;
   public pageContent: PageContent;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
@@ -39,31 +41,30 @@ export class WalkDynamicContentComponent implements OnInit {
     private notifierService: NotifierService,
     private urlService: UrlService,
     private stringUtils: StringUtilsService,
-    public display: WalkDisplayService,
     private pageContentService: PageContentService,
     private walksService: WalksService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkDynamicContentComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.area = this.urlService.area();
-      this.path = paramMap.get("path");
-      this.pathSegments = this.urlService.toPathSegments(this.path);
-      this.logger.debug("initialised with path:", this.path, "pathSegments:", this.pathSegments);
+      this.relativePath = paramMap.get("relativePath");
+      this.contentPath = `${this.area}/${this.relativePath}`;
+      this.pathSegments = this.urlService.toPathSegments(this.relativePath);
+      this.logger.debug("initialised with path:", this.relativePath, "pathSegments:", this.pathSegments);
       this.pageTitle = this.stringUtils.asTitle(last(this.pathSegments));
-      this.logger.debug("Finding page content for " + this.path);
-      const contentPath = `${this.area}/${this.path}`;
-      this.pageContentService.findByPath(contentPath)
+      this.logger.debug("Finding page content for " + this.relativePath);
+      this.pageContentService.findByPath(this.contentPath)
         .then(pageContent => {
-          this.logger.debug("Found page content for", contentPath, "as:", pageContent);
+          this.logger.debug("Found page content for", this.contentPath, "as:", pageContent);
           this.pageContent = pageContent;
           if (!pageContent) {
             this.notify.success({
               title: `Page content doesn't exist`,
-              message: `for ${this.path}`
+              message: `for ${this.relativePath}`
             });
           }
         });
@@ -72,7 +73,7 @@ export class WalkDynamicContentComponent implements OnInit {
 
   createContent() {
     this.pageContent = {
-      path: this.path,
+      path: this.contentPath,
       rows: [defaultRow]
     };
     this.logger.info("this.pageContent:", this.pageContent);
@@ -91,18 +92,23 @@ export class WalkDynamicContentComponent implements OnInit {
   }
 
   descriptionForContent() {
-    return this.stringUtils.replaceAll("-", " ", this.path);
+    return this.stringUtils.replaceAll("-", " ", this.relativePath);
   }
 
   saveContentTextId(contentText: ContentText, rowIndex: number, columnIndex: number) {
     if (this.pageContent.rows[rowIndex].columns[columnIndex].contentTextId !== contentText?.id) {
       this.pageContent.rows[rowIndex].columns[columnIndex].contentTextId = contentText?.id;
-      this.savePageContent();
+      if (!this.unsavedMarkdownElements()) {
+        this.savePageContent();
+      }
     }
   }
 
-  public savePageContentAllowed(): boolean {
-    return this.pageContent.rows.map(item => item.columns.map(col => col.contentTextId)).length > 0;
+  public unsavedMarkdownElements(): boolean {
+    const columnsWithNewlyCreatedMarkdown = flatten(this.pageContent.rows.map(item => item.columns.map(col => col.contentTextId)))
+      .filter(item => item === null);
+    this.logger.debug("unsavedMarkdownElements:", columnsWithNewlyCreatedMarkdown);
+    return columnsWithNewlyCreatedMarkdown.length > 0;
   }
 
   public savePageContent() {
@@ -122,7 +128,8 @@ export class WalkDynamicContentComponent implements OnInit {
 
   addColumn(row: PageContentRow, columnIndex: number) {
     const existingColumns = sum(row.columns.map(item => item.columns));
-    const newColumn = {columns: 12 - existingColumns, contentTextId: null};
+    const columns = 12 - existingColumns;
+    const newColumn = {columns: columns === 0 ? 6 : columns, contentTextId: null};
     row.columns.splice(columnIndex, 0, newColumn);
     this.logger.info("this.pageContent:", this.pageContent);
   }

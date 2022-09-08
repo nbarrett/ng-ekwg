@@ -39,7 +39,7 @@ export class SocialHomeComponent implements OnInit {
     this.authService.authResponse().subscribe(() => this.applyAllows());
     this.siteEditService.events.subscribe(() => this.applyAllows());
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const socialEventId = paramMap.get("social-event-id");
+      const socialEventId = paramMap.get("relativePath");
       this.logger.debug("socialEventId from route params:", paramMap, socialEventId);
       if (socialEventId) {
         this.socialEventId = socialEventId;

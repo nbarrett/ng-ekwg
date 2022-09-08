@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { ContentText, ContentTextApiResponse } from "../models/content-text.model";
 import { CommonDataService } from "./common-data-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -12,12 +12,16 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 export class ContentTextService {
   private logger: Logger;
   private BASE_URL = "/api/database/content-text";
-  private notifications = new Subject<ContentTextApiResponse>();
+  private notificationsInternal = new Subject<ContentTextApiResponse>();
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ContentTextService, NgxLoggerLevel.OFF);
+  }
+
+  notifications(): Observable<ContentTextApiResponse> {
+    return this.notificationsInternal.asObservable();
   }
 
   async all(): Promise<ContentText[]> {
@@ -28,18 +32,20 @@ export class ContentTextService {
 
   async getById(contentTextId: string): Promise<ContentText> {
     this.logger.debug("getById:", contentTextId);
-    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<ContentTextApiResponse>(`${this.BASE_URL}/${contentTextId}`), this.notifications);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<ContentTextApiResponse>(`${this.BASE_URL}/${contentTextId}`), this.notificationsInternal);
     return apiResponse.response as ContentText;
   }
 
-  async findByName(name): Promise<ContentText> {
-    const apiResponse = await this.http.get<{ response: ContentText }>(this.BASE_URL + "/name/" + name).toPromise();
+  async findByNameAndCategory(name: string, category: string): Promise<ContentText> {
+    const params = this.commonDataService.toHttpParams(category ? {criteria: {name: {$eq: name}, category: {$eq: category}}} : {criteria: {name: {$eq: name}}});
+    const apiResponse = await this.http.get<{ response: ContentText }>(this.BASE_URL, {params}).toPromise();
     this.logger.debug("forName", name, "- received", apiResponse);
     return apiResponse.response;
   }
 
   async filterByCategory(category): Promise<ContentText[]> {
-    const apiResponse = await this.http.get<{ response: ContentText[] }>(this.BASE_URL + "/category/" + category).toPromise();
+    const params = this.commonDataService.toHttpParams({criteria: {category: {$eq: category}}});
+    const apiResponse = await this.http.get<{ response: ContentText[] }>(`${this.BASE_URL}/all`, {params}).toPromise();
     this.logger.debug("forName", category, "- received", apiResponse);
     return apiResponse.response;
   }

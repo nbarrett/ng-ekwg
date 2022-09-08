@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { last } from "lodash-es";
+import { NgxLoggerLevel } from "ngx-logger";
 import { Page } from "../models/page.model";
+import { Logger, LoggerFactory } from "./logger-factory.service";
 import { StringUtilsService } from "./string-utils.service";
 import { UrlService } from "./url.service";
 
@@ -11,9 +13,12 @@ export const HOME: Page = {href: "", title: "Home"};
 })
 
 export class PageService {
+  private logger: Logger;
 
   constructor(private stringUtils: StringUtilsService,
-              private urlService: UrlService) {
+              private urlService: UrlService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(PageService, NgxLoggerLevel.INFO);
   }
 
   public pages: Page[] = [
@@ -41,9 +46,10 @@ export class PageService {
   }
 
   private relativePages(area: string, pathSegments: string[]): Page[] {
+    this.logger.info("area:", area, "pathSegments:", pathSegments);
     return pathSegments
-      .filter(item => item !== last(pathSegments))
-      .map((path, index) => ({title: this.stringUtils.asTitle(path), href: this.pathSegmentsUpTo(area, pathSegments, index)}));
+      ?.filter(item => item !== last(pathSegments))
+      ?.map((path, index) => ({title: this.stringUtils.asTitle(path), href: this.pathSegmentsUpTo(area, pathSegments, index)}));
   }
 
   private pathSegmentsUpTo(area: string, pathSegments: string[], upToIndex: number): string {

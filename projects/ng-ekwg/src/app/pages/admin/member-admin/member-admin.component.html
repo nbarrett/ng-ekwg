@@ -1,5 +1,6 @@
 <app-page area="admin" pageTitle="Member Admin">
-  <div [ngClass]="{'busy': notifyTarget.busy}" class="admin-frame rounded" *ngIf="memberFilter">
+  <div class="row">
+  <div class="admin-frame rounded" *ngIf="memberFilter">
     <div class="admin-header-background rounded">
       <div class="admin-header-container">
         <div class="form-inline" role="form">
@@ -143,5 +144,6 @@
         </table>
       </div>
     </div>
+  </div>
   </div>
 </app-page>

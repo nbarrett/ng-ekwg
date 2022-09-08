@@ -67,7 +67,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
               private changeDetectorRef: ChangeDetectorRef,
               private siteEditService: SiteEditService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -133,32 +133,33 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   queryContent(): Promise<ContentText> {
     this.editorState.dataAction = DataAction.QUERY;
-    this.logger.debug("querying content", this.name, "editorState:", this.editorState);
-    if (this.name) {
-      return this.contentTextService.findByName(this.name).then((content) => {
-        if (isEmpty(content)) {
-          this.content = {category: this.category, text: this.text, name: this.name};
-        } else {
-          this.content = content;
-        }
+    if (this.id) {
+      this.logger.info("querying contentby:id", this.id, "name:", this.name, "category:", this.category, "editorState:", this.editorState, "id:", );
+      return this.contentTextService.getById(this.id).then((content) => {
         return this.apply(content);
       });
-    } else if (this.id) {
-      return this.contentTextService.getById(this.id).then((content) => {
+    } else if (this.name) {
+      this.logger.info("querying content:name", this.name, "and category:", this.category, "editorState:", this.editorState, "id:", this.id);
+      return this.contentTextService.findByNameAndCategory(this.name, this.category).then((content) => {
         return this.apply(content);
       });
     }
   }
 
-  private apply(content: ContentText) {
+  private apply(content: ContentText): ContentText {
+    if (isEmpty(content)) {
+      this.content = {category: this.category, text: this.text, name: this.name};
+    } else {
+      this.content = content;
+    }
     this.saveEnabled = true;
     this.originalContent = cloneDeep(this.content);
     this.editorState.dataAction = DataAction.NONE;
     if (!this.rows) {
       this.rows = this.calculateRowsFrom(this.content);
     }
-    this.logger.debug(this.name, "retrieved content:", this.content, "editor state:", this.editorState);
-    return content;
+    this.logger.info(this.name, "retrieved content:", this.content, "editor state:", this.editorState);
+    return this.content;
   }
 
   revert(): void {

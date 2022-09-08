@@ -1,7 +1,8 @@
-<app-page [relativePath]="path" [area]="area" [pageTitle]="pageTitle">
+<app-page [area]="area" [relativePath]="relativePath" [pageTitle]="pageTitle">
   <div *ngIf="pageContent && siteEditService.active()">
-    <div (click)="savePageContent()"
-         delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2">
+    <div (click)="unsavedMarkdownElements() ? null :savePageContent()"
+         delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
+         [ngClass]="{'disabled' : unsavedMarkdownElements()}">
       <fa-icon [icon]="faSave"></fa-icon>
       Save page changes
     </div>
@@ -21,14 +22,16 @@
               </div>
               <input #input (input)="changeColumnWidthFor(input, rowIndex, columnIndex)"
                      [value]="pageContent.rows[rowIndex].columns[columnIndex].columns"
+                     autocomplete="columns"
                      type="number" class="form-control input-sm column-input"
                      placeholder="Enter number of columns (1-12)">
+              contentTextId: {{column?.contentTextId}}
             </div>
           </div>
           <app-markdown-editor [id]="column?.contentTextId"
                                [editInitiallyActive]="true"
-                               [description]="identifierFor(rowIndex, columnIndex, path)"
-                               [category]="path"
+                               [description]="identifierFor(rowIndex, columnIndex, relativePath)"
+                               [category]="contentPath"
                                (saved)="saveContentTextId($event, rowIndex, columnIndex)"
                                [name]="rowColFor(rowIndex, columnIndex)">
             <div
@@ -64,8 +67,8 @@
     <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
         <app-markdown-editor [id]="column?.contentTextId"
-                             [description]="identifierFor(rowIndex,columnIndex,path)"
-                             [category]="path"
+                             [description]="identifierFor(rowIndex,columnIndex,relativePath)"
+                             [category]="relativePath"
                              [name]="rowColFor(rowIndex, columnIndex)">
         </app-markdown-editor>
       </div>

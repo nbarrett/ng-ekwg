@@ -1,8 +1,13 @@
-const contentText = require("../models/content-text");
 const {envConfig} = require("../../env-config/env-config");
 const transforms = require("./transforms");
 const debug = require("debug")(envConfig.logNamespace("context-text"));
+
+const contentText = require("../models/content-text");
+const controller = require("./crud-controller").create(contentText, true);
 debug.enabled = false;
+exports.all = controller.all
+exports.findByConditions = controller.findByConditions
+exports.findById = controller.findById
 
 exports.create = (req, res) => {
   new contentText({
@@ -45,21 +50,6 @@ exports.update = (req, res) => {
         message: "Update of contentTextDoc failed",
         input: contentTextDoc,
         error: error
-      });
-    });
-};
-
-exports.all = (req, res) => {
-  debug("all - req.params:", req.params.id)
-  contentText.find()
-    .then(documents => {
-      res.status(200).json({
-        response: documents
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        message: "Fetching contentText failed"
       });
     });
 };
@@ -108,34 +98,6 @@ exports.findByName = (req, res) => {
           value: value
         },
         response: {},
-      });
-    });
-};
-
-exports.findByCategory = (req, res) => {
-  const type = "category";
-  const value = req.params[type];
-  this.queryBy(type, value, res, req);
-};
-
-exports.findById = (req, res) => {
-  debug("find - id:", req.params.id)
-  contentText.findById(req.params.id)
-    .then(contentText => {
-      if (contentText) {
-        res.status(200).json(transforms.toObjectWithId(contentText));
-      } else {
-        res.status(404).json({
-          message: "contentText not found",
-          request: req.params.id
-        });
-      }
-    })
-    .catch(error => {
-      res.status(500).json({
-        message: "contentText query failed",
-        request: req.params.id,
-        error: error
       });
     });
 };

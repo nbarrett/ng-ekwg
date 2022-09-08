@@ -56,7 +56,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnDestroy(): void {
@@ -70,8 +70,8 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const committeeFileId = paramMap.get("committee-file-id");
-      this.logger.debug("committeeFileId from route params:", paramMap, committeeFileId);
+      const committeeFileId = paramMap.get("relativePath");
+      this.logger.info("committeeFileId from route params:", paramMap, committeeFileId);
       if (committeeFileId) {
         this.committeeFileService.getById(committeeFileId);
       } else {

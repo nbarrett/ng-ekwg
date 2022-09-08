@@ -71,7 +71,7 @@ export class UrlService {
   }
 
   toPathSegments(relativePath: string): string[] {
-    return relativePath?.split("/").filter(item => !isEmpty(item));
+    return relativePath ? relativePath?.split("/").filter(item => !isEmpty(item)) : [];
   }
 
   relativeUrlIsMongoId(): boolean {

@@ -1,14 +1,14 @@
 import { UrlMatchResult, UrlSegment } from "@angular/router";
 import { isMongoId } from "./mongo-utils";
 
-function wholePathFrom(urlSegments: UrlSegment[]) {
+function relativePathFrom(urlSegments: UrlSegment[]) {
   return new UrlSegment(urlSegments.map(urlSegment => urlSegment.path).join("/"), {});
 }
 
 function returnMatch(matched: boolean, urlSegments: UrlSegment[]) {
-  const path = wholePathFrom(urlSegments);
+  const relativePath = relativePathFrom(urlSegments);
   return matched ? ({
-    posParams: {path},
+    posParams: {relativePath},
     consumed: urlSegments
   }) : null;
 }
