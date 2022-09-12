@@ -9,9 +9,9 @@ import { NgxLoggerLevel } from "ngx-logger";
 })
 
 export class SiteEditService {
-  private subject: Subject<NamedEvent>;
+  private subject: Subject<NamedEvent<boolean>>;
   private logger: Logger;
-  public events: Observable<NamedEvent>;
+  public events: Observable<NamedEvent<boolean>>;
 
   constructor(private loggerFactory: LoggerFactory) {
     this.subject = new Subject();

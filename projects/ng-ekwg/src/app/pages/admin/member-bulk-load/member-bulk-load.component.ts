@@ -2,7 +2,7 @@ import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { faCircleInfo, faBan, faCircleCheck, faCirclePlus, faEnvelopesBulk, faPencil, faRemove, faSearch, faSpinner, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faCircleCheck, faCircleInfo, faCirclePlus, faEnvelopesBulk, faPencil, faRemove, faSearch, faSpinner, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import groupBy from "lodash-es/groupBy";
@@ -21,7 +21,6 @@ import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpda
 import { ASCENDING, DESCENDING, MemberTableFilter, MemberUpdateAuditTableFilter } from "../../../models/table-filtering.model";
 import { EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -91,7 +90,6 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
-              private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               loggerFactory: LoggerFactory) {

@@ -68,7 +68,7 @@ export class WalkListComponent implements OnInit {
     private walksQueryService: WalksQueryService,
     private dateUtils: DateUtilsService,
     private notifierService: NotifierService,
-    private broadcastService: BroadcastService,
+    private broadcastService: BroadcastService<any>,
     private urlService: UrlService,
     private walksReferenceService: WalksReferenceService,
     private changeDetectorRef: ChangeDetectorRef,

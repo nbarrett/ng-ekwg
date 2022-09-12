@@ -9,20 +9,20 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
   providedIn: "root"
 })
 
-export class BroadcastService {
-  observable: Observable<NamedEvent>;
-  observer: Observer<NamedEvent>;
+export class BroadcastService<T> {
+  observable: Observable<NamedEvent<T>>;
+  observer: Observer<NamedEvent<T>>;
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
-    const temp = new Observable(((observer: Observer<NamedEvent>) => {
+    const temp = new Observable(((observer: Observer<NamedEvent<T>>) => {
       this.observer = observer;
     }));
     this.observable = temp.pipe(share());
   }
 
-  broadcast(event: NamedEvent | string): void {
+  broadcast(event: NamedEvent<T> | string): void {
     if (this.observer) {
       this.logger.debug("broadcast:", event);
       if (event instanceof NamedEvent) {
@@ -35,7 +35,7 @@ export class BroadcastService {
 
   on(eventName, callback) {
     this.observable.pipe(
-      filter((event: NamedEvent) => {
+      filter((event: NamedEvent<T>) => {
         const found = event.name === eventName;
         if (found) {
           this.logger.debug("filtering for event", event, eventName, "found:", found);

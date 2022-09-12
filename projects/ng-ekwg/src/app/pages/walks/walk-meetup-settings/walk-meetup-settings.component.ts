@@ -37,7 +37,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
   constructor(private urlService: UrlService,
               private contentTextService: ContentTextService,
               private meetupService: MeetupService,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<ContentText>,
               protected notifierService: NotifierService,
               private changeDetectorRef: ChangeDetectorRef,
               loggerFactory: LoggerFactory) {
@@ -56,8 +56,8 @@ export class WalkMeetupSettingsComponent implements OnInit {
       this.onChange(first(this.contentTextItems));
       this.changeDetectorRef.detectChanges();
     });
-    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_SAVED, (event: NamedEvent) => this.replaceContent(event.data));
-    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (event: NamedEvent) => this.removeContent(event.data));
+    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_SAVED, (event: NamedEvent<ContentText>) => this.replaceContent(event.data));
+    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (event: NamedEvent<ContentText>) => this.removeContent(event.data));
   }
 
   activeTabIs(tab: number) {

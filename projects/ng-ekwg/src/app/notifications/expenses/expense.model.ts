@@ -1,4 +1,5 @@
 import { Type } from "@angular/core";
+import { PageContent } from "../../models/content-text.model";
 import { ExpenseNotificationDirective } from "./expense-notification.directive";
 import { ExpenseNotificationDetailsComponent } from "./templates/common/expense-notification-details.component";
 import { AlertInstance } from "../../services/notifier.service";

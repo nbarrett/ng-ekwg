@@ -9,7 +9,6 @@ import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
 import { DisplayedWalk, EventType, GoogleMapsConfig, Walk, WalkViewMode } from "../../models/walk.model";
-import { BroadcastService } from "../../services/broadcast-service";
 import { ClipboardService } from "../../services/clipboard.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { GoogleMapsService } from "../../services/google-maps.service";
@@ -52,7 +51,6 @@ export class WalkDisplayService {
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
     private walksQueryService: WalksQueryService,
-    private broadcastService: BroadcastService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
     this.refreshGoogleMapsService();

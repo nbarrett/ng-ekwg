@@ -46,7 +46,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
   public imageFile: File;
   public format = "png";
 
-  constructor(private broadcastService: BroadcastService, private numberUtils: NumberUtilsService,
+  constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
               private notifierService: NotifierService,
               loggerFactory: LoggerFactory) {

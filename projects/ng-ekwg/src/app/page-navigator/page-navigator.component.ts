@@ -16,7 +16,7 @@ import { UrlService } from "../services/url.service";
 export class PageNavigatorComponent {
   private logger: Logger;
 
-  constructor(private broadcastService: BroadcastService,
+  constructor(private broadcastService: BroadcastService<boolean>,
               private pageService: PageService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);

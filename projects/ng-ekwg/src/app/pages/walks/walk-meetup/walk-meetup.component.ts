@@ -41,7 +41,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   public CONTENT_CATEGORY = meetupDescriptionPrefix;
 
   constructor(private memberLoginService: MemberLoginService,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<ContentText>,
               private changeDetectorRef: ChangeDetectorRef,
               private contentTextService: ContentTextService,
               private dateUtils: DateUtilsService,
@@ -68,8 +68,8 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
       this.logger.debug("forCategory", this.CONTENT_CATEGORY + ":", contentTextItems);
       this.contentTextItems = contentTextItems;
     });
-    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_CHANGED, (event: NamedEvent) => this.changeContent(event.data));
-    this.broadcastService.on(NamedEventType.MEETUP_DEFAULT_CONTENT_CHANGED, (event: NamedEvent) => this.createMeetupDescription(event.data));
+    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_CHANGED, (event: NamedEvent<ContentText>) => this.changeContent(event.data));
+    this.broadcastService.on(NamedEventType.MEETUP_DEFAULT_CONTENT_CHANGED, (event: NamedEvent<ContentText>) => this.createMeetupDescription(event.data));
   }
 
   private changeContent(contentText: ContentText) {

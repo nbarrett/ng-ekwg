@@ -108,7 +108,7 @@ export class WalkEditComponent implements OnInit {
     private displayDate: DisplayDatePipe,
     protected notifierService: NotifierService,
     private configService: ConfigService,
-    private broadcastService: BroadcastService,
+    private broadcastService: BroadcastService<Walk>,
     private siteEditService: SiteEditService,
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,

@@ -13,6 +13,7 @@ import { AlertModule } from "ngx-bootstrap/alert";
 import { CarouselModule } from "ngx-bootstrap/carousel";
 import { CollapseModule } from "ngx-bootstrap/collapse";
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { BsDropdownModule } from "ngx-bootstrap/dropdown";
 import { ModalModule } from "ngx-bootstrap/modal";
 import { PaginationModule } from "ngx-bootstrap/pagination";
 import { PopoverModule } from "ngx-bootstrap/popover";
@@ -30,7 +31,9 @@ import { ContactUsDirective } from "./contact-us/contact-us-directive.component"
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
+import { DynamicCarouselComponent } from "./modules/common/dynamic-carousel/dynamic-carousel";
 import { DynamicContentComponent } from "./modules/common/dynamic-content/dynamic-content";
+import { SvgComponent } from "./modules/common/svg/svg";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
 import { ImageEditComponent } from "./pages/image-editor/image-edit/image-edit.component";
@@ -92,6 +95,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
     NgSelectModule,
+    BsDropdownModule.forRoot(),
     PopoverModule.forRoot(),
     PaginationModule.forRoot(),
     RouterModule,
@@ -123,6 +127,8 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     LineFeedsToBreaksPipe,
     CopyIconComponent,
     DynamicContentComponent,
+    DynamicCarouselComponent,
+    SvgComponent,
     MarkdownEditorComponent,
     MeetupEventSummaryPipe,
     MemberIdsToFullNamesPipe,
@@ -177,6 +183,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     NotificationUrlComponent,
     PageComponent,
     PanelExpanderComponent,
+    BsDropdownModule,
     PopoverModule,
     PaginationModule,
     RouterModule,
@@ -189,7 +196,9 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     ValueOrDefaultPipe,
     FontAwesomeModule,
     CopyIconComponent,
-    DynamicContentComponent
+    DynamicContentComponent,
+    DynamicCarouselComponent,
+    SvgComponent
   ]
 })
 export class SharedModule {

@@ -6,7 +6,6 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member, ProfileUpdateType } from "../../../models/member.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
@@ -44,7 +43,6 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
               private stringUtils: StringUtilsService,
               public profileService: ProfileService,
               private authService: AuthService,
-              private broadcastService: BroadcastService,
               private memberLoginService: MemberLoginService,
               private routerHistoryService: RouterHistoryService,
               loggerFactory: LoggerFactory) {

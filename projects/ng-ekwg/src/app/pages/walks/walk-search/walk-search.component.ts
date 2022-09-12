@@ -30,7 +30,7 @@ export class WalkSearchComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private walksReferenceService: WalksReferenceService,
               private memberLoginService: MemberLoginService,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkSearchComponent, NgxLoggerLevel.INFO);
     this.searchChangeObservable = new Subject<string>();
@@ -41,7 +41,7 @@ export class WalkSearchComponent implements OnInit {
       this.currentWalkId = paramMap.get("walk-id");
       this.logger.debug("walk-id from route params:", this.currentWalkId);
     });
-    this.broadcastService.on(NamedEventType.SHOW_PAGINATION, (show: NamedEvent) => {
+    this.broadcastService.on(NamedEventType.SHOW_PAGINATION, (show: NamedEvent<boolean>) => {
       this.logger.info("showPagination:", show);
       return this.showPagination = show.data;
     });

@@ -6,16 +6,13 @@
          placeholder="Enter name of content">
   <label class="mt-2 mt-3" [for]="content.name">Content for {{content.name}}</label>
 </div>
-<div class="row" *ngIf="editorState.editActive">
+<div class="row" *ngIf="siteEditService.active()">
   <div class="col-12 form-inline">
-    <div *ngIf="!editorState.preview" (click)="preview() && !saving()" class="badge-button">
-      <fa-icon [icon]="querying() ? faSpinner: faMagnifyingGlass"></fa-icon>
-      <span>{{previewCaption}}</span></div>
-    <div *ngIf="editorState.preview"
-         (click)="edit()"
-         delay=500 [tooltip]="'Edit content for ' + description" class="badge-button">
-      <fa-icon [icon]="querying() ? faSpinner: faPencil"></fa-icon>
-      <span>{{editCaption}}</span>
+    <div *ngIf="editorState.view"
+         (click)="toggleEdit()"
+         delay=500 [tooltip]="tooltip()" class="badge-button">
+      <fa-icon [icon]="icon()"></fa-icon>
+      <span>{{nextActionCaption()}}</span>
     </div>
     <div *ngIf="dirty() && canSave()" class="badge-button"
          (click)="save()" [tooltip]="'Save content for ' + description">
@@ -38,14 +35,13 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <div *ngIf="canPreview()"
-         (click)="edit()" markdown ngPreserveWhitespaces [data]="content.text">
+    <div *ngIf="editorState.view==='view'"
+         (click)="toggleEdit()" markdown ngPreserveWhitespaces [data]="content.text">
     </div>
-    <textarea *ngIf="canEdit()"
+    <textarea *ngIf="editorState.view==='edit'"
               [(ngModel)]="content.text"
               (ngModelChange)="changeText($event)"
               class="form-control markdown-textarea" rows="{{rows}}"
-              placeholder="Enter {{description}} text here">
-</textarea>
+              placeholder="Enter {{description}} text here"></textarea>
   </div>
 </div>

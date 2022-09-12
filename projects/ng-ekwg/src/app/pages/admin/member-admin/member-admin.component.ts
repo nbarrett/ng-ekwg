@@ -16,7 +16,6 @@ import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, SELECT_ALL } fro
 import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -69,7 +68,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private mailchimpListUpdaterService: MailchimpListUpdaterService,
               private stringUtils: StringUtilsService,
               private authService: AuthService,
-              private broadcastService: BroadcastService,
               private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {

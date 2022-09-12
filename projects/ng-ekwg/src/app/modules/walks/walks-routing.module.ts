@@ -6,6 +6,7 @@ import { WalkAdminComponent } from "../../pages/walks/walk-admin/walk-admin.comp
 import { WalkEditFullPageComponent } from "../../pages/walks/walk-edit-fullpage/walk-edit-full-page.component";
 import { WalkEditComponent } from "../../pages/walks/walk-edit/walk-edit.component";
 import { WalkExportComponent } from "../../pages/walks/walk-export/walk-export.component";
+import { DynamicCarouselComponent } from "../common/dynamic-carousel/dynamic-carousel";
 import { DynamicContentComponent } from "../common/dynamic-content/dynamic-content";
 import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
@@ -25,6 +26,7 @@ import { WalksModule } from "./walks.module";
     {path: "export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
     {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
     {path: "admin", component: WalkAdminComponent, canActivate: [WalksAuthGuard]},
+    {path: "carousel", component: DynamicCarouselComponent},
     {matcher: hasMongoId, component: WalkViewComponent},
     {matcher: hasDynamicPath, component: DynamicContentComponent},
     {path: "**", component: WalkListComponent},

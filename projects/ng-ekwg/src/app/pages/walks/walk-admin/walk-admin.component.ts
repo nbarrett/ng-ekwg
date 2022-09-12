@@ -5,7 +5,6 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { LoginResponse } from "../../../models/member.model";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { UrlService } from "../../../services/url.service";
@@ -26,7 +25,6 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
 
   constructor(private memberLoginService: MemberLoginService,
               private authService: AuthService,
-              private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.OFF);

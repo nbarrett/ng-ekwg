@@ -8,7 +8,6 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { EnteredMemberCredentials, LoginResponse, Member, ProfileUpdateType } from "../../../models/member.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -41,7 +40,6 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private broadcastService: BroadcastService,
     private contentMetadata: ContentMetadataService,
     private dateUtils: DateUtilsService,
     private mailchimpListSubscriptionService: MailchimpListSubscriptionService,

@@ -12,8 +12,8 @@ import { Logger, LoggerFactory } from "../logger-factory.service";
 })
 export class ExpenseClaimService {
 
-  private BASE_URL = "/api/database/expense-claim";
   private logger: Logger;
+  private BASE_URL = "/api/database/expense-claim";
   private expenseNotifications = new Subject<ExpenseClaimApiResponse>();
 
   constructor(private http: HttpClient,

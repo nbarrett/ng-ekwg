@@ -4,7 +4,6 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../auth/auth.service";
 import { MemberCookie } from "../../models/member.model";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
-import { BroadcastService } from "../broadcast-service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { NumberUtilsService } from "../number-utils.service";
@@ -19,7 +18,6 @@ export class MemberLoginService {
 
   constructor(
     private fullNamePipe: FullNamePipe,
-    private broadcastService: BroadcastService,
     private authService: AuthService,
     private numberUtils: NumberUtilsService,
     private urlService: UrlService,

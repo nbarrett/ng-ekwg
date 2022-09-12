@@ -13,7 +13,6 @@ import { NgxLoggerLevel } from "ngx-logger";
 export class SiteEditComponent {
   private userEdits;
   private logger: Logger;
-  private changeEvent: Event;
 
   constructor(private siteEditService: SiteEditService, private loggerFactory: LoggerFactory) {
     this.userEdits = {preview: true, saveInProgress: false, revertInProgress: false};
@@ -29,7 +28,7 @@ export class SiteEditComponent {
     return this.siteEditService.active() ? "editing site" : "edit site";
   }
 
-  private onItemEvent(event: NamedEvent) {
+  private onItemEvent(event: NamedEvent<boolean>) {
     this.logger.debug("event occurred", event);
   }
 

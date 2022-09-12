@@ -1,13 +1,17 @@
 const mongoose = require("mongoose");
 
-const PageContentColumn = {
-  columns: {type: Number, required: true},
-  contentTextId: {type: String}
-};
+const PageContentColumn = mongoose.Schema({
+  href: {type: String},
+  title: {type: String},
+  imageSource: {type: String},
+  columns: {type: Number},
+  contentTextId: {type: String},
+}, { _id : false });
 
-const PageContentRow = {
+const PageContentRow = mongoose.Schema({
+  type: {type: String, required: true},
   columns: [PageContentColumn]
-};
+}, { _id : false });
 
 const pageContentSchema = mongoose.Schema({
   path: {type: String, required: true},

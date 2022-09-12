@@ -1,18 +1,21 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
-import flatten from "lodash-es/flatten";
+import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
 import last from "lodash-es/last";
-import sum from "lodash-es/sum";
+import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ContentText, defaultRow, PageContent, PageContentRow } from "../../../models/content-text.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
+import { PageContent, PageContentColumn, PageContentRow, PageContentType } from "../../../models/content-text.model";
+import { BroadcastService } from "../../../services/broadcast-service";
+import { ContentTextNamingService } from "../../../services/content-text-naming.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageContentService } from "../../../services/page-content.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 
 @Component({
@@ -32,17 +35,21 @@ export class DynamicContentComponent implements OnInit {
   faMinusCircle = faMinusCircle;
   faSave = faSave;
   faUndo = faUndo;
+  faTableCells = faTableCells;
   public pathSegments: string[] = [];
   public area: string;
+  providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }];
 
   constructor(
     public siteEditService: SiteEditService,
     private route: ActivatedRoute,
     private notifierService: NotifierService,
     private urlService: UrlService,
+    private numberUtils: NumberUtilsService,
     private stringUtils: StringUtilsService,
     private pageContentService: PageContentService,
-    private walksService: WalksService,
+    public namingService: ContentTextNamingService,
+    private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
   }
@@ -59,56 +66,41 @@ export class DynamicContentComponent implements OnInit {
       this.logger.debug("Finding page content for " + this.relativePath);
       this.pageContentService.findByPath(this.contentPath)
         .then(pageContent => {
-          this.logger.debug("Found page content for", this.contentPath, "as:", pageContent);
+          this.logger.info("Found page content for", this.contentPath, "as:", pageContent);
           this.pageContent = pageContent;
           if (!pageContent) {
             this.notify.success({
               title: `Page content doesn't exist`,
-              message: `for ${this.relativePath}`
+              message: `for ${this.pageTitle} page`
             });
           }
         });
+      this.broadcastService.on(NamedEventType.SAVE_PAGE_CONTENT, (namedEvent: NamedEvent<PageContent>) => {
+        this.logger.info("event received:", namedEvent);
+        if (namedEvent.data.id === this.pageContent.id) {
+          this.savePageContent();
+        }
+      });
     });
+  }
+
+  defaultRowFor(type: PageContentType | string): PageContentRow {
+    return {
+      type: type as PageContentType,
+      columns: [this.columnFor(type)]
+    };
+  };
+
+  private columnFor(type: PageContentType | string): PageContentColumn {
+    return type === PageContentType.TEXT ? {columns: 12} : {};
   }
 
   createContent() {
     this.pageContent = {
       path: this.contentPath,
-      rows: [defaultRow]
+      rows: [this.defaultRowFor(PageContentType.TEXT)]
     };
     this.logger.info("this.pageContent:", this.pageContent);
-  }
-
-  rowColFor(rowIndex: number, columnIndex: number) {
-    return `row-${rowIndex + 1}-column-${columnIndex + 1}`;
-  }
-
-  identifierFor(rowIndex: number, columnIndex: number, identifier: string) {
-    return `${identifier}-${this.rowColFor(rowIndex, columnIndex)}`;
-  }
-
-  descriptionFor(rowIndex, columnIndex, identifier: string) {
-    return (this.stringUtils.replaceAll("-", " ", this.identifierFor(rowIndex, columnIndex, identifier)) as string).trim();
-  }
-
-  descriptionForContent() {
-    return this.stringUtils.replaceAll("-", " ", this.relativePath);
-  }
-
-  saveContentTextId(contentText: ContentText, rowIndex: number, columnIndex: number) {
-    if (this.pageContent.rows[rowIndex].columns[columnIndex].contentTextId !== contentText?.id) {
-      this.pageContent.rows[rowIndex].columns[columnIndex].contentTextId = contentText?.id;
-      if (!this.unsavedMarkdownElements()) {
-        this.savePageContent();
-      }
-    }
-  }
-
-  public unsavedMarkdownElements(): boolean {
-    const columnsWithNewlyCreatedMarkdown = flatten(this.pageContent.rows.map(item => item.columns.map(col => col.contentTextId)))
-      .filter(item => item === null);
-    this.logger.debug("unsavedMarkdownElements:", columnsWithNewlyCreatedMarkdown);
-    return columnsWithNewlyCreatedMarkdown.length > 0;
   }
 
   public savePageContent() {
@@ -121,20 +113,31 @@ export class DynamicContentComponent implements OnInit {
       .then(response => this.pageContent = response);
   }
 
-  addRow() {
-    this.pageContent.rows.push(defaultRow);
+  addRow(rowIndex, pageContentType: PageContentType | string) {
+    this.pageContent.rows.splice(rowIndex, 0, this.defaultRowFor(pageContentType));
+    this.logger.info("this.pageContent:", this.pageContent);
+  }
+
+  deleteRow(rowIndex) {
+    this.pageContent.rows = this.pageContent.rows.filter((item, index) => index !== rowIndex);
     this.logger.info("this.pageContent:", this.pageContent);
   }
 
   addColumn(row: PageContentRow, columnIndex: number) {
-    const existingColumns = sum(row.columns.map(item => item.columns));
-    const columns = 12 - existingColumns;
-    const newColumn = {columns: columns === 0 ? 6 : columns, contentTextId: null};
-    row.columns.splice(columnIndex, 0, newColumn);
+    const columns = this.calculateColumnsFor(row, 1);
+    row.columns.splice(columnIndex, 0, {columns});
     this.logger.info("this.pageContent:", this.pageContent);
   }
 
+  private calculateColumnsFor(row: PageContentRow, columnIncrement: number) {
+    const newColumnCount = row.columns.length + columnIncrement;
+    const columns = this.numberUtils.asNumber(12 / newColumnCount, 0);
+    row.columns.forEach(column => column.columns = columns);
+    return columns;
+  }
+
   deleteColumn(row: PageContentRow, columnIndex: number) {
+    this.calculateColumnsFor(row, -1);
     row.columns = row.columns.filter((item, index) => index !== columnIndex);
     this.logger.info("this.pageContent:", this.pageContent);
   }

@@ -5,7 +5,6 @@ import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { LoginResponse } from "../../../models/member.model";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -37,7 +36,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   constructor(private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
               private authService: AuthService,
-              private broadcastService: BroadcastService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(AdminComponent, NgxLoggerLevel.OFF);

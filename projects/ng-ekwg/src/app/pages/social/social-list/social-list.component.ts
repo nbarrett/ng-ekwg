@@ -15,7 +15,6 @@ import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe"
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -57,7 +56,6 @@ export class SocialListComponent implements OnInit {
               private socialEventsService: SocialEventsService,
               private memberLoginService: MemberLoginService,
               public display: SocialDisplayService,
-              private broadcastService: BroadcastService,
               private apiResponseProcessor: ApiResponseProcessor,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,

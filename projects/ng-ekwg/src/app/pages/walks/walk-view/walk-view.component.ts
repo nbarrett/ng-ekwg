@@ -9,7 +9,6 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { LoginResponse } from "../../../models/member.model";
 import { DisplayedWalk, Walk } from "../../../models/walk.model";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -73,7 +72,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     public meetupService: MeetupService,
     private urlService: UrlService,
     private notifierService: NotifierService,
-    private broadcastService: BroadcastService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);

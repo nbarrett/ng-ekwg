@@ -35,7 +35,7 @@ export class WalkMeetupConfigParametersComponent implements OnInit {
               private configService: ConfigService,
               private meetupService: MeetupService,
               private changeDetectorRef: ChangeDetectorRef,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<ContentText>,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkMeetupConfigParametersComponent, NgxLoggerLevel.OFF);
   }

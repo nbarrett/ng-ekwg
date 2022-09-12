@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { faCircleCheck, faEraser, faMagnifyingGlass, faPencil, faRemove, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
@@ -13,9 +14,13 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { MemberLoginService } from "../services/member/member-login.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
 
+export enum View {
+  EDIT = "edit",
+  VIEW = "view"
+}
+
 export interface EditorState {
-  editActive: boolean;
-  preview: boolean;
+  view: View;
   dataAction: DataAction;
 }
 
@@ -35,9 +40,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   private logger: Logger;
   private originalContent: ContentText;
   public editorState: EditorState;
-  public editCaption: string;
-  public previewCaption: string;
-  public content: ContentText;
+  public content: ContentText = {};
   private saveEnabled = false;
 
   @Input() data: ContentText;
@@ -46,26 +49,23 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() category: string;
   @Input() text: string;
   @Input() rows: number;
-  @Input() editCaptionText: string;
   @Input() editNameEnabled: boolean;
   @Input() deleteEnabled: boolean;
-  @Input() editInitiallyActive: boolean;
-  @Input() previewInitiallyActive: boolean;
+  @Input() initialView: View;
   @Input() description: string;
   @Output() saved: EventEmitter<ContentText> = new EventEmitter();
   private initialised: boolean;
   faSpinner = faSpinner;
-  faMagnifyingGlass = faMagnifyingGlass;
   faPencil = faPencil;
   faCircleCheck = faCircleCheck;
   faRemove = faRemove;
   faEraser = faEraser;
 
   constructor(private memberLoginService: MemberLoginService,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<ContentText>,
               private contentTextService: ContentTextService,
               private changeDetectorRef: ChangeDetectorRef,
-              private siteEditService: SiteEditService,
+              public siteEditService: SiteEditService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.INFO);
   }
@@ -85,12 +85,8 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.logger.debug("ngOnInit", this.name || this.data);
-    this.editCaption = "querying";
-    this.previewCaption = "querying";
-    this.editCaption = this.editCaptionText || "edit";
     this.editorState = {
-      editActive: this.editInitiallyActive || this.siteEditService.active(),
-      preview: this.previewInitiallyActive === undefined ? true : this.previewInitiallyActive,
+      view: this.initialView || View.VIEW,
       dataAction: DataAction.NONE
     };
     if (this.data) {
@@ -98,29 +94,21 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
       this.content = this.data;
       this.saveEnabled = true;
       this.logger.debug("editing:", this.content, "existingData:", existingData, "editorState:", this.editorState, "rows:", this.rows);
-      this.editCaption = "edit";
-      this.previewCaption = "preview";
       this.originalContent = cloneDeep(this.content);
       this.setDescription();
     } else if (this.text) {
-      this.editCaptionText = this.editCaptionText || "edit";
-      this.previewCaption = "preview";
       this.content = {name: this.name, text: this.text, category: this.category};
       this.originalContent = cloneDeep(this.content);
       this.logger.debug("editing injected content", this.content, "editorState:", this.editorState);
     } else {
       this.queryContent().then(() => {
-        this.editCaptionText = this.editCaptionText || "edit";
-        this.previewCaption = "preview";
         this.setDescription();
         this.changeDetectorRef.detectChanges();
       });
     }
-    this.siteEditService.events.subscribe((item: NamedEvent) => {
-      this.logger.debug(this.name, "editInitiallyActive", this.editInitiallyActive, "siteEditService:active", item);
-      if (this.editInitiallyActive === undefined) {
-        this.editorState.editActive = item.data;
-      }
+    this.siteEditService.events.subscribe((item: NamedEvent<boolean>) => {
+      this.logger.info(this.name, "this.editorState.view", this.editorState.view, "siteEditService:event", item);
+      this.editorState.view = item.data ? View.EDIT : View.VIEW;
     });
     this.initialised = true;
   }
@@ -201,13 +189,23 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   preview(): void {
-    this.editorState.preview = true;
+    this.editorState.view = View.VIEW;
   }
 
-  edit(): void {
-    if (this.editorState.editActive) {
-      this.editorState.preview = false;
+  toggleEdit(): void {
+    if (this.siteEditService.active() && this.editorState.dataAction !== DataAction.QUERY) {
+      const priorState: View = this.editorState.view;
+      if (priorState === View.VIEW) {
+        this.editorState.view = View.EDIT;
+      } else if (this.editorState.view === View.EDIT) {
+        this.editorState.view = View.VIEW;
+      }
+      this.logger.info("toggleEdit: changing state from ", priorState, "to", this.editorState.view);
     }
+  }
+
+  nextActionCaption(): string {
+    return this.editorState.dataAction === DataAction.QUERY ? "Querying" : this.editorState.view === View.VIEW ? View.EDIT : View.VIEW;
   }
 
   saving(): boolean {
@@ -216,6 +214,15 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   querying(): boolean {
     return this.editorState.dataAction === DataAction.QUERY;
+  }
+
+  icon(): IconDefinition {
+    return this.editorState.dataAction === DataAction.QUERY ? faSpinner : this.editorState.view === View.VIEW ? faPencil : faMagnifyingGlass;
+  }
+
+  tooltip(): string {
+    const prefix = this.editorState.dataAction === DataAction.QUERY ? "Querying" : this.editorState.view === View.VIEW ? "Edit" : "Preview";
+    return prefix + " content for " + this.description;
   }
 
   reverting(): boolean {
@@ -237,16 +244,9 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     return this.saveEnabled;
   }
 
-  canEdit() {
-    return this.content && this.editorState.editActive && !this.editorState.preview;
-  }
-
-  canPreview() {
-    return this.content && (this.editorState.preview || !this.editorState.editActive);
-  }
-
   changeText($event: any) {
     this.logger.debug(this.name, "changeText:", $event);
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_CHANGED, this.content));
   }
+
 }

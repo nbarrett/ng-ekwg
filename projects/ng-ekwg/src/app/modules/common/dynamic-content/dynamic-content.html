@@ -1,77 +1,128 @@
 <app-page [area]="area" [relativePath]="relativePath" [pageTitle]="pageTitle">
-  <div *ngIf="pageContent && siteEditService.active()">
-    <div (click)="unsavedMarkdownElements() ? null :savePageContent()"
-         delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
-         [ngClass]="{'disabled' : unsavedMarkdownElements()}">
-      <fa-icon [icon]="faSave"></fa-icon>
-      Save page changes
-    </div>
-    <div (click)="revertPageContent()"
-         delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
-      <fa-icon [icon]="faUndo"></fa-icon>
-      Revert page changes
-    </div>
-    <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
-      <div class="thumbnail-heading">Row {{rowIndex + 1}}</div>
-      <div class="row">
-        <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
-          <div class="form-inline mb-2">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <div class="input-group-text input-sm">column {{columnIndex + 1}} width:</div>
-              </div>
-              <input #input (input)="changeColumnWidthFor(input, rowIndex, columnIndex)"
-                     [value]="pageContent.rows[rowIndex].columns[columnIndex].columns"
-                     autocomplete="columns"
-                     type="number" class="form-control input-sm column-input"
-                     placeholder="Enter number of columns (1-12)">
-              contentTextId: {{column?.contentTextId}}
+  <div *ngIf="pageContent">
+    <div *ngIf="siteEditService.active()">
+      <div (click)="namingService.unsavedMarkdownElements(pageContent) ? null :savePageContent()"
+           delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
+           [ngClass]="{'disabled' : namingService.unsavedMarkdownElements(pageContent)}">
+        <fa-icon [icon]="faSave"></fa-icon>
+        Save page changes
+      </div>
+      <div (click)="revertPageContent()"
+           delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
+        <fa-icon [icon]="faUndo"></fa-icon>
+        Revert page changes
+      </div>
+      <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+        <div class="thumbnail-heading">Row {{rowIndex + 1}} ({{row.type}})</div>
+        <app-dynamic-carousel *ngIf="row.type==='slides'" [pageContent]="pageContent" [rowIndex]="rowIndex">
+        </app-dynamic-carousel>
+        <div *ngIf="row.type==='text'">
+          <div class="row">
+            <div *ngFor="let column of row?.columns; let columnIndex = index;" [class]="'col-sm-' + column.columns">
+              <app-markdown-editor (saved)="namingService.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
+                                   [category]="contentPath"
+                                   [description]="namingService.identifierFor(rowIndex, columnIndex, relativePath)"
+                                   [id]="column?.contentTextId"
+                                   [initialView]="column?.contentTextId? 'view': 'edit'"
+                                   [name]="namingService.rowColFor(rowIndex, columnIndex)">
+                <div class="btn-group" dropdown>
+                  <button aria-controls="dropdown-animated" class="dropdown-toggle badge-button" dropdownToggle
+                          id="button-animated"
+                          type="button">
+                    <fa-icon [icon]="faTableCells"></fa-icon>
+                    <span class="ml-2">Actions</span><span class="caret"></span>
+                  </button>
+                  <ul *dropdownMenu aria-labelledby="button-animated" class="dropdown-menu"
+                      id="dropdown-animated" role="menu">
+                    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
+                      <a (click)="false" class="dropdown-item dropdown-toggle"
+                         dropdownToggle>Column<span class="caret"></span></a>
+                      <ul *dropdownMenu class="dropdown-menu" role="menu">
+                        <li role="menuitem"><a (click)="addColumn(row, columnIndex)"
+                                               class="dropdown-item">Insert to
+                          left</a>
+                        </li>
+                        <li role="menuitem"><a (click)="addColumn(row, columnIndex+1)"
+                                               class="dropdown-item">Insert to
+                          right</a>
+                        </li>
+                        <li role="menuitem"><a (click)="deleteColumn(row, columnIndex)"
+                                               class="dropdown-item">Remove</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
+                      <a (click)="false" class="dropdown-item dropdown-toggle"
+                         dropdownToggle>Text Row<span class="caret"></span></a>
+                      <ul *dropdownMenu class="dropdown-menu" role="menu">
+                        <li role="menuitem"><a (click)="addRow(rowIndex,'text')"
+                                               class="dropdown-item">Add above</a></li>
+                        <li role="menuitem"><a (click)="addRow(rowIndex + 1, 'text')"
+                                               class="dropdown-item">Add below</a></li>
+                      </ul>
+                    </li>
+                    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
+                      <a (click)="false" class="dropdown-item dropdown-toggle"
+                         dropdownToggle>Slide Carousel Row <span class="caret"></span></a>
+                      <ul *dropdownMenu class="dropdown-menu" role="menu">
+                        <li role="menuitem"><a (click)="addRow(rowIndex,'slides')"
+                                               class="dropdown-item">Add above</a></li>
+                        <li role="menuitem"><a (click)="addRow(rowIndex + 1,'slides')"
+                                               class="dropdown-item">Add below</a></li>
+                      </ul>
+                    </li>
+                    <li role="menuitem"><a (click)="deleteRow(rowIndex)"
+                                           class="dropdown-item">Delete Row</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text input-sm">width:</div>
+                  </div>
+                  <input #input (input)="changeColumnWidthFor(input, rowIndex, columnIndex)"
+                         [value]="pageContent.rows[rowIndex].columns[columnIndex].columns"
+                         autocomplete="columns"
+                         class="form-control input-sm column-input" placeholder="Enter number of columns (1-12)"
+                         type="number">
+                </div>
+              </app-markdown-editor>
             </div>
           </div>
-          <app-markdown-editor [id]="column?.contentTextId"
-                               [editInitiallyActive]="true"
-                               [description]="identifierFor(rowIndex, columnIndex, relativePath)"
-                               [category]="contentPath"
-                               (saved)="saveContentTextId($event, rowIndex, columnIndex)"
-                               [name]="rowColFor(rowIndex, columnIndex)">
-            <div
-              (click)="addColumn(row, columnIndex)"
-              delay=500 [tooltip]="'Insert column at position ' + (columnIndex+1)" class="badge-button">
-              <fa-icon [icon]="faPlusCircle"></fa-icon>
-            </div>
-            <div
-              (click)="deleteColumn(row, columnIndex)"
-              delay=500 [tooltip]="'Remove column at position ' + (columnIndex+1)" class="badge-button">
-              <fa-icon [icon]="faMinusCircle"></fa-icon>
-            </div>
-          </app-markdown-editor>
         </div>
       </div>
     </div>
-    <div (click)="addRow()"
-         delay=500 [tooltip]="'Add Row ' + (pageContent?.rows.length+1)" class="badge-button">
-      <fa-icon [icon]="faPlusCircle"></fa-icon>
-      <span>{{'Add Row ' + (pageContent?.rows.length + 1)}}</span>
+    <div *ngIf="!siteEditService.active()">
+      <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+        <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
+          <app-dynamic-carousel *ngIf="row.type==='slides'" [pageContent]="pageContent" [rowIndex]="rowIndex">
+          </app-dynamic-carousel>
+          <div *ngIf="row.type==='text'">
+            <app-markdown-editor [id]="column?.contentTextId"
+                                 [description]="namingService.identifierFor(rowIndex,columnIndex,relativePath)"
+                                 [category]="relativePath"
+                                 [name]="namingService.rowColFor(rowIndex, columnIndex)">
+            </app-markdown-editor>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div *ngIf="!pageContent">
-    <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
-      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
-      <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
-      - <a (click)="createContent()" type="button"
-           class="rams-text-decoration-pink">Create content</a>
-      {{notifyTarget.alertMessage}}
-    </div>
-  </div>
-  <div *ngIf="!siteEditService.active()">
-    <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
-      <div [class]="'col-sm-' + column.columns" *ngFor="let column of row?.columns; let columnIndex = index;">
-        <app-markdown-editor [id]="column?.contentTextId"
-                             [description]="identifierFor(rowIndex,columnIndex,relativePath)"
-                             [category]="relativePath"
-                             [name]="rowColFor(rowIndex, columnIndex)">
-        </app-markdown-editor>
+    <div *ngIf="siteEditService.active()">
+      <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
+        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+        <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
+        <div class="ml-2 p-2"><a (click)="createContent()" class="rams-text-decoration-pink"
+                             type="button">Create content</a> {{notifyTarget.alertMessage}}</div>
       </div>
+    </div>
+    <div *ngIf="!siteEditService.active()">
+      <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
+        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+        <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
+        <div class="mt-5">{{notifyTarget.alertMessage}}</div>
+        </div>
     </div>
   </div>
 </app-page>

@@ -23,7 +23,6 @@ import { ExpenseNotificationDirective } from "../../../notifications/expenses/ex
 import { ExpenseClaim, ExpenseEvent, ExpenseFilter, ExpenseItem, ExpenseNotificationRequest } from "../../../notifications/expenses/expense.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
-import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../services/expenses/expense-claim.service";
@@ -85,7 +84,6 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   showOrHide = "hide";
 
   constructor(private authService: AuthService,
-              private broadcastService: BroadcastService,
               private contentMetadata: ContentMetadataService,
               private dateUtils: DateUtilsService,
               private expenseClaimService: ExpenseClaimService,

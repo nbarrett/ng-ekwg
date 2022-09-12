@@ -13,7 +13,7 @@ export class NavbarComponent implements OnInit {
   private logger: Logger;
   public navbarContentWithinCollapse: boolean;
 
-  constructor(private broadcastService: BroadcastService, loggerFactory: LoggerFactory) {
+  constructor(private broadcastService: BroadcastService<boolean>, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
   }
 
@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent) => {
+    this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {
       this.logger.info("menu toggled with event:", event);
       this.navbarExpanded = event.data;
     });

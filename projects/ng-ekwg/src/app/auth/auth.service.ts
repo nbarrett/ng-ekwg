@@ -24,7 +24,7 @@ export class AuthService {
 
   constructor(private http: HttpClient,
               private loggerFactory: LoggerFactory,
-              private broadcastService: BroadcastService,
+              private broadcastService: BroadcastService<any>,
               private siteEditService: SiteEditService) {
     this.logger = loggerFactory.createLogger(AuthService, NgxLoggerLevel.OFF);
   }

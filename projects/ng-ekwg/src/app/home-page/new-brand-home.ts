@@ -14,13 +14,13 @@ export class NewBrandHomeComponent implements OnInit {
   croppedImage: any = "";
   private logger: Logger;
 
-  constructor(private broadcastService: BroadcastService,
+  constructor(private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(NewBrandHomeComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
-    this.broadcastService.on(NamedEventType.IMAGE_CROP, (event: NamedEvent) => {
+    this.broadcastService.on(NamedEventType.IMAGE_CROP, (event: NamedEvent<any>) => {
       this.logger.info("croppedImage:", event);
       this.croppedImage = event.data;
     });
