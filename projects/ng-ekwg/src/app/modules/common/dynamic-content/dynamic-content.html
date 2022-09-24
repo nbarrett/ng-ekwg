@@ -25,11 +25,11 @@
     <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <div class="thumbnail-heading">Row {{rowIndex + 1}}</div>
       <div class="form-group form-inline">
-        <label [for]="actions.identifierFor(rowIndex, 0, 'type')">Row Type:</label>
+        <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, 'type')">Row Type:</label>
         <select class="form-control input-sm ml-2"
                 [(ngModel)]="row.type"
                 (ngModelChange)="changeType($event)"
-                [id]="actions.identifierFor(rowIndex, 0, 'type')">
+                [id]="actions.rowColumnIdentifierFor(rowIndex, 0, 'type')">
           <option *ngFor="let type of enumKeyValuesFor"
                   [ngValue]="type.value">{{type.value}}</option>
         </select>
@@ -51,7 +51,7 @@
                                  [category]="contentPath"
                                  [editNameEnabled]="editNameEnabled"
                                  [clearEnabled]="true"
-                                 [description]="actions.identifierFor(rowIndex, columnIndex, contentDescription)"
+                                 [description]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, contentDescription)"
                                  [id]="column?.contentTextId"
                                  [initialView]="initialView(column)"
                                  [name]="actions.rowColFor(rowIndex, columnIndex)">
@@ -88,7 +88,7 @@
                              [class]="'col-sm-' + column.columns"
                              [id]="column?.contentTextId"
                              [editNameEnabled]="editNameEnabled"
-                             [description]="actions.identifierFor(rowIndex,columnIndex,contentDescription)"
+                             [description]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,contentDescription)"
                              [category]="contentPath"
                              [name]="actions.rowColFor(rowIndex, columnIndex)">
         </app-markdown-editor>

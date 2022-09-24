@@ -17,7 +17,8 @@
   </div>
   <div class="swiper-container">
     <div class="swiper-wrapper">
-      <div *ngFor="let column of viewableColumns(); let columnIndex = index;" [class]="slideClasses()">
+      <div *ngFor="let column of viewableColumns(); let columnIndex = index;" [class]="slideClasses()"
+           [id]="actions.columnIdentifierFor(columnIndex,'slide')">
         <div class="card shadow clickable h-100 mb-4">
           <img class="card-img-top" height="200"
                [src]="imageSource(column, columnIndex)">
@@ -35,25 +36,25 @@
             <div *ngIf="siteEditService.active()" class="card-title">
               <div class="form-group">
                 <label class="form-label"
-                       [for]="actions.identifierFor(rowIndex, columnIndex, 'title')">Title</label>
+                       [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title')">Title</label>
                 <input [(ngModel)]="column.title"
-                       [id]="actions.identifierFor(rowIndex, columnIndex, 'title')"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title')"
                        class="form-control input-sm" placeholder="Enter slide title"
                        type="text">
               </div>
               <div class="form-group">
                 <label class="form-label"
-                       [for]="actions.identifierFor(rowIndex, columnIndex, 'typeaheadLink')">Link</label>
+                       [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'typeaheadLink')">Link</label>
                 <input [(ngModel)]="column.href"
                        [typeahead]="siteLinks"
-                       [id]="actions.identifierFor(rowIndex, columnIndex, 'typeaheadLink')"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'typeaheadLink')"
                        class="form-control input-sm" placeholder="Enter href value">
               </div>
               <div class="form-group">
                 <label class="form-label"
-                       [for]="actions.identifierFor(rowIndex, columnIndex, 'imageSource')">Image Source</label>
+                       [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource')">Image Source</label>
                 <input [(ngModel)]="column.imageSource"
-                       [id]="actions.identifierFor(rowIndex, columnIndex, 'imageSource')"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource')"
                        class="form-control input-sm" placeholder="Enter image source value"
                        type="text">
               </div>
@@ -64,7 +65,7 @@
                                  [clearEnabled]="true"
                                  [editNameEnabled]="editNameEnabled"
                                  [category]="contentPath"
-                                 [description]="actions.identifierFor(rowIndex, columnIndex, relativePath)"
+                                 [description]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, relativePath)"
                                  [id]="column?.contentTextId"
                                  [name]="actions.rowColFor(rowIndex, columnIndex)">
               <div *ngIf="activeEditColumnIndex!==columnIndex"

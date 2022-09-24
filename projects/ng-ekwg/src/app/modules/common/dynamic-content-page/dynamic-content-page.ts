@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
-import { PageContent } from "../../../models/content-text.model";
+import { Page } from "../../../models/page.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
@@ -16,12 +15,9 @@ import { UrlService } from "../../../services/url.service";
 export class DynamicContentPageComponent implements OnInit {
   private logger: Logger;
   public relativePath: string;
-  public contentPath: string;
-  public pageContent: PageContent;
   public pageTitle: string;
-  public pathSegments: string[] = [];
   public area: string;
-  public editNameEnabled: true;
+  private page: Page;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,8 +31,11 @@ export class DynamicContentPageComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.relativePath = paramMap.get("relativePath");
-      this.logger.debug("initialised with path:", this.relativePath);
       this.pageTitle = this.pageService.pageTitle(this.relativePath);
+      this.pageService.contentPath(this.relativePath);
+      this.area = this.urlService.area();
+      this.page = this.pageService.pageForArea(this.area);
+      this.logger.info("initialised with path:", this.relativePath, "contentPath:", this.pageService.contentPath(this.relativePath), this.pageTitle, "this.page:", this.page);
     });
   }
 

@@ -48,12 +48,13 @@ export class PageService {
     return this.stringUtils.replaceAll("/", " ", this.contentPath(relativePath)).toString().toLowerCase();
   }
 
-  contentPath(relativePath: string): string {
+  contentPath(relativePath: string, anchor?: string): string {
+    const anchorSuffix = anchor ? "#" + anchor : "";
     const area = this.urlService.area();
     if (relativePath) {
-      return `${area}/${relativePath}`;
+      return `${area}/${relativePath}${anchorSuffix}`;
     } else {
-      return area;
+      return `${area}${anchorSuffix}`;
     }
   }
 
@@ -63,7 +64,7 @@ export class PageService {
 
   private basePagesForArea(area: string): Page[] {
     return this.pages
-      .filter(page => page === HOME || page.title.toLowerCase() === area.toLowerCase());
+      .filter(page => page === HOME || page?.title?.toLowerCase() === area?.toLowerCase());
   }
 
   private relativePages(area: string, pathSegments: string[]): Page[] {

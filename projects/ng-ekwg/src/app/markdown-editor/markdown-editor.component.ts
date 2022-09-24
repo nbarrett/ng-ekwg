@@ -69,7 +69,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
               private changeDetectorRef: ChangeDetectorRef,
               public siteEditService: SiteEditService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnChanges(changes: SimpleChanges) {

@@ -1,11 +1,11 @@
 <div class="btn-group" dropdown>
   <button aria-controls="dropdown-animated" class="dropdown-toggle badge-button" dropdownToggle
-          [id]="actions.identifierFor(rowIndex, columnIndex,'button-animated')"
+          [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex,'button-animated')"
           type="button">
     <fa-icon [icon]="faTableCells"></fa-icon>
     <span class="ml-2">Actions</span><span class="caret"></span>
   </button>
-  <ul *dropdownMenu [aria-labelledby]="actions.identifierFor(rowIndex, columnIndex,'button-animated')"
+  <ul *dropdownMenu [aria-labelledby]="actions.rowColumnIdentifierFor(rowIndex, columnIndex,'button-animated')"
       class="dropdown-menu"
       id="dropdown-animated" role="menu">
     <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover"

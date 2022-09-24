@@ -87,15 +87,20 @@ export class PageContentActionsService {
   }
 
   rowColFor(rowIndex: number, columnIndex: number): string {
-    return `row-${rowIndex + 1}-column-${columnIndex + 1}`;
+    const rowPrefix = rowIndex ? `row-${rowIndex + 1}-` : "";
+    return `${rowPrefix}column-${columnIndex + 1}`;
   }
 
-  identifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
+  rowColumnIdentifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
     return `${identifier}-${this.rowColFor(rowIndex, columnIndex)}`;
   }
 
+  columnIdentifierFor(columnIndex: number, identifier: string): string {
+    return `${identifier}-${this.rowColFor(null, columnIndex)}`;
+  }
+
   descriptionFor(rowIndex, columnIndex, identifier: string): string {
-    return (this.stringUtils.replaceAll("-", " ", this.identifierFor(rowIndex, columnIndex, identifier)) as string).trim();
+    return (this.stringUtils.replaceAll("-", " ", this.rowColumnIdentifierFor(rowIndex, columnIndex, identifier)) as string).trim();
   }
 
   descriptionForContent(relativePath: string): string | number {

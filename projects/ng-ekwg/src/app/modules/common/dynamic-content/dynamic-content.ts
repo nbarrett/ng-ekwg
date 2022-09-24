@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
@@ -26,6 +26,8 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
   styleUrls: ["./dynamic-content.sass"],
 })
 export class DynamicContentComponent implements OnInit {
+  @Input()
+  public anchor: string;
   private logger: Logger;
   public relativePath: string;
   public contentPath: string;
@@ -64,19 +66,21 @@ export class DynamicContentComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.area = this.urlService.area();
       this.relativePath = paramMap.get("relativePath");
-      this.contentPath = this.pageService.contentPath(this.relativePath);
+      this.contentPath = this.pageService.contentPath(this.relativePath, this.anchor);
       this.contentDescription = this.pageService.contentDescription(this.relativePath);
-      this.logger.debug("initialised with path:", this.relativePath);
+      this.logger.info("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
       this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
       this.logger.debug("Finding page content for " + this.relativePath);
       this.pageContentService.findByPath(this.contentPath)
         .then(pageContent => {
-          this.logger.info("Found page content for", this.contentPath, "as:", pageContent);
           this.pageContent = pageContent;
-          if (!pageContent) {
+          if (pageContent) {
+            this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
+          } else {
+            this.logger.info("Page content not found for", this.contentPath);
             this.notify.warning({
               title: `Page not found`,
-              message: `We couldn't find the ${this.pageTitle} page`
+              message: `The ${this.contentPath} page content was not found`
             });
           }
         });
