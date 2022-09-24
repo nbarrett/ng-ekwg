@@ -19,6 +19,7 @@ import { PaginationModule } from "ngx-bootstrap/pagination";
 import { PopoverModule } from "ngx-bootstrap/popover";
 import { TabsModule } from "ngx-bootstrap/tabs";
 import { TooltipModule } from "ngx-bootstrap/tooltip";
+import { TypeaheadModule } from "ngx-bootstrap/typeahead";
 import { ImageCropperModule } from "ngx-image-cropper";
 import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger";
 import { MarkdownModule } from "ngx-markdown";
@@ -29,10 +30,14 @@ import { LoggedInGuard } from "./admin-login-guard.service";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsDirective } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
+import { ImageCropperAndResizerComponent } from "./image-cropper/image-cropper";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
+import { ActionsDropdownComponent } from "./modules/common/actions-dropdown/actions-dropdown";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
 import { DynamicCarouselComponent } from "./modules/common/dynamic-carousel/dynamic-carousel";
+import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
 import { DynamicContentComponent } from "./modules/common/dynamic-content/dynamic-content";
+import { IconExamplesComponent } from "./modules/common/icon-examples/icon-examples";
 import { SvgComponent } from "./modules/common/svg/svg";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
@@ -54,6 +59,7 @@ import { FullNameWithAliasOrMePipe } from "./pipes/full-name-with-alias-or-me.pi
 import { FullNameWithAliasPipe } from "./pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "./pipes/full-name.pipe";
 import { HumanisePipe } from "./pipes/humanise.pipe";
+import { KebabCasePipe } from "./pipes/kebabcase.pipe";
 import { LastConfirmedDateDisplayed } from "./pipes/last-confirmed-date-displayed.pipe";
 import { LineFeedsToBreaksPipe } from "./pipes/line-feeds-to-breaks.pipe";
 import { MeetupEventSummaryPipe } from "./pipes/meetup-event-summary.pipe";
@@ -84,121 +90,132 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     AlertModule.forRoot(),
     Angular2CsvModule,
     BsDatepickerModule.forRoot(),
+    BsDropdownModule.forRoot(),
     CarouselModule.forRoot(),
     CollapseModule.forRoot(),
     CommonModule,
     FileUploadModule,
+    FontAwesomeModule,
     FormsModule,
     FormsModule,
-    LoggerModule.forRoot({serverLoggingUrl: "api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF}),
     ImageCropperModule,
+    LoggerModule.forRoot({serverLoggingUrl: "api/logs", level: NgxLoggerLevel.OFF, serverLogLevel: NgxLoggerLevel.OFF}),
     MarkdownModule.forRoot(),
     ModalModule.forRoot(),
     NgSelectModule,
-    BsDropdownModule.forRoot(),
-    PopoverModule.forRoot(),
     PaginationModule.forRoot(),
+    PopoverModule.forRoot(),
     RouterModule,
+    ScrollingModule,
     TabsModule.forRoot(),
     TagifyModule.forRoot(),
     TooltipModule.forRoot(),
+    TypeaheadModule.forRoot(),
     UiSwitchModule,
-    ScrollingModule,
-    FontAwesomeModule,
   ],
   declarations: [
-    TagEditorComponent,
     AccordionGroupComponent,
+    ActionsDropdownComponent,
     ContactUsDirective,
+    CopyIconComponent,
     CreatedAuditPipe,
     DatePickerComponent,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    DynamicCarouselComponent,
+    DynamicContentComponent,
+    DynamicContentPageComponent,
+    IconExamplesComponent,
     EventNotePipe,
     FormatAuditPipe,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    ImageEditComponent,
     ImageListComponent,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
-    CopyIconComponent,
-    DynamicContentComponent,
-    DynamicCarouselComponent,
-    SvgComponent,
     MarkdownEditorComponent,
     MeetupEventSummaryPipe,
-    MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
+    MemberIdsToFullNamesPipe,
     MoneyPipe,
     NotificationUrlComponent,
     PageComponent,
     PanelExpanderComponent,
+    ImageCropperAndResizerComponent,
     SearchFilterPipe,
     SnakeCasePipe,
+    KebabCasePipe,
+    SvgComponent,
+    TagEditorComponent,
     UpdatedAuditPipe,
     ValueOrDefaultPipe,
-    ImageEditComponent,
   ],
   exports: [
     AccordionGroupComponent,
     AccordionModule,
+    ActionsDropdownComponent,
     AlertModule,
     Angular2CsvModule,
     BsDatepickerModule,
+    BsDropdownModule,
     CarouselModule,
     CollapseModule,
     CommonModule,
     ContactUsDirective,
+    CopyIconComponent,
     CreatedAuditPipe,
     DatePickerComponent,
     DisplayDateAndTimePipe,
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    DynamicCarouselComponent,
+    DynamicContentComponent,
+    DynamicContentPageComponent,
+    IconExamplesComponent,
     EventNotePipe,
     FileUploadModule,
+    FontAwesomeModule,
     FormsModule,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    ImageCropperModule,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
     LoggerModule,
     MarkdownEditorComponent,
     MarkdownModule,
-    ImageCropperModule,
     MeetupEventSummaryPipe,
-    MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
+    MemberIdsToFullNamesPipe,
     ModalModule,
     MoneyPipe,
     NgSelectModule,
     NotificationUrlComponent,
     PageComponent,
-    PanelExpanderComponent,
-    BsDropdownModule,
-    PopoverModule,
     PaginationModule,
+    PanelExpanderComponent,
+    ImageCropperAndResizerComponent,
+    PopoverModule,
     RouterModule,
     SearchFilterPipe,
     SnakeCasePipe,
+    KebabCasePipe,
+    SvgComponent,
     TabsModule,
     TooltipModule,
     UiSwitchModule,
     UpdatedAuditPipe,
     ValueOrDefaultPipe,
-    FontAwesomeModule,
-    CopyIconComponent,
-    DynamicContentComponent,
-    DynamicCarouselComponent,
-    SvgComponent
   ]
 })
 export class SharedModule {
@@ -239,6 +256,7 @@ export class SharedModule {
         SearchFilterPipe,
         SiteEditService,
         SnakeCasePipe,
+        KebabCasePipe,
         UpdatedAuditPipe,
         ValueOrDefaultPipe,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

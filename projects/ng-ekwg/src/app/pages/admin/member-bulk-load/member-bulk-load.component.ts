@@ -74,8 +74,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   faSpinner = faSpinner;
   faSearch = faSearch;
 
-  constructor(@Inject(DOCUMENT) private document: Document,
-              private mailchimpListService: MailchimpListService,
+  constructor(private mailchimpListService: MailchimpListService,
               private contentMetadata: ContentMetadataService,
               private memberBulkUploadService: MemberBulkLoadService,
               private memberService: MemberService,
@@ -380,9 +379,8 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
     return this.memberBulkUploadService.processResponse(memberBulkLoadServerResponse, this.members, this.notify);
   }
 
-  bulkUploadRamblersDataStart() {
-    const elementById: HTMLElement = this.document.getElementById("browse-to-file");
-    this.logger.debug("bulkUploadRamblersDataStart:elementById", elementById);
-    elementById.click();
+  bulkUploadRamblersDataStart(fileElement: HTMLInputElement) {
+    this.logger.debug("bulkUploadRamblersDataStart:fileElement", fileElement);
+    fileElement.click();
   }
 }

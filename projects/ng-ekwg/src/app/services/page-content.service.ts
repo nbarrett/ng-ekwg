@@ -20,7 +20,7 @@ export class PageContentService {
   }
 
   async all(): Promise<PageContent[]> {
-    const apiResponse = await this.http.get<{ response: PageContent[] }>(this.BASE_URL).toPromise();
+    const apiResponse = await this.http.get<{ response: PageContent[] }>(this.BASE_URL + "/all").toPromise();
     this.logger.debug("all - received", apiResponse);
     return apiResponse.response;
   }

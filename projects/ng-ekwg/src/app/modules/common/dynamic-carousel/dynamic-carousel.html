@@ -15,24 +15,68 @@
         <span class="sr-only">Next slide</span></button>
     </div>
   </div>
-  <div class="swiper-container swiper-container-initialized swiper-container-horizontal">
+  <div class="swiper-container">
     <div class="swiper-wrapper">
       <div *ngFor="let column of viewableColumns(); let columnIndex = index;" [class]="slideClasses()">
         <div class="card shadow clickable h-100 mb-4">
-          <img class="card-img-top"
-               height="200"
-               [src]="column.imageSource">
-
+          <img class="card-img-top" height="200"
+               [src]="imageSource(column, columnIndex)">
           <div class="card-body">
-            <h4 class="card-title"><a
-              class="rams-text-decoration-pink" [href]="column.href"
-              target="_self">{{column.title}}</a></h4>
-            <app-markdown-editor class="card-text" (saved)="namingService.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
+            <app-image-cropper
+              *ngIf="activeEditColumnIndex===columnIndex"
+              (imageChange)="imageChanged($event)"
+              (quit)="exitImageEdit()"
+              (save)="imagedSaved($event)">
+            </app-image-cropper>
+            <h4 class="card-title">
+              <a class="rams-text-decoration-pink" [href]="column.href"
+                 target="_self">{{column.title}}</a>
+            </h4>
+            <div *ngIf="siteEditService.active()" class="card-title">
+              <div class="form-group">
+                <label class="form-label"
+                       [for]="actions.identifierFor(rowIndex, columnIndex, 'title')">Title</label>
+                <input [(ngModel)]="column.title"
+                       [id]="actions.identifierFor(rowIndex, columnIndex, 'title')"
+                       class="form-control input-sm" placeholder="Enter slide title"
+                       type="text">
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                       [for]="actions.identifierFor(rowIndex, columnIndex, 'typeaheadLink')">Link</label>
+                <input [(ngModel)]="column.href"
+                       [typeahead]="siteLinks"
+                       [id]="actions.identifierFor(rowIndex, columnIndex, 'typeaheadLink')"
+                       class="form-control input-sm" placeholder="Enter href value">
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                       [for]="actions.identifierFor(rowIndex, columnIndex, 'imageSource')">Image Source</label>
+                <input [(ngModel)]="column.imageSource"
+                       [id]="actions.identifierFor(rowIndex, columnIndex, 'imageSource')"
+                       class="form-control input-sm" placeholder="Enter image source value"
+                       type="text">
+              </div>
+            </div>
+            <app-markdown-editor class="card-text"
+                                 (saved)="actions.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
+                                 [actionCaptionSuffix]="'text'"
+                                 [clearEnabled]="true"
+                                 [editNameEnabled]="editNameEnabled"
                                  [category]="contentPath"
-                                 [description]="namingService.identifierFor(rowIndex, columnIndex, relativePath)"
+                                 [description]="actions.identifierFor(rowIndex, columnIndex, relativePath)"
                                  [id]="column?.contentTextId"
-                                 [initialView]="column?.contentTextId? 'view': 'edit'"
-                                 [name]="namingService.rowColFor(rowIndex, columnIndex)">
+                                 [name]="actions.rowColFor(rowIndex, columnIndex)">
+              <div *ngIf="activeEditColumnIndex!==columnIndex"
+                   (click)="editImage(columnIndex)"
+                   delay=500 tooltip="edit image" class="badge-button">
+                <fa-icon [icon]="faPencil"></fa-icon>
+                <span>edit image</span>
+              </div>
+              <app-actions-dropdown [columnIndex]="columnIndex"
+                                    [pageContent]="pageContent"
+                                    [row]="row">
+              </app-actions-dropdown>
             </app-markdown-editor>
           </div>
         </div>

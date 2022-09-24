@@ -18,7 +18,7 @@ export class PageService {
   constructor(private stringUtils: StringUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PageService, NgxLoggerLevel.OFF);
   }
 
   public pages: Page[] = [
@@ -38,6 +38,27 @@ export class PageService {
 
   pagesFor(area: string, relativePath: string): Page[] {
     return this.basePagesForArea(area).concat(this.relativePages(area, this.urlService.toPathSegments(relativePath)));
+  }
+
+  pageTitle(relativePath: string): string {
+    return this.stringUtils.asTitle(last(this.pathSegments(relativePath)));
+  }
+
+  contentDescription(relativePath: string): string {
+    return this.stringUtils.replaceAll("/", " ", this.contentPath(relativePath)).toString().toLowerCase();
+  }
+
+  contentPath(relativePath: string): string {
+    const area = this.urlService.area();
+    if (relativePath) {
+      return `${area}/${relativePath}`;
+    } else {
+      return area;
+    }
+  }
+
+  pathSegments(relativePath: string): string[] {
+    return this.urlService.toPathSegments(relativePath);
   }
 
   private basePagesForArea(area: string): Page[] {

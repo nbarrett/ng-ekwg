@@ -84,7 +84,6 @@
                  id="longer-description-formatted"></p>
               <textarea *ngIf="!longerDescriptionPreview"
                         [disabled]="!allowEdits()"
-                        (blur)="previewLongerDescription()"
                         [(ngModel)]="displayedWalk.walk.longerDescription" type="text"
                         class="form-control input-sm" rows="5" id="longer-description"
                         placeholder="Enter Longer Description here"></textarea>

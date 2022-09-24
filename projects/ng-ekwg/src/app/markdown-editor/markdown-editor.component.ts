@@ -49,8 +49,10 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() category: string;
   @Input() text: string;
   @Input() rows: number;
+  @Input() actionCaptionSuffix: string;
   @Input() editNameEnabled: boolean;
   @Input() deleteEnabled: boolean;
+  @Input() clearEnabled: boolean;
   @Input() initialView: View;
   @Input() description: string;
   @Output() saved: EventEmitter<ContentText> = new EventEmitter();
@@ -84,7 +86,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit", this.name || this.data);
+    this.logger.info("ngOnInit:name", this.name, "data:", this.data, "description:", this.description);
     this.editorState = {
       view: this.initialView || View.VIEW,
       dataAction: DataAction.NONE
@@ -122,10 +124,15 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   queryContent(): Promise<ContentText> {
     this.editorState.dataAction = DataAction.QUERY;
     if (this.id) {
-      this.logger.info("querying contentby:id", this.id, "name:", this.name, "category:", this.category, "editorState:", this.editorState, "id:", );
-      return this.contentTextService.getById(this.id).then((content) => {
-        return this.apply(content);
-      });
+      this.logger.info("querying content for id:", this.id, "name:", this.name, "category:", this.category, "editorState:", this.editorState, "id:",);
+      return this.contentTextService.getById(this.id)
+        .then((content) => {
+          return this.apply(content);
+        })
+        .catch(response => {
+          this.logger.error(response);
+          return this.apply({});
+        });
     } else if (this.name) {
       this.logger.info("querying content:name", this.name, "and category:", this.category, "editorState:", this.editorState, "id:", this.id);
       return this.contentTextService.findByNameAndCategory(this.name, this.category).then((content) => {
@@ -193,6 +200,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   toggleEdit(): void {
+    this.logger.info("toggleEdit called");
     if (this.siteEditService.active() && this.editorState.dataAction !== DataAction.QUERY) {
       const priorState: View = this.editorState.view;
       if (priorState === View.VIEW) {
@@ -205,7 +213,11 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   nextActionCaption(): string {
-    return this.editorState.dataAction === DataAction.QUERY ? "Querying" : this.editorState.view === View.VIEW ? View.EDIT : View.VIEW;
+    return this.editorState.dataAction === DataAction.QUERY ? "Querying" : this.editorState.view === View.VIEW ? this.captionFor(View.EDIT) : this.captionFor(View.VIEW);
+  }
+
+  private captionFor(view: View) {
+    return view + (this.actionCaptionSuffix ? (" " + this.actionCaptionSuffix) : "");
   }
 
   saving(): boolean {
@@ -229,6 +241,10 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     return this.editorState.dataAction === DataAction.REVERT;
   }
 
+  clear() {
+    delete this.content.id;
+  }
+
   delete() {
     this.contentTextService.delete(this.content).then((removed) => {
       this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_DELETED, removed));
@@ -238,6 +254,10 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   canDelete() {
     return this.deleteEnabled && this.content.id;
+  }
+
+  canClear() {
+    return this.clearEnabled && this.content.id;
   }
 
   canSave() {

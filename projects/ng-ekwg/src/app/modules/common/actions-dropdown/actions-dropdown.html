@@ -1,0 +1,53 @@
+<div class="btn-group" dropdown>
+  <button aria-controls="dropdown-animated" class="dropdown-toggle badge-button" dropdownToggle
+          [id]="actions.identifierFor(rowIndex, columnIndex,'button-animated')"
+          type="button">
+    <fa-icon [icon]="faTableCells"></fa-icon>
+    <span class="ml-2">Actions</span><span class="caret"></span>
+  </button>
+  <ul *dropdownMenu [aria-labelledby]="actions.identifierFor(rowIndex, columnIndex,'button-animated')"
+      class="dropdown-menu"
+      id="dropdown-animated" role="menu">
+    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover"
+        [ngClass]="{'d-none': columnIndex==null}">
+      <a class="dropdown-item dropdown-toggle"
+         dropdownToggle>Column<span class="caret"></span></a>
+      <ul *dropdownMenu class="dropdown-menu" role="menu">
+        <li role="menuitem"><a (click)="actions.addColumn(row, columnIndex, pageContent)"
+                               class="dropdown-item">Insert to
+          left</a>
+        </li>
+        <li role="menuitem"><a (click)="actions.addColumn(row, columnIndex+1, pageContent)"
+                               class="dropdown-item">Insert to
+          right</a>
+        </li>
+        <li role="menuitem"><a (click)="actions.deleteColumn(row, columnIndex, pageContent)"
+                               class="dropdown-item">Remove</a>
+        </li>
+      </ul>
+    </li>
+    <li role="menuitem"><a (click)="actions.deleteRow(rowIndex, pageContent)"
+                           class="dropdown-item" [ngClass]="{'d-none': rowIndex==null}">Delete Row</a>
+    </li>
+    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover" [ngClass]="{'d-none': rowIndex==null}">
+      <a class="dropdown-item dropdown-toggle"
+         dropdownToggle>Text Row<span class="caret"></span></a>
+      <ul *dropdownMenu class="dropdown-menu" role="menu">
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex,'text', pageContent)"
+                               class="dropdown-item">Add above</a></li>
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex + 1, 'text', pageContent)"
+                               class="dropdown-item">Add below</a></li>
+      </ul>
+    </li>
+    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover" [ngClass]="{'d-none': rowIndex==null}">
+      <a class="dropdown-item dropdown-toggle"
+         dropdownToggle>Slide Carousel Row <span class="caret"></span></a>
+      <ul *dropdownMenu class="dropdown-menu" role="menu">
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex,'slides', pageContent)"
+                               class="dropdown-item">Add above</a></li>
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex + 1,'slides', pageContent)"
+                               class="dropdown-item">Add below</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>

@@ -2,18 +2,20 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
-import last from "lodash-es/last";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
+import { View } from "../../../markdown-editor/markdown-editor.component";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { PageContent, PageContentColumn, PageContentRow, PageContentType } from "../../../models/content-text.model";
+import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
-import { ContentTextNamingService } from "../../../services/content-text-naming.service";
+import { enumKeyValues, KeyValue } from "../../../services/enums";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { NumberUtilsService } from "../../../services/number-utils.service";
+import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageContentService } from "../../../services/page-content.service";
+import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
@@ -36,9 +38,11 @@ export class DynamicContentComponent implements OnInit {
   faSave = faSave;
   faUndo = faUndo;
   faTableCells = faTableCells;
-  public pathSegments: string[] = [];
   public area: string;
   providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }];
+  enumKeyValuesFor: KeyValue[] = enumKeyValues(PageContentType);
+  public editNameEnabled: true;
+  public contentDescription: string;
 
   constructor(
     public siteEditService: SiteEditService,
@@ -48,7 +52,8 @@ export class DynamicContentComponent implements OnInit {
     private numberUtils: NumberUtilsService,
     private stringUtils: StringUtilsService,
     private pageContentService: PageContentService,
-    public namingService: ContentTextNamingService,
+    private pageService: PageService,
+    public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
@@ -59,19 +64,19 @@ export class DynamicContentComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.area = this.urlService.area();
       this.relativePath = paramMap.get("relativePath");
-      this.contentPath = `${this.area}/${this.relativePath}`;
-      this.pathSegments = this.urlService.toPathSegments(this.relativePath);
-      this.logger.debug("initialised with path:", this.relativePath, "pathSegments:", this.pathSegments);
-      this.pageTitle = this.stringUtils.asTitle(last(this.pathSegments));
+      this.contentPath = this.pageService.contentPath(this.relativePath);
+      this.contentDescription = this.pageService.contentDescription(this.relativePath);
+      this.logger.debug("initialised with path:", this.relativePath);
+      this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
       this.logger.debug("Finding page content for " + this.relativePath);
       this.pageContentService.findByPath(this.contentPath)
         .then(pageContent => {
           this.logger.info("Found page content for", this.contentPath, "as:", pageContent);
           this.pageContent = pageContent;
           if (!pageContent) {
-            this.notify.success({
-              title: `Page content doesn't exist`,
-              message: `for ${this.pageTitle} page`
+            this.notify.warning({
+              title: `Page not found`,
+              message: `We couldn't find the ${this.pageTitle} page`
             });
           }
         });
@@ -81,24 +86,24 @@ export class DynamicContentComponent implements OnInit {
           this.savePageContent();
         }
       });
+
+      this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (namedEvent: NamedEvent<PageContent>) => {
+        this.logger.info("event received:", namedEvent);
+        this.pageContent.rows.forEach(row => row.columns.forEach(column => {
+          if (column.contentTextId === namedEvent?.data?.id) {
+            this.logger.info("removing link to content " + namedEvent.data.id);
+            delete column.contentTextId;
+          }
+        }));
+        this.savePageContent();
+      });
     });
-  }
-
-  defaultRowFor(type: PageContentType | string): PageContentRow {
-    return {
-      type: type as PageContentType,
-      columns: [this.columnFor(type)]
-    };
-  };
-
-  private columnFor(type: PageContentType | string): PageContentColumn {
-    return type === PageContentType.TEXT ? {columns: 12} : {};
   }
 
   createContent() {
     this.pageContent = {
       path: this.contentPath,
-      rows: [this.defaultRowFor(PageContentType.TEXT)]
+      rows: [this.actions.defaultRowFor(PageContentType.TEXT)]
     };
     this.logger.info("this.pageContent:", this.pageContent);
   }
@@ -113,40 +118,11 @@ export class DynamicContentComponent implements OnInit {
       .then(response => this.pageContent = response);
   }
 
-  addRow(rowIndex, pageContentType: PageContentType | string) {
-    this.pageContent.rows.splice(rowIndex, 0, this.defaultRowFor(pageContentType));
-    this.logger.info("this.pageContent:", this.pageContent);
+  public changeType($event: any) {
+    this.logger.info("changeType:", $event);
   }
 
-  deleteRow(rowIndex) {
-    this.pageContent.rows = this.pageContent.rows.filter((item, index) => index !== rowIndex);
-    this.logger.info("this.pageContent:", this.pageContent);
-  }
-
-  addColumn(row: PageContentRow, columnIndex: number) {
-    const columns = this.calculateColumnsFor(row, 1);
-    row.columns.splice(columnIndex, 0, {columns});
-    this.logger.info("this.pageContent:", this.pageContent);
-  }
-
-  private calculateColumnsFor(row: PageContentRow, columnIncrement: number) {
-    const newColumnCount = row.columns.length + columnIncrement;
-    const columns = this.numberUtils.asNumber(12 / newColumnCount, 0);
-    row.columns.forEach(column => column.columns = columns);
-    return columns;
-  }
-
-  deleteColumn(row: PageContentRow, columnIndex: number) {
-    this.calculateColumnsFor(row, -1);
-    row.columns = row.columns.filter((item, index) => index !== columnIndex);
-    this.logger.info("this.pageContent:", this.pageContent);
-  }
-
-  changeColumnWidthFor($event: HTMLInputElement, rowIndex: number, columnIndex: number) {
-    const inputValue = +$event.value;
-    const columnWidth: number = inputValue > 12 ? 12 : inputValue < 1 ? 1 : +$event.value;
-    $event.value = columnWidth.toString();
-    this.pageContent.rows[rowIndex].columns[columnIndex].columns = columnWidth;
-    this.logger.info("changeColumnsFor:", rowIndex, columnIndex, columnWidth, "this.pageContent:", this.pageContent);
+  public initialView(column: PageContentColumn): View {
+    return column?.contentTextId ? View.VIEW : View.EDIT;
   }
 }

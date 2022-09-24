@@ -28,8 +28,8 @@
                          (click)="uploadToRamblers()"
                          title="Upload {{walksDownloadFileContents().length}} selected walk(s) directly to Ramblers Walks and Events Manager"
                          [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-                  <input *ngIf="walksDownloadFileContents().length > 0" type="submit"
-                         (click)="exportCSV()"
+                  <input #fileElement *ngIf="walksDownloadFileContents().length > 0" type="submit"
+                         (click)="exportCSV(fileElement)"
                          value="Export {{walksDownloadFileContents().length}} walk(s) file as CSV format"
                          title="Export {{walksDownloadFileContents().length}} selected walk(s) in Ramblers Walks and Events Manager upload format"
                          [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">

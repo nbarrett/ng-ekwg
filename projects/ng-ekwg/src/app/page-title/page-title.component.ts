@@ -1,7 +1,9 @@
-import { Component } from "@angular/core";
-import { UrlService } from "../services/url.service";
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, ParamMap } from "@angular/router";
+import last from "lodash-es/last";
 import { PageService } from "../services/page.service";
-
+import { StringUtilsService } from "../services/string-utils.service";
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-page-title",
@@ -9,13 +11,27 @@ import { PageService } from "../services/page.service";
   styleUrls: ["./page-title.component.sass"]
 
 })
-export class PageTitleComponent {
+export class PageTitleComponent implements OnInit {
+  private relativePath: string;
 
-  constructor(private urlService: UrlService, private pageService: PageService) {
+  constructor(
+    private urlService: UrlService,
+    private stringUtils: StringUtilsService,
+    private pageService: PageService,
+    private route: ActivatedRoute) {
+  }
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      this.relativePath = paramMap.get("relativePath");
+    });
   }
 
   title() {
-    return `EKWG - ${this.pageService.pageForArea(this.urlService.area())?.title}`;
+    const pages = this.pageService.pagesFor(this.urlService.area(), this.relativePath);
+    const areaTitle = last(pages)?.title;
+    const subTitle = this.stringUtils.asTitle(last(this.urlService.relativeUrlAsPathSegments()));
+    return areaTitle === subTitle ? `EKWG - ${areaTitle}` : `EKWG - ${areaTitle} - ${subTitle}`;
   }
 
 }

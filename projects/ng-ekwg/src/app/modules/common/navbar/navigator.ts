@@ -21,7 +21,7 @@ export class NavbarComponent implements OnInit {
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
-    const width = event.target.innerWidth;
+    const width = event?.target?.innerWidth;
     this.detectWidth(width);
   }
 

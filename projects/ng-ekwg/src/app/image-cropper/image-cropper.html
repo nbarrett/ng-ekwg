@@ -1,5 +1,5 @@
 <div class="row mb-n3">
-  <div class="mb-3 col-md-6">
+  <div *ngIf="false" class="mb-3 col-md-6">
     <div class="card shadow clickable h-100">
       <div class="card-body"><h4>Resize</h4>
         <div class="card-text">
@@ -14,56 +14,9 @@
           </div>
           <div class="row">
             <div class="col">
-              <input type="submit" [disabled]="notifyTarget.busy"
-                     value="Choose File"
-                     (click)="browseToFile(fileElement)"
-                     [ngClass]="{'disabled-button-form': notifyTarget.busy}">
-              <input #fileElement class="d-none" type="file" ng2FileSelect (onFileSelected)="onFileSelect($event)"
-                     [uploader]="uploader">
-            </div>
-            <div class="col">
-              <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-                   (fileOver)="fileOver($event)"
-                   (onFileDrop)="fileDropped($event)"
-                   [uploader]="uploader"
-                   class="drop-zone flex-grow-1">Or drop file here
-              </div>
-            </div>
-            <div class="w-100"></div>
-
-            <div class="col">
-              <button (click)="rotateLeft()">Rotate left</button>
-            </div>
-            <div class="col">
-              <button (click)="rotateRight()">Rotate right</button>
-            </div>
-            <div class="w-100"></div>
-
-            <div class="col">
-              <button (click)="flipHorizontal()">Flip horizontal</button>
-            </div>
-            <div class="col">
-              <button (click)="flipVertical()">Flip vertical</button>
-            </div>
-            <div class="w-100"></div>
-
-            <div class="col">
               <button
                 (click)="toggleContainWithinAspectRatio()">{{containWithinAspectRatio ? 'Fill Aspect Ratio' : 'Contain Within Aspect Ratio'}}</button>
             </div>
-            <div class="col">
-              <button (click)="resetImage()">Reset image</button>
-            </div>
-            <div class="w-100"></div>
-
-            <div class="col">
-              <button (click)="zoomOut()">Zoom -</button>
-            </div>
-            <div class="col">
-              <button (click)="zoomIn()">Zoom +</button>
-            </div>
-            <div class="w-100 mb-2"></div>
-
             <div class="col">
               <label for="resizeToWidth">Resize to width:</label>
             </div>
@@ -73,7 +26,6 @@
                      placeholder="Resize to width" type="number"
                      class="form-control input-sm flex-grow-1"/>
             </div>
-
             <div class="col">
               <label for="rotation">Rotation:</label>
             </div>
@@ -82,58 +34,126 @@
                      (keyup)="updateRotation()"
                      class="form-control input-sm flex-grow-1"/>
             </div>
-            <div class="w-100"></div>
-
             <div class="col">
               <div>Original Size: {{originalSize}}</div>
             </div>
             <div class="col">
               <div>Cropped Size: {{croppedSize}}</div>
             </div>
+            <div class="col">
+              <label for="aspect-ratio">Aspect Ratio:</label>
+              <select class="form-control input-sm ml-2"
+                      [(ngModel)]="dimension"
+                      (change)="changeAspectRatio($event)"
+                      id="aspect-ratio">
+                <option *ngFor="let aspectRatio of dimensions"
+                        [ngValue]="aspectRatio">{{aspectRatio.width}} x {{aspectRatio.height}}</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="mb-3 col-md-6">
-    <div class="card shadow h-100">
-      <div class="card-body"><h4>Image</h4>
-        <div>
-          <image-cropper
-            [allowMoveImage]="true"
-            [imageFile]="imageFile"
-            [imageChangedEvent]="imageChangedEvent"
-            [maintainAspectRatio]="false"
-            [containWithinAspectRatio]="containWithinAspectRatio"
-            [aspectRatio]="4 / 3"
-            [onlyScaleDown]="false"
-            [roundCropper]="false"
-            [canvasRotation]="canvasRotation"
-            [transform]="transform"
-            [resizeToWidth]="resizeToWidth"
-            (resize)="resized($event)"
-            [alignImage]="'left'"
-            [style.display]="showCropper ? null : 'none'"
-            [format]="format"
-            (imageCropped)="imageCropped($event)"
-            (imageLoaded)="imageLoaded($event)"
-            (cropperReady)="cropperReady($event)"
-            (loadImageFailed)="loadImageFailed()">
-          </image-cropper>
+  <div class="card-body">
+    <div class="row mt-2">
+      <div class="col-12">
+        <input type="submit" [disabled]="notifyTarget.busy"
+               value="Choose File"
+               (click)="browseToFile(fileElement)"
+               [ngClass]="{'disabled-button-form': notifyTarget.busy}">
+        <input #fileElement class="d-none" type="file" ng2FileSelect (onFileSelected)="onFileSelect($event)"
+               [uploader]="uploader">
+      </div>
+      <div class="col-12">
+        <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
+             (fileOver)="fileOver($event)"
+             (onFileDrop)="fileDropped($event)"
+             [uploader]="uploader"
+             class="drop-zone dflex-grow-1 col">Or drop file here
         </div>
       </div>
     </div>
-  </div>
-  <div class="mb-3 col-md-6 d-none">
-    <div class="card shadow clickable h-100">
-      <div class="card-body"><h4
-        class="card-title"><a
-        href="https://www.ramblers.org.uk/go-walking/find-a-walk-or-route.aspx"
-        target="_blank" class="rams-text-decoration-pink external">Preview</a></h4>
+    <div class="row mt-2">
+      <div class="badge-button col" (click)="rotateLeft()"
+           delay=500 tooltip="Rotate left">
+        <fa-icon [icon]="faRotateLeft"></fa-icon>
+        <span>left</span>
       </div>
-      <img [src]="croppedImage"/>
+      <div class="badge-button col" (click)="rotateRight()"
+           delay=500 tooltip="Rotate right">
+        <fa-icon [icon]="faRotateRight"></fa-icon>
+        <span>right</span>
+      </div>
+      <div class="badge-button col" (click)="flipHorizontal()"
+           delay=500 tooltip="Flip horizontal">
+        <fa-icon [icon]="faArrowRightArrowLeft"></fa-icon>
+        <span>flip</span>
+      </div>
+      <div class="badge-button col" (click)="flipVertical()"
+           delay=500 tooltip="Flip vertical">
+        <fa-icon [icon]="faUpDown"></fa-icon>
+        <span>flip</span>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="badge-button col" (click)="zoomIn()"
+           delay=500 tooltip="Zoom in">
+        <fa-icon [icon]="faMagnifyingGlassPlus"></fa-icon>
+        <span>zoom</span>
+      </div>
+      <div class="badge-button col" (click)="zoomOut()"
+           delay=500 tooltip="Zoom out">
+        <fa-icon [icon]="faMagnifyingGlassMinus"></fa-icon>
+        <span>zoom</span>
+      </div>
+      <div class="badge-button col" (click)="resetImage()"
+           delay=500 tooltip="Reset image">
+        <fa-icon [icon]="faRedoAlt"></fa-icon>
+        <span>reset</span>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div (click)="quit.next()"
+           delay=500 tooltip="quit without saving" class="badge-button col">
+        <fa-icon [icon]="faClose"></fa-icon>
+        <span>quit</span>
+      </div>
+      <div (click)="saveImage()"
+           delay=500 tooltip="save changes" class="badge-button col">
+        <fa-icon [icon]="faSave"></fa-icon>
+        <span>save</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="progress" style="">
+        <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <image-cropper
+          [allowMoveImage]="true"
+          [imageFile]="originalFile"
+          [imageChangedEvent]="imageChangedEvent"
+          [maintainAspectRatio]="false"
+          [containWithinAspectRatio]="containWithinAspectRatio"
+          [aspectRatio]="aspectRatio"
+          [onlyScaleDown]="false"
+          [roundCropper]="false"
+          [canvasRotation]="canvasRotation"
+          [transform]="transform"
+          [resizeToWidth]="resizeToWidth"
+          (resize)="resized($event)"
+          [alignImage]="'left'"
+          [style.display]="showCropper ? null : 'none'"
+          [format]="format"
+          (imageCropped)="imageCropped($event)"
+          (imageLoaded)="imageLoaded($event)"
+          (cropperReady)="cropperReady($event)"
+          (loadImageFailed)="loadImageFailed()">
+        </image-cropper>
+      </div>
     </div>
   </div>
 </div>
-
-

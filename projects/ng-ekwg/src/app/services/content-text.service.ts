@@ -25,7 +25,7 @@ export class ContentTextService {
   }
 
   async all(): Promise<ContentText[]> {
-    const apiResponse = await this.http.get<{ response: ContentText[] }>(this.BASE_URL).toPromise();
+    const apiResponse = await this.http.get<{ response: ContentText[] }>(this.BASE_URL + "/all").toPromise();
     this.logger.debug("all - received", apiResponse);
     return apiResponse.response;
   }

@@ -51,7 +51,6 @@ import { NavbarComponent } from "./navbar/navigator";
     FooterIconsComponent,
     ForgotPasswordComponent,
     NewBrandHomeComponent,
-    ImageCropperAndResizerComponent,
     HowToComponent,
     HowToModalComponent,
     JoinUsComponent,

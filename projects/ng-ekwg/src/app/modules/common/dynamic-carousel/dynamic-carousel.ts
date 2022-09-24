@@ -1,13 +1,18 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { max, min } from "lodash-es";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { max, min, uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AwsFileData } from "../../../models/aws-object.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
-import { ContentTextNamingService } from "../../../services/content-text-naming.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { PageContentActionsService } from "../../../services/page-content-actions.service";
+import { PageContentService } from "../../../services/page-content.service";
+import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
+import { SiteEditService } from "../../../site-edit/site-edit.service";
 
 @Component({
   selector: "app-dynamic-carousel",
@@ -19,7 +24,10 @@ export class DynamicCarouselComponent implements OnInit {
   public pageContent: PageContent;
   @Input()
   public rowIndex: number;
-  rows: PageContentRow[];
+  @Input()
+  public editNameEnabled: boolean;
+
+  public rows: PageContentRow[];
   private logger: Logger;
   public contentPath: string;
   public slideIndex = 0;
@@ -27,72 +35,49 @@ export class DynamicCarouselComponent implements OnInit {
   public maxViewableSlideCount: number;
   public actualViewableSlideCount: number;
   public relativePath: string;
-  private area: string;
+  public row: PageContentRow;
+  siteLinks: string[];
+  public awsFileData: AwsFileData;
+  public activeEditColumnIndex: number;
+  public faPencil = faPencil;
 
   constructor(
+    public siteEditService: SiteEditService,
     private urlService: UrlService,
+    private pageService: PageService,
     private stringUtils: StringUtilsService,
     private route: ActivatedRoute,
-    public namingService: ContentTextNamingService,
+    public pageContentService: PageContentService,
+    public actions: PageContentActionsService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DynamicCarouselComponent, NgxLoggerLevel.INFO);
   }
 
-  @HostListener("window:resize", ["$event"])
+  @HostListener("window:resize", ["event"])
   onResize(event) {
-    this.detectWidth(event.target.innerWidth);
+    this.detectWidth(event?.target?.innerWidth);
   }
 
   ngOnInit() {
-    // this.columns.push(
-    //   {
-    //     href: "https://beta.ramblers.org.uk/go-walking-hub/walking-boots-buyers-guide",
-    //     // text: "Choose the right footwear to get the maximum enjoyment from your walk. Read our expert advice on choosing the right walking boots for you.",
-    //     title: "Walking boots Buyer’s Guide",
-    //     imageSource: "https://prod-static.ramblers.nomensa.xyz/styles/large/s3/2022-01/walking-boots-buyers-guide.jpg?itok=zj0_lzql"
-    //   },
-    //   {
-    //     href: "https://beta.ramblers.org.uk/go-walking-hub/walking-poles-buyers-guide",
-    //     // text: "You may find walking poles useful for long-distance hikes.  Read our expert advice on choosing the right poles for you.",
-    //     title: "Walking poles Buyer's Guide",
-    //     imageSource: "https://prod-static.ramblers.nomensa.xyz/styles/large/s3/2022-01/walking-poles-19283318b.jpg?itok=siSdvBqB"
-    //   },
-    //   {
-    //     href: "https://beta.ramblers.org.uk/go-walking-hub/walking-trousers-buyers-guide",
-    //     // text: "A good pair of walking trousers will make your walks more comfortable.\n" +
-    //     //   "Read our expert advice on choosing the right trousers for you.",
-    //     title: "Walking trousers Buyer's Guide",
-    //     imageSource: "https://prod-static.ramblers.nomensa.xyz/styles/large/s3/2022-01/Trousers-Inverness-Young-Walkers-Oct-2021---B.jpg?itok=ogqkK_mE"
-    //   },
-    //   {
-    //     href: "https://beta.ramblers.org.uk/go-walking-hub/waterproof-jackets-buyers-guide",
-    //     // text: "A good waterproof jacket will help you enjoy your walks whatever the weather.\n" +
-    //     //   "Read our expert advice on choosing the right jacket for you.",
-    //     title: "Walking jacket Buyer's Guide",
-    //     imageSource: "https://prod-static.ramblers.nomensa.xyz/styles/large/s3/2022-01/Ramblers-Winter-Oct-2021-4980-2.jpg?itok=QySKZZck"
-    //   }
-    // );
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      this.area = this.urlService.area();
-      this.relativePath = paramMap.get("relativePath");
-      this.contentPath = `${this.area}/${this.relativePath}`;
-      this.logger.debug("initialised with path:", this.relativePath);
-      this.logger.debug("Finding page content for " + this.relativePath);
+    this.row = this.pageContent.rows[this.rowIndex];
+    this.logger.info("ngOnInit:editNameEnabled", this.editNameEnabled);
+    this.pageContentService.all().then(response => {
+      this.logger.info("pageContentService.all:", response);
+      this.siteLinks = uniq(response.map(item => item.path)).sort();
+      this.logger.info("siteLinks:", this.siteLinks);
     });
-
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      this.relativePath = paramMap.get("relativePath");
+      this.contentPath = this.pageService.contentPath(this.relativePath);
+      this.logger.info("initialised with contentPath:", this.contentPath);
+    });
     this.detectWidth(window.innerWidth);
     this.actualViewableSlideCount = min([this.pageContentColumns().length, this.maxViewableSlideCount]);
-
   }
 
   pageContentColumns(): PageContentColumn[] {
     return this.pageContent.rows[this.rowIndex].columns;
   }
-
-// col-sm for larger mobile phones (devices with resolutions ≥ 576px);
-// col-md for tablets (≥768px);
-// col-lg for laptops (≥992px);
-// col-xl for desktops (≥1200px)
 
   private detectWidth(width: number) {
     this.width = width;
@@ -122,7 +107,7 @@ export class DynamicCarouselComponent implements OnInit {
 
   viewableColumns(): PageContentColumn[] {
     const viewableSlides = this.pageContentColumns().slice(this.slideIndex, this.slideIndex + this.maxViewableSlideCount);
-    this.logger.info("viewableSlides:slideIndex", this.slideIndex, "this.slides", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
+    this.logger.debug("viewableSlides:slideIndex", this.slideIndex, "this.slides", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
     return viewableSlides;
   }
 
@@ -140,4 +125,31 @@ export class DynamicCarouselComponent implements OnInit {
     }
   }
 
+  exitImageEdit() {
+    this.activeEditColumnIndex = null;
+    this.awsFileData = null;
+  }
+
+  editImage(columnIndex) {
+    this.activeEditColumnIndex = columnIndex;
+  }
+
+  imageSource(column, columnIndex): string {
+    if (this.activeEditColumnIndex === columnIndex) {
+      return this.awsFileData?.image || column?.imageSource;
+    } else {
+      return column?.imageSource;
+    }
+  }
+
+  imagedSaved(event: AwsFileData) {
+    const imageSource = this.urlService.resourceRelativePathForAWSFileName(event.awsFileName);
+    this.logger.info("imagedSaved:", event, "setting imageSource for columnIndex", this.activeEditColumnIndex, "to", imageSource);
+    this.row.columns[this.activeEditColumnIndex].imageSource = imageSource;
+  }
+
+  imageChanged(event: AwsFileData) {
+    this.logger.info("imageChanged:", event);
+    this.awsFileData = event;
+  }
 }

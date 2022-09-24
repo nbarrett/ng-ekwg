@@ -56,8 +56,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   faRemove = faRemove;
   faCircleInfo = faCircleInfo;
 
-  constructor(@Inject(DOCUMENT) private document: Document,
-              private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
+  constructor(private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
               private walksService: WalksService,
               private ramblersUploadAuditService: RamblersUploadAuditService,
               private notifierService: NotifierService,
@@ -221,9 +220,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     return this.ramblersWalksAndEventsService.exportWalksFileName(true);
   }
 
-  exportCSV() {
-    this.document.getElementById("angular-2-csv")
-      .getElementsByTagName("button")[0].click();
+  exportCSV(fileElement: HTMLInputElement) {
+    fileElement.click();
   }
 
 }

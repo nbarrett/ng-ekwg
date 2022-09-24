@@ -1,6 +1,6 @@
 import { DOCUMENT } from "@angular/common";
 import { TestBed } from "@angular/core/testing";
-import { ActivatedRoute, Router, RouterModule } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { UrlService } from "./url.service";
@@ -13,11 +13,11 @@ describe("UrlService", () => {
   const LOCATION_VALUE = {
     location: {
       href: URL_PATH
-    }
+    },
+    querySelectorAll: () => []
   };
-
   beforeEach(() => TestBed.configureTestingModule({
-    imports: [LoggerTestingModule, RouterModule.forRoot([], { relativeLinkResolution: "legacy" })],
+    imports: [LoggerTestingModule],
     providers: [
       {provide: Router, useValue: {url: "/admin/member-bulk-load/12398719823"}},
       {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
@@ -160,6 +160,20 @@ describe("UrlService", () => {
     it("should allow passed parameter to be processed", () => {
       const service: UrlService = TestBed.inject(UrlService);
       expect(service.relativeUrlFirstSegment(INJECTED_URL)).toBe("/walks");
+    });
+
+  });
+
+  describe("relativeUrl", () => {
+
+    it("should return the path segment after the host including slash", () => {
+      const service: UrlService = TestBed.inject(UrlService);
+      expect(service.relativeUrl()).toBe("/admin/member-bulk-load/12398719823");
+    });
+
+    it("should allow passed parameter to be processed", () => {
+      const service: UrlService = TestBed.inject(UrlService);
+      expect(service.relativeUrl(INJECTED_URL)).toBe("/walks/walk-programme");
     });
 
   });

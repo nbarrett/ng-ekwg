@@ -1,11 +1,3 @@
-<div *ngIf="editNameEnabled">
-  <label class="mt-2 mt-3" [for]="'input_'+ content.name | snakeCase">Content name</label>
-  <input [(ngModel)]="content.name"
-         [id]="'input_'+ content.name | snakeCase"
-         type="text" class="form-control input-sm"
-         placeholder="Enter name of content">
-  <label class="mt-2 mt-3" [for]="content.name">Content for {{content.name}}</label>
-</div>
 <div class="row" *ngIf="siteEditService.active()">
   <div class="col-12 form-inline">
     <div *ngIf="editorState.view"
@@ -29,19 +21,29 @@
       <fa-icon [icon]="reverting() ? faSpinner: faEraser"></fa-icon>
       <span>delete</span>
     </div>
-      <ng-content class="ml-1">
-      </ng-content>
-  </div>
-</div>
-<div class="row">
-  <div class="col-12">
-    <div *ngIf="editorState.view==='view'"
-         (click)="toggleEdit()" markdown ngPreserveWhitespaces [data]="content.text">
+    <div *ngIf="canClear()" class="badge-button"
+         (click)="clear()" delay=500 [tooltip]="'Clear content for ' + description">
+      <fa-icon [icon]="reverting() ? faSpinner: faEraser"></fa-icon>
+      <span>clear</span>
     </div>
-    <textarea *ngIf="editorState.view==='edit'"
-              [(ngModel)]="content.text"
-              (ngModelChange)="changeText($event)"
-              class="form-control markdown-textarea" rows="{{rows}}"
-              placeholder="Enter {{description}} text here"></textarea>
+    <ng-content class="ml-1">
+    </ng-content>
+  </div>
+  <div class="col-12" *ngIf="editNameEnabled">
+    <label class="mt-2 mt-3" [for]="'input-'+ content.name | kebabCase">Content name</label>
+    <input [(ngModel)]="content.name"
+           [id]="'input-'+ content.name | kebabCase"
+           type="text" class="form-control input-sm"
+           placeholder="Enter name of content">
+    <label class="mt-2 mt-3" [for]="content.name">Content for {{content.name}}</label>
   </div>
 </div>
+<span *ngIf="editorState.view==='view'"
+      (click)="toggleEdit()" markdown ngPreserveWhitespaces [data]="content.text">
+</span>
+<textarea *ngIf="editorState.view==='edit'"
+          [(ngModel)]="content.text"
+          (ngModelChange)="changeText($event)"
+          class="form-control markdown-textarea" rows="{{rows}}"
+          placeholder="Enter {{description}} text here">
+</textarea>

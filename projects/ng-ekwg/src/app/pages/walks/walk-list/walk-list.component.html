@@ -93,27 +93,7 @@
           </div>
         </div>
       </div>
-    </div>
-    <div [routerLink]="'/walks/information'" class="mb-3 col-sm-12" [ngClass]="allowAdminEdits() ? 'col-lg-6': 'col-lg-12'">
-      <div class="card shadow clickable h-100">
-        <img
-          class="card-img-top"
-          height="200" src="/api/aws/s3/imagesHome/f029e7e1-56aa-41dd-853a-0a8459c4fb94.jpg">
-        <div class="card-body"><h4
-          class="card-title"><a class="rams-text-decoration-pink external a-new">Walks information</a></h4>
-          <div class="card-text">Find out about things you might need to know about before coming on a walk</div>
-        </div>
-      </div>
-    </div>
-    <div [routerLink]="'/walks/admin'" *ngIf="allowAdminEdits()" class="mb-3 col-sm-12 col-lg-6">
-      <div class="card shadow clickable h-100">
-        <img class="card-img-top"
-             height="200" src="/api/aws/s3/imagesHome/fe76fd73-de42-4629-804e-a96b00ab4822.jpg">
-        <div class="card-body"><h4
-          class="card-title">
-          <a class="rams-text-decoration-pink external">Admin Stuff</a></h4>
-          <p class="card-text">Things that important people like Malc have to do when everyone else is asleep</p></div>
-      </div>
+      <app-dynamic-content></app-dynamic-content>
     </div>
   </div>
 </app-page>

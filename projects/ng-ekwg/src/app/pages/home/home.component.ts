@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
-    this.configureBasedOnWidth(event.target.innerWidth);
+    this.configureBasedOnWidth(event?.target?.innerWidth);
   }
 
   constructor(

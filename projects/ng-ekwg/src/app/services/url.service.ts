@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
-import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -19,7 +18,7 @@ import { isMongoId } from "./mongo-utils";
 
 export class UrlService {
   private logger: Logger;
-
+  private API_PATH_PREFIX = "api/aws/s3/";
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
@@ -67,7 +66,12 @@ export class UrlService {
   }
 
   relativeUrl(optionalUrl?: string): string {
-    return last((this.toPathSegments(optionalUrl || this.absUrl())));
+    const url = new URL(optionalUrl || this.absUrl());
+    return "/" + url.pathname.substring(1);
+  }
+
+  relativeUrlAsPathSegments(): string[] {
+    return this.toPathSegments(this.relativeUrl());
   }
 
   toPathSegments(relativePath: string): string[] {
@@ -107,8 +111,11 @@ export class UrlService {
   }
 
   resourceUrlForAWSFileName(fileName): string {
-    const API_PATH_PREFIX = "api/aws/s3/";
-    return this.baseUrl() + "/" + API_PATH_PREFIX + fileName;
+    return this.baseUrl() + "/" + this.API_PATH_PREFIX + fileName;
+  }
+
+  resourceRelativePathForAWSFileName(fileName: string): string {
+    return this.API_PATH_PREFIX + fileName;
   }
 
   hasRouteParameter(parameter): boolean {

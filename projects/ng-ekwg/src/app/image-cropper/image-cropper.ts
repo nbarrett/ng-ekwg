@@ -1,12 +1,14 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
+import { faArrowRightArrowLeft, faClose, faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRedoAlt, faRotateLeft, faUpDown } from "@fortawesome/free-solid-svg-icons";
+import { faRotateRight } from "@fortawesome/free-solid-svg-icons/faRotateRight";
+import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../models/alert-target.model";
-import { FileNameData } from "../models/aws-object.model";
-import { NamedEvent, NamedEventType } from "../models/broadcast.model";
+import { AwsFileData, AwsFileUploadResponse, FileNameData } from "../models/aws-object.model";
 import { DateValue } from "../models/date.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { FileUploadService } from "../services/file-upload.service";
@@ -22,6 +24,9 @@ import { NumberUtilsService } from "../services/number-utils.service";
 
 export class ImageCropperAndResizerComponent implements OnInit {
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
+  @Output() quit: EventEmitter<void> = new EventEmitter();
+  @Output() save: EventEmitter<AwsFileData> = new EventEmitter();
+  @Output() imageChange: EventEmitter<AwsFileData> = new EventEmitter();
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   imageChangedEvent: Event;
@@ -43,14 +48,58 @@ export class ImageCropperAndResizerComponent implements OnInit {
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  public imageFile: File;
+  public originalFile: File;
   public format = "png";
+  public aspectRatio: number;
+  private uploadInProgress: boolean;
+  public dimensions: Dimensions[] = [
+    {width: 1, height: 1},
+    {width: 3, height: 2},
+    {width: 4, height: 3},
+    {width: 4, height: 6},
+    {width: 5, height: 4},
+    {width: 5, height: 7},
+    {width: 12, height: 18},
+    {width: 16, height: 9},
+    {width: 18, height: 24},
+    {width: 940, height: 300},
+  ];
+  public dimension: Dimensions = this.dimensions[0];
+  faClose = faClose;
+  faSave = faSave;
+  faRotateRight = faRotateRight;
+  faRotateLeft = faRotateLeft;
+  faRedoAlt = faRedoAlt;
+  faMagnifyingGlassMinus = faMagnifyingGlassMinus;
+  faMagnifyingGlassPlus = faMagnifyingGlassPlus;
+  faArrowRightArrowLeft = faArrowRightArrowLeft;
+  faUpDown = faUpDown;
+
+  // faAngleDown = faAngleDown;
+  // faAngleUp = faAngleUp;
+  // faArrowLeft = faArrowLeft;
+  // faArrowLeftRotate = faArrowLeftRotate;
+  // faArrowRightFromFile = faArrowRightFromFile;
+  // faCompress = faCompress;
+  // faCompressAlt = faCompressAlt;
+  // faCrop = faCrop;
+  // faFilePen = faFilePen;
+  // faGripLines = faGripLines;
+  // faGripLinesVertical = faGripLinesVertical;
+  // faLeftRight = faLeftRight;
+  // faRotate = faRotate;
+  // faRulerCombined = faRulerCombined;
+  // faRulerVertical = faRulerVertical;
+  // faSave = faSave;
+  // faSpinner = faSpinner;
+  // faSyncAlt = faSyncAlt;
+  // faUndoAlt = faUndoAlt;
 
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
               private notifierService: NotifierService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
@@ -67,7 +116,9 @@ export class ImageCropperAndResizerComponent implements OnInit {
         } else {
           const uploadResponse = JSON.parse(response);
           this.fileNameData = uploadResponse.response.fileNameData;
-          this.fileNameData.title = this.existingTitle;
+          if (this.fileNameData) {
+            this.fileNameData.title = this?.existingTitle;
+          }
           this.logger.debug("JSON response:", uploadResponse, "committeeFile:", this.fileNameData);
           this.notify.clearBusy();
           this.notify.success({title: "File uploaded", message: this.fileNameData.title});
@@ -83,10 +134,19 @@ export class ImageCropperAndResizerComponent implements OnInit {
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedImage = event.base64;
-    const blob: Blob = base64ToFile(event.base64);
-    this.logger.info("imageCropped:event", event, "base64ToFileBlob:", blob);
+    const blob: Blob = base64ToFile(this.croppedImage);
+    const awsFileData: AwsFileData = this.awsFileData();
+    this.logger.info("imageCropped:event", event, "blob:", blob, "awsFileData:", awsFileData);
     this.croppedSize = this.numberUtils.humanFileSize(this.croppedImage.length);
-    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.IMAGE_CROP, event.base64));
+    this.imageChange.next(awsFileData);
+  }
+
+  awsFileData(awsFileName?: string): AwsFileData {
+    return {
+      awsFileName,
+      image: this.croppedImage,
+      file: new File([base64ToFile(this.croppedImage)], this.originalFile.name, {lastModified: this.originalFile.lastModified, type: this.originalFile.type})
+    };
   }
 
   imageLoaded($event: LoadedImage) {
@@ -96,7 +156,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
     this.originalSize = this.numberUtils.humanFileSize(this.original.base64.length)
       + " - humanFileSize:" + this.numberUtils.humanFileSize(this.original.base64.length, true)
       + " - humanFileSize2:" + this.numberUtils.humanFileSize2(this.original.base64.length)
-      + " - humanFileSizeValor:" + this.numberUtils.humanFileSizeValor(this.imageFile.size);
+      + " - humanFileSizeValor:" + this.numberUtils.humanFileSizeValor(this.originalFile.size);
     this.setResizeToWidth();
   }
 
@@ -215,14 +275,39 @@ export class ImageCropperAndResizerComponent implements OnInit {
 
   private processSingleFile(file: File) {
     this.notify.setBusy();
+    this.logger.info("processSingleFile:file:", file, "queue:", this.uploader.queue);
     this.notify.progress({title: "File upload", message: `loading preview for ${file.name}...`});
-    this.imageFile = file;
+    this.originalFile = file;
   }
 
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
   }
 
+  changeAspectRatio(event: any) {
+    this.aspectRatio = this.dimension.width / this.dimension.height;
+    this.logger.info("changeAspectRatio:", event.target.value, "aspectRatio:", this.dimension);
+    this.imageCropperComponent.crop();
+  }
+
+  saveImage() {
+    try {
+      this.uploadInProgress = true;
+      this.uploader.clearQueue();
+      this.uploader.addToQueue([this.awsFileData().file]);
+      this.uploader.uploadAll();
+      this.uploader.response.subscribe((uploaderResponse: string) => {
+        const response: AwsFileUploadResponse = JSON.parse(uploaderResponse);
+        const awsFileName = `${response?.response?.fileNameData?.rootFolder}/${response?.response?.fileNameData?.awsFileName}`;
+        this.logger.info("received response:", uploaderResponse, "awsFileName:", awsFileName, "local originalFile.name:", this.originalFile.name, "aws originalFileName", response?.response?.fileNameData.originalFileName);
+        this.save.next(this.awsFileData(awsFileName));
+        this.uploadInProgress = false;
+      });
+    } catch (e) {
+      this.logger.error("received error response:", e);
+      this.uploadInProgress = false;
+    }
+  }
 }
 
 interface ImageData {

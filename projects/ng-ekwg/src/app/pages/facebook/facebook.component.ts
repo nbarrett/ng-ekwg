@@ -29,7 +29,7 @@ export class FacebookComponent implements OnInit {
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
-    const width = event.target.innerWidth;
+    const width = event?.target?.innerWidth;
     this.setWidth(width);
   }
 
