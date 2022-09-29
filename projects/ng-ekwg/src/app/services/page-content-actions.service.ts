@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import flatten from "lodash-es/flatten";
 import { NgxLoggerLevel } from "ngx-logger";
+import { NamedEventType } from "../models/broadcast.model";
 import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType } from "../models/content-text.model";
 import { BroadcastService } from "./broadcast-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -56,6 +57,14 @@ export class PageContentActionsService {
       {href: null, imageSource: null, title: null};
     row.columns.splice(columnIndex, 0, columnData);
     this.logger.info("pageContent:", pageContent);
+    this.notifyPageContentChanges();
+  }
+
+  deleteColumn(row: PageContentRow, columnIndex: number, pageContent: PageContent) {
+    this.calculateColumnsFor(row, -1);
+    row.columns = row.columns.filter((item, index) => index !== columnIndex);
+    this.logger.info("pageContent:", pageContent);
+    this.notifyPageContentChanges();
   }
 
   private calculateColumnsFor(row: PageContentRow, columnIncrement: number) {
@@ -65,11 +74,6 @@ export class PageContentActionsService {
     return columns;
   }
 
-  deleteColumn(row: PageContentRow, columnIndex: number, pageContent: PageContent) {
-    this.calculateColumnsFor(row, -1);
-    row.columns = row.columns.filter((item, index) => index !== columnIndex);
-    this.logger.info("pageContent:", pageContent);
-  }
 
   changeColumnWidthFor($event: HTMLInputElement, column: PageContentColumn) {
     const inputValue = +$event.value;
@@ -107,4 +111,7 @@ export class PageContentActionsService {
     return this.stringUtils.replaceAll("-", " ", relativePath);
   }
 
+  private notifyPageContentChanges() {
+    this.broadcastService.broadcast(NamedEventType.PAGE_CONTENT_CHANGED);
+  }
 }

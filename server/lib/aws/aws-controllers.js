@@ -1,18 +1,22 @@
 const {envConfig} = require("../env-config/env-config");
 const moment = require("moment-timezone");
-const {first, isObject, map} = require("lodash");
+const {first} = require("lodash");
 const debug = require("debug")(envConfig.logNamespace("aws"));
-debug.enabled = false;
-const AWS = require("aws-sdk");
+debug.enabled = true;
+const AWS = require("@aws-sdk/client-s3");
 const http = require("http");
 const crypto = require("crypto");
-const s3Config = {accessKeyId: envConfig.aws.accessKeyId, secretAccessKey: envConfig.aws.secretAccessKey};
+const s3Config = {
+  accessKeyId: envConfig.aws.accessKeyId,
+  secretAccessKey: envConfig.aws.secretAccessKey,
+  region: envConfig.aws.region
+};
 const s3 = new AWS.S3(s3Config);
 const fs = require("fs");
 const path = require("path");
+const {GetObjectCommand} = require('@aws-sdk/client-s3');
 const baseHostingUrl = envConfig.aws.baseHostingUrl;
-http.globalAgent.maxSockets = 20;
-debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl);
+debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl,"http.globalAgent.maxSockets:", http.globalAgent.maxSockets);
 
 function expiryTime() {
   const _date = new Date();
@@ -41,31 +45,75 @@ exports.listObjects = (req, res) => {
   });
 };
 
-exports.getObject = (req, res) => {
+exports.getObjectInChunks = async (req, res) => {
+  const getObjectCommand = new GetObjectCommand(optionsFrom(req));
+  try {
+    const response = await s3.send(getObjectCommand)
+
+    // Store all of data chunks returned from the response data stream
+    // into an array then use Array#join() to use the returned contents as a String
+    const responseDataChunks = [];
+
+    // Handle an error while streaming the response body
+    response.Body.once('error', err => res.status(500).send(err))
+
+    // Attach a 'data' listener to add the chunks of data to our array
+    // Each chunk is a Buffer instance
+    response.Body.on('data', chunk => responseDataChunks.push(chunk))
+
+    // Once the stream has no more data, join the chunks into a string and return the string
+    response.Body.once('end', () => res.status(200).send(responseDataChunks.join('')));
+  } catch (err) {
+    // Handle the error or throw
+    res.status(500).send(err)
+  }
+}
+
+exports.getObject = async (req, res) => {
+  const options = optionsFrom(req);
+  const getObjectCommand = new GetObjectCommand(options);
+  try {
+    debug("getting object command using options", options)
+    const s3Item = await s3.send(getObjectCommand);
+    res.writeHead(200, {'Content-Type': 'image/jpeg; charset=UTF-8'});
+    s3Item.Body.pipe(res);
+    debug("returned object command using options", options)
+  } catch (err) {
+    debug("failed getting object command using options", options, err)
+    res.status(500).send(err)
+  }
+}
+
+function optionsFrom(req) {
   const key = `${req.params.bucket}${req.params[0]}`;
-  const options = {Bucket: envConfig.aws.bucket, Key: key};
+  return {Bucket: envConfig.aws.bucket, Key: key};
+}
+
+exports.getObjectAsBase64 = async (req, res) => {
+  const options = optionsFrom(req);
   debug("getting object", options);
   try {
-    s3.getObject(options).createReadStream()
-      .on("error", error => {
-        debug("On error", error.message, "on s3 request", key);
-        res.status(500).send(error);
-      }).pipe(res)
+    const response = await s3.getObject(options);
+    debug("received response Body:", response.Body);
+    const text = await response.Body.text();
+    const src = `data:image/jpeg;base64,${text}`;
+    debug("src", src);
+    res.status(200).send(src);
   } catch (error) {
-    debug("Caught error", error.message, "on s3 request", key);
+    debug("Caught error", error.message, "on s3 request", options.key);
     res.status(500).send(error)
   }
 };
 
-exports.get = (req, res) => {
-  debug("req.method:", req.method, "req.url:", req.url, "req.params", req.params);
-  const remoteUrl = `${baseHostingUrl}/${req.params.bucket}${req.params[0]}`;
-  debug("mapping Request from", req.method, req.url, "-> server path", remoteUrl);
-  http.get(remoteUrl, serverResponse => {
-    serverResponse.pipe(res);
-  }).on("error", e => {
-    debug("Got error", e.message, "on s3 request", remoteUrl);
-  });
+exports.get = async (req, res) => {
+  const options = optionsFrom(req)
+  const response = await s3.getObject(options);
+  debug("received response Body:", response.Body);
+  const imageBytes = await response.Body.arrayBuffer();
+  const blob = new Blob([imageBytes], {type: "image/jpeg"});
+  const imageUrl = URL.createObjectURL(blob);
+  debug("blob", blob, "imageUrl:", imageUrl);
+  res.status(200).send(imageUrl);
 };
 
 exports.getConfig = (req, res) => res.send(envConfig.aws);
@@ -137,7 +185,7 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
     ACL: "public-read",
   };
   debug(`Saving file to ${bucket}/${objectKey}`);
-  return s3.putObject(params).promise()
+  return s3.putObject(params)
     .then(data => {
       const information = `Successfully uploaded file to ${bucket}/${objectKey}`;
       debug(information, "->", data);

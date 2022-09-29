@@ -1,4 +1,4 @@
-<app-page [ngClass]="{'busy': notifyTarget.busy}" area="home" pageTitle="Social Events">
+<app-page>
   <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
     <app-social-information [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm"></app-social-information>
     <app-social-list [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm" [socialEventId]="socialEventId"></app-social-list>

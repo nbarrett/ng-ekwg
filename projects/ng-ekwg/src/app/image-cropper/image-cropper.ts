@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, EventEmitter, OnInit, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import { faArrowRightArrowLeft, faClose, faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRedoAlt, faRotateLeft, faUpDown } from "@fortawesome/free-solid-svg-icons";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons/faRotateRight";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
@@ -7,8 +7,9 @@ import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
+import { FileUtilsService } from "../file-utils.service";
 import { AlertTarget } from "../models/alert-target.model";
-import { AwsFileData, AwsFileUploadResponse, FileNameData } from "../models/aws-object.model";
+import { AwsFileData, AwsFileUploadResponse, FileNameData, ImageData } from "../models/aws-object.model";
 import { DateValue } from "../models/date.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { FileUploadService } from "../services/file-upload.service";
@@ -22,8 +23,9 @@ import { NumberUtilsService } from "../services/number-utils.service";
   styleUrls: ["./image-cropper.sass"]
 })
 
-export class ImageCropperAndResizerComponent implements OnInit {
+export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
+  @Input() preloadImage: string;
   @Output() quit: EventEmitter<void> = new EventEmitter();
   @Output() save: EventEmitter<AwsFileData> = new EventEmitter();
   @Output() imageChange: EventEmitter<AwsFileData> = new EventEmitter();
@@ -98,6 +100,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
               private notifierService: NotifierService,
+              private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.INFO);
   }
@@ -127,6 +130,13 @@ export class ImageCropperAndResizerComponent implements OnInit {
     );
   }
 
+  ngAfterViewInit(): void {
+    if (this.preloadImage) {
+      this.fileUtils.urlToFile(this.preloadImage, "file-crop.jpeg")
+        .then(file => this.processSingleFile(file));
+    }
+  }
+
   fileChangeEvent(event: Event): void {
     this.imageChangedEvent = event;
     this.logger.info("fileChangeEvent:event", event);
@@ -134,9 +144,8 @@ export class ImageCropperAndResizerComponent implements OnInit {
 
   imageCropped(event: ImageCroppedEvent) {
     this.croppedImage = event.base64;
-    const blob: Blob = base64ToFile(this.croppedImage);
     const awsFileData: AwsFileData = this.awsFileData();
-    this.logger.info("imageCropped:event", event, "blob:", blob, "awsFileData:", awsFileData);
+    this.logger.info("imageCropped:event", event, "awsFileData:", awsFileData);
     this.croppedSize = this.numberUtils.humanFileSize(this.croppedImage.length);
     this.imageChange.next(awsFileData);
   }
@@ -310,8 +319,3 @@ export class ImageCropperAndResizerComponent implements OnInit {
   }
 }
 
-interface ImageData {
-  base64: string;
-  image: HTMLImageElement;
-  size: Dimensions;
-}

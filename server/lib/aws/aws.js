@@ -11,8 +11,8 @@ router.get("/list-buckets", controllers.listBuckets);
 router.get("/s3/policy", controllers.s3Policy);
 router.get("/config", controllers.getConfig);
 router.get("/metadata/list-objects/:prefix", controllers.listObjects);
-router.get("/s3/:bucket*", controllers.get);
-router.get("/s3/object/:bucket*", controllers.getObject);
+router.get("/s3/:bucket*", controllers.getObject);
+router.get("/s3/object/:bucket*", controllers.getObjectAsBase64);
 
 
 module.exports = router;

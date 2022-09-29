@@ -1,5 +1,5 @@
-<div *ngIf="pageContent">
-  <div *ngIf="siteEditService.active()">
+<ng-container *ngIf="pageContent">
+  <ng-container *ngIf="siteEditService.active()">
     <div class="form-inline mt-2">
       <div (click)="actions.unsavedMarkdownElements(pageContent) ? null :savePageContent()"
            delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
@@ -44,7 +44,7 @@
                             [pageContent]="pageContent"
                             [rowIndex]="rowIndex">
       </app-dynamic-carousel>
-      <div *ngIf="row.type==='text'">
+      <ng-container *ngIf="row.type==='text'">
         <div class="row">
           <div *ngFor="let column of row?.columns; let columnIndex = index;" [class]="'col-sm-' + column.columns">
             <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
@@ -73,11 +73,11 @@
             </app-markdown-editor>
           </div>
         </div>
-      </div>
+      </ng-container>
     </div>
-  </div>
-  <div *ngIf="!siteEditService.active()">
-    <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+  </ng-container>
+  <div *ngIf="!siteEditService.active()" class="row">
+    <div class="container w-100" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <app-dynamic-carousel *ngIf="row.type==='slides'"
                             [editNameEnabled]="editNameEnabled"
                             [pageContent]="pageContent"
@@ -95,22 +95,22 @@
       </ng-container>
     </div>
   </div>
-</div>
-<div *ngIf="!pageContent">
-  <div *ngIf="siteEditService.active()">
+</ng-container>
+<ng-container *ngIf="!pageContent">
+  <ng-container *ngIf="siteEditService.active()">
     <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
       <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
       <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
-      <div class="p-2">{{notifyTarget.alertMessage}}. <a (click)="createContent()" class="rams-text-decoration-pink"
-                                                         type="button">Create content</a></div>
+      <span class="p-2">{{notifyTarget.alertMessage}}. <a (click)="createContent()" class="rams-text-decoration-pink"
+                                                         type="button">Create content</a></span>
     </div>
-  </div>
-  <div *ngIf="!siteEditService.active()">
+  </ng-container>
+  <ng-container *ngIf="!siteEditService.active()">
     <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
       <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
       <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
-      <div class="p-2">{{notifyTarget.alertMessage}}. <a [href]="area" class="rams-text-decoration-pink"
-                                                         type="button"> Go Back to {{area}} page</a></div>
+      <span class="p-2">{{notifyTarget.alertMessage}}. <a [href]="area" class="rams-text-decoration-pink"
+                                                         type="button"> Go Back to {{area}} page</a></span>
     </div>
-  </div>
-</div>
+  </ng-container>
+</ng-container>

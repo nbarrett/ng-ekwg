@@ -4,8 +4,10 @@ import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { max, min, uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AwsFileData } from "../../../models/aws-object.model";
+import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageContentService } from "../../../services/page-content.service";
@@ -49,6 +51,7 @@ export class DynamicCarouselComponent implements OnInit {
     private route: ActivatedRoute,
     public pageContentService: PageContentService,
     public actions: PageContentActionsService,
+    private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DynamicCarouselComponent, NgxLoggerLevel.INFO);
   }
@@ -72,6 +75,14 @@ export class DynamicCarouselComponent implements OnInit {
       this.logger.info("initialised with contentPath:", this.contentPath);
     });
     this.detectWidth(window.innerWidth);
+    this.pageColumnsChanged();
+    this.broadcastService.on(NamedEventType.PAGE_CONTENT_CHANGED, () => {
+      this.logger.info("event received:", NamedEventType.PAGE_CONTENT_CHANGED);
+      this.pageColumnsChanged();
+    });
+  }
+
+  private pageColumnsChanged() {
     this.actualViewableSlideCount = min([this.pageContentColumns().length, this.maxViewableSlideCount]);
   }
 
@@ -134,7 +145,7 @@ export class DynamicCarouselComponent implements OnInit {
     this.activeEditColumnIndex = columnIndex;
   }
 
-  imageSource(column, columnIndex): string {
+  imageSourceOrPreview(column, columnIndex): string {
     if (this.activeEditColumnIndex === columnIndex) {
       return this.awsFileData?.image || column?.imageSource;
     } else {
@@ -148,8 +159,8 @@ export class DynamicCarouselComponent implements OnInit {
     this.row.columns[this.activeEditColumnIndex].imageSource = imageSource;
   }
 
-  imageChanged(event: AwsFileData) {
-    this.logger.info("imageChanged:", event);
-    this.awsFileData = event;
+  imageChanged(awsFileData: AwsFileData) {
+    this.logger.info("imageChanged:", awsFileData);
+    this.awsFileData = awsFileData;
   }
 }

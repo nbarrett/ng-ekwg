@@ -27,6 +27,29 @@ export class FileUtilsService {
     );
   }
 
+  public async loadBase64Image(url: string): Promise<string> {
+    const blob = await this.blobFrom(url);
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        resolve(base64data as string);
+      };
+    });
+  }
+
+  private async blobFrom(url: string): Promise<Blob> {
+    const blob = await (await fetch(url)).blob();
+    this.logger.info("loadBase64Image:url:", blob);
+    return blob;
+  }
+
+  public async urlToFile(url: string, fileName: string): Promise<File> {
+    const blob = await this.blobFrom(url);
+    return new File([blob], fileName, {type: blob.type});
+  }
+
   base64ToFileWithName(data, filename) {
 
     const arr = data.split(",");

@@ -1,13 +1,11 @@
 <main>
-  <div class="type-content">
-    <div class="container">
-      <ol class="breadcrumb bg-transparent"><span class="d-md-none">...</span>
-        <li class="breadcrumb-item d-none d-md-inline" *ngFor="let page of pages">
-          <a [routerLink]="'/' + page.href" target="_self">{{page.title}}</a>
-        </li>
-        <li class="breadcrumb-item d-none d-md-inline active">{{pageTitle}}</li>
-      </ol>
-      <ng-content></ng-content>
-    </div>
+  <div class="container">
+    <ol *ngIf="pageTitle && area" class="breadcrumb bg-transparent"><span class="d-md-none">...</span>
+      <li class="breadcrumb-item d-none d-md-inline" *ngFor="let page of pages">
+        <a [routerLink]="'/' + page.href" target="_self">{{page.title}}</a>
+      </li>
+      <li class="breadcrumb-item d-none d-md-inline active">{{pageTitle}}</li>
+    </ol>
+    <ng-content></ng-content>
   </div>
 </main>

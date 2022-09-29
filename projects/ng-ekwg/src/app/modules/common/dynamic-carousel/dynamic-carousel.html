@@ -21,10 +21,11 @@
            [id]="actions.columnIdentifierFor(columnIndex,'slide')">
         <div class="card shadow clickable h-100 mb-4">
           <img class="card-img-top" height="200"
-               [src]="imageSource(column, columnIndex)">
+               [src]="imageSourceOrPreview(column, columnIndex)" [routerLink]="'/'+ column.href">
           <div class="card-body">
             <app-image-cropper
               *ngIf="activeEditColumnIndex===columnIndex"
+              [preloadImage]="column?.imageSource"
               (imageChange)="imageChanged($event)"
               (quit)="exitImageEdit()"
               (save)="imagedSaved($event)">

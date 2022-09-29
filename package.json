@@ -5,6 +5,8 @@
   "license": "ISC",
   "private": true,
   "scripts": {
+    "prod": "concurrently --kill-others-on-fail \"npm run start:prod\" \"npm run serve\"",
+    "dev": "concurrently --kill-others-on-fail \"npm run start:test\" \"npm run serve\"",
     "analyze": "webpack-bundle-analyzer dist/ng-ekwg/stats-es2015.json",
     "build:stats": "ng build --project ng-ekwg --configuration production --statsJson=true",
     "build": "ng build --project ng-ekwg --build-optimizer --progress --configuration production",
@@ -85,6 +87,7 @@
     "@types/jasminewd2": "2.0.8",
     "@types/node": "12.11.1",
     "codelyzer": "6.0.1",
+    "concurrently": "7.4.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
     "karma": "6.3.2",

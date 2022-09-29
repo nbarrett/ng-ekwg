@@ -1,4 +1,4 @@
-<app-page [ngClass]="{'busy': notifyTarget.busy}" area="home" pageTitle="How-to guides for members">
+<app-page>
   <div class="row">
     <div class="col-sm-8">
       <div class="event-description">
@@ -9,9 +9,6 @@
       </div>
       <div class="d-flex">
         <div class="idnput-group form-group">
-<!--          <div class="input-group-prepend rounded">-->
-<!--            <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>-->
-<!--          </div>-->
           <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
                  (ngModelChange)="onSearchChange($event)"
                  name="quickSearch"

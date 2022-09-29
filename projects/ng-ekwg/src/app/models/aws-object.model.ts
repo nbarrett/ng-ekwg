@@ -1,3 +1,5 @@
+import { Dimensions } from "ngx-image-cropper";
+
 export interface FileNameData {
   originalFileName?: string;
   awsFileName?: string;
@@ -47,3 +49,8 @@ export interface AwsFileUploadResponse {
   }
 }
 
+export interface ImageData {
+    base64: string;
+    image: HTMLImageElement;
+    size: Dimensions;
+}
