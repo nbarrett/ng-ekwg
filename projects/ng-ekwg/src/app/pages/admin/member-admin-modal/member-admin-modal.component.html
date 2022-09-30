@@ -459,7 +459,7 @@
       <input *ngIf="allowDelete" type="submit" [disabled]="saveInProgress"
              [ngClass]="saveInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'"
              (click)="deleteMemberDetails()" title="Delete these member details" value="Delete">
-      <input *ngIf="allowConfirmDelete" type="submit" class="button-form button-form-left cta-red"
+      <input *ngIf="allowConfirmDelete" type="submit" class="button-form button-form-left button-confirm"
              (click)="confirmDeleteMemberDetails()" title="Confirm Delete of these member details"
              value="Confirm Deletion">
       <input *ngIf="allowEdits" type="submit" [disabled]="saveInProgress"

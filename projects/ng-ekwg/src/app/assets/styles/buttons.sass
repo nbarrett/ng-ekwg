@@ -238,3 +238,128 @@
 .btn-light:not(:disabled):not(.disabled).active:focus, .btn-light:not(:disabled):not(.disabled):active:focus, .show > .btn-light.dropdown-toggle:focus
   box-shadow: 0 0 0 .2rem rgba(217, 217, 218, .5)
 
+.button-image
+  background-position: 4px 8px
+  background-size: 14px
+  background-image: url("../images/ramblers/icons/ramblers_icon_2_arrow_forward_rgb.png")
+  background-repeat: no-repeat
+
+.button-form
+  @extend .button-image
+  margin: 0px 4px 0px 0px
+  background-color: $ramblers-colour-granite
+  color: $ramblers-colour-cloudy
+  border: none
+  padding: 8px 10px 8px 22px
+  font-size: 11px
+  font-weight: bold
+  -webkit-border-radius: 6px 6px 6px 6px
+  -moz-border-radius: 6px 6px 6px 6px
+  border-radius: 6px 6px 6px 6px
+  position: relative
+
+.button-form:hover
+  @extend .button-image
+  background-color: $ramblers-colour-black
+  border-color: $ramblers-colour-hover
+  cursor: pointer
+
+
+.disabled-button-form
+  @extend .button-image
+  margin: 0px 4px 0px 0px
+  background-color: $disabled-color
+  color: rgb(230, 230, 230)
+  border: none
+  padding: 8px 10px 8px 22px
+  font-size: 11px
+  font-weight: bold
+  -webkit-border-radius: 6px 6px 6px 6px
+  -moz-border-radius: 6px 6px 6px 6px
+  border-radius: 6px 6px 6px 6px
+  position: relative
+
+
+.disabled-button-form:hover
+  @extend .button-image
+  background-color: $disabled-color
+  cursor: not-allowed
+
+.button-form-in-tab
+  margin: 6px 6px 6px 0px
+  float: left
+
+
+.cta-red, .cta-red a, .cta-red:hover, .cta-red a:hover
+  @extend .button-image
+  background-color: #C60C30
+
+.button-form-left
+  float: left
+  margin-right: 6px
+
+
+.button-form-right
+  margin: 0px 0px 0px 0px
+  float: right
+
+
+.button-form-edit-event
+  margin: 3px 0px 8px 12px
+  float: right
+
+
+.button-contact-us
+  margin: 9px -11px 0px 0
+  float: right
+
+
+.button-form-right:visited
+  color: $ramblers-colour-cloudy
+
+.button-confirm
+  @extend .button-image
+  background-color: #C60C30
+
+.button-confirm:hover
+  @extend .button-image
+  background-color: #eb0c35
+
+
+.green-confirm
+  @extend .button-image
+  background-color: #1D9630
+
+
+.green-confirm:hover
+  @extend .button-image
+  background-color: rgb(32, 191, 57)
+
+
+.amber-confirm
+  @extend .button-image
+  background-color: #e89349
+
+
+.amber-confirm:hover
+  @extend .button-image
+  background-color: #FFA64D
+
+
+.blue-confirm
+  @extend .button-image
+  background-color: #007C89
+
+
+.blue-confirm:hover
+  @extend .button-image
+  background-color: #0097a4
+
+
+.yellow-confirm
+  @extend .button-image
+  background-color: $admin-color
+
+.yellow-confirm:hover
+  @extend .button-image
+  background-color: #d6d072

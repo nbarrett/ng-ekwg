@@ -74,7 +74,7 @@ export class CommitteeGeneralComponent implements OnInit, OnDestroy {
   }
 
   configureLetterheads() {
-    this.urlService.navigateTo("letterhead");
+    this.urlService.navigateTo("committee/letterhead");
   }
 
   ngOnDestroy(): void {

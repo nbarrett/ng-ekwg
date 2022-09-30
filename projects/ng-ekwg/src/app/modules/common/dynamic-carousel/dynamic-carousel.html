@@ -34,6 +34,7 @@
               <a class="rams-text-decoration-pink" [href]="column.href"
                  target="_self">{{column.title}}</a>
             </h4>
+            <ng-container *ngIf="false">{{'column ' + (columnIndex + 1) + ' class: ' +slideClasses() }}</ng-container>
             <div *ngIf="siteEditService.active()" class="card-title">
               <div class="form-group">
                 <label class="form-label"

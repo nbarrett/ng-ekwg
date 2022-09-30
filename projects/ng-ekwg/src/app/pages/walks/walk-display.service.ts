@@ -86,10 +86,8 @@ export class WalkDisplayService {
 
   googleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
     const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
-      "https://www.google.com/maps/embed/v1/directions?origin=" + fromPostcode + "&destination=" +
-      walk.postcode + "&key=" + this.googleMapsConfig.apiKey :
-      "https://www.google.com/maps/embed/v1/place?q=" + walk.postcode + "&zoom=" +
-      this.googleMapsConfig.zoomLevel + "&key=" + this.googleMapsConfig.apiKey);
+      `https://www.google.com/maps/embed/v1/directions?origin=${fromPostcode}&destination=${walk.postcode}&key=${this.googleMapsConfig?.apiKey}` :
+      `https://www.google.com/maps/embed/v1/place?q=${walk.postcode}&zoom=${this.googleMapsConfig?.zoomLevel}&key=${this.googleMapsConfig.apiKey}`);
     this.logger.debug("this.googleMapsUrl", googleMapsUrl);
     return googleMapsUrl;
   }

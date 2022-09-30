@@ -33,6 +33,7 @@ export class DynamicCarouselComponent implements OnInit {
   private logger: Logger;
   public contentPath: string;
   public slideIndex = 0;
+  private marginBottom = "";
   public width: number;
   public maxViewableSlideCount: number;
   public actualViewableSlideCount: number;
@@ -57,8 +58,8 @@ export class DynamicCarouselComponent implements OnInit {
   }
 
   @HostListener("window:resize", ["event"])
-  onResize(event) {
-    this.detectWidth(event?.target?.innerWidth);
+  onResize() {
+    this.detectWidth();
   }
 
   ngOnInit() {
@@ -74,7 +75,7 @@ export class DynamicCarouselComponent implements OnInit {
       this.contentPath = this.pageService.contentPath(this.relativePath);
       this.logger.info("initialised with contentPath:", this.contentPath);
     });
-    this.detectWidth(window.innerWidth);
+    this.detectWidth();
     this.pageColumnsChanged();
     this.broadcastService.on(NamedEventType.PAGE_CONTENT_CHANGED, () => {
       this.logger.info("event received:", NamedEventType.PAGE_CONTENT_CHANGED);
@@ -90,29 +91,30 @@ export class DynamicCarouselComponent implements OnInit {
     return this.pageContent.rows[this.rowIndex].columns;
   }
 
-  private detectWidth(width: number) {
-    this.width = width;
-    if (width <= DeviceSize.SMALL) {
+  private detectWidth() {
+    this.width = window.innerWidth;
+    if (this.width <= DeviceSize.SMALL) {
       this.maxViewableSlideCount = 1;
-    } else if (width <= DeviceSize.LARGE) {
+    } else if (this.width <= DeviceSize.LARGE) {
       this.maxViewableSlideCount = 2;
-    } else if (width <= DeviceSize.EXTRA_LARGE) {
+    } else if (this.width <= DeviceSize.EXTRA_LARGE) {
       this.maxViewableSlideCount = 3;
     } else {
       this.maxViewableSlideCount = 4;
     }
+    this.logger.info("detectWidth:", this.width, "maxViewableSlideCount", this.maxViewableSlideCount);
   }
 
   slideClasses() {
     switch (this.actualViewableSlideCount) {
       case 4:
-        return "mb-4 col-sm-12 col-md-6 col-lg-4 col-xl-3";
+        return this.marginBottom + "col-sm-12 col-md-6 col-lg-4 col-xl-3";
       case 3:
-        return "mb-4 col-sm-12 col-md-6 col-lg-4 col-xl-4";
+        return this.marginBottom + "col-sm-12 col-md-6 col-lg-4 col-xl-4";
       case 2:
-        return "mb-4 col-sm-12 col-md-6 col-lg-6 col-xl-6";
+        return this.marginBottom + "col-sm-12 col-md-6 col-lg-6 col-xl-6";
       default :
-        return "mb-4 col-sm-12";
+        return this.marginBottom + "col-sm-12";
     }
   }
 

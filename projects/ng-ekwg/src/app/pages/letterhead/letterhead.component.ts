@@ -6,32 +6,40 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
   selector: "app-letterhead",
   styleUrls: ["./letterhead.component.sass"],
   template: `
-    <div class="row">
-      <div class="col-sm-4">
-          <h1 class="mb-2 ml-2 mt-3">Configure letterhead</h1>
-          <app-letterhead-title-config [titleLine]="line1"></app-letterhead-title-config>
-          <app-letterhead-title-config [titleLine]="line2"></app-letterhead-title-config>
-      </div>
-      <div class="col-sm-8">
-        <header class="narrow narrow-margin">
-          <div class="header-inner">
-            <div class="row">
-              <div class="col-sm-2">
-                <app-main-logo></app-main-logo>
-              </div>
-              <div class="col-sm-8">
-                <div class="centred" [ngClass]="{'second-line': line2.include}">
-                  <app-letterhead-title-output [titleLine]="line1"></app-letterhead-title-output>
-                  <app-letterhead-title-output [titleLine]="line2"></app-letterhead-title-output>
-                </div>
-              </div>
-              <div class="col-sm-2">
-              </div>
+    <app-page [area]="'committee'" [pageTitle]="'Configure Letterheads'">
+      <div class="row">
+        <div class="col-sm-12">
+          <h1 class="mb-2 ml-2 mt-3">Configure letterheads</h1>
+          <div class="row">
+            <div class="col-sm-6">
+              <app-letterhead-title-config [titleLine]="line1"></app-letterhead-title-config>
+            </div>
+            <div class="col-sm-6">
+              <app-letterhead-title-config [titleLine]="line2"></app-letterhead-title-config>
             </div>
           </div>
-        </header>
+        </div>
+        <div class="col-sm-12">
+          <header class="mt-5 mb-5">
+            <div class="header-inner">
+              <div class="row">
+                <div class="col-sm-2">
+                  <app-main-logo></app-main-logo>
+                </div>
+                <div class="col-sm-8">
+                  <div class="centred" [ngClass]="{'second-line': line2.include}">
+                    <app-letterhead-title-output [titleLine]="line1"></app-letterhead-title-output>
+                    <app-letterhead-title-output [titleLine]="line2"></app-letterhead-title-output>
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                </div>
+              </div>
+            </div>
+          </header>
+        </div>
       </div>
-    </div>`
+    </app-page>`
 })
 
 export class LetterheadComponent implements OnInit {
@@ -42,7 +50,7 @@ export class LetterheadComponent implements OnInit {
     name: "First Line",
     include: true,
     showIcon: false,
-    iconType: "members",
+    iconType: "ramblers_icon_11_home_rgb",
     part1: {part: 1, text: "East Kent", class: "white"},
     part2: {part: 2, text: "Walking", class: "green"},
     part3: {part: 3, text: "Group", class: "white"},
@@ -52,7 +60,7 @@ export class LetterheadComponent implements OnInit {
     name: "Second Line",
     include: true,
     showIcon: true,
-    iconType: "members",
+    iconType: "ramblers_icon_19_tree_rgb",
     part1: {part: 1, text: "Walk", class: "white"},
     part2: {part: 2, text: "Leader", class: "green"},
     part3: {part: 3, text: "Notification", class: "white"},

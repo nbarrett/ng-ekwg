@@ -9,12 +9,11 @@ import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-contact-us",
-  templateUrl: "./contact-us-directive.component.html",
-  styleUrls: ["./contact-us.component.sass"]
+  templateUrl: "./contact-us.html",
+  styleUrls: ["./contact-us.sass"]
 })
 
-// tslint:disable-next-line:component-class-suffix
-export class ContactUsDirective implements OnInit, OnDestroy {
+export class ContactUsComponent implements OnInit, OnDestroy {
 
   @Input() format: string;
   @Input() text: string;
@@ -25,10 +24,10 @@ export class ContactUsDirective implements OnInit, OnDestroy {
   private dataSub: Subscription;
   private committeeReferenceData: CommitteeReferenceData;
 
-  constructor(public uRLService: UrlService,
+  constructor(public urlService: UrlService,
               private loggerFactory: LoggerFactory,
               private committeeConfig: CommitteeConfigService) {
-    this.logger = loggerFactory.createLogger(ContactUsDirective, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContactUsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

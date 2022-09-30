@@ -9,24 +9,31 @@ import { TitleLine, TitlePart } from "./letterhead.component";
   styleUrls: ["./letterhead.component.sass"],
   template: `
     <div class="form-inline">
-      <label class="mr-12" for="{{idPrefix}}-include">Part {{titlePart.part}}:</label>
-      <input id="{{idPrefix}}-include" type="text" [(ngModel)]="titlePart.text" class="form-control">
-      <div class="custom-control custom-radio custom-control-inline map-radio-label">
-        <input id="{{idPrefix}}-green" type="radio"
+      <label class="mr-2" for="{{idPrefix}}-include">Part {{titlePart.part}}:</label>
+      <input id="{{idPrefix}}-include" type="text" [(ngModel)]="titlePart.text" class="form-control mr-2">
+      <div class="custom-control custom-radio custom-control-inline">
+        <input class="custom-control-input"
+               id="{{idPrefix}}-green" type="radio"
                [(ngModel)]="titlePart.class"
                name="{{idPrefix}}colour"
                value="green"/>
-        <label for="{{idPrefix}}-green">Green</label>
-        <input id="{{idPrefix}}-white" type="radio"
+        <label class="custom-control-label" for="{{idPrefix}}-green">Green</label>
+      </div>
+      <div class="custom-control custom-radio custom-control-inline">
+        <input class="custom-control-input"
+               id="{{idPrefix}}-white" type="radio"
                [(ngModel)]="titlePart.class"
                name="{{idPrefix}}colour"
                value="white"/>
-        <label for="{{idPrefix}}-white">White</label>
-        <input id="{{idPrefix}}-none" type="radio"
+        <label class="custom-control-label" for="{{idPrefix}}-white">White</label>
+      </div>
+      <div class="custom-control custom-radio custom-control-inline">
+        <input class="custom-control-input"
+               id="{{idPrefix}}-none" type="radio"
                [(ngModel)]="titlePart.class"
                name="{{idPrefix}}colour"
                value="none"/>
-        <label for="{{idPrefix}}-none">None</label>
+        <label class="custom-control-label" for="{{idPrefix}}-none">None</label>
       </div>
     </div>`
 })
