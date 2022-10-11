@@ -12,10 +12,28 @@ export enum ConfirmType {
 }
 
 export enum EditMode {
+  NONE = "None",
   ADD_NEW = "Add new",
   DELETE = "Delete",
   EDIT = "Edit existing",
   COPY_EXISTING = "Copy existing"
+}
+
+export class Actions {
+  private editMode: EditMode = EditMode.NONE;
+
+  activateEditMode(): void {
+    this.editMode = EditMode.EDIT;
+  }
+
+  editModeActive(): boolean {
+    return this.editMode === EditMode.EDIT;
+  }
+
+  clearEditMode(): void {
+    this.editMode = EditMode.NONE;
+  }
+
 }
 
 export class Confirm {

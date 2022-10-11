@@ -4,12 +4,12 @@ import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
+import { slideClasses } from "../../../services/card-utils";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -23,11 +23,12 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { SocialDisplayService } from "../social-display.service";
 
 @Component({
-  selector: "app-social-list",
-  templateUrl: "./social-list.component.html",
-  styleUrls: ["./social-list.component.sass"]
+  selector: "app-social-list-cards",
+  templateUrl: "./social-list-cards.html",
+  styleUrls: ["./social-list-cards.sass"]
 })
-export class SocialListComponent implements OnInit {
+export class SocialListCardsComponent implements OnInit {
+  public socialEvents: SocialEvent[] = [];
   public notify: AlertInstance;
   private logger: Logger;
   faCopy = faCopy;
@@ -49,7 +50,7 @@ export class SocialListComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               private modalService: BsModalService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialListCardsComponent, NgxLoggerLevel.OFF);
   }
 
   @Input()
@@ -59,17 +60,10 @@ export class SocialListComponent implements OnInit {
   faSearch = faSearch;
 
   ngOnInit() {
-    this.logger.info("ngOnInit:filteredSocialEvents:", this.filteredSocialEvents);
   }
 
-  todayValue(): number {
-    return this.dateUtils.momentNowNoTime().valueOf();
+  slideClasses() {
+    return slideClasses(this.filteredSocialEvents.length);
   }
-
-  socialEventTracker(index: number, socialEvent: SocialEvent) {
-    return socialEvent?.id;
-  }
-
-
 
 }

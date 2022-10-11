@@ -9,6 +9,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
+import { slideClasses } from "../../../services/card-utils";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -102,6 +103,10 @@ export class DynamicContentComponent implements OnInit {
         this.savePageContent();
       });
     });
+  }
+
+  slideClasses(columnCount: number | undefined) {
+    return slideClasses(columnCount);
   }
 
   createContent() {

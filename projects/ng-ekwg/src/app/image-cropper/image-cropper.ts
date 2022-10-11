@@ -178,8 +178,8 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.notify.hide();
   }
 
-  loadImageFailed() {
-    this.logger.info("Load failed");
+  loadImageFailed($event: void) {
+    this.logger.info("Load failed:", $event);
   }
 
   rotateLeft() {
@@ -274,7 +274,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   }
 
   fileDropped($event: File[]) {
-    this.logger.debug("fileDropped:", $event);
+    this.logger.info("fileDropped:", $event);
     this.processSingleFile(first($event));
   }
 
@@ -284,6 +284,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
 
   private processSingleFile(file: File) {
     this.notify.setBusy();
+    this.uploader.clearQueue();
     this.logger.info("processSingleFile:file:", file, "queue:", this.uploader.queue);
     this.notify.progress({title: "File upload", message: `loading preview for ${file.name}...`});
     this.originalFile = file;

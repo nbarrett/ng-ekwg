@@ -1,10 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faCopy, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faImage, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
-import { AlertTarget } from "../../../models/alert-target.model";
-import { MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
@@ -23,15 +21,16 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { SocialDisplayService } from "../social-display.service";
 
 @Component({
-  selector: "app-social-list",
-  templateUrl: "./social-list.component.html",
-  styleUrls: ["./social-list.component.sass"]
+  selector: "app-social-card",
+  templateUrl: "./social-card.html",
+  styleUrls: ["./social-card.sass"]
 })
-export class SocialListComponent implements OnInit {
+export class SocialCardComponent implements OnInit {
+  public socialEvents: SocialEvent[] = [];
   public notify: AlertInstance;
   private logger: Logger;
   faCopy = faCopy;
-
+  faImage= faImage;
   constructor(public googleMapsService: GoogleMapsService,
               private authService: AuthService,
               private stringUtils: StringUtilsService,
@@ -49,27 +48,14 @@ export class SocialListComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               private modalService: BsModalService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialCardComponent, NgxLoggerLevel.OFF);
   }
 
   @Input()
-  public notifyTarget: AlertTarget;
-  @Input()
-  public filteredSocialEvents: SocialEvent[];
+  public socialEvent: SocialEvent;
   faSearch = faSearch;
 
   ngOnInit() {
-    this.logger.info("ngOnInit:filteredSocialEvents:", this.filteredSocialEvents);
   }
-
-  todayValue(): number {
-    return this.dateUtils.momentNowNoTime().valueOf();
-  }
-
-  socialEventTracker(index: number, socialEvent: SocialEvent) {
-    return socialEvent?.id;
-  }
-
-
 
 }

@@ -1,0 +1,68 @@
+<div class="row">
+  <div class="col-sm-8">
+    <h1>{{socialEvent?.eventDate | displayDay}}</h1>
+    <h2>{{socialEvent?.briefDescription}}</h2>
+    <h3 *ngIf="socialEvent?.eventTimeStart">Time: {{socialEvent | eventTimes}}</h3>
+  </div>
+  <div class="col-sm-4">
+    <input *ngIf="display.allow.edits" type="submit" value="edit"
+           (click)="editSocialEvent(socialEvent)" [disabled]="notifyTarget.busy"
+           [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'"
+           title="Edit social event" class="button-form button-form-right">
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="event-description">
+      <a target="_blank"
+         [href]="socialEvent?.link">
+        <img *ngIf="socialEvent?.thumbnail"
+             [src]="socialEvent?.thumbnail" class="img-fluid event-thumbnail-image"></a>
+      <div class="green-bullets-no-rule">
+        <p markdown [data]="socialEvent?.longerDescription"></p>
+        <ul class="list-arrows">
+          <li *ngIf="display.attachmentExists(socialEvent)">
+            <a target="_blank" [href]="display.attachmentUrl(socialEvent)">{{display.attachmentTitle(socialEvent)}}</a>
+          </li>
+          <li *ngIf="!socialEvent?.thumbnail && socialEvent?.link">
+            <a target="_blank"
+               [href]="socialEvent?.link">{{socialEvent?.linkTitle || 'Link: ' + socialEvent?.link}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="event-panel rounded">
+      <h1>Location</h1>
+      <p>{{socialEvent?.location}} <a class="ml-2"
+                                      [href]="googleMapsService.urlForPostcode(socialEvent?.postcode)"
+                                      target="_blank"><span tooltipPlacement="left"
+                                                            tooltip="Click to locate postcode {{socialEvent?.postcode}} on Google Maps">{{socialEvent?.postcode}}</span></a>
+      </p>
+      <div class="row related-links-row" *ngIf="display.socialEventLink(socialEvent)">
+        <div class="col-sm-12">
+          <label><a (click)="display.copyToClipboard(socialEvent, null)">
+            <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg">
+                  <span tooltipPlacement="left"
+                        tooltip="Click to copy link to clipboard"></span></fa-icon>
+            copy link </a> to this <a
+            [href]="display.socialEventLink(socialEvent)" target="_blank">social event</a></label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="event-panel rounded">
+      <h1>Contact Details</h1>
+      <p><a [href]="'mailto: ' + socialEvent?.contactEmail">
+                                <span tooltipPlacement="left"
+                                      tooltip="Click to email {{socialEvent?.displayName}} at {{socialEvent?.contactEmail}}">{{socialEvent?.displayName}}</span></a>
+        <a class="ml-2" [href]="'tel: ' + socialEvent?.contactPhone"><span tooltipPlacement="left"
+                                                                           tooltip="Click to ring {{socialEvent?.displayName}} on {{socialEvent?.contactPhone}} (mobile devices only)">{{socialEvent?.contactPhone}}</span></a>
+      </p>
+    </div>
+  </div>
+</div>

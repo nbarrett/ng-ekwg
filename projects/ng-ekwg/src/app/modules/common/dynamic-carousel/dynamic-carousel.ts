@@ -8,6 +8,7 @@ import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
 import { BroadcastService } from "../../../services/broadcast-service";
+import { slideClasses } from "../../../services/card-utils";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageContentService } from "../../../services/page-content.service";
@@ -33,8 +34,7 @@ export class DynamicCarouselComponent implements OnInit {
   private logger: Logger;
   public contentPath: string;
   public slideIndex = 0;
-  private marginBottom = "";
-  public width: number;
+  private marginBottom = "mb-4";
   public maxViewableSlideCount: number;
   public actualViewableSlideCount: number;
   public relativePath: string;
@@ -92,30 +92,20 @@ export class DynamicCarouselComponent implements OnInit {
   }
 
   private detectWidth() {
-    this.width = window.innerWidth;
-    if (this.width <= DeviceSize.SMALL) {
+    if (window.innerWidth <= DeviceSize.SMALL) {
       this.maxViewableSlideCount = 1;
-    } else if (this.width <= DeviceSize.LARGE) {
+    } else if (window.innerWidth <= DeviceSize.LARGE) {
       this.maxViewableSlideCount = 2;
-    } else if (this.width <= DeviceSize.EXTRA_LARGE) {
+    } else if (window.innerWidth <= DeviceSize.EXTRA_LARGE) {
       this.maxViewableSlideCount = 3;
     } else {
       this.maxViewableSlideCount = 4;
     }
-    this.logger.info("detectWidth:", this.width, "maxViewableSlideCount", this.maxViewableSlideCount);
+    this.logger.info("detectWidth:", window.innerWidth, "maxViewableSlideCount", this.maxViewableSlideCount);
   }
 
   slideClasses() {
-    switch (this.actualViewableSlideCount) {
-      case 4:
-        return this.marginBottom + "col-sm-12 col-md-6 col-lg-4 col-xl-3";
-      case 3:
-        return this.marginBottom + "col-sm-12 col-md-6 col-lg-4 col-xl-4";
-      case 2:
-        return this.marginBottom + "col-sm-12 col-md-6 col-lg-6 col-xl-6";
-      default :
-        return this.marginBottom + "col-sm-12";
-    }
+    return slideClasses(this.actualViewableSlideCount, this.marginBottom);
   }
 
   viewableColumns(): PageContentColumn[] {

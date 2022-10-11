@@ -38,7 +38,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   }
 
   public walkIdOrPath: string;
-  public walkIdFromUrl: boolean;
+  public pathContainsMongoId: boolean;
   public displayedWalk: DisplayedWalk;
   public displayLinks: boolean;
   fromPostcode = "";
@@ -74,7 +74,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     private notifierService: NotifierService,
     private changeDetectorRef: ChangeDetectorRef,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -83,13 +83,13 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logger.debug("initialised with walk", this.displayedWalk);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
     this.refreshHomePostcode();
-    this.walkIdFromUrl = this.urlService.relativeUrlIsMongoId();
-    this.walkIdOrPath = this.urlService.relativeUrl()
+    this.pathContainsMongoId = this.urlService.pathContainsMongoId();
+    this.walkIdOrPath = this.urlService.lastPathSegment();
+    this.logger.debug("initialised with walk", this.displayedWalk, "pathContainsMongoId:", this.pathContainsMongoId, "walkIdOrPath:", this.walkIdOrPath);
     this.queryIfRequired();
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.logger.debug("loginResponseObservable:", loginResponse);
@@ -105,7 +105,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   }
 
   queryIfRequired(): void {
-    if (this.walkIdFromUrl) {
+    if (this.pathContainsMongoId) {
       this.walksService.getByIdIfPossible(this.walkIdOrPath)
         .then((walk: Walk) => {
           if (walk) {

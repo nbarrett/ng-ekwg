@@ -29,7 +29,7 @@ export class PageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.logger.debug("lastBreadcrumb:", this.area, "relativePath:", this.relativePath);
+    this.logger.debug("area:", this.area, "relativePath:", this.relativePath);
     this.pages = this.pageService.pagesFor(this.area, this.relativePath)
     this.logger.debug("pageTitle:", this.pageTitle, "lastBreadcrumb:", this.area, "pages:", this.pages);
   }

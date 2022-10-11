@@ -14,8 +14,9 @@
         <app-committee-history [notify]="notify" [confirm]="confirm"></app-committee-history>
       </accordion>
     </div>
-    <div class="col-sm-4 auto-fit-column">
+    <div class="col-sm-4">
       <app-committee-right-column></app-committee-right-column>
     </div>
   </div>
+  <app-dynamic-content [anchor]="'action-buttons'"></app-dynamic-content>
 </app-page>

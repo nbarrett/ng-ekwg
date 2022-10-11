@@ -46,7 +46,8 @@
       </app-dynamic-carousel>
       <ng-container *ngIf="row.type==='text'">
         <div class="row">
-          <div *ngFor="let column of row?.columns; let columnIndex = index;" [class]="'col-sm-' + column.columns">
+          <div *ngFor="let column of row?.columns; let columnIndex = index;"
+               [class]="slideClasses(row?.columns.length)">
             <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
                                  [category]="contentPath"
                                  [editNameEnabled]="editNameEnabled"
@@ -76,8 +77,8 @@
       </ng-container>
     </div>
   </ng-container>
-  <div *ngIf="!siteEditService.active()" class="container w-100">
-    <div class="row" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+  <ng-container *ngIf="!siteEditService.active()">
+    <ng-container *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <ng-container *ngIf="false">{{'row ' + (rowIndex + 1) + ' ' + row.type  }}</ng-container>
       <app-dynamic-carousel *ngIf="row.type==='slides'"
                             [editNameEnabled]="editNameEnabled"
@@ -85,17 +86,19 @@
                             [rowIndex]="rowIndex">
       </app-dynamic-carousel>
       <ng-container *ngIf="row.type==='text'">
-        <app-markdown-editor *ngFor="let column of row?.columns; let columnIndex = index;"
-                             [class]="'col-sm-' + column.columns"
-                             [id]="column?.contentTextId"
-                             [editNameEnabled]="editNameEnabled"
-                             [description]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,contentDescription)"
-                             [category]="contentPath"
-                             [name]="actions.rowColFor(rowIndex, columnIndex)">
-        </app-markdown-editor>
+        <div class="row">
+          <app-markdown-editor *ngFor="let column of row?.columns; let columnIndex = index;"
+                               [class]="'col-sm-' + column.columns"
+                               [id]="column?.contentTextId"
+                               [editNameEnabled]="editNameEnabled"
+                               [description]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,contentDescription)"
+                               [category]="contentPath"
+                               [name]="actions.rowColFor(rowIndex, columnIndex)">
+          </app-markdown-editor>
+        </div>
       </ng-container>
-    </div>
-  </div>
+    </ng-container>
+  </ng-container>
 </ng-container>
 <ng-container *ngIf="!pageContent">
   <ng-container *ngIf="siteEditService.active()">

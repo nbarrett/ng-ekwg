@@ -18,9 +18,9 @@
                            [(ngModel)]="socialEvent?.notification?.content.destinationType"
                            name="send-to"
                            value="all-ekwg-social"/>
-                    <label class="custom-control-label" for="all-ekwg-social">{{memberFilterSelections?.length}}
+                    <label class="custom-control-label" for="all-ekwg-social">{{display.memberFilterSelections?.length}}
                       Social Group Members</label>
-                    <a class="ml-4" *ngIf="memberFilterSelections.length>0"
+                    <a class="ml-4" *ngIf="display.memberFilterSelections.length>0"
                        (click)="editAllSocialRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -88,7 +88,7 @@
               <div class="col-sm-12">
                 <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
                      [tooltip]="helpMembers()">
-                  <ng-select #select [items]="memberFilterSelections"
+                  <ng-select #select [items]="display.memberFilterSelections"
                              bindLabel="text"
                              name="member-selector"
                              bindValue="id"
@@ -165,7 +165,7 @@
                           class="custom-control-label"
                           for="include-attendees">Include List of attendees:
                           <span
-                            style="font-weight: normal"> ({{display.attendeeList(socialEvent, memberFilterSelections)}}
+                            style="font-weight: normal"> ({{display.attendeeList(socialEvent, display.memberFilterSelections)}}
                             )</span>
                         </label>
                       </div>

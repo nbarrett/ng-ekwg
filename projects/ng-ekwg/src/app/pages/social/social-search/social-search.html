@@ -1,0 +1,42 @@
+<div class="simg-thumbnail thumbnail-equal-padding" *ngIf="showSearch">
+  <form class="form-inline">
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend rounded">
+          <span class="input-group-text"><fa-icon [icon]="faSearch"></fa-icon></span>
+        </div>
+        <input id="quick-search" [(ngModel)]="filterParameters.quickSearch"
+               (ngModelChange)="onSearchChange($event)"
+               name="quickSearch"
+               class="form-control input-md inline-label rounded"
+               type="text" placeholder="Quick Search">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="inline-label" for="selectType">Show:</label>
+      <select [(ngModel)]="filterParameters.selectType"
+              (ngModelChange)="refreshSocialEvents('change filterParameters.selectType')" name="selectType" id="selectType"
+              class="form-control input-md rounded">
+        <option selected="selected" value="1">Future Social Events</option>
+        <option value="2">Past Social Events</option>
+        <option value="3">All Social Events</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="inline-label" for="sortOrder">Sort By:</label>
+      <select [(ngModel)]="filterParameters.fieldSort"
+              (ngModelChange)="refreshSocialEvents('change filterParameters.fieldSort')" name="sortOrder" id="sortOrder"
+              class="form-control input-md rounded">
+        <option value="-1">Date Descending</option>
+        <option selected value="1">Date Ascending</option>
+      </select>
+    </div>
+  </form>
+  <div class="mt-3" *ngIf="notifyTarget.showAlert">
+    <div class="alert {{notifyTarget.alertClass}}">
+      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+      <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
+      {{notifyTarget.alertMessage}}
+    </div>
+  </div>
+</div>

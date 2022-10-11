@@ -1,6 +1,12 @@
 <app-page>
-  <accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-    <app-social-information [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm"></app-social-information>
-    <app-social-list [allow]="allow" [notifyTarget]="notifyTarget" [confirm]="confirm" [socialEventId]="socialEventId"></app-social-list>
-  </accordion>
+  <app-social-carousel [notifyTarget]="notifyTarget"></app-social-carousel>
+  <app-social-search *ngIf="showSearch"
+                     [filterParameters]="filterParameters"
+                     [notifyTarget]="notifyTarget">
+    <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="5"
+                [totalItems]="filteredSocialEvents?.length" [(ngModel)]="pageNumber"
+                (pageChanged)="pageChanged($event)"></pagination>
+  </app-social-search>
+  <app-social-list-cards [notifyTarget]="notifyTarget" [filteredSocialEvents]="filteredSocialEvents">
+  </app-social-list-cards>
 </app-page>

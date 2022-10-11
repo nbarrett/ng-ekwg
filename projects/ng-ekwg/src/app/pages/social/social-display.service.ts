@@ -1,11 +1,14 @@
 import { Injectable } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
+import isEmpty from "lodash-es/isEmpty";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuthService } from "../../auth/auth.service";
 import { CommitteeMember } from "../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../models/member.model";
-import { SocialEvent } from "../../models/social-events.model";
+import { SocialEvent, SocialEventsPermissions } from "../../models/social-events.model";
+import { Confirm } from "../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { MemberIdToFullNamePipe } from "../../pipes/member-id-to-full-name.pipe";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
@@ -19,6 +22,7 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
 import { UrlService } from "../../services/url.service";
+import { SiteEditService } from "../../site-edit/site-edit.service";
 
 const SORT_BY_NAME = sortBy("order", "member.lastName", "member.firstName");
 
@@ -30,9 +34,14 @@ export class SocialDisplayService {
   private logger: Logger;
   public attachmentBaseUrl = this.contentMetadataService.baseUrl("socialEvents");
   private committeeReferenceData: CommitteeReferenceData;
+  public allow: SocialEventsPermissions = {};
+  public confirm: Confirm = new Confirm();
+  public memberFilterSelections: MemberFilterSelection[];
 
   constructor(
+    private authService: AuthService,
     private memberService: MemberService,
+    private siteEditService: SiteEditService,
     private modalService: BsModalService,
     private memberLoginService: MemberLoginService,
     private urlService: UrlService,
@@ -45,7 +54,38 @@ export class SocialDisplayService {
     private contentMetadataService: ContentMetadataService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SocialDisplayService, NgxLoggerLevel.OFF);
+    this.configureEventSubscriptions();
+  }
+
+  private configureEventSubscriptions() {
     this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
+    this.authService.authResponse().subscribe(() => this.applyAllows());
+    this.authService.authResponse().subscribe(() => this.authChanges());
+    this.siteEditService.events.subscribe(() => this.applyAllows());
+    this.applyAllows();
+    this.authChanges();
+  }
+
+  applyAllows() {
+    this.allow.detailView = this.memberLoginService.allowSocialDetailView();
+    this.allow.summaryView = this.memberLoginService.allowSocialAdminEdits() || !this.memberLoginService.allowSocialDetailView();
+    this.allow.edits = this.memberLoginService.allowSocialAdminEdits();
+    this.allow.copy = this.memberLoginService.allowSocialAdminEdits();
+    this.allow.contentEdits = this.siteEditService.active() && this.memberLoginService.allowContentEdits();
+    this.logger.debug("permissions:", this.allow);
+  }
+
+  private authChanges() {
+    if (this.memberLoginService.memberLoggedIn()) {
+      this.refreshSocialMemberFilterSelection()
+        .then(members => {
+          this.memberFilterSelections = members;
+        });
+    }
+  }
+
+  attachmentExists(socialEvent: SocialEvent): boolean {
+    return !isEmpty(socialEvent?.attachment);
   }
 
   committeeMembersPlusOrganiser(socialEvent: SocialEvent, members: Member[]): CommitteeMember[] {

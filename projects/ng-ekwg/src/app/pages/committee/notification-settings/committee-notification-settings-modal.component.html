@@ -1,4 +1,4 @@
-<div bsModal class="modal-lg" [ngClass]="{'busy': notifyTarget.busy}">
+<div bsModal class="modal-lg" data-backdrop="false">
   <div class="modal-content">
     <div class="modal-header">
       <h4 class="modal-title">Notification <em>Campaign</em> Settings</h4>
@@ -380,8 +380,9 @@
       <div *ngIf="notifyTarget.showAlert" class="row">
         <div class="col-sm-12 mb-10">
           <div class="alert {{notifyTarget.alert.class}}">
-            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
-            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+            <strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
           </div>
         </div>
       </div>

@@ -1,0 +1,9 @@
+<app-page area="social" [relativePath]="relativePath"
+          [pageTitle]="pageTitle()">
+  <div *ngIf="!actions.editModeActive()" class="img-thumbnail event-thumbnail">
+    <app-social-view [actions]="actions"
+                     [socialEvent]="socialEvent"></app-social-view>
+  </div>
+  <app-social-edit [actions]="actions" *ngIf="actions.editModeActive()"></app-social-edit>
+
+</app-page>

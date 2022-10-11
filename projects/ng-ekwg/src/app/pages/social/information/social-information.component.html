@@ -1,29 +1,6 @@
-<accordion [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-  <app-accordion-group groupTitle="Social Events Information" initiallyOpen="true"
-                       [icon]="'assets/images/ramblers/icon-getinvolved.png'">
-    <div class="green-bullets-no-rule col-sm-6">
-      <app-markdown-editor name="socialEventsInformation"
+<div class="green-bullets-no-rule col-sm-6">
+  <app-markdown-editor name="socialEventsInformation"
                        description="social events information"></app-markdown-editor>
-      <a *ngIf="allow.contentEdits" href="image-editor/imagesSocialEvents" title="Edit images"
-         class="button-form button-form-right rounded">Edit images</a>
-    </div>
-    <div class="green-bullets-no-rule col-sm-6 auto-fit-column">
-      <div id="social-carousel">
-        <div class="carousel-wrapper">
-          <div class="slider-container">
-            <div class="sc-inner">
-              <carousel [interval]="slideInterval">
-                <slide *ngFor="let slide of slides" active="slide.active">
-                  <img class="img-responsive center-block carousel-image" loading="lazy" [src]="slide.image">
-                  <div class="carousel-caption d-none d-md-block">
-                    <h4>{{slide.text}}</h4>
-                  </div>
-                </slide>
-              </carousel>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </app-accordion-group>
-</accordion>
+  <a *ngIf="display.allow.contentEdits" href="image-editor/imagesSocialEvents" title="Edit images"
+     class="button-form button-form-right rounded">Edit images</a>
+</div>

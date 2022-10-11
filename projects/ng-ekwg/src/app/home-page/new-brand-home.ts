@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AwsFileData } from "../models/aws-object.model";
 import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
@@ -26,4 +27,8 @@ export class NewBrandHomeComponent implements OnInit {
     });
   }
 
+  imageChanged(awsFileData: AwsFileData) {
+    this.logger.info("awsFileData:", awsFileData);
+    this.croppedImage = awsFileData.image
+  }
 }

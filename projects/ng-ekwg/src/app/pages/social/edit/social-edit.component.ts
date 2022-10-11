@@ -1,16 +1,17 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
+import { faCopy, faEye, faPencil } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
+import isEmpty from "lodash-es/isEmpty";
 import { FileUploader } from "ng2-file-upload";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { Identifiable } from "../../../models/api-response.model";
 import { DateValue } from "../../../models/date.model";
 import { MemberFilterSelection } from "../../../models/member.model";
-import { SocialEvent, SocialEventsPermissions } from "../../../models/social-events.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { SocialEvent } from "../../../models/social-events.model";
+import { Actions, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
@@ -31,16 +32,15 @@ import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { SocialSendNotificationModalComponent } from "../send-notification/social-send-notification-modal.component";
 import { SocialDisplayService } from "../social-display.service";
-import { faCopy, faEye } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
-  selector: "app-social-edit-modal",
-  templateUrl: "social-edit-modal.component.html",
+  selector: "app-social-edit",
+  templateUrl: "social-edit.component.html",
 })
-export class SocialEditModalComponent implements OnInit {
+export class SocialEditComponent implements OnInit {
+  @Input()
+  public actions: Actions;
   public socialEvent: SocialEvent;
-  public allow: SocialEventsPermissions;
-  public confirm: Confirm;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
@@ -50,13 +50,12 @@ export class SocialEditModalComponent implements OnInit {
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  private confirmType: ConfirmType = ConfirmType.NONE;
   public socialEventEditMode: string;
   public longerDescriptionPreview = true;
-  public memberFilterSelections: MemberFilterSelection[];
   public selectedMemberIds: string[] = [];
   faCopy = faCopy;
   faEye = faEye;
+  faPencil = faPencil;
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -77,21 +76,28 @@ export class SocialEditModalComponent implements OnInit {
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
-              public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEditModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialEditComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
-    this.logger.debug("constructed with socialEvent", this.socialEvent);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
-    this.eventDate = this.dateUtils.asDateValue(this.socialEvent.eventDate);
-    this.existingTitle = this.socialEvent?.attachment?.title;
-    this.campaignSearchTerm = "Master";
-    this.notify.hide();
+    if (this.urlService.pathContainsMongoId()) {
+      const socialEventId = this.urlService.lastPathSegment();
+      this.logger.debug("finding socialEvent from socialEventId:", socialEventId);
+      this.socialEventsService.getById(socialEventId).then(data => {
+        this.socialEvent = data;
+        this.eventDate = this.dateUtils.asDateValue(this.socialEvent.eventDate);
+        this.existingTitle = this.socialEvent?.attachment?.title;
+        this.campaignSearchTerm = "Master";
+        this.notify.hide();
+        this.selectedMemberIds = this.socialEvent.attendees.map(attendee => attendee.id);
+      });
+    } else {
+      this.notify.error({title: "Cannot edit social event", message: "path does not contain social event id"});
+    }
     this.uploader = this.fileUploadService.createUploaderFor("socialEvents");
-    this.selectedMemberIds = this.socialEvent.attendees.map(attendee => attendee.id);
     this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
@@ -154,13 +160,13 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   deleteSocialEventDetails() {
-    this.confirm.toggleOnDeleteConfirm();
+    this.display.confirm.toggleOnDeleteConfirm();
   }
 
   confirmDeleteSocialEventDetails() {
     Promise.resolve(this.notify.progress("Deleting social event", true))
       .then(() => this.deleteMailchimpSegment())
-      .then(() => this.removeSocialEventHideSocialEventDialogAndRefreshSocialEvents())
+      .then(() => this.removeSocialEventAndRefreshSocialEvents())
       .then(() => this.notify.clearBusy())
       .catch((error) => this.notify.error(error));
   }
@@ -171,7 +177,7 @@ export class SocialEditModalComponent implements OnInit {
     }
   }
 
-  removeSocialEventHideSocialEventDialogAndRefreshSocialEvents() {
+  removeSocialEventAndRefreshSocialEvents() {
     this.socialEventsService.delete(this.socialEvent).then(() => this.close());
   }
 
@@ -183,8 +189,8 @@ export class SocialEditModalComponent implements OnInit {
       socialEvent.contactPhone = "";
       socialEvent.contactEmail = "";
     } else {
-      this.logger.debug("looking for member id", memberId, "in memberFilterSelections", this.memberFilterSelections);
-      const selectedMember = this.memberFilterSelections.find(member => member.id === memberId).member;
+      this.logger.debug("looking for member id", memberId, "in memberFilterSelections", this.display.memberFilterSelections);
+      const selectedMember = this.display.memberFilterSelections.find(member => member.id === memberId).member;
       socialEvent.displayName = selectedMember.displayName;
       socialEvent.contactPhone = selectedMember.mobileNumber;
       socialEvent.contactEmail = selectedMember.email;
@@ -217,7 +223,7 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   deleteSocialEvent() {
-    this.confirmType = ConfirmType.DELETE;
+    this.display.confirm.type = ConfirmType.DELETE;
   }
 
   showAlertMessage(): boolean {
@@ -225,11 +231,11 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   pendingCompletion(): boolean {
-    return this.notifyTarget.busy || this.confirmType !== ConfirmType.NONE;
+    return this.notifyTarget.busy || this.display.confirm.type !== ConfirmType.NONE;
   }
 
   pendingDeletion(): boolean {
-    return this.confirmType === ConfirmType.DELETE;
+    return this.display.confirm.type === ConfirmType.DELETE;
   }
 
   eventDateChanged(dateValue: DateValue) {
@@ -248,14 +254,16 @@ export class SocialEditModalComponent implements OnInit {
     this.socialEvent.attachment = {};
   }
 
+
   onFileSelect($file: File[]) {
     this.notify.setBusy();
     this.notify.progress({title: "Attachment upload", message: `uploading ${first($file).name} - please wait...`});
   }
 
   close() {
-    this.confirm.clear();
-    this.bsModalRef.hide();
+    this.display.confirm.clear();
+    this.actions.clearEditMode();
+    this.logger.info("close:this.actions", this.actions, "this.display.confirm", this.display.confirm);
   }
 
   confirmDeleteSocialEvent() {
@@ -264,7 +272,7 @@ export class SocialEditModalComponent implements OnInit {
   }
 
   cancelDeleteSocialEvent() {
-    this.confirmType = ConfirmType.NONE;
+    this.display.confirm.type = ConfirmType.NONE;
   }
 
   copyDetailsToNewSocialEvent() {
@@ -274,10 +282,10 @@ export class SocialEditModalComponent implements OnInit {
     delete copiedSocialEvent.notification;
     copiedSocialEvent.attendees = [];
     this.socialEvent = copiedSocialEvent;
-    this.confirm.clear();
-    const existingRecordEditEnabled = this.allow.edits && "Copy Existing".startsWith("Edit");
-    this.allow.copy = existingRecordEditEnabled;
-    this.allow.delete = existingRecordEditEnabled;
+    this.display.confirm.clear();
+    const existingRecordEditEnabled = this.display.allow.edits && "Copy Existing".startsWith("Edit");
+    this.display.allow.copy = existingRecordEditEnabled;
+    this.display.allow.delete = existingRecordEditEnabled;
     this.notify.success({
       title: "Existing social event copied!",
       message: "Make changes here and save to create a new social event."
@@ -295,10 +303,10 @@ export class SocialEditModalComponent implements OnInit {
 
   sendSocialEventNotification() {
     this.modalService.show(SocialSendNotificationModalComponent, this.display.createModalOptions({
-      memberFilterSelections: this.memberFilterSelections,
+      memberFilterSelections: this.display.memberFilterSelections,
       socialEvent: this.socialEvent,
-      allow: this.allow,
-      confirm: this.confirm
+      allow: this.display.allow,
+      confirm: this.display.confirm
     }));
     this.close();
   }

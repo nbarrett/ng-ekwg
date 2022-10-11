@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
 import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
+import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -74,15 +75,19 @@ export class UrlService {
     return this.toPathSegments(this.relativeUrl());
   }
 
+  lastPathSegment() {
+    return last(this.relativeUrlAsPathSegments());
+  }
+
   toPathSegments(relativePath: string): string[] {
     return relativePath ? relativePath?.split("/").filter(item => !isEmpty(item)) : [];
   }
 
-  relativeUrlIsMongoId(): boolean {
-    return this.isMongoId(this.relativeUrl());
+  pathContainsMongoId(): boolean {
+    return this.isMongoId(this.lastPathSegment());
   }
 
-  isMongoId(id: string) {
+  isMongoId(id: string): boolean {
     return isMongoId(id);
   }
 

@@ -1,0 +1,20 @@
+<ng-container *ngIf="slides">
+  <div class="mb-4">
+    <div class="d-flex flex-column flex-md-row position-relative">
+      <div class="wrapper w-100 position-relative">
+        <img *ngIf="contentMetadataItem" class="crop" [src]="contentMetadataItem?.image"
+             [ngStyle]="{'height.px': paperCutImageHeight(), 'width.px': paperCutWidth}"/><img/>
+        <img class="h-100 position-absolute" #paperCutImage
+             src="/assets/images/ramblers/papercut-paths/home-page.png">
+      </div>
+      <div class="row position-md-absolute w-100 h-100 align-items-center">
+        <div class="ml-md-4 ml-lg-5 col-md-6 col-xl-5">
+          <h1 class="display-4 font-weight-bold">Social Events</h1>
+          <div class="body-text">Welcome to our social Events page! Here are some photos from some of our past events
+          </div>
+          <div class="body-text mt-5 w-75">{{contentMetadataItem?.text}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

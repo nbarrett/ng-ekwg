@@ -1,6 +1,6 @@
 <div>
   <div>
-    <app-image-cropper></app-image-cropper>
+    <app-image-cropper (imageChange)="imageChanged($event)"></app-image-cropper>
     <div class="mb-4">
       <div class="d-flex flex-column flex-md-row position-relative">
         <div class="wrapper w-100 position-relative">

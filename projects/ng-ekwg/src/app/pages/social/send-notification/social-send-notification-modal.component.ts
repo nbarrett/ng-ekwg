@@ -10,7 +10,7 @@ import { CommitteeMember } from "../../../models/committee.model";
 import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpGenericOtherContent } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { ConfirmType } from "../../../models/ui-actions";
 import { SocialNotificationComponentAndData, SocialNotificationDirective } from "../../../notifications/social/social-notification.directive";
 import { SocialNotificationDetailsComponent } from "../../../notifications/social/templates/social-notification-details.component";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
@@ -39,8 +39,6 @@ import { SocialDisplayService } from "../social-display.service";
 export class SocialSendNotificationModalComponent implements OnInit {
   @ViewChild(SocialNotificationDirective) notificationDirective: SocialNotificationDirective;
   public socialEvent: SocialEvent;
-  public memberFilterSelections: MemberFilterSelection[];
-  public confirm: Confirm;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
@@ -79,13 +77,13 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.memberFilterSelections);
+    this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.display.memberFilterSelections);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.memberService.all().then(members => {
       this.initialiseRoles(members);
       this.initialiseNotification();
     });
-    this.confirm.type = ConfirmType.SEND_NOTIFICATION;
+    this.display.confirm.type = ConfirmType.SEND_NOTIFICATION;
   }
 
   notReady(): boolean {
@@ -164,7 +162,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
   editAllSocialRecipients() {
     this.logger.debug("editAllSocialRecipients - after:", this.socialEvent?.notification?.content.selectedMemberIds);
     this.socialEvent.notification.content.destinationType = "custom";
-    this.socialEvent.notification.content.selectedMemberIds = this.memberFilterSelections.map(attendee => attendee.id);
+    this.socialEvent.notification.content.selectedMemberIds = this.display.memberFilterSelections.map(attendee => attendee.id);
   }
 
   editAttendeeRecipients() {
@@ -259,7 +257,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   public toMembers(): Member[] {
-    return this.memberFilterSelections.map(item => item.member);
+    return this.display.memberFilterSelections.map(item => item.member);
   }
 
   querySegmentMembers(): Identifiable[] {
