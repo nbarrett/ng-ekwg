@@ -117,7 +117,7 @@ exports.create = (model, debugEnabled) => {
           });
         })
         .catch(error => {
-          debug(`findByConditions: ${model.modelName} error`)
+          debug(`findByConditions: ${model.modelName} error: ${error}`)
           res.status(500).json({
             message: `${model.modelName} query failed`,
             request: req.query,

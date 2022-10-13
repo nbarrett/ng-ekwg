@@ -3,7 +3,6 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { max, min, uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { AwsFileData } from "../../../models/aws-object.model";
 import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
@@ -39,8 +38,6 @@ export class DynamicCarouselComponent implements OnInit {
   public actualViewableSlideCount: number;
   public relativePath: string;
   public row: PageContentRow;
-  siteLinks: string[];
-  public awsFileData: AwsFileData;
   public activeEditColumnIndex: number;
   public faPencil = faPencil;
 
@@ -65,11 +62,6 @@ export class DynamicCarouselComponent implements OnInit {
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
     this.logger.info("ngOnInit:editNameEnabled", this.editNameEnabled);
-    this.pageContentService.all().then(response => {
-      this.logger.info("pageContentService.all:", response);
-      this.siteLinks = uniq(response.map(item => item.path)).sort();
-      this.logger.info("siteLinks:", this.siteLinks);
-    });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.relativePath = paramMap.get("relativePath");
       this.contentPath = this.pageService.contentPath(this.relativePath);
@@ -128,31 +120,4 @@ export class DynamicCarouselComponent implements OnInit {
     }
   }
 
-  exitImageEdit() {
-    this.activeEditColumnIndex = null;
-    this.awsFileData = null;
-  }
-
-  editImage(columnIndex) {
-    this.activeEditColumnIndex = columnIndex;
-  }
-
-  imageSourceOrPreview(column, columnIndex): string {
-    if (this.activeEditColumnIndex === columnIndex) {
-      return this.awsFileData?.image || column?.imageSource;
-    } else {
-      return column?.imageSource;
-    }
-  }
-
-  imagedSaved(event: AwsFileData) {
-    const imageSource = this.urlService.resourceRelativePathForAWSFileName(event.awsFileName);
-    this.logger.info("imagedSaved:", event, "setting imageSource for columnIndex", this.activeEditColumnIndex, "to", imageSource);
-    this.row.columns[this.activeEditColumnIndex].imageSource = imageSource;
-  }
-
-  imageChanged(awsFileData: AwsFileData) {
-    this.logger.info("imageChanged:", awsFileData);
-    this.awsFileData = awsFileData;
-  }
 }

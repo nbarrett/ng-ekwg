@@ -17,7 +17,7 @@ export function move(array: any[], fromIndex: number, toIndex: number) {
 }
 
 export const sortBy = (...properties: string[]) => (nextItem, currentItem) => properties
-  .map(property => {
+  .map((property: string) => {
     let dir = 1;
     if (property[0] === "-") {
       dir = -1;

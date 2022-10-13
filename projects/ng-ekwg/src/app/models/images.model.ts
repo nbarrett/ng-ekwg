@@ -4,4 +4,3 @@ export interface FontAwesomeIcon {
   icon: IconDefinition;
   class: string;
 }
-

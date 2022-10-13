@@ -46,6 +46,7 @@ export class DynamicContentComponent implements OnInit {
   enumKeyValuesFor: KeyValue[] = enumKeyValues(PageContentType);
   public editNameEnabled: true;
   public contentDescription: string;
+  public queryCompleted = false;
 
   constructor(
     public siteEditService: SiteEditService,
@@ -59,7 +60,7 @@ export class DynamicContentComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -71,10 +72,11 @@ export class DynamicContentComponent implements OnInit {
       this.contentDescription = this.pageService.contentDescription(this.relativePath);
       this.logger.info("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
       this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
-      this.logger.debug("Finding page content for " + this.relativePath);
+      this.logger.debug("Finding page content for " + this.contentPath);
       this.pageContentService.findByPath(this.contentPath)
         .then(pageContent => {
           this.pageContent = pageContent;
+          this.queryCompleted = true;
           if (pageContent) {
             this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
           } else {
@@ -84,7 +86,10 @@ export class DynamicContentComponent implements OnInit {
               message: `The ${this.contentPath} page content was not found`
             });
           }
-        });
+        }).catch(error => {
+        this.logger.info("Page content error found for", this.contentPath, error);
+        this.queryCompleted = true;
+      });
       this.broadcastService.on(NamedEventType.SAVE_PAGE_CONTENT, (namedEvent: NamedEvent<PageContent>) => {
         this.logger.info("event received:", namedEvent);
         if (namedEvent.data.id === this.pageContent.id) {

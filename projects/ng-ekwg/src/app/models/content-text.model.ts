@@ -38,6 +38,7 @@ export interface PageContentColumn extends Page {
   columns?: number;
   contentTextId?: string;
   imageSource?: string;
+  icon?: string;
 }
 
 

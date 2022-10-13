@@ -127,6 +127,6 @@ export interface Notification {
 }
 
 export interface CommitteeYear {
-  year: string;
+  year: number;
   latestYear: boolean;
 }

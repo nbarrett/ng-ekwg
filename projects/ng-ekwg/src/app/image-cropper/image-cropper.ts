@@ -108,7 +108,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.logger.debug("constructed with fileNameData", this.fileNameData);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.uploader = this.fileUploadService.createUploaderFor("site-content-files", false);
+    this.uploader = this.fileUploadService.createUploaderFor("site-content", false);
     this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();

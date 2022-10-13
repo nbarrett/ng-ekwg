@@ -1,5 +1,4 @@
 export function slideClasses(slideCount: number, marginBottom: string = "") {
-  console.log("slideCount", slideCount,"marginBottom:",marginBottom);
   switch (slideCount) {
     case 4:
       return (marginBottom + " col-sm-12 col-md-6 col-lg-4 col-xl-3").trim();

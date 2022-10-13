@@ -1,6 +1,6 @@
 import { Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { extend } from "lodash-es";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
@@ -15,15 +15,13 @@ import {
   SaveSegmentResponse
 } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { ConfirmType } from "../../../models/ui-actions";
 import { CommitteeNotificationComponentAndData, CommitteeNotificationDirective } from "../../../notifications/committee/committee-notification.directive";
 import { CommitteeNotificationDetailsComponent } from "../../../notifications/committee/templates/committee-notification-details.component";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { sortBy } from "../../../services/arrays";
-import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -42,13 +40,12 @@ import { CommitteeDisplayService } from "../committee-display.service";
 const SORT_BY_NAME = sortBy("order", "member.lastName", "member.firstName");
 
 @Component({
-  selector: "app-committee-send-notification-modal",
-  templateUrl: "./committee-send-notification-modal.component.html",
-  styleUrls: ["./committee-send-notification-modal.component.sass"]
+  selector: "app-committee-send-notification",
+  templateUrl: "./committee-send-notification.component.html",
+  styleUrls: ["./committee-send-notification.component.sass"]
 })
-export class CommitteeSendNotificationModalComponent implements OnInit {
+export class CommitteeSendNotificationComponent implements OnInit {
   @ViewChild(CommitteeNotificationDirective) notificationDirective: CommitteeNotificationDirective;
-  public confirm: Confirm;
   public committeeFile: CommitteeFile;
   public members: Member[] = [];
   private notify: AlertInstance;
@@ -60,108 +57,108 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
   public selectableRecipients: MemberFilterSelection[];
   private config: MailchimpConfigResponse;
   public campaigns: MailchimpCampaignListResponse;
-  private committeeReferenceData: CommitteeReferenceData;
+  public relativePath: string;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              private mailchimpSegmentService: MailchimpSegmentService,
-              private committeeQueryService: CommitteeQueryService,
-              private mailchimpCampaignService: MailchimpCampaignService,
-              private mailchimpConfig: MailchimpConfigService,
-              private notifierService: NotifierService,
-              public display: CommitteeDisplayService,
-              public stringUtils: StringUtilsService,
-              public googleMapsService: GoogleMapsService,
-              private memberService: MemberService,
-              private fullNameWithAlias: FullNameWithAliasPipe,
-              private lineFeedsToBreaks: LineFeedsToBreaksPipe,
-              private modalService: BsModalService,
-              private mailchimpLinkService: MailchimpLinkService,
-              private memberLoginService: MemberLoginService,
-              private mailchimpListService: MailchimpListService,
-              private urlService: UrlService,
-              protected dateUtils: DateUtilsService,
-              private bsModalRef: BsModalRef,
-              private committeeConfig: CommitteeConfigService,
-              loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeSendNotificationModalComponent, NgxLoggerLevel.INFO);
+  constructor(
+    private route: ActivatedRoute,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private mailchimpSegmentService: MailchimpSegmentService,
+    private committeeQueryService: CommitteeQueryService,
+    private mailchimpCampaignService: MailchimpCampaignService,
+    private mailchimpConfig: MailchimpConfigService,
+    private notifierService: NotifierService,
+    public display: CommitteeDisplayService,
+    public stringUtils: StringUtilsService,
+    public googleMapsService: GoogleMapsService,
+    private memberService: MemberService,
+    private fullNameWithAlias: FullNameWithAliasPipe,
+    private lineFeedsToBreaks: LineFeedsToBreaksPipe,
+    private mailchimpLinkService: MailchimpLinkService,
+    private memberLoginService: MemberLoginService,
+    private mailchimpListService: MailchimpListService,
+    private urlService: UrlService,
+    protected dateUtils: DateUtilsService,
+    loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(CommitteeSendNotificationComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
-    this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.logger.debug("constructed with", this.members.length, "members");
-    this.confirm.type = ConfirmType.SEND_NOTIFICATION;
+    this.display.confirm.type = ConfirmType.SEND_NOTIFICATION;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
-    this.roles = {signoff: this.committeeReferenceData.committeeMembers(), replyTo: []};
-
-    this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
-    this.logger.debug("initialised on open: notification ->", this.notification);
-
-    this.notification = {
-      cancelled: false,
-      content: {
-        text: {value: "", include: true},
-        signoffText: {value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,", include: true},
-        includeDownloadInformation: !!this.committeeFile,
-        destinationType: "committee",
-        addresseeType: "Hi *|FNAME|*,",
-        selectedMemberIds: [],
-        signoffAs: {
-          include: true,
-          value: this.committeeReferenceData.loggedOnRole().type || "secretary"
+    this.display.configEvents().subscribe(() => {
+      this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
+      this.notification = {
+        cancelled: false,
+        content: {
+          text: {value: "", include: true},
+          signoffText: {value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,", include: true},
+          includeDownloadInformation: !!this.committeeFile,
+          destinationType: "committee",
+          addresseeType: "Hi *|FNAME|*,",
+          selectedMemberIds: [],
+          signoffAs: {
+            include: true,
+            value: this.display.committeeReferenceData.loggedOnRole().type || "secretary"
+          },
+          title: {value: "Committee Notification", include: true}
         },
-        title: {value: "Committee Notification", include: true}
-      },
-      groupEvents: [],
-      groupEventsFilter: {
-        selectAll: true,
-        fromDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf()),
-        toDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf()),
-        includeContact: true,
-        includeDescription: true,
-        includeLocation: true,
-        includeWalks: true,
-        includeSocialEvents: true,
-        includeCommitteeEvents: true
-      },
-    };
+        groupEvents: [],
+        groupEventsFilter: {
+          selectAll: true,
+          fromDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf()),
+          toDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf()),
+          includeContact: true,
+          includeDescription: true,
+          includeLocation: true,
+          includeWalks: true,
+          includeSocialEvents: true,
+          includeCommitteeEvents: true
+        },
+      };
+      if (this.committeeFile) {
+        this.notification.content.title.value = this.committeeFile.fileType;
+        this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the EKWG website. The file information is as follows:";
+        }
+      this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
+      this.logger.debug("initialised on open: notification ->", this.notification);
+      this.route.paramMap.subscribe((paramMap: ParamMap) => {
+        this.relativePath = paramMap.get("relativePath");
+        this.logger.info("initialised with path:", this.relativePath);
+      });
 
-    if (this.committeeFile) {
-      this.notification.content.title.value = this.committeeFile.fileType;
-      this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the EKWG website. The file information is as follows:";
-    }
-
-    const promises: any[] = [
-      this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
-        this.members = members;
-        this.logger.debug("refreshMembers -> populated ->", this.members.length, "members");
-        this.selectableRecipients = members
-          .map(member => this.toMemberFilterSelection(member))
-          .sort(SORT_BY_NAME);
-        this.logger.debug("refreshMembers -> populated ->", this.selectableRecipients.length, "selectableRecipients:", this.selectableRecipients);
-      }),
-      this.mailchimpConfig.getConfig()
-        .then(config => {
-          this.config = config;
-          this.logger.debug("retrieved config", this.config);
-          this.clearRecipientsForCampaignOfType("committee");
+      const promises: any[] = [
+        this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
+          this.members = members;
+          this.logger.debug("refreshMembers -> populated ->", this.members.length, "members");
+          this.selectableRecipients = members
+            .map(member => this.toMemberFilterSelection(member))
+            .sort(SORT_BY_NAME);
+          this.logger.debug("refreshMembers -> populated ->", this.selectableRecipients.length, "selectableRecipients:", this.selectableRecipients);
         }),
-      this.mailchimpCampaignService.list({
-        limit: 1000,
-        concise: true,
-        status: "save",
-        title: "Master"
-      }).then(response => {
-        this.campaigns = response;
-        this.logger.debug("response.data", response.data);
-      })];
-    if (!this.committeeFile) {
-      promises.push(this.populateGroupEvents());
-    }
-
-    Promise.all(promises).then(() => {
-      this.logger.debug("performed total of", promises.length);
-      this.notify.clearBusy();
+        this.mailchimpConfig.getConfig()
+          .then(config => {
+            this.config = config;
+            this.logger.debug("retrieved config", this.config);
+            this.clearRecipientsForCampaignOfType("committee");
+          }),
+        this.mailchimpCampaignService.list({
+          limit: 1000,
+          concise: true,
+          status: "save",
+          title: "Master"
+        }).then(response => {
+          this.campaigns = response;
+          this.logger.debug("response.data", response.data);
+        })];
+      if (!this.committeeFile) {
+        promises.push(this.populateGroupEvents());
+      }
+      Promise.all(promises).then(() => {
+        this.logger.debug("performed total of", promises.length);
+        this.notify.clearBusy();
+      });
     });
   }
 
@@ -409,8 +406,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
             let members: MemberFilterSelection[];
             const list = this.notification.content.list;
             const otherOptions = {
-              from_name: this.committeeReferenceData.contactUsField(replyToRole, "fullName"),
-              from_email: this.committeeReferenceData.contactUsField(replyToRole, "email"),
+              from_name: this.display.committeeReferenceData.contactUsField(replyToRole, "fullName"),
+              from_email: this.display.committeeReferenceData.contactUsField(replyToRole, "email"),
               list_id: config.mailchimp.lists[list]
             };
             this.logger.debug("Sending", campaignName, "with otherOptions", otherOptions, "config", config);
@@ -481,8 +478,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
     this.notify.clearBusy();
     if (!this.notification.cancelled) {
       this.notify.success("Sending of " + campaignName + " was successful.", false);
-      this.confirm.clear();
-      this.bsModalRef.hide();
+      this.display.confirm.clear();
+      this.urlService.navigateTo("committee");
     }
   }
 
@@ -529,8 +526,8 @@ export class CommitteeSendNotificationModalComponent implements OnInit {
       });
     } else {
       this.logger.debug("calling cancelSendNotification");
-      this.confirm.clear();
-      this.bsModalRef.hide();
+      this.display.confirm.clear();
+      this.urlService.navigateTo("committee");
     }
   }
 

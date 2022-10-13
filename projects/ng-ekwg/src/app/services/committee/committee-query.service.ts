@@ -124,14 +124,14 @@ export class CommitteeQueryService {
   }
 
   extractYear(committeeFile: CommitteeFile): number {
-    return parseInt(this.dateUtils.asString(committeeFile.eventDate, undefined, "YYYY"), 10);
+    return committeeFile ? parseInt(this.dateUtils.asString(committeeFile.eventDate, undefined, "YYYY"), 10) : null;
   }
 
   addLatestYearFlag(committeeFileYear, latestYearValue: number): CommitteeYear {
     return {year: committeeFileYear, latestYear: latestYearValue === committeeFileYear};
   }
 
-  committeeFileYears(committeeFiles): CommitteeYear[] {
+  committeeFileYears(committeeFiles: CommitteeFile[]): CommitteeYear[] {
     const latestYearValue = this.latestYear(committeeFiles);
     this.logger.debug("latestYearValue", latestYearValue);
     const years = chain(committeeFiles)

@@ -33,9 +33,9 @@ import { SharedModule } from "../../shared-module";
     SocialViewComponent,
     SocialViewPageComponent,
   ],
-  imports: [
-    SharedModule,
-  ],
+    imports: [
+        SharedModule,
+    ],
   providers: [
     SocialDisplayService
   ]

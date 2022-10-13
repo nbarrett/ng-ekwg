@@ -8,19 +8,19 @@
         <input [(ngModel)]="filter"
                (ngModelChange)="modelChanged($event)"
                (change)="change($event)"
-               [typeahead]="iconValues"
+               [typeahead]="iconService.iconKeys"
                id="filter"
                class="form-control input-sm" placeholder="Enter href value">
       </div>
       <h6>{{filteredIcons.length}} icons matching {{filter}}</h6>
       <div class="row" *ngFor="let icon of filteredIcons">
         <div class="col-sm-3">
-          {{icon.value}}
+          {{icon.key}}
         </div>
         <div class="col-sm-3">
           <div class="badge-button">
-            <fa-icon [icon]="icon.key"></fa-icon>
-            <span>{{icon.value}}</span>
+            <fa-icon [icon]="icon.value" class="fa-5x"></fa-icon>
+            <span>{{icon.key}}</span>
           </div>
         </div>
       </div>

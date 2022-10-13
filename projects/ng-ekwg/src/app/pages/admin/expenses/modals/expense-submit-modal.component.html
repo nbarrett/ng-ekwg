@@ -19,7 +19,7 @@
           </ul>
         </div>
         <div class="mb-2">
-          <div class="custom-control custom-radio custom-control-inline inline-radio-label pl-0">
+          <div class="custom-control custom-radio custom-control-inline pl-0">
             <input [disabled]="notifyTarget.busy" id="supply-bank-details"
                    type="radio"
                    class="custom-control-input"
@@ -27,14 +27,16 @@
                    (change)="supplyBankDetails(true)"
                    value="true"/>
             <label class="custom-control-label" for="supply-bank-details">I'll supply bank details now</label>
-
+          </div>
+          <div class="custom-control custom-radio custom-control-inline pl-0">
             <input [disabled]="notifyTarget.busy" id="send-me-a-cheque"
                    type="radio"
                    class="custom-control-input"
                    [(ngModel)]="supplyBankDetailsChoice"
                    (change)="supplyBankDetails(false)"
                    value="false"/>
-            <label class="custom-control-label" for="send-me-a-cheque">Please send me a cheque or contact me for bank details</label>
+            <label class="custom-control-label" for="send-me-a-cheque">Please send me a cheque or contact me for bank
+              details</label>
           </div>
         </div>
         <div *ngIf="expenseClaim.bankDetails">

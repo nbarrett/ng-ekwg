@@ -8,7 +8,6 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
-import { MailchimpCampaignListResponse } from "../../../models/mailchimp.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";

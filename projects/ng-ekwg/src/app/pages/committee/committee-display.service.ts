@@ -4,7 +4,9 @@ import cloneDeep from "lodash-es/cloneDeep";
 import last from "lodash-es/last";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Observable } from "rxjs";
 import { CommitteeFile } from "../../models/committee.model";
+import { Confirm } from "../../models/ui-actions";
 import { ValueOrDefaultPipe } from "../../pipes/value-or-default.pipe";
 import { CommitteeConfigService } from "../../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../../services/committee/committee-file.service";
@@ -24,7 +26,8 @@ import { UrlService } from "../../services/url.service";
 export class CommitteeDisplayService {
   private logger: Logger;
   public committeeFileBaseUrl = this.contentMetadataService.baseUrl("committeeFiles");
-  private committeeReferenceData: CommitteeReferenceData;
+  public committeeReferenceData: CommitteeReferenceData;
+  public confirm: Confirm = new Confirm();
 
   constructor(
     private memberService: MemberService,
@@ -40,6 +43,10 @@ export class CommitteeDisplayService {
     this.logger = loggerFactory.createLogger(CommitteeDisplayService, NgxLoggerLevel.OFF);
     this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
+  }
+
+  configEvents(): Observable<CommitteeReferenceData> {
+    return this.committeeConfig.events();
   }
 
   defaultCommitteeFile(): CommitteeFile {
@@ -64,7 +71,7 @@ export class CommitteeDisplayService {
   }
 
   fileTypes() {
-    return this.committeeReferenceData.fileTypes();
+    return this.committeeReferenceData?.fileTypes();
   }
 
   allowSend() {

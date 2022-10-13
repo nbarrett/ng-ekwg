@@ -1,22 +1,20 @@
 <app-page>
+  <app-dynamic-content [anchor]="'action-buttons'"></app-dynamic-content>
+  <app-dynamic-content [anchor]="'committee-years'"></app-dynamic-content>
   <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-12">
       <div *ngIf="showAlertMessage()" class="row">
         <div class="col-sm-12 mb-10">
           <div class="alert {{notifyTarget.alertClass}}">
-            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
-            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+            <strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
           </div>
         </div>
       </div>
-      <accordion  [isAnimated]="true" class="accordion-style" [closeOthers]="false">
-        <app-committee-general [notify]="notify" [confirm]="confirm"></app-committee-general>
-        <app-committee-history [notify]="notify" [confirm]="confirm"></app-committee-history>
-      </accordion>
-    </div>
-    <div class="col-sm-4">
-      <app-committee-right-column></app-committee-right-column>
+      <app-committee-list-years [notify]="notify" [confirm]="confirm"></app-committee-list-years>
+      <app-committee-year [committeeYear]="committeeYear"  [notify]="notify" [confirm]="confirm"></app-committee-year>
     </div>
   </div>
-  <app-dynamic-content [anchor]="'action-buttons'"></app-dynamic-content>
+
 </app-page>

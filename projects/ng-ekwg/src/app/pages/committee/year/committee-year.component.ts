@@ -5,8 +5,7 @@ import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
-import { ApiAction } from "../../../models/api-response.model";
-import { CommitteeFile, CommitteeFileApiResponse, CommitteeYear } from "../../../models/committee.model";
+import { CommitteeFile, CommitteeYear } from "../../../models/committee.model";
 import { LoginResponse } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
@@ -14,33 +13,32 @@ import { sortBy } from "../../../services/arrays";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
-import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 import { CommitteeEditFileModalComponent } from "../edit/committee-edit-file-modal.component";
-import { CommitteeSendNotificationModalComponent } from "../send-notification/committee-send-notification-modal.component";
+import { CommitteeSendNotificationComponent } from "../send-notification/committee-send-notification.component";
 
 @Component({
-  selector: "app-committee-history",
-  templateUrl: "./committee-history.component.html",
+  selector: "app-committee-year",
+  templateUrl: "./committee-year.component.html",
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class CommitteeHistoryComponent implements OnInit, OnDestroy {
+export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   @Input()
   public confirm: Confirm;
   @Input()
   public notify: AlertInstance;
+  @Input()
+  public committeeYear: CommitteeYear;
 
   private logger: Logger;
   private subscription: Subscription;
-  public committeeFileYears: CommitteeYear[] = [];
   public committeeFiles: CommitteeFile[] = [];
   public committeeFile: CommitteeFile;
-  private committeeReferenceData: CommitteeReferenceData;
 
   constructor(
     public memberLoginService: MemberLoginService,
@@ -56,7 +54,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeHistoryComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -66,43 +64,26 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    this.committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const committeeFileId = paramMap.get("relativePath");
       this.logger.info("committeeFileId from route params:", paramMap, committeeFileId);
       if (committeeFileId) {
-        this.committeeFileService.getById(committeeFileId);
+        this.committeeFileService.getById(committeeFileId).then(response => this.applyFiles([response]));
       } else {
-        this.committeeFileService.all();
+        this.committeeFileService.all().then(response => this.applyFiles(response));
       }
     });
-    this.subscription = this.committeeFileService.notifications().subscribe((apiResponse: CommitteeFileApiResponse) => {
-      if (apiResponse.error) {
-        this.logger.warn("received error:", apiResponse.error);
-        this.notify.error({
-          title: "Problem viewing Committee file",
-          message: "The file in the link could not be found. Click the Committee tab above to clear this message."
-        });
-      } else if (this.confirm.notificationsOutstanding()) {
-        this.logger.debug("Not processing subscription response due to confirm:", this.confirm.type);
-      } else {
-        const filteredFiles = this.apiResponseProcessor.processResponse(this.logger, this.committeeFiles, apiResponse)
-          .filter(file => this.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
-          .sort(sortBy("-fileDate"));
-        if (apiResponse.action === ApiAction.QUERY && filteredFiles.length === 1) {
-          this.notify.warning({
-            title: "Single Committee File being viewed",
-            message: "Click the Committee tab above to restore normal view."
-          });
-        }
-        this.notify.setReady();
-        this.cancelConfirmations();
-        this.committeeFiles = filteredFiles;
-        this.committeeFileYears = this.committeeQueryService.committeeFileYears(this.committeeFiles);
-      }
-    });
+  }
+
+  applyFiles(files: CommitteeFile[]) {
+    const filteredFiles = files
+      .filter(file => this.display.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
+      .sort(sortBy("-fileDate"));
+    this.notify.setReady();
+    this.cancelConfirmations();
+    this.committeeFiles = filteredFiles;
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile, committeeFiles: CommitteeFile[]) {
@@ -157,7 +138,7 @@ export class CommitteeHistoryComponent implements OnInit, OnDestroy {
   }
 
   sendNotification(confirm: Confirm, committeeFile: CommitteeFile) {
-    this.modalService.show(CommitteeSendNotificationModalComponent, this.createModalOptions({committeeFile, confirm}));
+    this.modalService.show(CommitteeSendNotificationComponent, this.createModalOptions({committeeFile, confirm}));
   }
 
 }

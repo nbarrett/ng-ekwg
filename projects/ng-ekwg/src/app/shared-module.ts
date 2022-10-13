@@ -33,6 +33,8 @@ import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { ImageCropperAndResizerComponent } from "./image-cropper/image-cropper";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
 import { ActionsDropdownComponent } from "./modules/common/actions-dropdown/actions-dropdown";
+import { CardEditorComponent } from "./modules/common/card-editor/card-editor";
+import { CardImageComponent } from "./modules/common/card/image/card-image";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
 import { DynamicCarouselComponent } from "./modules/common/dynamic-carousel/dynamic-carousel";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
@@ -74,6 +76,7 @@ import { ValueOrDefaultPipe } from "./pipes/value-or-default.pipe";
 import { BroadcastService } from "./services/broadcast-service";
 import { ClipboardService } from "./services/clipboard.service";
 import { CommitteeConfigService } from "./services/committee/commitee-config.service";
+import { IconService } from "./services/icon-service/icon-service";
 import { ImageDuplicatesService } from "./services/image-duplicates-service";
 import { ImageTagDataService } from "./services/image-tag-data-service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
@@ -116,6 +119,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
   declarations: [
     AccordionGroupComponent,
     ActionsDropdownComponent,
+    CardImageComponent,
     ContactUsComponent,
     CopyIconComponent,
     CreatedAuditPipe,
@@ -127,15 +131,18 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DynamicCarouselComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
-    IconExamplesComponent,
     EventNotePipe,
     FormatAuditPipe,
     FullNamePipe,
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    CardEditorComponent,
+    IconExamplesComponent,
+    ImageCropperAndResizerComponent,
     ImageEditComponent,
     ImageListComponent,
+    KebabCasePipe,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
     MarkdownEditorComponent,
@@ -147,10 +154,8 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     NotificationUrlComponent,
     PageComponent,
     PanelExpanderComponent,
-    ImageCropperAndResizerComponent,
     SearchFilterPipe,
     SnakeCasePipe,
-    KebabCasePipe,
     SvgComponent,
     TagEditorComponent,
     UpdatedAuditPipe,
@@ -164,6 +169,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     Angular2CsvModule,
     BsDatepickerModule,
     BsDropdownModule,
+    CardImageComponent,
     CarouselModule,
     CollapseModule,
     CommonModule,
@@ -175,10 +181,10 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    CardEditorComponent,
     DynamicCarouselComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
-    IconExamplesComponent,
     EventNotePipe,
     FileUploadModule,
     FontAwesomeModule,
@@ -187,7 +193,10 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     FullNameWithAliasOrMePipe,
     FullNameWithAliasPipe,
     HumanisePipe,
+    IconExamplesComponent,
+    ImageCropperAndResizerComponent,
     ImageCropperModule,
+    KebabCasePipe,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
     LoggerModule,
@@ -204,12 +213,10 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     PageComponent,
     PaginationModule,
     PanelExpanderComponent,
-    ImageCropperAndResizerComponent,
     PopoverModule,
     RouterModule,
     SearchFilterPipe,
     SnakeCasePipe,
-    KebabCasePipe,
     SvgComponent,
     TabsModule,
     TooltipModule,
@@ -238,6 +245,7 @@ export class SharedModule {
         DisplayDayPipe,
         EventNotePipe,
         FullNamePipe,
+        IconService,
         FullNameWithAliasOrMePipe,
         FullNameWithAliasPipe,
         HumanisePipe,

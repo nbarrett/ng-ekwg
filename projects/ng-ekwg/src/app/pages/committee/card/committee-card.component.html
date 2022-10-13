@@ -1,0 +1,23 @@
+<div class="card shadow clickable h-100 mb-4">
+  <img *ngIf="committeeFile.id" class="card-img-top" height="200"
+       [src]="committeeFile.id" [routerLink]="committeeFile.id">
+  <div *ngIf="!committeeFile.id" class="row no-image">
+    <div class="col align-self-center text-center">
+      <fa-icon [icon]="faImage" class="fa-icon fa-2x"></fa-icon>
+      <div>No image available</div>
+    </div>
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">
+      <a class="rams-text-decoration-pink" [href]="display.fileUrl(committeeFile)"
+         target="_self">{{committeeFile.id}}</a>
+    </h4>
+    <div markdown>
+      <ul>
+        <li class="card-text">{{committeeFile.eventDate | displayDay}}</li>
+        <li class="card-text" *ngIf="committeeFile?.id">Time: {{committeeFile.eventDate | displayDate}}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+

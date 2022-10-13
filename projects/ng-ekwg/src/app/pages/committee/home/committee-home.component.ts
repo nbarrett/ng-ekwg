@@ -3,7 +3,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile } from "../../../models/committee.model";
+import { CommitteeFile, CommitteeYear } from "../../../models/committee.model";
 import { LoginResponse, Member } from "../../../models/member.model";
 import { Confirm } from "../../../models/ui-actions";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -30,6 +30,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   public members: Member[];
   private selected: { committeeFile?: CommitteeFile, committeeFiles: CommitteeFile[] };
   public confirm = new Confirm();
+  committeeYear: CommitteeYear = {year: 2022, latestYear: true};
 
   constructor(private memberLoginService: MemberLoginService,
               private memberService: MemberService,

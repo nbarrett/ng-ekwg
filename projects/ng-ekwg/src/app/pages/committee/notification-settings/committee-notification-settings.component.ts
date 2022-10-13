@@ -1,5 +1,5 @@
-import { Component, OnInit} from "@angular/core";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { Component, OnInit } from "@angular/core";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Notification } from "../../../models/committee.model";
@@ -24,9 +24,9 @@ import { UrlService } from "../../../services/url.service";
 
 @Component({
   selector: "app-committee-notification-settings",
-  templateUrl: "./committee-notification-settings-modal.component.html",
+  templateUrl: "./committee-notification-settings.component.html",
 })
-export class CommitteeNotificationSettingsModalComponent implements OnInit {
+export class CommitteeNotificationSettingsComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
@@ -52,9 +52,8 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
               private mailchimpListService: MailchimpListService,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
-              public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -109,11 +108,11 @@ export class CommitteeNotificationSettingsModalComponent implements OnInit {
   save() {
     this.logger.debug("saving config", this.config);
     this.mailchimpConfig.saveConfig(this.config)
-      .then(() => this.bsModalRef.hide())
+      .then(() => this.urlService.navigateTo("committee"))
       .catch((error) => this.notify.error(error));
   }
 
   cancel() {
-    this.bsModalRef.hide();
+    this.urlService.navigateTo("committee");
   }
 }

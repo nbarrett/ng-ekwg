@@ -1,12 +1,5 @@
 <div class="card shadow clickable h-100 mb-4">
-  <img *ngIf="socialEvent.thumbnail" class="card-img-top" height="200"
-       [src]="socialEvent.thumbnail" [routerLink]="socialEvent.link">
-  <div *ngIf="!socialEvent.thumbnail" class="row no-image">
-    <div class="col align-self-center text-center">
-      <fa-icon [icon]="faImage" class="fa-icon fa-2x"></fa-icon>
-      <div>No image available</div>
-    </div>
-  </div>
+ <app-card-image [imageLink]="socialEvent.link" [imageSource]="socialEvent.thumbnail"></app-card-image>
   <div class="card-body">
     <h4 class="card-title">
       <a class="rams-text-decoration-pink" [href]="display.socialEventLink(socialEvent)"

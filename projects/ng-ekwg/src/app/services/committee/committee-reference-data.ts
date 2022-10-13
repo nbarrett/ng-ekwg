@@ -5,7 +5,7 @@ import { FileType } from "./committee-file-type.model";
 
 export class CommitteeReferenceData {
 
-  constructor(private injectedCommitteeMembers: CommitteeMember[],
+  constructor(private injectedCommitteeMembers: CommitteeMember[] = [],
               private injectedFileTypes: FileType[],
               private memberLoginService: MemberLoginService) {
   }

@@ -1,13 +1,8 @@
-<div bsModal [ngClass]="{'busy': notifyTarget.busy}">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h4 class="modal-title">Send <em>Committee</em> Notification</h4>
-      <button type="button" class="close float-right" aria-label="Close" (click)="cancelSendNotification()">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <tabset>
+<app-page area="committee" relativePath="send-notification"
+          pageTitle="Send Notification">
+  <div class="row">
+    <div class="col-sm-12">
+      <tabset *ngIf="notification">
         <tab [heading]="'Recipients & Addressing'">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
@@ -18,7 +13,7 @@
                       (click)="clearRecipientsForCampaignOfType('committee')"
                       name="send-to"
                       id="send-to-committee"
-                      [disabled]="allCommitteeList().length===0"
+                      [disabled]="allCommitteeList()?.length===0"
                       type="radio"
                       class="custom-control-input"
                       [(ngModel)]="notification.content.destinationType"
@@ -26,7 +21,7 @@
                     <label class="custom-control-label" for="send-to-committee">{{allCommitteeList().length}}
                       Committee Members
                     </label>
-                    <a class="ml-1" *ngIf="allCommitteeList().length>0"
+                    <a class="ml-1" *ngIf="allCommitteeList()?.length>0"
                        (click)="editCommitteeRecipients()">(edit)</a>
                   </div>
                   <div class="custom-control custom-radio">
@@ -339,7 +334,8 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <div class="custom-control custom-checkbox">
-                    <input [(ngModel)]="notification.content.signoffText.include" type="checkbox" class="custom-control-input"
+                    <input [(ngModel)]="notification.content.signoffText.include" type="checkbox"
+                           class="custom-control-input"
                            id="include-signoff-text">
                     <label for="include-signoff-text"
                            class="custom-control-label">
@@ -380,26 +376,25 @@
         </tab>
         <tab [heading]="'Preview'">
           <div class="img-thumbnail thumbnail-admin-edit">
-              <div id="preview" class="print-preview">
-                <ng-template app-committee-notification-template></ng-template>
-                <h2 class="mb-3">{{notification.content.title.value}}</h2>
-                <app-committee-notification-details [committeeFile]="committeeFile" [members]="members"
-                                                    [notification]="notification">
-                </app-committee-notification-details>
-              </div>
+            <div id="preview" class="print-preview">
+              <ng-template app-committee-notification-template></ng-template>
+              <h2 class="mb-3">{{notification.content.title.value}}</h2>
+              <app-committee-notification-details [committeeFile]="committeeFile" [members]="members"
+                                                  [notification]="notification">
+              </app-committee-notification-details>
+            </div>
           </div>
         </tab>
       </tabset>
       <div *ngIf="notifyTarget.showAlert" class="row">
         <div class="col-sm-12 mb-10">
           <div class="alert {{notifyTarget.alert.class}}">
-            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
-            {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+            <strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
           </div>
         </div>
       </div>
-    </div>
-    <div class="modal-footer">
       <input type="submit" value="Confirm Send" (click)="confirmSendNotification()"
              [disabled]="notReady()"
              title="Confirm sending of notification email"
@@ -413,4 +408,7 @@
              class="button-form button-confirm button-form-left">
     </div>
   </div>
-</div>
+</app-page>
+
+
+
