@@ -77,32 +77,12 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   faArrowRightArrowLeft = faArrowRightArrowLeft;
   faUpDown = faUpDown;
 
-  // faAngleDown = faAngleDown;
-  // faAngleUp = faAngleUp;
-  // faArrowLeft = faArrowLeft;
-  // faArrowLeftRotate = faArrowLeftRotate;
-  // faArrowRightFromFile = faArrowRightFromFile;
-  // faCompress = faCompress;
-  // faCompressAlt = faCompressAlt;
-  // faCrop = faCrop;
-  // faFilePen = faFilePen;
-  // faGripLines = faGripLines;
-  // faGripLinesVertical = faGripLinesVertical;
-  // faLeftRight = faLeftRight;
-  // faRotate = faRotate;
-  // faRulerCombined = faRulerCombined;
-  // faRulerVertical = faRulerVertical;
-  // faSave = faSave;
-  // faSpinner = faSpinner;
-  // faSyncAlt = faSyncAlt;
-  // faUndoAlt = faUndoAlt;
-
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
               private notifierService: NotifierService,
               private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

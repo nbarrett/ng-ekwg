@@ -21,7 +21,7 @@ export class WalksService {
               private commonDataService: CommonDataService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalksService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalksService, NgxLoggerLevel.OFF);
   }
 
   notifications(): Observable<WalkApiResponse> {

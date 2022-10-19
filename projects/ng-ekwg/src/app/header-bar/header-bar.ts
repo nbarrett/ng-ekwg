@@ -13,7 +13,7 @@ export class HeaderBarComponent implements OnInit {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory, public urlService: UrlService) {
-    this.logger = loggerFactory.createLogger(HeaderBarComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(HeaderBarComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

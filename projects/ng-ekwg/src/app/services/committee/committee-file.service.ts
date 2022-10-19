@@ -19,7 +19,7 @@ export class CommitteeFileService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeFileService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeFileService, NgxLoggerLevel.OFF);
   }
 
   notifications(): Observable<CommitteeFileApiResponse> {

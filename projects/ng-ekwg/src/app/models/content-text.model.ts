@@ -1,4 +1,5 @@
 import { ApiResponse } from "./api-response.model";
+import { AccessLevel } from "./member-resource.model";
 import { Page } from "./page.model";
 
 export interface ContentText {
@@ -31,6 +32,8 @@ export enum PageContentType {
 
 export interface PageContentRow {
   type: PageContentType;
+  maxColumns: number;
+  showSwiper: boolean;
   columns: PageContentColumn[];
 }
 
@@ -39,6 +42,7 @@ export interface PageContentColumn extends Page {
   contentTextId?: string;
   imageSource?: string;
   icon?: string;
+  accessLevel: AccessLevel;
 }
 
 

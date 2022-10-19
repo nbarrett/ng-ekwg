@@ -21,7 +21,7 @@ export class SocialViewPageComponent implements OnInit {
     private urlService: UrlService,
     private pageService: PageService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialViewPageComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SocialViewPageComponent, NgxLoggerLevel.OFF);
   }
 
   @Input()

@@ -54,7 +54,7 @@ export class SocialHomeComponent implements OnInit {
               private memberLoginService: MemberLoginService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialHomeComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialHomeComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

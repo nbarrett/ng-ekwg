@@ -17,7 +17,7 @@ export class NewBrandHomeComponent implements OnInit {
 
   constructor(private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NewBrandHomeComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(NewBrandHomeComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

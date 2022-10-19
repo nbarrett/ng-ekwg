@@ -20,7 +20,7 @@ export class InstagramComponent implements OnInit {
               private instagramService: InstagramService,
               public dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(InstagramComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(InstagramComponent, NgxLoggerLevel.OFF);
   }
 
   imageWidth(media: InstagramMediaPost): string {

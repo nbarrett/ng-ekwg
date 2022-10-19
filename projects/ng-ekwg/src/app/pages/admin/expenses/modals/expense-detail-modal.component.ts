@@ -1,13 +1,15 @@
 import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, Inject, OnInit } from "@angular/core";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import first from "lodash-es/first";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../../auth/auth.service";
 import { AlertTarget } from "../../../../models/alert-target.model";
-import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../notifications/expenses/expense.model";
+import { DateValue } from "../../../../models/date.model";
 import { Confirm, EditMode } from "../../../../models/ui-actions";
+import { ExpenseClaim, ExpenseItem, ExpenseType } from "../../../../notifications/expenses/expense.model";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { ExpenseClaimService } from "../../../../services/expenses/expense-claim.service";
 import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
@@ -16,7 +18,6 @@ import { Logger, LoggerFactory } from "../../../../services/logger-factory.servi
 import { AlertInstance, NotifierService } from "../../../../services/notifier.service";
 import { NumberUtilsService } from "../../../../services/number-utils.service";
 import { StringUtilsService } from "../../../../services/string-utils.service";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: "app-expense-detail-modal",
@@ -135,18 +136,21 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.display.recalculateClaimCost(this.expenseClaim);
   }
 
-  onExpenseDateChange(date: Date) {
+  onExpenseDateChange(date: DateValue) {
     this.logger.debug("date", date);
     this.expenseItem.expenseDate = this.dateUtils.asValueNoTime(date);
   }
 
   removeReceipt() {
     this.expenseItem.receipt = undefined;
+    this.notify.progress({title: "Expense receipt upload", message: "Removed"});
   }
 
-  onFileSelect($file: File[]) {
-    this.notify.setBusy();
-    this.notify.progress({title: "Expense receipt upload", message: `uploading ${first($file).name} - please wait...`});
+  onFileSelect(files: File[]) {
+    if (files?.length > 0) {
+      this.notify.setBusy();
+      this.notify.progress({title: "Expense receipt upload", message: `uploading ${first(files).name} - please wait...`});
+    }
   }
 
   fileDropped($event: File[]) {

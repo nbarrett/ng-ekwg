@@ -22,14 +22,19 @@
         </label>
       </div>
     </div>
+    <div class="form-inline mt-2 mb-3">
+      <label class="mr-2" for="path">Path:</label>
+      <input id="path" [(ngModel)]="pageContent.path"
+             type="text" class="form-control w-75">
+    </div>
     <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <div class="thumbnail-heading">Row {{rowIndex + 1}}</div>
       <div class="form-group form-inline">
-        <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, 'type')">Row Type:</label>
+        <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">Row Type:</label>
         <select class="form-control input-sm ml-2"
                 [(ngModel)]="row.type"
                 (ngModelChange)="changeType($event)"
-                [id]="actions.rowColumnIdentifierFor(rowIndex, 0, 'type')">
+                [id]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">
           <option *ngFor="let type of enumKeyValuesFor"
                   [ngValue]="type.value">{{type.value}}</option>
         </select>
@@ -48,7 +53,7 @@
         <div class="row">
           <div *ngFor="let column of row?.columns; let columnIndex = index;"
                [class]="slideClasses(row?.columns.length)">
-            <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
+            <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
                                  [category]="contentPath"
                                  [editNameEnabled]="editNameEnabled"
                                  [clearEnabled]="true"

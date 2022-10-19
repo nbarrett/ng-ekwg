@@ -17,7 +17,7 @@ export class IconService {
 
   constructor(
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(IconService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(IconService, NgxLoggerLevel.OFF);
     this.iconArray = map(icons, (value, key) => ({key, value}));
     this.iconValues = this.iconArray.map(item => item.value);
     this.iconKeys = this.iconArray.map(item => item.key);
@@ -26,9 +26,9 @@ export class IconService {
 
   iconForName(iconName: string): any {
     if (iconName) {
-      const icon = this.iconArray.find(item => item?.value?.toLowerCase() === iconName?.toLowerCase());
-      this.logger.info("for iconName:", iconName, "found:", icon);
-      return icon?.key;
+      this.logger.debug("for iconName:", iconName);
+      const icon = this.iconArray.find(item => item?.key?.toLowerCase() === iconName?.toLowerCase());
+      return icon?.value;
     }
   }
 }

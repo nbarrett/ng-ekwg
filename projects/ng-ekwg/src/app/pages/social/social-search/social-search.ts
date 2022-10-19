@@ -37,7 +37,7 @@ export class SocialSearchComponent implements OnInit {
               private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialSearchComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SocialSearchComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 

@@ -288,7 +288,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   showAllExpenseClaims() {
     this.dataError = false;
-    this.urlService.navigateTo("/admin", "expenses");
+    this.urlService.navigateTo("admin", "expenses");
   }
 
   addExpenseClaim() {

@@ -7,6 +7,7 @@
   "scripts": {
     "prod": "concurrently --kill-others-on-fail \"npm run start:prod\" \"npm run serve\"",
     "dev": "concurrently --kill-others-on-fail \"npm run start:test\" \"npm run serve\"",
+    "dev-2": "concurrently --kill-others-on-fail \"npm run start:dev-2\" \"npm run serve\"",
     "analyze": "webpack-bundle-analyzer dist/ng-ekwg/stats-es2015.json",
     "build:stats": "ng build --project ng-ekwg --configuration production --statsJson=true",
     "build": "ng build --project ng-ekwg --build-optimizer --progress --configuration production",
@@ -19,6 +20,7 @@
     "serve": "ng serve --project ng-ekwg --configuration development",
     "start:prod": "server/scripts/run-prod.sh",
     "start:test": "server/scripts/run-test.sh",
+    "start:dev-2": "server/scripts/run-dev-2.sh",
     "test": "ng test"
   },
   "cacheDirectories": [

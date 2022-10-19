@@ -23,15 +23,15 @@ export class UrlService {
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
-    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
 
-  navigateTo(page?: string, area?: string): Promise<boolean> {
+  navigateTo(...pathSegments: string[]): Promise<boolean> {
     if (this.siteEdit.active()) {
       return Promise.resolve(false);
     } else {
-      const url = `${this.pageUrl(page)}${area ? "/" + area : ""}`;
-      this.logger.debug("navigating to page:", page, "area:", area, "->", url);
+      const url = `${this.pageUrl(pathSegments.filter(item => item).join("/"))}`;
+      this.logger.debug("navigating to pathSegments:", pathSegments, "->", url);
       return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
         this.logger.debug("activated:", activated, "area is now:", this.area());
         return activated;

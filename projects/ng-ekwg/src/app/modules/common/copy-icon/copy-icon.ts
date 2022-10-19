@@ -29,7 +29,7 @@ export class CopyIconComponent implements OnInit {
   constructor(
     private clipboardService: ClipboardService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CopyIconComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CopyIconComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

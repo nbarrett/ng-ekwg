@@ -19,7 +19,7 @@ export class WalksQueryService {
     private walkEventsService: WalkEventService,
     private dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalksQueryService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalksQueryService, NgxLoggerLevel.OFF);
   }
 
   activeWalk(walk: Walk) {

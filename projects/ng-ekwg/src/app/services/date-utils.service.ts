@@ -29,6 +29,10 @@ export class DateUtilsService {
     yyyymmdd: "YYYYMMDD"
   };
 
+  yearFromDate(dateValue: number): number {
+    return dateValue ? parseInt(this.asString(dateValue, undefined, "YYYY"), 10) : null;
+  }
+
   isDate(value) {
     return value && this.asMoment(value).isValid();
   }

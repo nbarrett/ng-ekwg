@@ -37,7 +37,7 @@ export class FacebookComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.OFF);
   }
 
   private setWidth(width: number) {

@@ -39,7 +39,7 @@ export class RouterHistoryService {
         return match;
       });
     this.logger.debug("event:pageHistory", this.pageHistory, "lastPage ->", lastPage);
-    this.urlService.navigateTo(lastPage || "/");
+    this.urlService.navigateTo(lastPage);
   }
 
   setRoot() {

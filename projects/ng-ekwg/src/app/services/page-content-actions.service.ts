@@ -3,6 +3,7 @@ import flatten from "lodash-es/flatten";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
 import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType } from "../models/content-text.model";
+import { AccessLevel } from "../models/member-resource.model";
 import { BroadcastService } from "./broadcast-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NumberUtilsService } from "./number-utils.service";
@@ -18,12 +19,12 @@ export class PageContentActionsService {
               private broadcastService: BroadcastService<PageContent>,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.OFF);
   }
 
-  saveContentTextId(contentText: ContentText, rowIndex: number, columnIndex: number, pageContent: PageContent) {
-    if (pageContent.rows[rowIndex].columns[columnIndex].contentTextId !== contentText?.id) {
-      pageContent.rows[rowIndex].columns[columnIndex].contentTextId = contentText?.id;
+  saveContentTextId(contentText: ContentText, rowIndex: number, column: PageContentColumn, pageContent: PageContent) {
+    if (column.contentTextId !== contentText?.id) {
+      column.contentTextId = contentText?.id;
       if (!this.unsavedMarkdownElements(pageContent)) {
         // this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SAVE_PAGE_CONTENT, pageContent));
       }
@@ -32,13 +33,15 @@ export class PageContentActionsService {
 
   defaultRowFor(type: PageContentType | string): PageContentRow {
     return {
+      maxColumns: 4,
+      showSwiper: false,
       type: type as PageContentType,
       columns: [this.columnFor(type)]
     };
   };
 
   private columnFor(type: PageContentType | string): PageContentColumn {
-    return type === PageContentType.TEXT ? {columns: 12} : {};
+    return type === PageContentType.TEXT ? {columns: 12, accessLevel: AccessLevel.public} : {accessLevel: AccessLevel.public};
   }
 
   addRow(rowIndex, pageContentType: PageContentType | string, pageContent: PageContent) {
@@ -53,8 +56,8 @@ export class PageContentActionsService {
 
   addColumn(row: PageContentRow, columnIndex: number, pageContent: PageContent) {
     const columnData: PageContentColumn = row.type === PageContentType.TEXT ?
-      {columns: this.calculateColumnsFor(row, 1)} :
-      {href: null, imageSource: null, title: null};
+      {columns: this.calculateColumnsFor(row, 1), accessLevel: AccessLevel.public} :
+      {href: null, imageSource: null, title: null, accessLevel: AccessLevel.hidden};
     row.columns.splice(columnIndex, 0, columnData);
     this.logger.info("pageContent:", pageContent);
     this.notifyPageContentChanges();
@@ -91,8 +94,15 @@ export class PageContentActionsService {
   }
 
   rowColFor(rowIndex: number, columnIndex: number): string {
-    const rowPrefix = rowIndex ? `row-${rowIndex + 1}-` : "";
-    return `${rowPrefix}column-${columnIndex + 1}`;
+    return `${(this.rowPrefixFor(rowIndex))}${this.columnPrefixFor(columnIndex)}`;
+  }
+
+  private columnPrefixFor(columnIndex: number) {
+    return columnIndex !== null ? `column-${columnIndex + 1}` : "";
+  }
+
+  private rowPrefixFor(rowIndex: number) {
+    return rowIndex !== null ? `row-${rowIndex + 1}-` : "";
   }
 
   rowColumnIdentifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
@@ -101,6 +111,10 @@ export class PageContentActionsService {
 
   columnIdentifierFor(columnIndex: number, identifier: string): string {
     return `${identifier}-${this.rowColFor(null, columnIndex)}`;
+  }
+
+  rowIdentifierFor(rowIndex: number, identifier: string): string {
+    return `${identifier}-${this.rowColFor(rowIndex, null)}`;
   }
 
   descriptionFor(rowIndex, columnIndex, identifier: string): string {

@@ -38,7 +38,7 @@ export class WalksRoutingModule {
   constructor(private pageService: PageService,
               private stringUtils: StringUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalksRoutingModule, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalksRoutingModule, NgxLoggerLevel.OFF);
   }
 }
 

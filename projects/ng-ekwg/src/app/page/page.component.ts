@@ -25,7 +25,7 @@ export class PageComponent implements OnInit {
   constructor(private pageService: PageService,
               private stringUtils: StringUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

@@ -1,7 +1,7 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { max, min, uniq } from "lodash-es";
+import { max, min } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
@@ -10,7 +10,6 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { slideClasses } from "../../../services/card-utils";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
-import { PageContentService } from "../../../services/page-content.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -47,16 +46,15 @@ export class DynamicCarouselComponent implements OnInit {
     private pageService: PageService,
     private stringUtils: StringUtilsService,
     private route: ActivatedRoute,
-    public pageContentService: PageContentService,
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicCarouselComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicCarouselComponent, NgxLoggerLevel.OFF);
   }
 
   @HostListener("window:resize", ["event"])
   onResize() {
-    this.detectWidth();
+    this.determineViewableSlideCount();
   }
 
   ngOnInit() {
@@ -67,7 +65,7 @@ export class DynamicCarouselComponent implements OnInit {
       this.contentPath = this.pageService.contentPath(this.relativePath);
       this.logger.info("initialised with contentPath:", this.contentPath);
     });
-    this.detectWidth();
+    this.determineViewableSlideCount();
     this.pageColumnsChanged();
     this.broadcastService.on(NamedEventType.PAGE_CONTENT_CHANGED, () => {
       this.logger.info("event received:", NamedEventType.PAGE_CONTENT_CHANGED);
@@ -75,7 +73,7 @@ export class DynamicCarouselComponent implements OnInit {
     });
   }
 
-  private pageColumnsChanged() {
+ private pageColumnsChanged() {
     this.actualViewableSlideCount = min([this.pageContentColumns().length, this.maxViewableSlideCount]);
   }
 
@@ -83,7 +81,7 @@ export class DynamicCarouselComponent implements OnInit {
     return this.pageContent.rows[this.rowIndex].columns;
   }
 
-  private detectWidth() {
+  private determineViewableSlideCount() {
     if (window.innerWidth <= DeviceSize.SMALL) {
       this.maxViewableSlideCount = 1;
     } else if (window.innerWidth <= DeviceSize.LARGE) {
@@ -93,17 +91,22 @@ export class DynamicCarouselComponent implements OnInit {
     } else {
       this.maxViewableSlideCount = 4;
     }
-    this.logger.info("detectWidth:", window.innerWidth, "maxViewableSlideCount", this.maxViewableSlideCount);
+    this.logger.info("determineViewableSlideCount:", window.innerWidth, "maxViewableSlideCount", this.maxViewableSlideCount);
   }
 
   slideClasses() {
-    return slideClasses(this.actualViewableSlideCount, this.marginBottom);
+    return slideClasses(this.row.maxColumns || this.actualViewableSlideCount, this.marginBottom);
   }
 
   viewableColumns(): PageContentColumn[] {
-    const viewableSlides = this.pageContentColumns().slice(this.slideIndex, this.slideIndex + this.maxViewableSlideCount);
-    this.logger.debug("viewableSlides:slideIndex", this.slideIndex, "this.slides", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
-    return viewableSlides;
+    if (this.row.showSwiper) {
+      const endIndex = this.slideIndex + this.maxViewableSlideCount;
+      const viewableSlides: PageContentColumn[] = this.pageContentColumns().slice(this.slideIndex, endIndex);
+      this.logger.info("viewableSlides:slideIndex", this.slideIndex, "end index:", endIndex, "all slides:", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
+      return viewableSlides;
+    } else {
+      return this.pageContentColumns();
+    }
   }
 
   back() {
@@ -112,12 +115,28 @@ export class DynamicCarouselComponent implements OnInit {
   }
 
   forward() {
-    if (this.maxViewableSlideCount + this.slideIndex < this.pageContentColumns().length) {
-      this.slideIndex = min([this.slideIndex + 1, this.pageContentColumns().length - 1]);
+    const columnCount = this.pageContentColumns().length;
+    if (this.forwardPossible()) {
+      this.slideIndex = min([this.slideIndex + 1, columnCount - 1]);
       this.logger.info("forward:slideIndex", this.slideIndex);
     } else {
       this.logger.info("forward:cant go further - slideIndex", this.slideIndex);
     }
   }
 
+  private forwardPossible() {
+    return this.maxViewableSlideCount + this.slideIndex < this.pageContentColumns().length;
+  }
+
+  backDisabled(): boolean {
+    const disabled = this.slideIndex === 0;
+    this.logger.info("backDisabled:", disabled);
+    return disabled;
+  }
+
+  forwardDisabled(): boolean {
+    const disabled = !this.forwardPossible();
+    this.logger.info("forwardDisabled:", disabled);
+    return disabled;
+  }
 }

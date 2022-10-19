@@ -24,8 +24,10 @@ import { CommitteeReferenceData } from "./committee-reference-data";
 export class CommitteeQueryService {
   private logger: Logger;
   private committeeReferenceData: CommitteeReferenceData;
+  public committeeFiles: CommitteeFile[] = [];
 
   constructor(
+    public display: CommitteeDisplayService,
     private dateUtils: DateUtilsService,
     private walksService: WalksService,
     private walksQueryService: WalksQueryService,
@@ -106,35 +108,52 @@ export class CommitteeQueryService {
     });
   }
 
-  committeeFilesLatestFirst(committeeFiles) {
-    return committeeFiles.sort(sortBy("-eventDate"));
+  queryFiles(committeeFileId: string): Promise<void> {
+    this.logger.debug("queryFiles:committeeFileId:", committeeFileId);
+    if (committeeFileId) {
+      return this.committeeFileService.getById(committeeFileId).then(response => this.applyFiles([response]));
+    } else {
+      return this.committeeFileService.all().then(response => this.applyFiles(response));
+    }
   }
 
-  latestYear(committeeFiles): number {
-    return this.extractYear(first(this.committeeFilesLatestFirst(committeeFiles)));
+  applyFiles(files: CommitteeFile[]): void {
+    this.committeeFiles = files
+      .filter(file => this.display.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
+      .sort(sortBy("-fileDate"));
+    this.logger.debug("applyFiles:committeeFileId:", this.committeeFiles.length);
   }
 
-  committeeFilesForYear(year, committeeFiles): CommitteeFile[] {
-    const latestYearValue = this.latestYear(committeeFiles);
-    return this.committeeFilesLatestFirst(committeeFiles).filter(committeeFile => {
+  committeeFilesLatestFirst() {
+    return this.committeeFiles.sort(sortBy("-eventDate"));
+  }
+
+  latestYear(): number {
+    return this.extractYear(first(this.committeeFilesLatestFirst()));
+  }
+
+  committeeFilesForYear(year): CommitteeFile[] {
+    this.logger.off("committeeFilesForYear", year, "file count:", this.committeeFilesLatestFirst()?.length);
+    const latestYearValue = this.latestYear();
+    return this.committeeFilesLatestFirst().filter(committeeFile => {
       const fileYear = this.extractYear(committeeFile);
-      this.logger.debug("fileYear", fileYear, "committeeFile", committeeFile);
+      this.logger.off("fileYear", fileYear, "committeeFile", committeeFile);
       return (fileYear === year) || (isNaN(fileYear) && (latestYearValue === year));
     });
   }
 
   extractYear(committeeFile: CommitteeFile): number {
-    return committeeFile ? parseInt(this.dateUtils.asString(committeeFile.eventDate, undefined, "YYYY"), 10) : null;
+    return committeeFile ? this.dateUtils.yearFromDate(committeeFile.eventDate) : null;
   }
 
   addLatestYearFlag(committeeFileYear, latestYearValue: number): CommitteeYear {
     return {year: committeeFileYear, latestYear: latestYearValue === committeeFileYear};
   }
 
-  committeeFileYears(committeeFiles: CommitteeFile[]): CommitteeYear[] {
-    const latestYearValue = this.latestYear(committeeFiles);
+  committeeFileYears(): CommitteeYear[] {
+    const latestYearValue = this.latestYear();
     this.logger.debug("latestYearValue", latestYearValue);
-    const years = chain(committeeFiles)
+    const years = chain(this.committeeFiles)
       .map(file => this.extractYear(file))
       .filter(year => !isNaN(year))
       .unique()
@@ -142,7 +161,10 @@ export class CommitteeQueryService {
       .value()
       .sort(descending());
     this.logger.debug("committeeFileYears", years);
-    return years.length === 0 ? [{year: this.latestYear(committeeFiles), latestYear: true}] : years;
+    return years.length === 0 ? [{year: this.latestYear(), latestYear: true}] : years;
   }
 
+  thisCommitteeYear(): CommitteeYear {
+    return {year: this.latestYear(), latestYear: true};
+  }
 }

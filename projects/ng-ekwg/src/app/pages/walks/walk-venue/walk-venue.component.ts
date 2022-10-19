@@ -24,7 +24,7 @@ export class WalkVenueComponent implements OnInit {
               public display: WalkDisplayService,
               private walksReferenceService: WalksReferenceService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkVenueComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkVenueComponent, NgxLoggerLevel.OFF);
   }
 
   venueTracker(index: number, venueType: VenueType) {

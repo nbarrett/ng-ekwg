@@ -37,7 +37,8 @@
           <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image')"
                  type="radio"
                  class="custom-control-input"
-                 [ngModel]="imageType()"
+                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
+                 [ngModel]="imageType"
                  (change)="changeImageType('image')"
                  value="image"/>
           <label class="custom-control-label"
@@ -46,15 +47,16 @@
         <div class="custom-control custom-radio custom-control-inline">
           <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon')"
                  type="radio"
+                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
                  class="custom-control-input"
-                 [ngModel]="imageType()"
+                 [ngModel]="imageType"
                  (change)="changeImageType('icon')"
                  value="icon"/>
           <label class="custom-control-label" [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon')">Use
             Icon</label>
         </div>
       </div>
-      <div *ngIf="imageType()==='icon'" class="form-group">
+      <div *ngIf="imageType==='icon'" class="form-group">
         <label class="form-label"
                [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon')">Icon</label>
         <input [(ngModel)]="column.icon"
@@ -62,7 +64,7 @@
                [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon')"
                class="form-control input-sm" placeholder="Enter icon value">
       </div>
-      <div *ngIf="imageType()==='image'" class="form-group">
+      <div *ngIf="imageType==='image'" class="form-group">
         <label class="form-label"
                [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource')">Image Source</label>
         <input [(ngModel)]="column.imageSource"
@@ -70,9 +72,18 @@
                class="form-control input-sm" placeholder="Enter image source value"
                type="text">
       </div>
+      <div class="form-group">
+        <label [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level')">Access</label>
+        <select [(ngModel)]="column.accessLevel" [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level')"
+                class="form-control input-sm">
+          <option *ngFor="let accessLevel of memberResourcesReferenceData.accessLevels()"
+                  [textContent]="accessLevel.description"
+                  [ngValue]="accessLevel.id">
+        </select>
+      </div>
     </div>
     <app-markdown-editor class="card-text"
-                         (saved)="actions.saveContentTextId($event, rowIndex, columnIndex, pageContent)"
+                         (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
                          [actionCaptionSuffix]="'text'"
                          [clearEnabled]="true"
                          [editNameEnabled]="editNameEnabled"
@@ -87,7 +98,7 @@
         <fa-icon [icon]="faPencil"></fa-icon>
         <span>edit image</span>
       </div>
-      <app-actions-dropdown [columnIndex]="columnIndex"
+      <app-actions-dropdown [columnIndex]="column"
                             [pageContent]="pageContent"
                             [row]="row">
       </app-actions-dropdown>

@@ -1,14 +1,17 @@
 <div class="row">
-  <div *ngIf="maxViewableSlideCount < pageContentColumns().length" class="d-flex align-items-center mb-3 col">
+  <div *ngIf="row.showSwiper && maxViewableSlideCount < pageContentColumns().length"
+       class="d-flex align-items-center mb-3 col">
     <div class="flex-shrink-0">
       <button aria-label="Previous slide" class="text-dark border-0 bg-transparent p-0 mr-1">
         <app-svg (click)="back()"
+                 [disabled]="backDisabled()"
                  class="icon"
                  icon="i-back-round">
         </app-svg>
         <span class="sr-only">Previous slide</span></button>
       <button aria-label="Next slide" class="text-dark border-0 bg-transparent p-0">
         <app-svg (click)="forward()"
+                 [disabled]="forwardDisabled()"
                  class="icon"
                  icon="i-forward-round">
         </app-svg>
@@ -16,15 +19,41 @@
     </div>
   </div>
 </div>
-<div class="row">
-  <div *ngFor="let column of viewableColumns(); let columnIndex = index;" [class]="slideClasses()"
-       [id]="actions.columnIdentifierFor(columnIndex,'slide')">
-    <app-card-editor
-      [rowIndex]="rowIndex"
-      [columnIndex]="columnIndex"
-      [pageContent]="pageContent"
-      [contentPath]="contentPath"
-      [relativePath]="relativePath">
-    </app-card-editor>
+<div *ngIf="siteEditService.active()" class="row mb-3">
+  <div class="col">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <div class="input-group-text input-sm">Max Columns:</div>
+      </div>
+      <input [(ngModel)]="row.maxColumns"
+             autocomplete="columns"
+             class="form-control input-sm column-input" placeholder="Enter number of viewable columns (1-4)"
+             type="number">
+    </div>
   </div>
+  <div class="col">
+    <div class="custom-control custom-checkbox">
+      <input name="editNameEnabled" [(ngModel)]="row.showSwiper"
+             [checked]="row.showSwiper"
+             type="checkbox" class="custom-control-input"
+             [id]="actions.rowIdentifierFor(rowIndex , pageContent.path + '-show-slider')">
+      <label class="custom-control-label"
+             [for]="actions.rowIdentifierFor(rowIndex , pageContent.path + '-show-slider')">Show Swiper
+      </label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <ng-container *ngFor="let column of viewableColumns(); let columnIndex = index;">
+    <div [class]="slideClasses()"
+         [id]="actions.columnIdentifierFor(columnIndex,column.contentTextId||'slide')">
+      <app-card-editor
+        [rowIndex]="rowIndex"
+        [column]="column"
+        [pageContent]="pageContent"
+        [contentPath]="contentPath"
+        [relativePath]="relativePath">
+      </app-card-editor>
+    </div>
+  </ng-container>
 </div>

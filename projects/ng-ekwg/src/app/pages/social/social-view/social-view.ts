@@ -33,7 +33,7 @@ export class SocialViewComponent implements OnInit {
     private urlService: UrlService,
     private socialEventsService: SocialEventsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialViewComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialViewComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -49,7 +49,7 @@ export class SocialListComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               private modalService: BsModalService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialListComponent, NgxLoggerLevel.OFF);
   }
 
   @Input()

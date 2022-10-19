@@ -77,7 +77,7 @@ export class SocialEditComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SocialEditComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

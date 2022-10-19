@@ -30,7 +30,7 @@ export class SocialInformationComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialInformationComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SocialInformationComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
     this.feeds = {facebook: {}};
   }
 

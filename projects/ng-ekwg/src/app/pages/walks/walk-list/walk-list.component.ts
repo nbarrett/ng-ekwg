@@ -74,7 +74,7 @@ export class WalkListComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef,
     private siteEditService: SiteEditService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkListComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

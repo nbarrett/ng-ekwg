@@ -30,7 +30,7 @@ export class LoginPanelComponent implements OnInit {
               private modalService: BsModalService,
               private urlService: UrlService,
               private routerHistoryService: RouterHistoryService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginPanelComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(LoginPanelComponent, NgxLoggerLevel.OFF);
   }
 
   memberLoginStatus() {

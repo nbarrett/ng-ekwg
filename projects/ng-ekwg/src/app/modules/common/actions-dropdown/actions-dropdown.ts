@@ -28,7 +28,7 @@ export class ActionsDropdownComponent implements OnInit {
   constructor(
     public actions: PageContentActionsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ActionsDropdownComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ActionsDropdownComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

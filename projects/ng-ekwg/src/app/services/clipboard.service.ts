@@ -13,7 +13,7 @@ export class ClipboardService {
   private lastCopiedText: string;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ClipboardService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ClipboardService, NgxLoggerLevel.OFF);
   }
 
   private clipboardData(e: ClipboardEvent): DataTransfer {

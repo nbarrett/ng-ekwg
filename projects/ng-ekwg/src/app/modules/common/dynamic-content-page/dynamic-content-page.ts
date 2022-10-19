@@ -25,7 +25,7 @@ export class DynamicContentPageComponent implements OnInit {
     private pageService: PageService,
     private stringUtils: StringUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentPageComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicContentPageComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

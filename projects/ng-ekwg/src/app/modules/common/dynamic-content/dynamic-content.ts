@@ -60,7 +60,7 @@ export class DynamicContentComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

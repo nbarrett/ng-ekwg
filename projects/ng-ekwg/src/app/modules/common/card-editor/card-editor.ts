@@ -7,6 +7,7 @@ import { PageContent, PageContentColumn, PageContentRow } from "../../../models/
 import { BroadcastService } from "../../../services/broadcast-service";
 import { IconService } from "../../../services/icon-service/icon-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MemberResourcesReferenceDataService } from "../../../services/member/member-resources-reference-data.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageContentService } from "../../../services/page-content.service";
 import { PageService } from "../../../services/page.service";
@@ -23,7 +24,7 @@ export class CardEditorComponent implements OnInit {
   @Input()
   public pageContent: PageContent;
   @Input()
-  public columnIndex: number;
+  public column: PageContentColumn;
   @Input()
   public rowIndex: number;
   @Input()
@@ -34,14 +35,16 @@ export class CardEditorComponent implements OnInit {
   editNameEnabled: boolean;
 
   public row: PageContentRow;
-  public column: PageContentColumn;
   public awsFileData: AwsFileData;
   private logger: Logger;
   editActive: boolean;
   public faPencil = faPencil;
   public siteLinks: string[] = [];
+  public imageType: string;
+  public columnIndex: number;
 
   constructor(
+    public memberResourcesReferenceData: MemberResourcesReferenceDataService,
     public iconService: IconService,
     private urlService: UrlService,
     private pageService: PageService,
@@ -51,13 +54,14 @@ export class CardEditorComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
-    this.column = this.row.columns[this.columnIndex];
-    this.logger.info("ngOnInit:column", this.column);
+    this.columnIndex = this.row.columns.indexOf(this.column);
+    this.logger.info("ngOnInit:column", this.column, "this.row:", this.row);
+    this.imageType = this.column.icon ? "icon" : "image";
   }
 
   imageSourceOrPreview(): string {
@@ -72,10 +76,6 @@ export class CardEditorComponent implements OnInit {
   exitImageEdit() {
     this.editActive = false;
     this.awsFileData = null;
-  }
-
-  imageType(): string {
-    return this.column.icon ? "icon" : "image";
   }
 
   editImage() {
@@ -93,6 +93,7 @@ export class CardEditorComponent implements OnInit {
   }
 
   changeImageType(value: string) {
+    this.imageType = value;
     this.logger.info("changeImageType:", value);
     if (value === "image") {
       this.column.icon = null;

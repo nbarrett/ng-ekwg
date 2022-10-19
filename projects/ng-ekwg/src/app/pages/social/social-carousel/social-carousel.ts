@@ -27,7 +27,7 @@ export class SocialCarouselComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialCarouselComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SocialCarouselComponent, NgxLoggerLevel.OFF);
   }
 
   private logger: Logger;

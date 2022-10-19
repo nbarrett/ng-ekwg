@@ -33,7 +33,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {
@@ -71,7 +71,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
           });
           this.bsModalRef.hide();
         } else {
-          return this.urlService.navigateTo("/");
+          return this.urlService.navigateTo();
         }
         return true;
       } else {
@@ -105,7 +105,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
 
   close() {
     this.bsModalRef.hide();
-    return this.urlService.navigateTo("/");
+    return this.urlService.navigateTo();
   }
 
   resetPassword() {

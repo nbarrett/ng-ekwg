@@ -26,6 +26,7 @@ export class CardImageComponent implements OnInit {
   faSearch = faSearch;
 
   ngOnInit() {
+    this.logger.info("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
   }
 
 }

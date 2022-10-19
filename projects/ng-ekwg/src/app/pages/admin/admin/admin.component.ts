@@ -4,10 +4,14 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { PageContent, PageContentType } from "../../../models/content-text.model";
+import { AccessLevel } from "../../../models/member-resource.model";
 import { LoginResponse } from "../../../models/member.model";
+import { ContentTextService } from "../../../services/content-text.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { PageContentService } from "../../../services/page-content.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -35,6 +39,8 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   constructor(private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
+              public pageContentService: PageContentService,
+              public contentTextService: ContentTextService,
               private authService: AuthService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
@@ -47,6 +53,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.generateActionButtons();
     this.setPrivileges();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
@@ -58,32 +65,79 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.logger.debug(loginResponse, "setPrivileges:allowAdminEdits", this.allowAdminEdits, "this.loggedIn", this.loggedIn);
   }
 
-  memberAdmin() {
-    this.urlService.navigateTo("admin", "member-admin");
+  private generateActionButtons() {
+    this.pageContentService.findByPath("admin#action-buttons")
+      .then(async response => {
+        this.logger.debug("response:", response);
+        if (!response) {
+          const data: PageContent = {
+            path: "admin#action-buttons", rows: [
+              {
+                maxColumns: 4,
+                showSwiper: false,
+                type: PageContentType.SLIDES,
+                columns: [
+                  {
+                    accessLevel: AccessLevel.loggedInMember,
+                    title: "Contact details",
+                    icon: "faIdCard",
+                    href: "admin/contact-details",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("personal-details-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.loggedInMember,
+                    title: "Change Password",
+                    icon: "faUnlockAlt",
+                    href: "admin/change-password",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.loggedInMember,
+                    title: "Email subscriptions",
+                    icon: "faEnvelopeOpenText",
+                    href: "admin/email-subscriptions",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("contact-preferences-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.loggedInMember,
+                    title: "Expenses",
+                    icon: "faCashRegister",
+                    href: "admin/expenses",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("expenses-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.committee,
+                    title: "Member Admin",
+                    icon: "faUsersCog",
+                    href: "admin/member-admin",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-admin-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.committee,
+                    title: "Member Bulk Load",
+                    icon: "faMailBulk",
+                    href: "admin/member-bulk-load",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("bulk-load-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.committee,
+                    title: "Member Login Audit",
+                    icon: "faBook",
+                    href: "admin/member-login-audit",
+                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
+                  },
+                ]
+              }]
+          };
+          this.logger.debug("data", data);
+          this.pageContentService.createOrUpdate(data);
+        } else {
+          this.logger.debug("found existing page content", response);
+        }
+      })
+      .catch(async error => {
+        this.logger.debug("error:", error);
+      });
   }
 
-  expensese() {
-    this.urlService.navigateTo("admin", "expenses");
-  }
-
-  bulkLoadAudit() {
-    this.urlService.navigateTo("admin", "member-bulk-load");
-  }
-
-  memberLoginAudit() {
-    this.urlService.navigateTo("admin", "member-login-audit");
-  }
-
-  contactDetails() {
-    this.urlService.navigateTo("admin", "contact-details");
-  }
-
-  changePassword() {
-    this.urlService.navigateTo("admin", "change-password");
-
-  }
-
-  emailSubscriptions() {
-    this.urlService.navigateTo("admin", "email-subscriptions");
-  }
 }

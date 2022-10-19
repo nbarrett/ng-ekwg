@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeYear } from "../../../models/committee.model";
+import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
+import { AccessLevel } from "../../../models/member-resource.model";
 import { LoginResponse, Member } from "../../../models/member.model";
 import { Confirm } from "../../../models/ui-actions";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
+import { ContentTextService } from "../../../services/content-text.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { PageContentService } from "../../../services/page-content.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -30,14 +35,17 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   public members: Member[];
   private selected: { committeeFile?: CommitteeFile, committeeFiles: CommitteeFile[] };
   public confirm = new Confirm();
-  committeeYear: CommitteeYear = {year: 2022, latestYear: true};
+  public committeeYear: CommitteeYear;
 
   constructor(private memberLoginService: MemberLoginService,
               private memberService: MemberService,
               private notifierService: NotifierService,
+              private route: ActivatedRoute,
               private authService: AuthService,
               private urlService: UrlService,
               private dateUtils: DateUtilsService,
+              public pageContentService: PageContentService,
+              public contentTextService: ContentTextService,
               private committeeFileService: CommitteeFileService,
               private committeeQueryService: CommitteeQueryService,
               loggerFactory: LoggerFactory) {
@@ -58,6 +66,17 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
       committeeFiles: []
     };
     this.refreshAll();
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      const committeeFileId = paramMap.get("relativePath");
+      this.logger.info("committeeFileId from route params:", paramMap, committeeFileId);
+      this.notify.setReady();
+      this.committeeQueryService.queryFiles(committeeFileId)
+        .then(() => {
+          this.committeeYear = this.committeeQueryService.thisCommitteeYear();
+          this.generateActionButtons();
+          this.confirm.clear();
+        });
+    });
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {
@@ -83,6 +102,51 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
 
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
+  }
+
+  private generateActionButtons() {
+    const path = "committee#committee-years";
+    this.pageContentService.findByPath(path)
+      .then(async response => {
+        this.logger.debug("response:", response);
+        if (!response) {
+          const unresolvedColumns: Promise<PageContentColumn>[] = this.committeeQueryService.committeeFileYears()
+            .map(async (year: CommitteeYear) => {
+              const contentTextId: string = (await this.contentTextService.create({
+                name: `committee-year-${year.year}`,
+                category: "committee-years",
+                text: `View committee files for ${year.year}`
+              })).id;
+              const column: PageContentColumn = {
+                accessLevel: AccessLevel.public,
+                title: year.year.toString(),
+                icon: "faCalendarAlt",
+                href: `committee/year/${year.year}`,
+                contentTextId
+              };
+              return column;
+            });
+          Promise.all(unresolvedColumns).then((columns: PageContentColumn[]) => {
+            const data: PageContent = {
+              path,
+              rows: [
+                {
+                  maxColumns: 4,
+                  showSwiper: true,
+                  type: PageContentType.SLIDES,
+                  columns
+                }]
+            };
+            this.logger.debug("generated data:", data);
+            this.pageContentService.createOrUpdate(data);
+          });
+        } else {
+          this.logger.debug("found existing page content", response);
+        }
+      })
+      .catch(async error => {
+        this.logger.debug("error:", error);
+      });
   }
 
 }

@@ -32,7 +32,7 @@ export class WalkSearchComponent implements OnInit {
               private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkSearchComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkSearchComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
 
