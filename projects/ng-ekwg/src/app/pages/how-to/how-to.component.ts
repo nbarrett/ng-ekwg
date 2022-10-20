@@ -151,7 +151,7 @@ export class HowToComponent implements OnInit, OnDestroy {
           this.logger.debug("this.filterParameters.filter", this.filterParameters.filter);
           return this.filterParameters.filter.includeAccessLevelIds.includes(memberResource.accessLevel);
         } else {
-          return this.memberResourcesReferenceData.accessLevelFor(memberResource).filter();
+          return this.memberResourcesReferenceData.accessLevelFor(memberResource.accessLevel).filter();
         }
       })
       .sort(sortBy("-resourceDate"));

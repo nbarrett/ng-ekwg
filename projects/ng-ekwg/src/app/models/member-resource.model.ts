@@ -43,7 +43,7 @@ export interface ResourceTypeData extends Identifiable {
 export interface AccessLevelData extends Identifiable {
   description: string;
   filter: () => boolean;
-  includeAccessLevelIds: string[];
+  includeAccessLevelIds: AccessLevel[];
 }
 
 export interface MemberResource extends Identifiable {

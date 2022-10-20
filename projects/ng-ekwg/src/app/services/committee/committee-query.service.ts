@@ -38,7 +38,7 @@ export class CommitteeQueryService {
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
     committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.DEBUG);
     committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
   }
 
@@ -108,6 +108,14 @@ export class CommitteeQueryService {
     });
   }
 
+  dataQueried() {
+    return this.committeeFiles.length > 0;
+  }
+
+  queryAllFiles(): Promise<void> {
+    return this.queryFiles(null);
+  }
+
   queryFiles(committeeFileId: string): Promise<void> {
     this.logger.debug("queryFiles:committeeFileId:", committeeFileId);
     if (committeeFileId) {
@@ -119,9 +127,9 @@ export class CommitteeQueryService {
 
   applyFiles(files: CommitteeFile[]): void {
     this.committeeFiles = files
-      .filter(file => this.display.committeeReferenceData.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
+      .filter(file => this.display?.committeeReferenceData?.isPublic(file.fileType) || this.memberLoginService.allowCommittee() || this.memberLoginService.allowFileAdmin())
       .sort(sortBy("-fileDate"));
-    this.logger.debug("applyFiles:committeeFileId:", this.committeeFiles.length);
+    this.logger.debug("applyFiles:committee file count:", this.committeeFiles.length);
   }
 
   committeeFilesLatestFirst() {
@@ -132,14 +140,16 @@ export class CommitteeQueryService {
     return this.extractYear(first(this.committeeFilesLatestFirst()));
   }
 
-  committeeFilesForYear(year): CommitteeFile[] {
+  committeeFilesForYear(year: number): CommitteeFile[] {
     this.logger.off("committeeFilesForYear", year, "file count:", this.committeeFilesLatestFirst()?.length);
     const latestYearValue = this.latestYear();
-    return this.committeeFilesLatestFirst().filter(committeeFile => {
+    const committeeFilesForYear = this.committeeFilesLatestFirst().filter(committeeFile => {
       const fileYear = this.extractYear(committeeFile);
       this.logger.off("fileYear", fileYear, "committeeFile", committeeFile);
       return (fileYear === year) || (isNaN(fileYear) && (latestYearValue === year));
     });
+    this.logger.off("committeeFilesForYear", year, "committeeFilesForYear:", committeeFilesForYear);
+    return committeeFilesForYear;
   }
 
   extractYear(committeeFile: CommitteeFile): number {

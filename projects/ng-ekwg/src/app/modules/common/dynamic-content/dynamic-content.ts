@@ -12,6 +12,7 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { slideClasses } from "../../../services/card-utils";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MemberResourcesReferenceDataService } from "../../../services/member/member-resources-reference-data.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
@@ -50,6 +51,7 @@ export class DynamicContentComponent implements OnInit {
 
   constructor(
     public siteEditService: SiteEditService,
+    private memberResourcesReferenceData: MemberResourcesReferenceDataService,
     private route: ActivatedRoute,
     private notifierService: NotifierService,
     private urlService: UrlService,
@@ -60,7 +62,7 @@ export class DynamicContentComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -73,23 +75,7 @@ export class DynamicContentComponent implements OnInit {
       this.logger.info("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
       this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
       this.logger.debug("Finding page content for " + this.contentPath);
-      this.pageContentService.findByPath(this.contentPath)
-        .then(pageContent => {
-          this.pageContent = pageContent;
-          this.queryCompleted = true;
-          if (pageContent) {
-            this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
-          } else {
-            this.logger.info("Page content not found for", this.contentPath);
-            this.notify.warning({
-              title: `Page not found`,
-              message: `The ${this.contentPath} page content was not found`
-            });
-          }
-        }).catch(error => {
-        this.logger.info("Page content error found for", this.contentPath, error);
-        this.queryCompleted = true;
-      });
+      this.refreshPageContent();
       this.broadcastService.on(NamedEventType.SAVE_PAGE_CONTENT, (namedEvent: NamedEvent<PageContent>) => {
         this.logger.info("event received:", namedEvent);
         if (namedEvent.data.id === this.pageContent.id) {
@@ -107,6 +93,49 @@ export class DynamicContentComponent implements OnInit {
         }));
         this.savePageContent();
       });
+    });
+  }
+
+  columnsFilteredForAccessLevel(columns: PageContentColumn[]) {
+    return columns.filter(item => {
+      const accessLevelData = this.memberResourcesReferenceData.accessLevelFor(item.accessLevel);
+      return accessLevelData ? accessLevelData.filter() : true;
+    });
+  }
+
+  pageContentFilteredForAccessLevel(pageContent: PageContent): PageContent {
+    if (this.siteEditService.active()) {
+      this.logger.info("pageContentFilteredForAccessLevel:siteEditService.active:pageContent unfiltered:", pageContent);
+      return pageContent;
+    } else {
+      const filteredPageContent = {
+        ...pageContent, rows: pageContent.rows.map(row => {
+          const columns = this.columnsFilteredForAccessLevel(row.columns);
+          return {...row, columns};
+        })
+      };
+      this.logger.info("pageContentFilteredForAccessLevel:filteredPageContent:", filteredPageContent);
+      return filteredPageContent;
+    }
+  }
+
+  private refreshPageContent() {
+    this.pageContentService.findByPath(this.contentPath)
+      .then(pageContent => {
+        this.pageContent = this.pageContentFilteredForAccessLevel(pageContent);
+        this.queryCompleted = true;
+        if (pageContent) {
+          this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
+        } else {
+          this.logger.info("Page content not found for", this.contentPath);
+          this.notify.warning({
+            title: `Page not found`,
+            message: `The ${this.contentPath} page content was not found`
+          });
+        }
+      }).catch(error => {
+      this.logger.info("Page content error found for", this.contentPath, error);
+      this.queryCompleted = true;
     });
   }
 

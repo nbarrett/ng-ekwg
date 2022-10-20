@@ -60,8 +60,9 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    this.committeeQueryService.queryFiles(null);
+    this.committeeQueryService.queryAllFiles();
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
+      this.committeeQueryService.queryAllFiles();
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const year = paramMap.get("year");

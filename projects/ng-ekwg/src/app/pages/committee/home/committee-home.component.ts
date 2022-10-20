@@ -36,6 +36,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   private selected: { committeeFile?: CommitteeFile, committeeFiles: CommitteeFile[] };
   public confirm = new Confirm();
   public committeeYear: CommitteeYear;
+  private committeeFileId: string;
 
   constructor(private memberLoginService: MemberLoginService,
               private memberService: MemberService,
@@ -67,16 +68,20 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
     };
     this.refreshAll();
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const committeeFileId = paramMap.get("relativePath");
-      this.logger.info("committeeFileId from route params:", paramMap, committeeFileId);
+      this.committeeFileId = paramMap.get("relativePath");
+      this.logger.info("committeeFileId from route params:", paramMap, this.committeeFileId);
       this.notify.setReady();
-      this.committeeQueryService.queryFiles(committeeFileId)
-        .then(() => {
-          this.committeeYear = this.committeeQueryService.thisCommitteeYear();
-          this.generateActionButtons();
-          this.confirm.clear();
-        });
+      this.refreshCommitteeFiles();
     });
+  }
+
+  private refreshCommitteeFiles() {
+    this.committeeQueryService.queryFiles(this.committeeFileId)
+      .then(() => {
+        this.committeeYear = this.committeeQueryService.thisCommitteeYear();
+        this.generateActionButtons();
+        this.confirm.clear();
+      });
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {
@@ -97,6 +102,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   }
 
   refreshAll() {
+    this.refreshCommitteeFiles();
     this.refreshMembers();
   }
 

@@ -21,7 +21,7 @@ export class MemberResourcesReferenceDataService {
               private contentMetadataService: ContentMetadataService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.INFO);
   }
 
   subjects(): ResourceSubject[] {
@@ -91,24 +91,24 @@ export class MemberResourcesReferenceDataService {
         id: "committee",
         description: "Committee",
         filter: () => this.siteEditService.active() || this.memberLoginService.allowCommittee(),
-        includeAccessLevelIds: ["committee", "loggedInMember", "public", "hidden"]
+        includeAccessLevelIds: [AccessLevel.committee, AccessLevel.loggedInMember, AccessLevel.public, AccessLevel.hidden]
       },
       {
         id: "loggedInMember",
         description: "Logged-in member",
         filter: () => this.siteEditService.active() || this.memberLoginService.memberLoggedIn(),
-        includeAccessLevelIds: ["loggedInMember"]
+        includeAccessLevelIds: [AccessLevel.loggedInMember]
       },
       {
         id: "public",
         description: "Public",
         filter: () => true,
-        includeAccessLevelIds: ["public"]
+        includeAccessLevelIds: [AccessLevel.public]
       }];
   }
 
   accessLevelViewTypes(): AccessLevelData[] {
-    return this.accessLevels().filter(item => item.id !== "hidden");
+    return this.accessLevels().filter(item => item.id !== AccessLevel.hidden);
   }
 
   defaultMemberResource(): MemberResource {
@@ -127,9 +127,9 @@ export class MemberResourcesReferenceDataService {
     return type;
   }
 
-  accessLevelFor(memberResource: MemberResource) {
-    const level: AccessLevelData = this.accessLevels().find(level => level.id === memberResource.accessLevel);
-    this.logger.debug("accessLevel for", memberResource.accessLevel, level);
+  accessLevelFor(accessLevel: AccessLevel): AccessLevelData {
+    const level: AccessLevelData = this.accessLevels().find(level => level.id === accessLevel);
+    this.logger.info("accessLevel for", accessLevel, level);
     return level;
   }
 
