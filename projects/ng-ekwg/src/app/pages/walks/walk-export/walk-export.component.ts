@@ -32,11 +32,11 @@ import { WalkDisplayService } from "../walk-display.service";
 
 export class WalkExportComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  private ramblersUploadAuditData: RamblersUploadAudit[];
-  private walksForExport: WalkExport[] = [];
-  private fileName: string;
-  private fileNames: string[] = [];
-  private showDetail: boolean;
+  public ramblersUploadAuditData: RamblersUploadAudit[];
+  public walksForExport: WalkExport[] = [];
+  public fileName: string;
+  public fileNames: string[] = [];
+  public showDetail: boolean;
   private walkExportTab0Active: boolean;
   private members: Member[];
   private walkExportTab1Active: boolean;
@@ -50,8 +50,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   };
   private intervalJob: Observable<any>;
   private subscription: Subscription;
-  private finalStatusError: any;
-  private exportInProgress = false;
+  public finalStatusError: any;
+  public exportInProgress = false;
   faEye = faEye;
   faRemove = faRemove;
   faCircleInfo = faCircleInfo;

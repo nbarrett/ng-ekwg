@@ -9,6 +9,7 @@ import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
 import { DisplayedWalk, EventType, GoogleMapsConfig, Walk, WalkViewMode } from "../../models/walk.model";
+import { uniq } from "../../services/arrays";
 import { ClipboardService } from "../../services/clipboard.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { GoogleMapsService } from "../../services/google-maps.service";
@@ -20,6 +21,7 @@ import { RamblersWalksAndEventsService } from "../../services/walks/ramblers-wal
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
+import { WalksService } from "../../services/walks/walks.service";
 
 @Injectable({
   providedIn: "root"
@@ -36,10 +38,12 @@ export class WalkDisplayService {
   public ramblersWalkBaseUrl: string;
   public googleMapsConfig: GoogleMapsConfig;
   loggedIn: boolean;
+  public previousWalkLeaderIds: string[];
 
   constructor(
     private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private googleMapsService: GoogleMapsService,
+    private walksService: WalksService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
     public clipboardService: ClipboardService,
@@ -55,9 +59,13 @@ export class WalkDisplayService {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
     this.refreshGoogleMapsService();
     this.refreshRamblersConfig();
-    this.refreshMembers();
+    this.refreshCachedData();
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
     this.loggedIn = memberLoginService.memberLoggedIn();
+  }
+
+  private queryPreviousWalkLeaderIds(): Promise<string[]> {
+    return this.walksService.all().then(walks => uniq(walks.filter(item => item.walkLeaderMemberId).map(item => item.walkLeaderMemberId)));
   }
 
   findWalk(walk: Walk): ExpandedWalk {
@@ -66,7 +74,9 @@ export class WalkDisplayService {
 
   walkMode(walk: Walk): WalkViewMode {
     const expandedWalk = find(this.expandedWalks, {walkId: walk.id}) as ExpandedWalk;
-    return expandedWalk ? expandedWalk.mode : WalkViewMode.LIST;
+    const walkViewMode = expandedWalk ? expandedWalk.mode : this.urlService.pathContains("edit") ? WalkViewMode.EDIT_FULL_SCREEN : WalkViewMode.LIST;
+    this.logger.debug("walkMode:", walkViewMode, "expandedWalk:", expandedWalk);
+    return walkViewMode;
   }
 
   isExpanded(walk: Walk): boolean {
@@ -102,12 +112,11 @@ export class WalkDisplayService {
     });
   }
 
-  refreshMembers() {
-    if (this.memberLoginService.memberLoggedIn()) {
-      this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS)
-        .then((members) => {
-          this.members = members;
-        });
+  async refreshCachedData() {
+    if (this.memberLoginService.memberLoggedIn() && this.members.length === 0) {
+      this.members = await this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS);
+      this.previousWalkLeaderIds = (await this.queryPreviousWalkLeaderIds() || []);
+      this.logger.debug("previousWalkLeaderIds:", this.previousWalkLeaderIds);
     }
   }
 
@@ -234,7 +243,7 @@ export class WalkDisplayService {
   }
 
   closeEditView(walk: Walk) {
-    if (this.urlService.hasRouteParameter("edit")) {
+    if (this.urlService.pathContains("edit")) {
       this.urlService.navigateTo("walks");
     }
     this.toggleExpandedViewFor(walk, WalkViewMode.VIEW);

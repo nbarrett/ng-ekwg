@@ -16,7 +16,7 @@ export class PageContentService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.DEBUG);
   }
 
   async all(): Promise<PageContent[]> {

@@ -8,13 +8,14 @@ import { WalkEditComponent } from "../../pages/walks/walk-edit/walk-edit.compone
 import { WalkExportComponent } from "../../pages/walks/walk-export/walk-export.component";
 import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
+import { WalkSubPageComponent } from "../../pages/walks/walk-sub-page/walk-sub-page";
 import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view.component";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { PageService } from "../../services/page.service";
 import { hasDynamicPath, hasMongoId } from "../../services/path-matchers";
 import { StringUtilsService } from "../../services/string-utils.service";
 import { WalksAuthGuard } from "../../walks-auth-guard.service";
-import { DynamicCarouselComponent } from "../common/dynamic-carousel/dynamic-carousel";
+import { ActionButtonsComponent } from "../common/action-buttons/action-buttons";
 import { DynamicContentPageComponent } from "../common/dynamic-content-page/dynamic-content-page";
 import { WalksModule } from "./walks.module";
 
@@ -26,7 +27,8 @@ import { WalksModule } from "./walks.module";
     {path: "export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
     {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
     {path: "admin", component: WalkAdminComponent, canActivate: [WalksAuthGuard]},
-    {path: "carousel", component: DynamicCarouselComponent},
+    {path: "carousel", component: ActionButtonsComponent},
+    {path: "sub-page", component: WalkSubPageComponent},
     {matcher: hasMongoId, component: WalkViewComponent},
     {matcher: hasDynamicPath, component: DynamicContentPageComponent},
     {path: "**", component: WalkListComponent},

@@ -1,53 +1,65 @@
 <ng-template #committeeYearTemplate>
-  <div class="row">
-    <div class="col">
-      <h2>{{committeeYear?.year + ' Committee'}}</h2>
-      <h6><i>picture will go here eventually</i></h6>
-      <input
-        *ngIf="display.allowAddCommitteeFile() && committeeQueryService.committeeFilesForYear(committeeYear?.year)?.length===0"
-        type="submit" value="Add File" (click)="addCommitteeFile()" title="Add new File"
-        class="button-form">
-      <div class="file-item"
-           *ngFor="let committeeFile of committeeQueryService.committeeFilesForYear(committeeYear?.year)"
-           (mouseover)="selectCommitteeFile(committeeFile)">
-        <div class="file-download" *ngIf="committeeFile.fileNameData">
-          <img class="icon" [src]="'assets/images/ramblers/' + display.iconFile(committeeFile)"
-               [alt]="display.iconFile(committeeFile)"/>
-          <a class="morelink" target='_blank' [title]="display.fileTitle(committeeFile)"
-             [href]="display.fileUrl(committeeFile)">Download</a>
-        </div>
-        <div class="file-detail">
-          <h3 [textContent]="committeeFile.fileType"></h3>
-          <p [textContent]="display.fileTitle(committeeFile)"></p>
-          <div *ngIf="memberLoginService.allowCommittee() &&  isActive(committeeFile)" class="row">
-            <div class="col-sm-12">
-              <div class="action-button-group">
-                    <span *ngIf="!confirm.deleteConfirmOutstanding()">
-                      <input *ngIf="display.allowAddCommitteeFile()" type="submit"
-                             value="Add File" (click)="addCommitteeFile()"
-                             title="Add new File" class="button-form">
-                      <input *ngIf="display.allowEditCommitteeFile(committeeFile)"
-                             type="submit" value="Edit File"
-                             (click)="editCommitteeFile(committeeFile)"
-                             title="Edit File for approval"
-                             class="button-form green-confirm">
-                      <input *ngIf="display.allowEditCommitteeFile(committeeFile)"
-                             type="submit" value="Send Email"
-                             (click)="sendNotification(committeeFile)"
-                             title="Send Email" class="button-form yellow-confirm">
-                      <input *ngIf="display.allowDeleteCommitteeFile(committeeFile)"
-                             type="submit" value="Delete File"
-                             (click)="deleteCommitteeFile()" title="Delete File"
-                             class="button-form button-confirm">
-                    </span>
-                <div *ngIf="confirm.deleteConfirmOutstanding()">
-                  <input type="submit" value="Confirm Delete of File"
-                         (click)="display.confirmDeleteCommitteeFile(notify, committeeFile)"
-                         title="Delete File" class="button-form button-confirm">
-                  <input type="submit" value="Cancel Delete of File"
-                         (click)="cancelConfirmations()"
-                         title="Cancel delete of File"
-                         class="button-form green-confirm">
+  <h2>{{committeeYearTitle}}</h2>
+  <div class="wrapper w-100 position-relative">
+    <img alt="" class="h-100 w-100 position-absolute target-style-xl image-style-xl"
+         role="presentation"
+         [src]="imageSource">
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title"><h4>Committee events</h4></div>
+      <div class="row">
+        <div class="col-sm-12">
+          <input
+            (click)="addCommitteeFile()"
+            *ngIf="display.allowAddCommitteeFile() && filesForYear?.length===0"
+            class="button-form" title="Add new File" type="submit"
+            value="Add File">
+          <div (mouseover)="selectCommitteeFile(committeeFile)"
+               *ngFor="let committeeFile of filesForYear"
+               class="file-item">
+            <div *ngIf="committeeFile.fileNameData" class="file-download">
+              <img [alt]="display.iconFile(committeeFile)"
+                   [src]="'assets/images/ramblers/' + display.iconFile(committeeFile)"
+                   class="icon"/>
+              <a [href]="display.fileUrl(committeeFile)" [title]="display.fileTitle(committeeFile)" class="morelink"
+                 target='_blank'>Download</a>
+            </div>
+            <div class="file-detail">
+              <h6>{{committeeFile.fileType}}</h6>
+              <p>{{display.fileTitle(committeeFile)}}</p>
+              <div *ngIf="memberLoginService.allowCommittee() &&  isActive(committeeFile)" class="row">
+                <div class="col-sm-12">
+                  <div class="action-button-group">
+                        <span *ngIf="!confirm.deleteConfirmOutstanding()">
+                          <input *ngIf="display.allowAddCommitteeFile()" type="submit"
+                                 value="Add File" (click)="addCommitteeFile()"
+                                 title="Add new File" class="button-form">
+                          <input *ngIf="display.allowEditCommitteeFile(committeeFile)"
+                                 type="submit" value="Edit File"
+                                 (click)="editCommitteeFile(committeeFile)"
+                                 title="Edit File for approval"
+                                 class="button-form green-confirm">
+                          <input *ngIf="display.allowEditCommitteeFile(committeeFile)"
+                                 type="submit" value="Send Email"
+                                 (click)="sendNotification(committeeFile)"
+                                 title="Send Email" class="button-form yellow-confirm">
+                          <input *ngIf="display.allowDeleteCommitteeFile(committeeFile)"
+                                 type="submit" value="Delete File"
+                                 (click)="deleteCommitteeFile()" title="Delete File"
+                                 class="button-form button-confirm">
+                        </span>
+                    <div *ngIf="confirm.deleteConfirmOutstanding()">
+                      <input (click)="display.confirmDeleteCommitteeFile(notify, committeeFile)"
+                             class="button-form button-confirm"
+                             title="Delete File"
+                             type="submit" value="Confirm Delete of File">
+                      <input (click)="cancelConfirmations()" class="button-form green-confirm"
+                             title="Cancel delete of File"
+                             type="submit"
+                             value="Cancel Delete of File">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -56,6 +68,8 @@
       </div>
     </div>
   </div>
+
+  <app-dynamic-content [anchor]="'committee-years'"></app-dynamic-content>
 </ng-template>
 <app-page *ngIf="!committeeYear?.latestYear" area="committee" [pageTitle]="'Committee Year '+ committeeYear?.year ">
   <ng-container *ngTemplateOutlet="committeeYearTemplate"></ng-container>

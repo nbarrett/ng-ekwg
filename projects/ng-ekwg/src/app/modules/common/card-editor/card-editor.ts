@@ -3,7 +3,7 @@ import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AwsFileData } from "../../../models/aws-object.model";
-import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
+import { ImageType, PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { IconService } from "../../../services/icon-service/icon-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -40,7 +40,7 @@ export class CardEditorComponent implements OnInit {
   editActive: boolean;
   public faPencil = faPencil;
   public siteLinks: string[] = [];
-  public imageType: string;
+  public imageType: ImageType;
   public columnIndex: number;
 
   constructor(
@@ -54,14 +54,14 @@ export class CardEditorComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
     this.columnIndex = this.row.columns.indexOf(this.column);
-    this.logger.info("ngOnInit:column", this.column, "this.row:", this.row);
-    this.imageType = this.column.icon ? "icon" : "image";
+    this.imageType = this.column.imageSource ? ImageType.IMAGE : ImageType.ICON;
+    this.logger.info("ngOnInit:column", this.column, "this.row:", this.row, "this.imageType:", this.imageType);
   }
 
   imageSourceOrPreview(): string {
@@ -92,7 +92,15 @@ export class CardEditorComponent implements OnInit {
     this.column.imageSource = imageSource;
   }
 
-  changeImageType(value: string) {
+  changeToImageType() {
+    this.changeImageType(ImageType.IMAGE);
+  }
+
+  changeToIconType() {
+    this.changeImageType(ImageType.ICON);
+  }
+
+  changeImageType(value: ImageType) {
     this.imageType = value;
     this.logger.info("changeImageType:", value);
     if (value === "image") {

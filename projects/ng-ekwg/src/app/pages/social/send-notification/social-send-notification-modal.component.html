@@ -5,7 +5,7 @@
     </button>
   </div>
   <div class="modal-body" *ngIf="socialEvent?.notification?.content?.title">
-    <tabset *ngIf="socialEvent?.notification?.content">
+    <tabset class="custom-tabset" *ngIf="socialEvent?.notification?.content">
       <tab [heading]="'Recipients & Addressing'">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">

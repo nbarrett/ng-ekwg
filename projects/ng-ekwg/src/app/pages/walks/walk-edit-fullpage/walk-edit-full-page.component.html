@@ -1,18 +1,3 @@
-<div [ngClass]="{'busy': notifyTarget.busy}">
-  <div class="wrapper">
-    <div id="page-body" role="main">
-      <div class="body-header">
-        <div class="breadcrumbs">
-          <ul>
-            <li><a [routerLink]="'/'" title="Home">Home</a></li>
-            <li><a [routerLink]="'/walks'" title="Walks">Walks</a></li>
-            <li *ngIf="displayedWalk" class="last">{{displayedWalk.walkAccessMode.title}} walk ({{status()
-              | walkEventType: 'description'}})
-            </li>
-          </ul>
-        </div>
-      </div>
-      <app-walk-edit *ngIf="displayedWalk" [displayedWalk]="displayedWalk"></app-walk-edit>
-    </div>
-  </div>
-</div>
+<app-page area="walks" [pageTitle]="pageTitle">
+  <app-walk-edit *ngIf="displayedWalk" [displayedWalk]="displayedWalk"></app-walk-edit>
+</app-page>

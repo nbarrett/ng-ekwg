@@ -6,9 +6,9 @@ import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { DateValue } from "../../../models/date.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
@@ -27,7 +27,7 @@ import { EventNotePipe } from "../../../pipes/event-note.pipe";
 import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
 import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
-import { BroadcastService} from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { ConfigService } from "../../../services/config.service";
@@ -61,7 +61,7 @@ interface DisplayMember {
 export class WalkEditComponent implements OnInit {
 
   @Input("displayedWalk")
-  set cloneWalk(displayedWalk: DisplayedWalk) {
+  set initialiseWalk(displayedWalk: DisplayedWalk) {
     this.logger.debug("cloning walk for edit");
     this.displayedWalk = cloneDeep(displayedWalk);
   }
@@ -118,7 +118,7 @@ export class WalkEditComponent implements OnInit {
 
   copySource = "copy-selected-walk-leader";
   copySourceFromWalkLeaderMemberId: string;
-  private copyFrom: any = {};
+  public copyFrom: any = {};
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
@@ -129,11 +129,6 @@ export class WalkEditComponent implements OnInit {
     this.logger.debug("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();
     this.siteEditService.events.subscribe(item => this.logDetectChanges());
-    setInterval(() => {
-      if (this.saveInProgress) {
-        this.logDetectChanges();
-      }
-    }, 3000);
   }
 
   notificationRequired() {
@@ -264,7 +259,6 @@ export class WalkEditComponent implements OnInit {
       this.confirmAction = ConfirmType.NONE;
       this.sendNotifications = true;
       this.updateGoogleMapsUrl();
-      this.walkDate = this.dateUtils.asDate(this.displayedWalk.walk.walkDate);
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
         this.displayedWalk.walk.walkLeaderMemberId = this.memberLoginService.loggedInMember().memberId;
@@ -323,6 +317,12 @@ export class WalkEditComponent implements OnInit {
   membersWithAliasOrMe(): DisplayMember[] {
     return this.display.members.map(member => {
       return {memberId: member.id, name: this.fullNameWithAliasOrMePipe.transform(member)};
+    });
+  }
+
+  previousWalkLeadersWithAliasOrMe(): DisplayMember[] {
+    return this.membersWithAliasOrMe().filter(member => {
+      return this.display.previousWalkLeaderIds?.includes(member.memberId);
     });
   }
 
@@ -507,7 +507,7 @@ export class WalkEditComponent implements OnInit {
 
   private logDetectChanges() {
     this.logger.debug("detectChanges");
-    this.changeDetectorRef.detectChanges();
+    // this.changeDetectorRef.detectChanges();
   }
 
   closeEditView() {
@@ -683,8 +683,7 @@ export class WalkEditComponent implements OnInit {
   onDateChange(date: DateValue) {
     if (date) {
       this.logger.debug("onDateChange:date", date);
-      this.walkDate = date.date;
-      this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
+      // this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
     }
   }
 

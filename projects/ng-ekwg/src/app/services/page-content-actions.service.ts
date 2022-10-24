@@ -128,4 +128,13 @@ export class PageContentActionsService {
   private notifyPageContentChanges() {
     this.broadcastService.broadcast(NamedEventType.PAGE_CONTENT_CHANGED);
   }
+
+  isActionButtons(row: PageContentRow): boolean {
+    return ["slides", PageContentType.ACTION_BUTTONS].includes(row?.type.toString());
+  }
+
+  isTextRow(row: PageContentRow) {
+    return row.type === PageContentType.TEXT
+  }
+
 }

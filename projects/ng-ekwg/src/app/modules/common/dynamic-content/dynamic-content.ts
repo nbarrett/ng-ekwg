@@ -4,10 +4,12 @@ import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-s
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuthService } from "../../../auth/auth.service";
 import { View } from "../../../markdown-editor/markdown-editor.component";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
+import { LoginResponse } from "../../../models/member.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { slideClasses } from "../../../services/card-utils";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
@@ -59,6 +61,7 @@ export class DynamicContentComponent implements OnInit {
     private stringUtils: StringUtilsService,
     private pageContentService: PageContentService,
     private pageService: PageService,
+    private authService: AuthService,
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
@@ -76,13 +79,13 @@ export class DynamicContentComponent implements OnInit {
       this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
       this.logger.debug("Finding page content for " + this.contentPath);
       this.refreshPageContent();
+      this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshPageContent());
       this.broadcastService.on(NamedEventType.SAVE_PAGE_CONTENT, (namedEvent: NamedEvent<PageContent>) => {
         this.logger.info("event received:", namedEvent);
         if (namedEvent.data.id === this.pageContent.id) {
           this.savePageContent();
         }
       });
-
       this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (namedEvent: NamedEvent<PageContent>) => {
         this.logger.info("event received:", namedEvent);
         this.pageContent.rows.forEach(row => row.columns.forEach(column => {
@@ -109,7 +112,7 @@ export class DynamicContentComponent implements OnInit {
       return pageContent;
     } else {
       const filteredPageContent = {
-        ...pageContent, rows: pageContent.rows.map(row => {
+        ...pageContent, rows: pageContent?.rows?.map(row => {
           const columns = this.columnsFilteredForAccessLevel(row.columns);
           return {...row, columns};
         })
@@ -168,4 +171,5 @@ export class DynamicContentComponent implements OnInit {
   public initialView(column: PageContentColumn): View {
     return column?.contentTextId ? View.VIEW : View.EDIT;
   }
+
 }

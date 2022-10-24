@@ -16,11 +16,11 @@ import { UrlService } from "../../../services/url.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 
 @Component({
-  selector: "app-dynamic-carousel",
-  templateUrl: "./dynamic-carousel.html",
-  styleUrls: ["./dynamic-carousel.sass"]
+  selector: "app-action-buttons",
+  templateUrl: "./action-buttons.html",
+  styleUrls: ["./action-buttons.sass"]
 })
-export class DynamicCarouselComponent implements OnInit {
+export class ActionButtonsComponent implements OnInit {
   @Input()
   public pageContent: PageContent;
   @Input()
@@ -49,7 +49,7 @@ export class DynamicCarouselComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicCarouselComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ActionButtonsComponent, NgxLoggerLevel.OFF);
   }
 
   @HostListener("window:resize", ["event"])

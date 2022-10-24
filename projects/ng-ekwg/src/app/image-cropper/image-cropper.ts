@@ -1,21 +1,37 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
-import { faArrowRightArrowLeft, faClose, faMagnifyingGlassMinus, faMagnifyingGlassPlus, faRedoAlt, faRotateLeft, faUpDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRightArrowLeft,
+  faClose,
+  faCompress,
+  faCompressAlt,
+  faExpand,
+  faGripLinesVertical,
+  faMagnifyingGlassMinus,
+  faMagnifyingGlassPlus,
+  faRedoAlt,
+  faRotateLeft,
+  faRulerCombined,
+  faRulerVertical,
+  faUpDown
+} from "@fortawesome/free-solid-svg-icons";
 import { faRotateRight } from "@fortawesome/free-solid-svg-icons/faRotateRight";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
-import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage } from "ngx-image-cropper";
+import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage, OutputFormat } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
 import { FileUtilsService } from "../file-utils.service";
 import { AlertTarget } from "../models/alert-target.model";
-import { AwsFileData, AwsFileUploadResponse, FileNameData, ImageData } from "../models/aws-object.model";
+import { AwsFileData, AwsFileUploadResponse, Compression, FileNameData, ImageData } from "../models/aws-object.model";
 import { DateValue } from "../models/date.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { FileUploadService } from "../services/file-upload.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../services/notifier.service";
 import { NumberUtilsService } from "../services/number-utils.service";
+
+const MAX_SIZE = 9984;
 
 @Component({
   selector: "app-image-cropper",
@@ -51,9 +67,8 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   private existingTitle: string;
   public uploader: FileUploader;
   public originalFile: File;
-  public format = "png";
+  public format: OutputFormat = "png";
   public aspectRatio: number;
-  private uploadInProgress: boolean;
   public dimensions: Dimensions[] = [
     {width: 1, height: 1},
     {width: 3, height: 2},
@@ -67,6 +82,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     {width: 940, height: 300},
   ];
   public dimension: Dimensions = this.dimensions[0];
+  public compressionIndex = 0;
   faClose = faClose;
   faSave = faSave;
   faRotateRight = faRotateRight;
@@ -77,12 +93,35 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   faArrowRightArrowLeft = faArrowRightArrowLeft;
   faUpDown = faUpDown;
 
+  // faAngleDown = faAngleDown;
+  // faAngleUp = faAngleUp;
+  // faArrowLeft = faArrowLeft;
+  // faArrowLeftRotate = faArrowLeftRotate;
+  // faArrowRightFromFile = faArrowRightFromFile;
+  faCompress = faCompress;
+  faExpand = faExpand;
+  faCompressAlt = faCompressAlt;
+  // faCrop = faCrop;
+  // faFilePen = faFilePen;
+  // faGripLines = faGripLines;
+  faGripLinesVertical = faGripLinesVertical;
+  // faLeftRight = faLeftRight;
+  // faRotate = faRotate;
+  faRulerCombined = faRulerCombined;
+  faRulerVertical = faRulerVertical;
+  // faSave = faSave;
+  // faSpinner = faSpinner;
+  // faSyncAlt = faSyncAlt;
+  // faUndoAlt = faUndoAlt;
+  action: string;
+  public compressions: Compression[];
+
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
               private notifierService: NotifierService,
               private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
@@ -112,9 +151,23 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.preloadImage) {
+      this.notify.success({title: "Image Cropper", message: "loading file into editor"});
       this.fileUtils.urlToFile(this.preloadImage, "file-crop.jpeg")
         .then(file => this.processSingleFile(file));
     }
+  }
+
+  private calculateCompressions(): Compression[] {
+    return [0, 64, 128, 200, 256, 384, 512, 640, 768, 896, 1024, 2048, 3072, 3840, 4096, 5120, 6400, 7040, 8192, 8704, MAX_SIZE]
+      .filter((_: number, index) => this.original?.base64?.length || index === 0)
+      .map((item: number, index) => {
+        const bytes = item / MAX_SIZE * this.original?.base64?.length;
+        return ({
+          index,
+          bytes,
+          displaySize: item === 0 ? "(original bytes)" : this.numberUtils.humanFileSize2(bytes)
+        });
+      });
   }
 
   fileChangeEvent(event: Event): void {
@@ -142,15 +195,13 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.showCropper = true;
     this.logger.info("Image loaded:", $event);
     this.original = $event.original;
-    this.originalSize = this.numberUtils.humanFileSize(this.original.base64.length)
-      + " - humanFileSize:" + this.numberUtils.humanFileSize(this.original.base64.length, true)
-      + " - humanFileSize2:" + this.numberUtils.humanFileSize2(this.original.base64.length)
-      + " - humanFileSizeValor:" + this.numberUtils.humanFileSizeValor(this.originalFile.size);
+    this.originalSize = this.numberUtils.humanFileSize(this.original.base64.length);
     this.setResizeToWidth();
+    this.compressions = this.calculateCompressions();
   }
 
   private setResizeToWidth() {
-    this.resizeToWidth = this.maintainQuality ? this.original.size.width : 500;
+    this.resizeToWidth = this.maintainQuality ? this.original.size.width : 1500;
   }
 
   cropperReady(sourceImageDimensions: Dimensions) {
@@ -158,8 +209,13 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.notify.hide();
   }
 
+  error(errorEvent: ErrorEvent) {
+    this.notify.error({title: "Unexpected Error", message: errorEvent});
+  }
+
   loadImageFailed($event: void) {
     this.logger.info("Load failed:", $event);
+    this.notify.error({title: "Load failed", message: $event});
   }
 
   rotateLeft() {
@@ -280,9 +336,14 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.imageCropperComponent.crop();
   }
 
+  changeCompression(event: any) {
+    this.logger.info("changeCompression:event:", event, "compressionIndex:", this.compressionIndex, "compression:", this.compressions[this.compressionIndex]);
+  }
+
   saveImage() {
     try {
-      this.uploadInProgress = true;
+      this.notify.success({title: "File upload", message: "saving image"});
+      this.action = "saving";
       this.uploader.clearQueue();
       this.uploader.addToQueue([this.awsFileData().file]);
       this.uploader.uploadAll();
@@ -291,12 +352,19 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
         const awsFileName = `${response?.response?.fileNameData?.rootFolder}/${response?.response?.fileNameData?.awsFileName}`;
         this.logger.info("received response:", uploaderResponse, "awsFileName:", awsFileName, "local originalFile.name:", this.originalFile.name, "aws originalFileName", response?.response?.fileNameData.originalFileName);
         this.save.next(this.awsFileData(awsFileName));
-        this.uploadInProgress = false;
+        this.action = null;
+        this.notify.success({title: "File upload", message: "image was saved successfully"});
       });
-    } catch (e) {
-      this.logger.error("received error response:", e);
-      this.uploadInProgress = false;
+    } catch (error) {
+      this.logger.error("received error response:", error);
+      this.action = null;
+      this.notify.error({title: "File upload", message: error});
     }
   }
+
+  progress() {
+    return this.uploader.progress;
+  }
+
 }
 

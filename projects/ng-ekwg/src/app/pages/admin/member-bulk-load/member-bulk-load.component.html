@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-sm-12">
       <div class="form-group">
-        <tabset>
+        <tabset class="custom-tabset">
           <tab [heading]="'Help'">
             <div class="admin-frame round-except-top-left">
               <div class="admin-header-white-background rounded">
@@ -163,7 +163,7 @@
                       </select>
                     </div>
                   </div>
-                  <tabset *ngIf="uploadSession">
+                  <tabset class="custom-tabset" *ngIf="uploadSession">
                     <tab [heading]="memberTabHeading" class="table-responsive">
                       <table class="round tbl-green-g table-striped table-hover table-sm">
                         <thead>

@@ -1,8 +1,4 @@
 <app-page>
-  <div *ngIf="!loggedIn">
-    <div class="well"><img src="/assets/images/ramblers/icon-members.png" alt="members area">You need to be logged in
-      to view this page. Click the link above to login.
-    </div>
-  </div>
+  <app-login-required></app-login-required>
   <app-dynamic-content *ngIf="loggedIn" [anchor]="'action-buttons'"></app-dynamic-content>
 </app-page>

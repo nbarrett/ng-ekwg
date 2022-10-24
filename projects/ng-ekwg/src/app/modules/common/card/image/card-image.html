@@ -1,6 +1,6 @@
-<img *ngIf="imageSource" class="card-img-top" height="200"
-     [src]="imageSource" [routerLink]="imageLink">
-<div *ngIf="!imageSource || icon" class="row no-image">
+<img *ngIf="cardShouldHaveImage()" class="card-img-top" height="200"
+     [src]="imageSource" [routerLink]="'/'+imageLink">
+<div *ngIf="cardMissingImage()|| cardShouldHaveIcon()" class="row no-image">
   <div class="col align-self-center text-center">
     <fa-icon [icon]="icon || faImage" class="fa-icon fa-3x"></fa-icon>
     <div *ngIf="!icon">No image available</div>

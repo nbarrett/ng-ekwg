@@ -72,7 +72,7 @@ export class NumberUtilsService {
   }
 
   humanFileSizeValor(size: number) {
-    return this.asNumber(size / 1024 / 1024, 2) + " MB";
+    return this.asNumber(size / 1024 / 1024, 2) + " mb";
   }
 
   humanFileSize2(size) {

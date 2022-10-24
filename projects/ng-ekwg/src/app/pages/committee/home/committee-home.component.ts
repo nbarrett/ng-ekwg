@@ -4,7 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { CommitteeFile, CommitteeYear } from "../../../models/committee.model";
+import { CommitteeFile, CommitteeYear, committeeYearsPath } from "../../../models/committee.model";
 import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
 import { AccessLevel } from "../../../models/member-resource.model";
 import { LoginResponse, Member } from "../../../models/member.model";
@@ -111,8 +111,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   }
 
   private generateActionButtons() {
-    const path = "committee#committee-years";
-    this.pageContentService.findByPath(path)
+    this.pageContentService.findByPath(committeeYearsPath)
       .then(async response => {
         this.logger.debug("response:", response);
         if (!response) {
@@ -134,12 +133,12 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
             });
           Promise.all(unresolvedColumns).then((columns: PageContentColumn[]) => {
             const data: PageContent = {
-              path,
+              path: committeeYearsPath,
               rows: [
                 {
                   maxColumns: 4,
                   showSwiper: true,
-                  type: PageContentType.SLIDES,
+                  type: PageContentType.ACTION_BUTTONS,
                   columns
                 }]
             };

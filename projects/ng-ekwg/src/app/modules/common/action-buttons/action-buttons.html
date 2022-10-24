@@ -46,7 +46,7 @@
 <div class="row">
   <ng-container *ngFor="let column of viewableColumns(); let columnIndex = index;">
     <div [class]="slideClasses()"
-         [id]="actions.columnIdentifierFor(columnIndex,column.contentTextId||'slide')">
+         [id]="actions.columnIdentifierFor(columnIndex,column.contentTextId || 'card')">
       <app-card-editor
         [rowIndex]="rowIndex"
         [column]="column"

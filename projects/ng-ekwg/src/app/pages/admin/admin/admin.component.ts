@@ -75,7 +75,7 @@ export class AdminComponent implements OnInit, OnDestroy {
               {
                 maxColumns: 4,
                 showSwiper: false,
-                type: PageContentType.SLIDES,
+                type: PageContentType.ACTION_BUTTONS,
                 columns: [
                   {
                     accessLevel: AccessLevel.loggedInMember,

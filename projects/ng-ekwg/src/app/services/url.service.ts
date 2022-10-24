@@ -1,4 +1,4 @@
-import { DOCUMENT } from "@angular/common";
+import { DOCUMENT, Location } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
@@ -20,10 +20,16 @@ import { isMongoId } from "./mongo-utils";
 export class UrlService {
   private logger: Logger;
   private API_PATH_PREFIX = "api/aws/s3/";
+
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
+              private location: Location,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
+  }
+
+  pathContains(path: string): boolean {
+    return this.location.path().includes(path);
   }
 
   navigateTo(...pathSegments: string[]): Promise<boolean> {
@@ -61,8 +67,8 @@ export class UrlService {
     return this.document.location.href;
   }
 
-  baseUrl(optionalUrl?: string): string {
-    const url = new URL(optionalUrl || this.absUrl());
+  baseUrl(): string {
+    const url = new URL(this.absUrl());
     return `${url.protocol}//${url.host}`;
   }
 

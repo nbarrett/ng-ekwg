@@ -1,7 +1,6 @@
 .btn
   display: inline-block
   font-family: "rucksack"
-  font-weight: 400
   color: $ramblers-colour-granite
   text-align: center
   vertical-align: middle
@@ -13,7 +12,6 @@
   line-height: 1em
   border-radius: .25rem
   transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
-
 
 .btn-primary
   color: $ramblers-colour-black
@@ -252,11 +250,12 @@
   border: none
   padding: 8px 10px 8px 22px
   font-size: 11px
-  font-weight: bold
   -webkit-border-radius: 6px 6px 6px 6px
   -moz-border-radius: 6px 6px 6px 6px
   border-radius: 6px 6px 6px 6px
   position: relative
+  font-weight: 700
+  height: 29.5px
 
 .button-form:hover
   @extend .button-image
@@ -293,6 +292,9 @@
 .cta-red, .cta-red a, .cta-red:hover, .cta-red a:hover
   @extend .button-image
   background-color: #C60C30
+
+.cta-blue, .cta-blue a, .cta-blue:hover, .cta-blue a:hover
+  background: #007A87
 
 .button-form-left
   float: left
@@ -363,3 +365,20 @@
 .yellow-confirm:hover
   @extend .button-image
   background-color: #d6d072
+
+.cta-button
+  margin: 0 0 20px 0
+  float: left
+  width: 100%
+  color: $ramblers-colour-cloudy
+  padding: 7px 0
+
+.cta-button a
+  display: block
+  padding: 5px 16px 5px 35px
+  font-size: 16px
+  font-weight: bold
+  color: $ramblers-colour-cloudy
+
+.cta-button p
+  padding: 0 15px

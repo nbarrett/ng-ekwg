@@ -1,6 +1,6 @@
 <app-page>
-  <app-committee-year [committeeYear]="committeeYear"  [notify]="notify"></app-committee-year>
   <app-dynamic-content [anchor]="'action-buttons'"></app-dynamic-content>
+  <app-committee-year [committeeYear]="committeeYear"  [notify]="notify"></app-committee-year>
   <div class="row">
     <div class="col-sm-12">
       <div *ngIf="showAlertMessage()" class="row">
@@ -14,5 +14,4 @@
       </div>
     </div>
   </div>
-  <app-dynamic-content [anchor]="'committee-years'"></app-dynamic-content>
 </app-page>

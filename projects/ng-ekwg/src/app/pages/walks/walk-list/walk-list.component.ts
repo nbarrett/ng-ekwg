@@ -87,7 +87,7 @@ export class WalkListComponent implements OnInit {
       this.currentWalkId = paramMap.get("walk-id");
       this.logger.debug("walk-id from route params:", this.currentWalkId);
     });
-    this.display.refreshMembers();
+    this.display.refreshCachedData();
     this.refreshWalks("ngOnInit");
     this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
     this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));

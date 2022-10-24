@@ -44,12 +44,12 @@
                               [row]="row">
         </app-actions-dropdown>
       </div>
-      <app-dynamic-carousel *ngIf="row.type==='slides'"
-                            [column]="editNameEnabled"
-                            [pageContent]="pageContent"
-                            [rowIndex]="rowIndex">
-      </app-dynamic-carousel>
-      <ng-container *ngIf="row.type==='text'">
+      <app-action-buttons *ngIf="actions.isActionButtons(row)"
+                          [column]="editNameEnabled"
+                          [pageContent]="pageContent"
+                          [rowIndex]="rowIndex">
+      </app-action-buttons>
+      <ng-container *ngIf="actions.isTextRow(row)">
         <div class="row">
           <div *ngFor="let column of row?.columns; let columnIndex = index;"
                [class]="slideClasses(row?.columns.length)">
@@ -85,12 +85,12 @@
   <ng-container *ngIf="!siteEditService.active()">
     <ng-container *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <ng-container *ngIf="false">{{'row ' + (rowIndex + 1) + ' ' + row.type  }}</ng-container>
-      <app-dynamic-carousel *ngIf="row.type==='slides'"
-                            [column]="editNameEnabled"
-                            [pageContent]="pageContent"
-                            [rowIndex]="rowIndex">
-      </app-dynamic-carousel>
-      <ng-container *ngIf="row.type==='text'">
+      <app-action-buttons *ngIf="actions.isActionButtons(row)"
+                          [column]="editNameEnabled"
+                          [pageContent]="pageContent"
+                          [rowIndex]="rowIndex">
+      </app-action-buttons>
+      <ng-container *ngIf="actions.isTextRow(row)">
         <div class="row">
           <app-markdown-editor *ngFor="let column of row?.columns; let columnIndex = index;"
                                [class]="'col-sm-' + column.columns"

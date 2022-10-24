@@ -38,7 +38,7 @@ export class LoginPanelComponent implements OnInit {
       const loggedInMember = this.memberLoginService.loggedInMember();
       return `Logout ${loggedInMember.firstName} ${loggedInMember.lastName}`;
     } else {
-      return "Login to EWKG Site";
+      return "Login to EKWG Site";
     }
   }
 

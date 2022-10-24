@@ -53,7 +53,7 @@ export class CommitteeNotificationSettingsComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -68,7 +68,7 @@ export class CommitteeNotificationSettingsComponent implements OnInit {
     this.mailchimpConfig.getConfig()
       .then(config => {
         this.config = config;
-        this.logger.debug("retrieved config", config);
+        this.logger.info("retrieved config", config);
       });
 
     this.mailchimpCampaignService.list({
@@ -78,7 +78,7 @@ export class CommitteeNotificationSettingsComponent implements OnInit {
       title: this.campaignSearchTerm
     }).then(response => {
       this.campaigns = response;
-      this.logger.debug("response.data", response.data);
+      this.logger.debug("mailchimpCampaignService response.data", response.data);
       this.notify.success({
         title: "Mailchimp Campaigns",
         message: "Found " + this.campaigns.data.length + " draft campaigns matching " + this.campaignSearchTerm

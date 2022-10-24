@@ -3,6 +3,8 @@ import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
 import { DateValue } from "./date.model";
 
+export const committeeYearsPath = "committee#committee-years";
+
 export interface GroupEventType {
   eventType: string;
   area: string;

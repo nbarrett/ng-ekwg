@@ -6,6 +6,12 @@ export interface FileNameData {
   title?: string;
 }
 
+export interface Compression {
+  index: number;
+  bytes: number;
+  displaySize: string;
+}
+
 export interface AwsFileData {
   awsFileName?: string;
   file: File;

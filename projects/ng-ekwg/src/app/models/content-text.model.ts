@@ -27,7 +27,12 @@ export interface PageContentApiResponse extends ApiResponse {
 
 export enum PageContentType {
   TEXT = "text",
-  SLIDES = "slides",
+  ACTION_BUTTONS = "action-buttons",
+}
+
+export enum ImageType {
+  IMAGE = "image",
+  ICON = "icon",
 }
 
 export interface PageContentRow {

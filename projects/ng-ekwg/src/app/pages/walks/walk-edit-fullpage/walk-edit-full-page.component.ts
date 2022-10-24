@@ -21,9 +21,11 @@ export class WalkEditFullPageComponent implements OnInit {
   public displayedWalk: DisplayedWalk;
   public notifyTarget: AlertTarget = {};
   private notify: AlertInstance;
+  pageTitle: string;
 
   constructor(private walksService: WalksService,
               private route: ActivatedRoute,
+              private walksReferenceService: WalksReferenceService,
               private dateUtils: DateUtilsService,
               private display: WalkDisplayService,
               private notifierService: NotifierService,
@@ -45,6 +47,7 @@ export class WalkEditFullPageComponent implements OnInit {
           },
           status: EventType.AWAITING_LEADER
         };
+        this.setPageTitle();
       } else {
         const walkId = paramMap.get("walk-id");
         this.logger.debug("querying walk-id", walkId);
@@ -55,9 +58,14 @@ export class WalkEditFullPageComponent implements OnInit {
             if (this.displayedWalk.latestEventType) {
               this.setStatus(this.displayedWalk.latestEventType.eventType);
             }
+            this.setPageTitle();
           });
       }
     });
+  }
+
+  private setPageTitle() {
+    this.pageTitle = this.displayedWalk.walkAccessMode.title + " walk " + this.walksReferenceService.toWalkEventType(this.status())?.description;
   }
 
   setStatus(status: EventType) {

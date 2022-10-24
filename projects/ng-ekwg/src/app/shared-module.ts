@@ -25,21 +25,21 @@ import { CustomNGXLoggerService, LoggerModule, NgxLoggerLevel } from "ngx-logger
 import { MarkdownModule } from "ngx-markdown";
 import { TagifyModule } from "ngx-tagify";
 import { UiSwitchModule } from "ngx-ui-switch";
-import { AccordionGroupComponent } from "./accordion/accordion-group.component";
 import { LoggedInGuard } from "./admin-login-guard.service";
 import { AuthInterceptor } from "./auth/auth.interceptor";
 import { ContactUsComponent } from "./contact-us/contact-us-directive.component";
 import { DatePickerComponent } from "./date-picker/date-picker.component";
 import { ImageCropperAndResizerComponent } from "./image-cropper/image-cropper";
 import { MarkdownEditorComponent } from "./markdown-editor/markdown-editor.component";
+import { ActionButtonsComponent } from "./modules/common/action-buttons/action-buttons";
 import { ActionsDropdownComponent } from "./modules/common/actions-dropdown/actions-dropdown";
 import { CardEditorComponent } from "./modules/common/card-editor/card-editor";
 import { CardImageComponent } from "./modules/common/card/image/card-image";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
-import { DynamicCarouselComponent } from "./modules/common/dynamic-carousel/dynamic-carousel";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
 import { DynamicContentComponent } from "./modules/common/dynamic-content/dynamic-content";
 import { IconExamplesComponent } from "./modules/common/icon-examples/icon-examples";
+import { LoginRequiredComponent } from "./modules/common/login-required/login-required";
 import { SvgComponent } from "./modules/common/svg/svg";
 import { NotificationUrlComponent } from "./notification-url/notification-url.component";
 import { PageComponent } from "./page/page.component";
@@ -89,7 +89,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
 
 @NgModule({
   imports: [
-    AccordionModule.forRoot(),
     AlertModule.forRoot(),
     Angular2CsvModule,
     BsDatepickerModule.forRoot(),
@@ -117,7 +116,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     UiSwitchModule,
   ],
   declarations: [
-    AccordionGroupComponent,
     ActionsDropdownComponent,
     CardImageComponent,
     ContactUsComponent,
@@ -128,7 +126,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
-    DynamicCarouselComponent,
+    ActionButtonsComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
     EventNotePipe,
@@ -138,6 +136,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     FullNameWithAliasPipe,
     HumanisePipe,
     CardEditorComponent,
+    LoginRequiredComponent,
     IconExamplesComponent,
     ImageCropperAndResizerComponent,
     ImageEditComponent,
@@ -162,7 +161,6 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     ValueOrDefaultPipe,
   ],
   exports: [
-    AccordionGroupComponent,
     AccordionModule,
     ActionsDropdownComponent,
     AlertModule,
@@ -182,7 +180,8 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatesPipe,
     DisplayDayPipe,
     CardEditorComponent,
-    DynamicCarouselComponent,
+    LoginRequiredComponent,
+    ActionButtonsComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
     EventNotePipe,

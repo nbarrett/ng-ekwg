@@ -1,9 +1,14 @@
 <div class="card shadow clickable h-100 mb-4">
   <app-card-image
+    [imageType]="imageType"
     [icon]="iconService.iconForName(column.icon)"
     [imageSource]="imageSourceOrPreview()"
     [imageLink]="column.href"></app-card-image>
   <div class="card-body">
+    <h4 class="card-title">
+      <a class="rams-text-decoration-pink" [href]="column.href"
+         target="_self">{{column.title}}</a>
+    </h4>
     <app-image-cropper
       *ngIf="editActive"
       [preloadImage]="column?.imageSource"
@@ -11,11 +16,7 @@
       (quit)="exitImageEdit()"
       (save)="imagedSaved($event)">
     </app-image-cropper>
-    <h4 class="card-title">
-      <a class="rams-text-decoration-pink" [href]="column.href"
-         target="_self">{{column.title}}</a>
-    </h4>
-    <div *ngIf="siteEditService.active()" class="card-title">
+    <ng-container *ngIf="siteEditService.active()">
       <div class="form-group">
         <label class="form-label"
                [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title')">Title</label>
@@ -39,7 +40,7 @@
                  class="custom-control-input"
                  [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
                  [ngModel]="imageType"
-                 (change)="changeImageType('image')"
+                 (change)="changeToImageType()"
                  value="image"/>
           <label class="custom-control-label"
                  [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image')">Use Image</label>
@@ -50,7 +51,7 @@
                  [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
                  class="custom-control-input"
                  [ngModel]="imageType"
-                 (change)="changeImageType('icon')"
+                 (change)="changeToIconType()"
                  value="icon"/>
           <label class="custom-control-label" [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon')">Use
             Icon</label>
@@ -81,7 +82,7 @@
                   [ngValue]="accessLevel.id">
         </select>
       </div>
-    </div>
+    </ng-container>
     <app-markdown-editor class="card-text"
                          (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
                          [actionCaptionSuffix]="'text'"
@@ -98,7 +99,7 @@
         <fa-icon [icon]="faPencil"></fa-icon>
         <span>edit image</span>
       </div>
-      <app-actions-dropdown [columnIndex]="column"
+      <app-actions-dropdown [columnIndex]="columnIndex"
                             [pageContent]="pageContent"
                             [row]="row">
       </app-actions-dropdown>

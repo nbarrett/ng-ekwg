@@ -3,6 +3,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { UrlService } from "../../../services/url.service";
 
 @Component({
   selector: "app-navbar",
@@ -13,7 +14,10 @@ export class NavbarComponent implements OnInit {
   private logger: Logger;
   public navbarContentWithinCollapse: boolean;
 
-  constructor(private broadcastService: BroadcastService<boolean>, loggerFactory: LoggerFactory) {
+  constructor(
+    private broadcastService: BroadcastService<boolean>,
+    public urlService: UrlService,
+    loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
   }
 

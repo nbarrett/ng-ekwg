@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import cloneDeep from "lodash-es/cloneDeep";
-import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
+import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
-import { CommitteeFile, CommitteeYear } from "../../../models/committee.model";
+import { CommitteeFile, CommitteeYear, committeeYearsPath } from "../../../models/committee.model";
+import { PageContent, PageContentColumn, PageContentRow, PageContentType } from "../../../models/content-text.model";
 import { LoginResponse } from "../../../models/member.model";
 import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
@@ -15,6 +15,8 @@ import { CommitteeQueryService } from "../../../services/committee/committee-que
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { PageContentActionsService } from "../../../services/page-content-actions.service";
+import { PageContentService } from "../../../services/page-content.service";
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 import { CommitteeEditFileModalComponent } from "../edit/committee-edit-file-modal.component";
@@ -29,13 +31,22 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   @Input()
   public notify: AlertInstance;
-  @Input()
-  public committeeYear: CommitteeYear;
+  public filesForYear: CommitteeFile[];
 
+  @Input("committeeYear") set acceptChangesFrom(committeeYear: CommitteeYear) {
+    this.logger.debug("committeeYear:input", committeeYear);
+    this.committeeYear = committeeYear;
+    this.setupDateForYear();
+  }
+
+  public committeeYear: CommitteeYear;
   private logger: Logger;
   private subscription: Subscription;
   public committeeFile: CommitteeFile;
   public confirm = new Confirm();
+  public committeeYearTitle = "";
+  public imageSource: string;
+
   constructor(
     public memberLoginService: MemberLoginService,
     private notifierService: NotifierService,
@@ -44,13 +55,15 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private authService: AuthService,
     private modalService: BsModalService,
+    public pageContentService: PageContentService,
+    public actions: PageContentActionsService,
     public committeeQueryService: CommitteeQueryService,
     private committeeFileService: CommitteeFileService,
     private urlService: UrlService,
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -59,8 +72,8 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit");
-    this.committeeQueryService.queryAllFiles();
+    this.logger.debug("ngOnInit:committeeYear", this.committeeYear);
+    this.committeeQueryService.queryAllFiles().then(() => this.setupDateForYear());
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.committeeQueryService.queryAllFiles();
     });
@@ -72,7 +85,23 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
         this.logger.debug("committeeYear:", committeeYear);
         this.committeeYear = committeeYear;
       }
+      this.setupDateForYear();
     });
+  }
+
+  private async setupDateForYear() {
+    this.committeeYearTitle = this.committeeYear?.year ? `${this.committeeYear?.year} Committee` : "";
+    this.filesForYear = this.committeeQueryService.committeeFilesForYear(this.committeeYear?.year);
+    const pageContent: PageContent = await this.pageContentService.findByPath(committeeYearsPath);
+    this.imageSource = this.imageSourceForRelativePath(pageContent);
+  }
+
+  private imageSourceForRelativePath(pageContent: PageContent) {
+    const pageContentRow: PageContentRow = pageContent.rows.find(row => this.actions.isActionButtons(row));
+    const relativeUrl = this.committeeYear?.latestYear ? `${this.urlService.relativeUrl()}/year/${this.committeeQueryService?.latestYear()}` : this.urlService.relativeUrl();
+    this.logger.debug("pageContentRow:", pageContentRow, "relativeUrl:", relativeUrl, "committeeYear:", this.committeeYear);
+    const pageContentColumn: PageContentColumn = pageContentRow?.columns.find(column => relativeUrl.endsWith(column.href));
+    return pageContentColumn?.imageSource;
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile) {
@@ -102,19 +131,6 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   deleteCommitteeFile() {
     this.confirm.type = ConfirmType.DELETE;
-  }
-
-  createModalOptions(initialState?: any): ModalOptions {
-    return {
-      class: "modal-xl",
-      animated: false,
-      backdrop: "static",
-      ignoreBackdropClick: false,
-      keyboard: true,
-      focus: true,
-      show: true,
-      initialState: cloneDeep(initialState)
-    };
   }
 
   sendNotification(committeeFile: CommitteeFile) {

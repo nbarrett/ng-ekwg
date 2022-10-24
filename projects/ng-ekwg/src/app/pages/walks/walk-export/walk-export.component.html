@@ -1,26 +1,14 @@
-<div [ngClass]="{'busy': walkExportTarget.busy}">
-  <div class="wrapper">
-    <div id="page-body" role="main">
-      <div class="body-header">
-        <div class="breadcrumbs">
-          <ul>
-            <li><a [routerLink]="'/'" title="Home">Home</a></li>
-            <li><a [routerLink]="'/walks'" title="Walks">Walks</a></li>
-            <li class="last">Export</li>
-          </ul>
+<app-page area="walks" pageTitle="Walk Export">
+  <tabset class="custom-tabset">
+    <tab active="true" [heading]="'Walk upload selection'">
+      <div class="img-thumbnail thumbnail-admin-edit">
+        <div class="form-group">
+          <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}">
+            <fa-icon [icon]="walkExportTarget.alert.icon"></fa-icon>
+            <strong *ngIf="walkExportTarget.alertTitle">
+              {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
+          </div>
         </div>
-      </div>
-      <div *ngIf="true">
-        <tabset>
-          <tab active="true" [heading]="'Walk upload selection'">
-            <div class="img-thumbnail thumbnail-admin-edit">
-              <div class="form-group">
-                <div *ngIf="walkExportTarget.showAlert" class="alert {{walkExportTarget.alertClass}}">
-                  <fa-icon [icon]="walkExportTarget.alert.icon"></fa-icon>
-                  <strong *ngIf="walkExportTarget.alertTitle">
-                    {{walkExportTarget.alertTitle}}: </strong> {{walkExportTarget.alertMessage}}
-                </div>
-              </div>
               <div class="row mb-2">
                 <div class="col-sm-12">
                   <input *ngIf="walksDownloadFileContents().length > 0" type="submit"
@@ -137,7 +125,8 @@
                         <fa-icon [icon]="faCircleInfo" class="blue-icon"></fa-icon>
                       <td *ngIf="audit.status==='error'">
                         <fa-icon [icon]="faRemove" class="red-icon"></fa-icon>
-                      <td>{{audit.message}}<span *ngIf="audit.errorResponse">: {{audit.errorResponse | valueOrDefault}}</span></td>
+                      <td>{{audit.message}}<span
+                        *ngIf="audit.errorResponse">: {{audit.errorResponse | valueOrDefault}}</span></td>
                     </tr>
                     </tbody>
                   </table>
@@ -145,8 +134,5 @@
               </div>
             </div>
           </tab>
-        </tabset>
-      </div>
-    </div>
-  </div>
-</div>
+  </tabset>
+</app-page>
