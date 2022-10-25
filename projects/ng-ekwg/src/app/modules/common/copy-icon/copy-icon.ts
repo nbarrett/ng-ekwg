@@ -13,12 +13,18 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 })
 
 export class CopyIconComponent implements OnInit {
-  @Input()
-  elementName: string;
+
+  @Input("elementName") set acceptChangesFrom(elementName: string) {
+    this.logger.debug("elementName:input", elementName);
+    this.elementName = elementName;
+    this.initialiseTooltips();
+  }
+
   @Input()
   value: string;
   @Input()
   icon: IconDefinition;
+  elementName: string;
 
   faCopy: IconDefinition = faCopy;
   private logger: Logger;
@@ -34,9 +40,13 @@ export class CopyIconComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("initialised with elementName", this.elementName, "value:", this.value);
+    this.initialiseTooltips();
+    this.icon = this.icon || faCopy;
+  }
+
+  private initialiseTooltips() {
     this.tooltipPreCopy = `Copy ${this.elementName} to clipboard`;
     this.tooltipPostCopy = `${this.elementName} has been copied to clipboard!`;
-    this.icon = this.icon || faCopy;
   }
 
   copyToClipboard(text: string) {

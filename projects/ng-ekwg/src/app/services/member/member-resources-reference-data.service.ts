@@ -21,7 +21,7 @@ export class MemberResourcesReferenceDataService {
               private contentMetadataService: ContentMetadataService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.OFF);
   }
 
   subjects(): ResourceSubject[] {

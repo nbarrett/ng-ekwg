@@ -1,4 +1,6 @@
-export function slideClasses(slideCount: number, marginBottom: string = "") {
+export const CARD_MARGIN_BOTTOM = "mb-4";
+
+export function cardClasses(slideCount: number, marginBottom: string = "") {
   switch (slideCount) {
     case 4:
       return (marginBottom + " col-sm-12 col-md-6 col-lg-4 col-xl-3").trim();

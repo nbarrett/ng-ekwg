@@ -127,10 +127,6 @@ export class HowToModalComponent implements OnInit {
     this.bsModalRef.hide();
   }
 
-  cancelDeleteMemberResource() {
-    this.confirmType = ConfirmType.NONE;
-  }
-
   cancelMemberResourceDetails() {
     this.close();
   }

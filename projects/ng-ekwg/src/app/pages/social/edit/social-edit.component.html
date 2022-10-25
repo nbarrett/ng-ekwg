@@ -1,10 +1,10 @@
 <div *ngIf="socialEvent" class="row">
   <div class="col-sm-12">
     <tabset class="custom-tabset">
-      <tab heading="Title And Description">
+      <tab heading="Social Event Details">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
-            <div class="col col-sm-12">
+            <div class="col-sm-12">
               <div class="form-group">
                 <label for="title">Title</label>
                 <input [disabled]="!display.allow.edits"
@@ -13,29 +13,76 @@
                        id="title"
                        placeholder="Enter title for social event here"/>
               </div>
-
-              <div class="row">
-                <div [ngClass]="socialEvent.thumbnail ? 'col-sm-8': 'col-sm-12'">
-                  <div class="event-description">
-                    <div class="form-group">
-                      <label for="longer-description">Description
-                        <a *ngIf="!longerDescriptionPreview" (click)="previewLongerDescription()" [href]="">
-                          <fa-icon [icon]="faEye" class="markdown-preview-icon"></fa-icon>
-                          preview</a>
-                        <a *ngIf="longerDescriptionPreview" (click)="editLongerDescription()" [href]="">
-                          <fa-icon [icon]="faPencil" class="markdown-preview-icon"></fa-icon>
-                          edit</a>
-                      </label>
-                      <div class="green-bullets-no-rule">
-                        <p *ngIf="longerDescriptionPreview"
-                           (click)="editLongerDescription()"
-                           markdown [data]="socialEvent.longerDescription"
-                           id="longer-description-preview"></p>
-                      </div>
-                      <textarea *ngIf="!longerDescriptionPreview"
-                                [disabled]="!display.allow.edits"
-                                (blur)="previewLongerDescription()"
-                                [(ngModel)]="socialEvent.longerDescription"
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <app-date-picker [label]="'Social Event Date'"
+                                 [size]="'md'"
+                                 (dateChange)="eventDateChanged($event)"
+                                 [value]="eventDate">
+                </app-date-picker>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label for="start-time">Start Time</label>
+                <input [disabled]="!display.allow.edits"
+                       [(ngModel)]="socialEvent.eventTimeStart" type="text"
+                       class="form-control input-sm" id="start-time"
+                       placeholder="Enter Start time here"/>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label for="end-time">End Time</label>
+                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.eventTimeEnd"
+                       type="text" class="form-control input-sm" id="end-time"
+                       placeholder="Enter End time here"/>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-8">
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.location"
+                       type="text" class="form-control input-sm" id="location"
+                       placeholder="Enter Location here">
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="post-code">Postcode</label>
+                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.postcode"
+                       type="text" class="form-control input-sm" id="post-code"
+                       placeholder="Enter Postcode here">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="event-description">
+                <div class="form-group">
+                  <label for="longer-description">Description
+                    <a *ngIf="!longerDescriptionPreview" (click)="previewLongerDescription()" [href]="">
+                      <fa-icon [icon]="faEye" class="markdown-preview-icon"></fa-icon>
+                      preview</a>
+                    <a *ngIf="longerDescriptionPreview" (click)="editLongerDescription()" [href]="">
+                      <fa-icon [icon]="faPencil" class="markdown-preview-icon"></fa-icon>
+                      edit</a>
+                  </label>
+                  <div class="green-bullets-no-rule">
+                    <p *ngIf="longerDescriptionPreview"
+                       (click)="editLongerDescription()"
+                       markdown [data]="socialEvent.longerDescription"
+                       id="longer-description-preview"></p>
+                  </div>
+                  <textarea *ngIf="!longerDescriptionPreview"
+                            [disabled]="!display.allow.edits"
+                            (blur)="previewLongerDescription()"
+                            [(ngModel)]="socialEvent.longerDescription"
                                 type="text"
                                 class="form-control input-sm"
                                 rows="{{socialEvent.thumbnail ? 20 : 5}}"
@@ -44,18 +91,8 @@
                     </div>
                   </div>
                 </div>
-                <div *ngIf="socialEvent.thumbnail" class="col-sm-4">
-                  <a class="event-dialog-thumbnail-image" target="_blank"
-                     [href]="socialEvent.link">
-                    <img *ngIf="socialEvent.thumbnail"
-                         [src]="socialEvent.thumbnail"
-                         id="image-thumbnail"
-                         class="img-fluid event-thumbnail-image round" alt=""/></a>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
       </tab>
       <tab heading="Thumbnail Image">
         <div class="img-thumbnail thumbnail-admin-edit">
@@ -89,60 +126,10 @@
           </div>
         </div>
       </tab>
-      <tab heading="Date and Location">
-        <div class="img-thumbnail thumbnail-admin-edit">
-          <div class="row">
-            <div class="col col-sm-6">
-              <div class="form-group">
-                <app-date-picker [label]="'Social Event Date'"
-                                 [size]="'md'"
-                                 (dateChange)="eventDateChanged($event)"
-                                 [value]="eventDate">
-                </app-date-picker>
-              </div>
-            </div>
-            <div class="col col-sm-3">
-              <div class="form-group">
-                <label for="start-time">Start Time</label>
-                <input [disabled]="!display.allow.edits"
-                       [(ngModel)]="socialEvent.eventTimeStart" type="text"
-                       class="form-control input-sm" id="start-time"
-                       placeholder="Enter Start time here"/>
-              </div>
-            </div>
-            <div class="col col-sm-3">
-              <div class="form-group">
-                <label for="end-time">End Time</label>
-                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.eventTimeEnd"
-                       type="text" class="form-control input-sm" id="end-time"
-                       placeholder="Enter End time here"/>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col col-sm-8">
-              <div class="form-group">
-                <label for="location">Location</label>
-                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.location"
-                       type="text" class="form-control input-sm" id="location"
-                       placeholder="Enter Location here">
-              </div>
-            </div>
-            <div class="col col-sm-4">
-              <div class="form-group">
-                <label for="post-code">Postcode</label>
-                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.postcode"
-                       type="text" class="form-control input-sm" id="post-code"
-                       placeholder="Enter Postcode here">
-              </div>
-            </div>
-          </div>
-        </div>
-      </tab>
       <tab heading="Organiser">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
-            <div class="col col-sm-12">
+            <div class="col-sm-12">
               <div class="form-group">
                 <label for="contact-member">Event Organiser</label>
                 <select [disabled]="!display.allow.edits" (ngModelChange)="selectMemberContactDetails($event)"
@@ -180,7 +167,7 @@
       <tab heading="Attendees">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
-            <div class="col col-sm-12" delay="2000"
+            <div class="col-sm-12" delay="2000"
                  [tooltip]="attendeeCaption()">
               <ng-select [items]="display.memberFilterSelections" *ngIf="display.allow.edits"
                          bindLabel="text"
@@ -264,12 +251,12 @@
         {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
     </div>
   </div>
-  <div class="col-sm-12" *ngIf="display.socialEventLink(socialEvent)">
+  <div class="col-sm-12" *ngIf="display.socialEventLink(socialEvent, true)">
     <label> <a (click)="display.copyToClipboard(socialEvent, null)">
       <fa-icon [icon]="faCopy" class="markdown-preview-icon fa-lg"><span
         tooltipPlacement="left" tooltip="Click to copy link to clipboard"></span></fa-icon>
       copy link </a> to this
-      <a [href]="display.socialEventLink(socialEvent)"
+      <a [href]="display.socialEventLink(socialEvent, true)"
          target="_blank">social event</a> </label>
   </div>
   <div class="col-sm-12">

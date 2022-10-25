@@ -66,6 +66,10 @@ export class SocialDisplayService {
     this.authChanges();
   }
 
+  loggedIn(): boolean {
+    return this.memberLoginService.memberLoggedIn();
+  }
+
   applyAllows() {
     this.allow.detailView = this.memberLoginService.allowSocialDetailView();
     this.allow.summaryView = this.memberLoginService.allowSocialAdminEdits() || !this.memberLoginService.allowSocialDetailView();
@@ -115,11 +119,11 @@ export class SocialDisplayService {
     return socialEvent?.attachment ? (socialEvent.attachment.title || `Attachment: ${socialEvent.attachment.originalFileName}`) : "";
   }
 
-  socialEventLink(socialEvent: SocialEvent) {
+  socialEventLink(socialEvent: SocialEvent, relative: boolean) {
     return socialEvent?.id ? this.urlService.notificationHref({
       area: "social",
       id: socialEvent?.id,
-      relative: true
+      relative
     }) : undefined;
   }
 

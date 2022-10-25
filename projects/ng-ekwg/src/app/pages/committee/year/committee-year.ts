@@ -140,4 +140,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     return last(this.filesForYear) !== committeeFile;
   }
 
+  deleteCommitteeFile() {
+    this.display.confirm.as(ConfirmType.DELETE);
+  }
 }

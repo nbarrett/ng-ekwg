@@ -46,6 +46,7 @@ import { PageComponent } from "./page/page.component";
 import { ImageEditComponent } from "./pages/image-editor/image-edit/image-edit.component";
 import { ImageListComponent } from "./pages/image-editor/image-list/image-list.component";
 import { TagEditorComponent } from "./pages/tag/tag-editor.component";
+import { RelatedLinkComponent } from "./modules/common/related-link/related-link.component";
 import { PanelExpanderComponent } from "./panel-expander/panel-expander.component";
 import { AuditDeltaChangedItemsPipePipe } from "./pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "./pipes/audit-delta-value.pipe";
@@ -126,6 +127,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatePipe,
     DisplayDatesPipe,
     DisplayDayPipe,
+    RelatedLinkComponent,
     ActionButtonsComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
@@ -182,6 +184,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     CardEditorComponent,
     LoginRequiredComponent,
     ActionButtonsComponent,
+    RelatedLinkComponent,
     DynamicContentComponent,
     DynamicContentPageComponent,
     EventNotePipe,

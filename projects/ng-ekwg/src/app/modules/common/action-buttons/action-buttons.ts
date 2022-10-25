@@ -7,7 +7,7 @@ import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
 import { BroadcastService } from "../../../services/broadcast-service";
-import { slideClasses } from "../../../services/card-utils";
+import { CARD_MARGIN_BOTTOM, cardClasses } from "../../../services/card-utils";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageService } from "../../../services/page.service";
@@ -32,7 +32,6 @@ export class ActionButtonsComponent implements OnInit {
   private logger: Logger;
   public contentPath: string;
   public slideIndex = 0;
-  private marginBottom = "mb-4";
   public maxViewableSlideCount: number;
   public actualViewableSlideCount: number;
   public relativePath: string;
@@ -95,7 +94,7 @@ export class ActionButtonsComponent implements OnInit {
   }
 
   slideClasses() {
-    return slideClasses(this.row.maxColumns || this.actualViewableSlideCount, this.marginBottom);
+    return cardClasses(this.row.maxColumns || this.actualViewableSlideCount, CARD_MARGIN_BOTTOM);
   }
 
   viewableColumns(): PageContentColumn[] {

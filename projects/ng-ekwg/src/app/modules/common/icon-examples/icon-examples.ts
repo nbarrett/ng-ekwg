@@ -1,9 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import range from "lodash-es/range";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subject } from "rxjs";
+import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { KeyValue } from "../../../services/enums";
 import { IconService } from "../../../services/icon-service/icon-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-
 
 @Component({
   selector: "app-icon-examples",
@@ -16,20 +18,35 @@ export class IconExamplesComponent implements OnInit {
   private logger: Logger;
   public filteredIcons: KeyValue[] = [];
   filter: string;
+  sizes = range(1, 6).map(size => `fa-${size}x`);
+  size = "fa-3x";
+  private searchChangeObservable: Subject<string>;
 
   constructor(
     public iconService: IconService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(IconExamplesComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(IconExamplesComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
     this.filteredIcons = [];
+    this.searchChangeObservable = new Subject<string>();
+    this.searchChangeObservable.pipe(debounceTime(1000))
+      .pipe(distinctUntilChanged())
+      .subscribe(data => this.refreshFilter(data));
+
   }
 
   modelChanged(data: string) {
-    this.logger.debug("modelChanged:", data);
-    this.filteredIcons = this.iconService.iconArray.filter(item => item?.key?.toLowerCase().includes(data?.toLowerCase()));
+    this.logger.debug("filter changed:", data);
+    this.searchChangeObservable.next(data);
+  }
+
+  refreshFilter(data: string) {
+    if (data) {
+      this.logger.debug("refreshFilter with data:", data);
+      this.filteredIcons = this.iconService.iconArray.filter(item => item?.key?.toLowerCase().includes(data?.toLowerCase()));
+    }
   }
 
   change($event: Event) {

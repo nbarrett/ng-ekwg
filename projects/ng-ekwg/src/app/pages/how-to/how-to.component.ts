@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
+import last from "lodash/last";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject, Subscription } from "rxjs";
@@ -46,7 +47,6 @@ export class HowToComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private searchChangeObservable: Subject<string>;
   public filterParameters: FilterParameters = {quickSearch: ""};
-  private addingNew = false;
   public allow: MemberResourcesPermissions = {};
   faSearch = faSearch;
 
@@ -66,7 +66,7 @@ export class HowToComponent implements OnInit, OnDestroy {
     public memberResourcesReferenceData: MemberResourcesReferenceDataService,
     private mailchimpLinkService: MailchimpLinkService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HowToComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(HowToComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnDestroy(): void {
@@ -212,10 +212,12 @@ export class HowToComponent implements OnInit, OnDestroy {
       .then(() => this.notify.clearBusy());
   }
 
-  selectMemberResource(memberResource) {
-    if (!this.addingNew && this.confirm.noneOutstanding() && this.memberResource !== memberResource) {
-      this.logger.debug("selectMemberResource with memberResource", memberResource, "addingNew:", this.addingNew);
+  selectMemberResource(memberResource: MemberResource) {
+    if (this.confirm.noneOutstanding() && this.memberResource !== memberResource) {
+      this.logger.debug("selectMemberResource with memberResource", memberResource);
       this.memberResource = memberResource;
+    } else {
+      this.logger.off("not selecting memberResource", memberResource, "this.confirm.noneOutstanding():", this.confirm.noneOutstanding());
     }
   }
 
@@ -237,7 +239,6 @@ export class HowToComponent implements OnInit, OnDestroy {
   }
 
   add() {
-    this.addingNew = true;
     this.edit(this.memberResourcesReferenceDataService.defaultMemberResource());
   }
 
@@ -251,6 +252,10 @@ export class HowToComponent implements OnInit, OnDestroy {
 
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
+  }
+
+  notLast(resource: MemberResource): boolean {
+    return last(this.filteredMemberResources) !== resource;
   }
 
 }

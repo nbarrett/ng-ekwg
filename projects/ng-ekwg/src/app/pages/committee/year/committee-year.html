@@ -44,7 +44,7 @@
                                  title="Send Email" class="button-form yellow-confirm">
                           <input *ngIf="display.allowDeleteCommitteeFile(committeeFile)"
                                  type="submit" value="Delete File"
-                                 (click)="this.display.confirm.as(ConfirmType.DELETE);" title="Delete File"
+                                 (click)="deleteCommitteeFile();" title="Delete File"
                                  class="button-form button-confirm">
                         </span>
                 <div *ngIf="display.confirm.deleteConfirmOutstanding()">

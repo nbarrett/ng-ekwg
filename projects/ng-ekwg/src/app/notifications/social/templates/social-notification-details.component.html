@@ -1,4 +1,6 @@
 <div>
+  <img *ngIf="socialEvent?.thumbnail" style="width:100%; margin-bottom: 15px"
+       [src]="socialEvent?.thumbnail">
   <h3 *ngIf="socialEvent.notification.content.title.include"><strong
     [textContent]="socialEvent.briefDescription"></strong>
   </h3>

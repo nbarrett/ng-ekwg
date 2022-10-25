@@ -11,7 +11,7 @@ import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
 import { LoginResponse } from "../../../models/member.model";
 import { BroadcastService } from "../../../services/broadcast-service";
-import { slideClasses } from "../../../services/card-utils";
+import { cardClasses } from "../../../services/card-utils";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberResourcesReferenceDataService } from "../../../services/member/member-resources-reference-data.service";
@@ -144,7 +144,7 @@ export class DynamicContentComponent implements OnInit {
   }
 
   slideClasses(columnCount: number | undefined) {
-    return slideClasses(columnCount);
+    return cardClasses(columnCount);
   }
 
   createContent() {

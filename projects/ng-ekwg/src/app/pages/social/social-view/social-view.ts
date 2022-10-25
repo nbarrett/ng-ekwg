@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faEnvelope, faMapMarkerAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { SocialEvent } from "../../../models/social-events.model";
@@ -25,12 +25,15 @@ export class SocialViewComponent implements OnInit {
   public notify: AlertInstance;
   private logger: Logger;
   faCopy = faCopy;
+  faEnvelope = faEnvelope;
+  faPhone = faPhone;
+  faMapMarkerAlt = faMapMarkerAlt;
 
   constructor(
     public googleMapsService: GoogleMapsService,
     private notifierService: NotifierService,
     public display: SocialDisplayService,
-    private urlService: UrlService,
+    public urlService: UrlService,
     private socialEventsService: SocialEventsService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SocialViewComponent, NgxLoggerLevel.OFF);
@@ -48,6 +51,10 @@ export class SocialViewComponent implements OnInit {
         this.socialEvent = data;
       });
     }
+    this.notify.success({
+      title: "Single social event showing",
+      message: " - "
+    });
   }
 
   editSocialEvent(socialEvent) {

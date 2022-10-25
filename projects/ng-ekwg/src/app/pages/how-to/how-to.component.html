@@ -35,8 +35,8 @@
       </div>
       <input *ngIf="allowAdd()"
              type="submit" value="Add new Article" (click)="add()" title="Add new Article"
-             class="button-form mt-8">
-      <div *ngFor="let memberResource of filteredMemberResources">
+             class="button-form mb-3">
+      <div *ngFor="let memberResource of filteredMemberResources" (mouseover)="selectMemberResource(memberResource)">
         <div class="row mb-4">
           <div class="col-sm-10">
             <div class="file-detail">
@@ -81,8 +81,7 @@
             </div>
           </div>
           <div class="col-sm-2">
-            <div class="file-item"
-                 (mouseover)="selectMemberResource(memberResource)">
+            <div class="file-item">
               <div class="file-download row">
                 <div class="col">
                   <img class="icon"
@@ -98,6 +97,7 @@
             </div>
           </div>
         </div>
+        <hr *ngIf="notLast(memberResource)">
       </div>
     </div>
     <div class="col-sm-4">

@@ -9,7 +9,7 @@ import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe"
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
-import { slideClasses } from "../../../services/card-utils";
+import { cardClasses, CARD_MARGIN_BOTTOM } from "../../../services/card-utils";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -63,7 +63,7 @@ export class SocialListCardsComponent implements OnInit {
   }
 
   slideClasses() {
-    return slideClasses(this.filteredSocialEvents.length);
+    return cardClasses(this.filteredSocialEvents.length, CARD_MARGIN_BOTTOM);
   }
 
 }
