@@ -223,7 +223,7 @@ export class SocialEditComponent implements OnInit {
   }
 
   deleteSocialEvent() {
-    this.display.confirm.type = ConfirmType.DELETE;
+    this.display.confirm.as(ConfirmType.DELETE);
   }
 
   showAlertMessage(): boolean {
@@ -231,11 +231,7 @@ export class SocialEditComponent implements OnInit {
   }
 
   pendingCompletion(): boolean {
-    return this.notifyTarget.busy || this.display.confirm.type !== ConfirmType.NONE;
-  }
-
-  pendingDeletion(): boolean {
-    return this.display.confirm.type === ConfirmType.DELETE;
+    return this.notifyTarget.busy || this.display.confirm.notificationsOutstanding();
   }
 
   eventDateChanged(dateValue: DateValue) {
@@ -272,7 +268,7 @@ export class SocialEditComponent implements OnInit {
   }
 
   cancelDeleteSocialEvent() {
-    this.display.confirm.type = ConfirmType.NONE;
+    this.display.confirm.clear();
   }
 
   copyDetailsToNewSocialEvent() {

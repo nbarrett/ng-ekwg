@@ -84,7 +84,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("constructed with", this.members.length, "members");
-    this.display.confirm.type = ConfirmType.SEND_NOTIFICATION;
+    this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.display.configEvents().subscribe(() => {

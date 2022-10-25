@@ -307,7 +307,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   bulkUnsubscribe() {
-    this.confirm.type = ConfirmType.BULK_ACTION;
+    this.confirm.as(ConfirmType.BULK_ACTION);
   }
 
   bulkUnsubscribeCancel() {

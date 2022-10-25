@@ -39,11 +39,11 @@
     </li>
     <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover" [ngClass]="{'d-none': rowIndex==null}">
       <a class="dropdown-item dropdown-toggle"
-         dropdownToggle>Slide Carousel Row <span class="caret"></span></a>
+         dropdownToggle>Action Buttons <span class="caret"></span></a>
       <ul *dropdownMenu class="dropdown-menu" role="menu">
-        <li role="menuitem"><a (click)="actions.addRow(rowIndex,'slides', pageContent)"
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex, 'action-buttons', pageContent)"
                                class="dropdown-item">Add above</a></li>
-        <li role="menuitem"><a (click)="actions.addRow(rowIndex + 1,'slides', pageContent)"
+        <li role="menuitem"><a (click)="actions.addRow(rowIndex + 1, 'action-buttons', pageContent)"
                                class="dropdown-item">Add below</a></li>
       </ul>
     </li>

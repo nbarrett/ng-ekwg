@@ -8,7 +8,6 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, Notification } from "../../../models/committee.model";
 import { DateValue } from "../../../models/date.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -34,7 +33,6 @@ import { CommitteeDisplayService } from "../committee-display.service";
   templateUrl: "./committee-edit-file-modal.component.html",
 })
 export class CommitteeEditFileModalComponent implements OnInit {
-  public confirm: Confirm;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
@@ -45,7 +43,6 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  private confirmType: ConfirmType = ConfirmType.NONE;
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -114,8 +111,11 @@ export class CommitteeEditFileModalComponent implements OnInit {
     this.notify.setBusy();
     this.logger.debug("saveCommitteeFile ->", this.committeeFile);
     return this.committeeFileService.createOrUpdate(this.committeeFile)
-      .then(() => this.close())
-      .then(() => this.notify.clearBusy())
+      .then(() => {
+        this.close();
+        this.notify.clearBusy();
+        this.display.confirm.clear();
+      })
       .catch((error) => this.handleError(error));
   }
 
@@ -126,21 +126,12 @@ export class CommitteeEditFileModalComponent implements OnInit {
     });
     this.notify.clearBusy();
   }
-
-  deleteCommitteeFile() {
-    this.confirmType = ConfirmType.DELETE;
-  }
-
   showAlertMessage(): boolean {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
   }
 
   pendingCompletion(): boolean {
-    return this.notifyTarget.busy || this.confirmType !== ConfirmType.NONE;
-  }
-
-  pendingDeletion(): boolean {
-    return this.confirmType === ConfirmType.DELETE;
+    return this.notifyTarget.busy || this.display.confirm.notificationsOutstanding();
   }
 
   eventDateChanged(dateValue: DateValue) {
@@ -165,15 +156,10 @@ export class CommitteeEditFileModalComponent implements OnInit {
   }
 
   close() {
-    this.confirm.clear();
     this.bsModalRef.hide();
   }
 
   confirmDeleteCommitteeFile() {
     this.display.confirmDeleteCommitteeFile(this.notify, this.committeeFile).then(() => this.close());
-  }
-
-  cancelDeleteCommitteeFile() {
-    this.confirmType = ConfirmType.NONE;
   }
 }

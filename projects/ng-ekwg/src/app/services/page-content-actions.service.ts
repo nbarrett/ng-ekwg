@@ -33,7 +33,7 @@ export class PageContentActionsService {
 
   defaultRowFor(type: PageContentType | string): PageContentRow {
     return {
-      maxColumns: 4,
+      maxColumns: 1,
       showSwiper: false,
       type: type as PageContentType,
       columns: [this.columnFor(type)]
@@ -87,7 +87,7 @@ export class PageContentActionsService {
   }
 
   public unsavedMarkdownElements(pageContent: PageContent): boolean {
-    const columnsWithNewlyCreatedMarkdown = flatten(pageContent.rows.map(item => item.columns.map(col => col.contentTextId)))
+    const columnsWithNewlyCreatedMarkdown = flatten(pageContent?.rows?.map(item => item?.columns?.map(col => col?.contentTextId)))
       .filter(item => item === null);
     this.logger.debug("unsavedMarkdownElements:", columnsWithNewlyCreatedMarkdown);
     return columnsWithNewlyCreatedMarkdown.length > 0;
@@ -134,7 +134,11 @@ export class PageContentActionsService {
   }
 
   isTextRow(row: PageContentRow) {
-    return row.type === PageContentType.TEXT
+    return row.type === PageContentType.TEXT;
+  }
+
+  pageContentFound(pageContent: PageContent, queryCompleted: boolean) {
+    return (pageContent?.rows?.length > 0) && queryCompleted;
   }
 
 }

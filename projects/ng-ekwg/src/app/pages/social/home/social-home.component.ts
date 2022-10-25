@@ -85,7 +85,7 @@ export class SocialHomeComponent implements OnInit {
           message: "Refresh this page to clear this message."
         });
       } else if (this.display.confirm.notificationsOutstanding()) {
-        this.logger.debug("Not processing subscription response due to confirm:", this.display.confirm.type);
+        this.logger.debug("Not processing subscription response due to confirm:", this.display.confirm.confirmType());
       } else {
         const socialEvents: SocialEvent[] = this.apiResponseProcessor.processResponse(this.logger, this.socialEvents, apiResponse);
         if (apiResponse.action === ApiAction.QUERY && !!this.socialEventId) {

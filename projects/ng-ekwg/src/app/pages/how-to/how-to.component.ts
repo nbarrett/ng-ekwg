@@ -111,7 +111,7 @@ export class HowToComponent implements OnInit, OnDestroy {
           message: "Refresh this page to clear this message."
         });
       } else if (this.confirm.notificationsOutstanding()) {
-        this.logger.debug("Not processing subscription response due to confirm:", this.confirm.type);
+        this.logger.debug("Not processing subscription response due to confirm:", this.confirm.confirmType());
       } else {
         if (apiResponse.action === ApiAction.QUERY && !!this.memberResourceId) {
           this.notify.warning({

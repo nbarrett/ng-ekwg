@@ -120,7 +120,7 @@
                   </table>
                   <div *ngIf="isActive(expenseClaim)" class="row" class="mb-2">
                     <div class="form-group">
-                    <span *ngIf="!confirmOutstanding()">
+                    <span *ngIf="!this.confirm.notificationsOutstanding()">
                       <input type="submit" *ngIf="display.allowAddExpenseItem(this.selected.expenseClaim)"
                              [disabled]="notifyTarget.busy"
                              value="Add Item" (click)="addExpenseItem()" title="Add Item"
@@ -162,7 +162,7 @@
                              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                     </span>
                       <input type="submit"
-                             *ngIf="!confirmOutstanding() && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
+                             *ngIf="!confirm.notificationsOutstanding() && display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
                              value="Delete Expense Claim" (click)="confirm.toggleOnDeleteConfirm()"
                              title="Delete Expense Claim"
                              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
@@ -176,7 +176,7 @@
                                class="button-form button-confirm">
                         <input *ngIf="display.allowDeleteExpenseItem(this.selected.expenseClaim)"
                                [disabled]="notifyTarget.busy"
-                               value="Cancel Delete of Item" (click)="removeConfirm()" type="submit"
+                               value="Cancel Delete of Item" (click)="confirm.clear()" type="submit"
                                title="Cancel delete of this expense item"
                                class="button-form button-form-left green-confirm">
                         <input *ngIf="display.allowDeleteExpenseClaim(this.selected.expenseClaim)"
@@ -206,7 +206,7 @@
                                [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form green-confirm'">
                         <input [disabled]="notifyTarget.busy" type="submit"
                                value="Cancel {{nextApprovalStage()}}"
-                               (click)="removeConfirm()"
+                               (click)="confirm.clear()"
                                title="Cancel {{nextApprovalStage()}} of Claim"
                                [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form amber-confirm'">
                       </span>

@@ -12,7 +12,7 @@ import { ApiAction, ApiResponse } from "../../../models/api-response.model";
 import { DateValue } from "../../../models/date.model";
 import { Member, MemberAuthAudit } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, MemberAuthAuditTableFilter } from "../../../models/table-filtering.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { Confirm } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -96,14 +96,6 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  deleteSelectedMemberAudit() {
-    this.confirm.type = ConfirmType.DELETE;
-  }
-
-  cancelDeleteSelectedMemberAudit() {
-    this.confirm.type = ConfirmType.NONE;
-  }
-
   deleteSelectedMemberAuditConfirm() {
     const recordCount = this.auditFilter.results.length;
     this.notifyProgress(`Deleting ${recordCount} member audit record(s)...`);
@@ -114,7 +106,7 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     Promise.all(removePromises).then(() => {
       this.notifyProgress(`Deleted ${recordCount} member audit record(s)`);
       this.notify.clearBusy();
-      this.cancelDeleteSelectedMemberAudit();
+      this.confirm.clear();
     });
   }
 

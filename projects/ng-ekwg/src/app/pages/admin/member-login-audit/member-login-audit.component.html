@@ -33,7 +33,7 @@
               <input type="submit" *ngIf="confirm.noneOutstanding()"
                      [disabled]="notifyTarget.busy || auditFilter.results.length==0"
                      value="Delete displayed audit"
-                     (click)="deleteSelectedMemberAudit()"
+                     (click)="this.confirm.as(ConfirmType.DELETE);"
                      class="button-form mr-2"
                      [ngClass]="{'disabled-button-form': notifyTarget.busy || auditFilter.results.length==0 }">
               <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
@@ -45,7 +45,7 @@
               <input type="submit" *ngIf="confirm.deleteConfirmOutstanding()"
                      [disabled]="notifyTarget.busy"
                      value="Cancel"
-                     (click)="cancelDeleteSelectedMemberAudit()"
+                     (click)="this.confirm.clear();"
                      class="button-form green-confirm" [ngClass]="{'disabled-button-form': notifyTarget.busy}">
             </div>
           </div>

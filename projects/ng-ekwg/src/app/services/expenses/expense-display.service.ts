@@ -1,13 +1,13 @@
-import { Inject, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import clone from "lodash-es/clone";
 import find from "lodash-es/find";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../notifications/expenses/expense.model";
 import { Member } from "../../models/member.model";
-import { Confirm, ConfirmType, EditMode } from "../../models/ui-actions";
+import { Confirm, EditMode } from "../../models/ui-actions";
+import { ExpenseClaim, ExpenseEvent, ExpenseEventType, ExpenseItem, ExpenseType } from "../../notifications/expenses/expense.model";
 import { ContentMetadataService } from "../content-metadata.service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -189,12 +189,8 @@ export class ExpenseDisplayService {
   saveExpenseClaim(confirm: Confirm, notify: AlertInstance, expenseClaim: ExpenseClaim) {
     this.recalculateClaimCost(expenseClaim);
     return this.expenseClaimService.createOrUpdate(expenseClaim)
-      .then(() => this.removeConfirm(confirm))
+      .then(() => confirm.clear())
       .then(() => notify.clearBusy());
-  }
-
-  removeConfirm(confirm: Confirm) {
-    confirm.type = ConfirmType.NONE;
   }
 
   recalculateClaimCost(expenseClaim: ExpenseClaim) {

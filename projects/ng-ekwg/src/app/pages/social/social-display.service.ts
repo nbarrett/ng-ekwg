@@ -118,7 +118,8 @@ export class SocialDisplayService {
   socialEventLink(socialEvent: SocialEvent) {
     return socialEvent?.id ? this.urlService.notificationHref({
       area: "social",
-      id: socialEvent?.id
+      id: socialEvent?.id,
+      relative: true
     }) : undefined;
   }
 

@@ -59,7 +59,7 @@ export class UrlService {
 
   relativeUrlFirstSegment(optionalUrl?: string): string {
     const url = new URL(optionalUrl || this.absUrl());
-    return "/" + first(this.toPathSegments(url.pathname.substring(1)));
+    return "/" + (first(this.toPathSegments(url.pathname.substring(1))) || "");
   }
 
   absUrl(): string {
@@ -97,8 +97,8 @@ export class UrlService {
     return isMongoId(id);
   }
 
-  resourceUrl(area: string, subArea: string, id: string): string {
-    return [this.baseUrl(), area, subArea, id].filter(item => !!item).join("/");
+  resourceUrl(area: string, subArea: string, id: string, relative?: boolean): string {
+    return [relative ? null : this.baseUrl(), area, subArea, id].filter(item => !!item).join("/");
   }
 
   area(optionalUrl?: string): string {
@@ -111,10 +111,16 @@ export class UrlService {
 
   notificationHref(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): string {
     if (this.isNotificationUrlConfig(linkConfig)) {
-      return this.resourceUrl(linkConfig.area, linkConfig.subArea, linkConfig.id);
+      return this.resourceUrl(linkConfig.area, linkConfig.subArea, linkConfig.id, linkConfig.relative);
     } else {
       return this.resourceUrlForAWSFileName(linkConfig.name);
     }
+  }
+
+  routerLinkUrl(url: string) {
+    const routerLinkUrl = url.startsWith("http") ? null : "/" + url;
+    this.logger.info("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
+    return routerLinkUrl;
   }
 
   isNotificationUrlConfig(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): linkConfig is NotificationUrlConfig {

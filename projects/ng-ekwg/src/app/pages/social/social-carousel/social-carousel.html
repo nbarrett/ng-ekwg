@@ -10,9 +10,9 @@
       <div class="row position-md-absolute w-100 h-100 align-items-center">
         <div class="ml-md-4 ml-lg-5 col-md-6 col-xl-5">
           <h1 class="display-4 font-weight-bold">Social Events</h1>
-          <div class="body-text">Welcome to our social Events page! Here are some photos from some of our past events
-          </div>
-          <div class="body-text mt-5 w-75">{{contentMetadataItem?.text}}</div>
+          <app-markdown-editor class="body-text" category="social" name="introduction"
+                               description="Introduction"></app-markdown-editor>
+          <div class="body-text mt-5 w-auto">{{contentMetadataItem?.text}}</div>
         </div>
       </div>
     </div>

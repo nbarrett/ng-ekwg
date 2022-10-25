@@ -4,6 +4,7 @@ import { faImage, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ImageType } from "../../../../models/content-text.model";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
+import { UrlService } from "../../../../services/url.service";
 
 @Component({
   selector: "app-card-image",
@@ -14,8 +15,9 @@ export class CardImageComponent implements OnInit {
   private logger: Logger;
   faImage = faImage;
 
-  constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardImageComponent, NgxLoggerLevel.OFF);
+  constructor(public urlService: UrlService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(CardImageComponent, NgxLoggerLevel.INFO);
   }
 
   @Input()
@@ -30,7 +32,7 @@ export class CardImageComponent implements OnInit {
   faSearch = faSearch;
 
   cardShouldHaveImage(): boolean {
-    return this.imageType === ImageType.IMAGE && !!this.imageSource;
+    return (!this.imageType || this.imageType === ImageType.IMAGE) && !!this.imageSource;
   }
 
   cardShouldHaveIcon(): boolean {
@@ -45,4 +47,9 @@ export class CardImageComponent implements OnInit {
     this.logger.info("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
   }
 
+  hrefUrl() {
+    const url = this.imageLink.startsWith("http") ? this.imageLink : null;
+    this.logger.info("hrefUrl:imageLink", this.imageLink, "url:", url);
+    return url;
+  }
 }

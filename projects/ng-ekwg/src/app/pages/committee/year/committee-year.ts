@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+import last from "lodash/last";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { CommitteeFile, CommitteeYear, committeeYearsPath } from "../../../models/committee.model";
-import { PageContent, PageContentColumn, PageContentRow, PageContentType } from "../../../models/content-text.model";
+import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { LoginResponse } from "../../../models/member.model";
-import { Confirm, ConfirmType } from "../../../models/ui-actions";
+import { ConfirmType } from "../../../models/ui-actions";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeFileService } from "../../../services/committee/committee-file.service";
@@ -36,14 +37,13 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
   @Input("committeeYear") set acceptChangesFrom(committeeYear: CommitteeYear) {
     this.logger.debug("committeeYear:input", committeeYear);
     this.committeeYear = committeeYear;
-    this.setupDateForYear();
+    this.setupDataForYear();
   }
 
   public committeeYear: CommitteeYear;
   private logger: Logger;
   private subscription: Subscription;
   public committeeFile: CommitteeFile;
-  public confirm = new Confirm();
   public committeeYearTitle = "";
   public imageSource: string;
 
@@ -73,9 +73,16 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit:committeeYear", this.committeeYear);
-    this.committeeQueryService.queryAllFiles().then(() => this.setupDateForYear());
+    this.committeeQueryService.queryAllFiles().then(() => this.setupDataForYear());
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.committeeQueryService.queryAllFiles();
+    });
+    this.subscription = this.committeeFileService.notifications().subscribe(apiResponse => {
+      if (apiResponse.error) {
+        this.logger.warn("received error:", apiResponse.error);
+      } else {
+        this.filesForYear = this.apiResponseProcessor.processResponse(this.logger, this.filesForYear, apiResponse);
+      }
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const year = paramMap.get("year");
@@ -85,11 +92,11 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
         this.logger.debug("committeeYear:", committeeYear);
         this.committeeYear = committeeYear;
       }
-      this.setupDateForYear();
+      this.setupDataForYear();
     });
   }
 
-  private async setupDateForYear() {
+  private async setupDataForYear(): Promise<void> {
     this.committeeYearTitle = this.committeeYear?.year ? `${this.committeeYear?.year} Committee` : "";
     this.filesForYear = this.committeeQueryService.committeeFilesForYear(this.committeeYear?.year);
     const pageContent: PageContent = await this.pageContentService.findByPath(committeeYearsPath);
@@ -105,7 +112,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile) {
-    if (this.confirm.noneOutstanding()) {
+    if (this.display.confirm.noneOutstanding()) {
       this.committeeFile = committeeFile;
     }
   }
@@ -115,26 +122,22 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
   }
 
   addCommitteeFile() {
-    this.confirm.type = ConfirmType.CREATE_NEW;
+    this.display.confirm.as(ConfirmType.CREATE_NEW);
     this.committeeFile = this.display.defaultCommitteeFile();
     this.logger.debug("addCommitteeFile:", this.committeeFile, "of", this.committeeQueryService.committeeFiles.length, "files");
     this.editCommitteeFile(this.committeeFile);
   }
 
   editCommitteeFile(committeeFile: CommitteeFile) {
-    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({confirm: this.confirm, committeeFile}));
-  }
-
-  cancelConfirmations() {
-    this.confirm.clear();
-  }
-
-  deleteCommitteeFile() {
-    this.confirm.type = ConfirmType.DELETE;
+    this.modalService.show(CommitteeEditFileModalComponent, this.display.createModalOptions({confirm: this.display.confirm, committeeFile}));
   }
 
   sendNotification(committeeFile: CommitteeFile) {
     this.urlService.navigateTo("committee", "send-notification", committeeFile.id);
+  }
+
+  notLast(committeeFile): boolean {
+    return last(this.filesForYear) !== committeeFile;
   }
 
 }

@@ -37,7 +37,11 @@ export class Actions {
 }
 
 export class Confirm {
-  public type: ConfirmType = ConfirmType.NONE;
+  private type: ConfirmType = ConfirmType.NONE;
+
+  as(confirmType: ConfirmType) {
+    this.type = confirmType;
+  }
 
   toggleOnDeleteConfirm() {
     this.type = ConfirmType.DELETE;
@@ -67,4 +71,7 @@ export class Confirm {
     return this.type === ConfirmType.APPROVE;
   }
 
+  confirmType() {
+    return this.type;
+  }
 }

@@ -318,16 +318,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     }
   }
 
-  confirmOutstanding() {
-    return this.confirm.type !== ConfirmType.NONE;
-  }
-
-  private removeConfirm() {
-    this.confirm.type = ConfirmType.NONE;
-  }
-
   editExpenseItem(expenseItem: ExpenseItem) {
-    this.removeConfirm();
+    this.confirm.clear();
     this.selectExpenseItem(expenseItem);
     this.uploadedFile = undefined;
     const expenseItemIndex = this.selected.expenseClaim.expenseItems.indexOf(this.selected.expenseItem);
@@ -339,7 +331,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   addExpenseItem() {
-    this.removeConfirm();
+    this.confirm.clear();
     const newExpenseItem = this.display.defaultExpenseItem();
     this.editExpenseItem(newExpenseItem);
   }
@@ -357,7 +349,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   approveExpenseClaim() {
-    this.confirm.type = ConfirmType.APPROVE;
+    this.confirm.as(ConfirmType.APPROVE);
     if (this.lastApprovedByMe()) {
       this.notifyConfirm.warning({
         title: "Duplicate approval warning",
@@ -378,7 +370,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   deleteExpenseClaim() {
-    this.confirm.type = ConfirmType.DELETE;
+    this.confirm.as(ConfirmType.DELETE);
   }
 
   eventTracker(index: number, event: ExpenseEvent) {
@@ -401,7 +393,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
     this.display.showExpenseProgressAlert(this.notify, "Deleting expense claim", true);
 
     this.expenseClaimService.delete(this.selected.expenseClaim)
-      .then(() => this.removeConfirm())
+      .then(() => this.confirm.clear())
       .then(() => this.showExpenseDeleted())
       .then(() => this.notify.clearBusy());
   }

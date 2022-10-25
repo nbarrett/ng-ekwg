@@ -91,7 +91,11 @@ export class CommitteeDisplayService {
   }
 
   confirmDeleteCommitteeFile(notify: AlertInstance, committeeFile: CommitteeFile): Promise<CommitteeFile> {
-    return this.committeeFileService.delete(committeeFile);
+    return this.committeeFileService.delete(committeeFile)
+      .then((response) => {
+        this.confirm.clear();
+        return response;
+      });
   }
 
   fileUrl(committeeFile: CommitteeFile) {

@@ -44,7 +44,7 @@ export class SocialCardComponent implements OnInit {
               private memberLoginService: MemberLoginService,
               public display: SocialDisplayService,
               private apiResponseProcessor: ApiResponseProcessor,
-              private urlService: UrlService,
+              public urlService: UrlService,
               protected dateUtils: DateUtilsService,
               private modalService: BsModalService,
               loggerFactory: LoggerFactory) {

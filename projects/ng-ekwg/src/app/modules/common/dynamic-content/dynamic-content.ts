@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { faMinusCircle, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -39,6 +39,7 @@ export class DynamicContentComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public pageTitle: string;
+  faPencil = faPencil;
   faPlusCircle = faPlusCircle;
   faMinusCircle = faMinusCircle;
   faSave = faSave;
@@ -58,7 +59,7 @@ export class DynamicContentComponent implements OnInit {
     private notifierService: NotifierService,
     private urlService: UrlService,
     private numberUtils: NumberUtilsService,
-    private stringUtils: StringUtilsService,
+    public stringUtils: StringUtilsService,
     private pageContentService: PageContentService,
     private pageService: PageService,
     private authService: AuthService,
@@ -115,7 +116,7 @@ export class DynamicContentComponent implements OnInit {
         ...pageContent, rows: pageContent?.rows?.map(row => {
           const columns = this.columnsFilteredForAccessLevel(row.columns);
           return {...row, columns};
-        })
+        }) || []
       };
       this.logger.info("pageContentFilteredForAccessLevel:filteredPageContent:", filteredPageContent);
       return filteredPageContent;
@@ -130,7 +131,7 @@ export class DynamicContentComponent implements OnInit {
         if (pageContent) {
           this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
         } else {
-          this.logger.info("Page content not found for", this.contentPath);
+          this.logger.info("Page content not found for", this.contentPath, "pageContent:", this.pageContent);
           this.notify.warning({
             title: `Page not found`,
             message: `The ${this.contentPath} page content was not found`

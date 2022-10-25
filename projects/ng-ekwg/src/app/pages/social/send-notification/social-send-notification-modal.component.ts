@@ -83,7 +83,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
       this.initialiseRoles(members);
       this.initialiseNotification();
     });
-    this.display.confirm.type = ConfirmType.SEND_NOTIFICATION;
+    this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
   }
 
   notReady(): boolean {

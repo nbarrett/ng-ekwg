@@ -1,42 +1,44 @@
 <ng-container *ngIf="pageContent">
-  <ng-container *ngIf="siteEditService.active()">
-    <div class="form-inline mt-2">
-      <div (click)="actions.unsavedMarkdownElements(pageContent) ? null :savePageContent()"
-           delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
-           [ngClass]="{'disabled' : actions.unsavedMarkdownElements(pageContent)}">
-        <fa-icon [icon]="faSave"></fa-icon>
-        Save page changes
+  <div *ngIf="siteEditService.active()" class="card mb-2">
+    <div class="card-body">
+      <h4 class="card-title">Page content for {{pageContent.path}} (<small class="text-muted">{{stringUtils.pluraliseWithCount(pageContent?.rows.length, 'row')}}</small>)</h4>
+      <div class="dmt-2">
+        <div (click)="actions.unsavedMarkdownElements(pageContent) ? null :savePageContent()"
+             delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2"
+             [ngClass]="{'disabled' : actions.unsavedMarkdownElements(pageContent)}">
+          <fa-icon [icon]="faSave"></fa-icon>
+          Save page changes
+        </div>
+        <div (click)="revertPageContent()"
+             delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
+          <fa-icon [icon]="faUndo"></fa-icon>
+          Revert page changes
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input name="editNameEnabled" [(ngModel)]="editNameEnabled"
+                 [checked]="editNameEnabled"
+                 type="checkbox" class="custom-control-input"
+                 id="edit-names">
+          <label class="custom-control-label"
+                 for="edit-names">Edit Content Names
+          </label>
+        </div>
       </div>
-      <div (click)="revertPageContent()"
-           delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
-        <fa-icon [icon]="faUndo"></fa-icon>
-        Revert page changes
+      <div class="mt-2 mb-3">
+        <label class="mr-2" for="path">Path:</label>
+        <input id="path" [(ngModel)]="pageContent.path"
+               type="text" class="form-control w-75">
       </div>
-      <div class="custom-control custom-checkbox">
-        <input name="editNameEnabled" [(ngModel)]="editNameEnabled"
-               [checked]="editNameEnabled"
-               type="checkbox" class="custom-control-input"
-               id="edit-names">
-        <label class="custom-control-label"
-               for="edit-names">Edit Content Names
-        </label>
-      </div>
-    </div>
-    <div class="form-inline mt-2 mb-3">
-      <label class="mr-2" for="path">Path:</label>
-      <input id="path" [(ngModel)]="pageContent.path"
-             type="text" class="form-control w-75">
-    </div>
-    <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
-      <div class="thumbnail-heading">Row {{rowIndex + 1}}</div>
-      <div class="form-group form-inline">
-        <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">Row Type:</label>
-        <select class="form-control input-sm ml-2"
-                [(ngModel)]="row.type"
-                (ngModelChange)="changeType($event)"
-                [id]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">
-          <option *ngFor="let type of enumKeyValuesFor"
-                  [ngValue]="type.value">{{type.value}}</option>
+      <div class="img-thumbnail thumbnail-walk-edit mt-2" *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+        <div class="thumbnail-heading">Row {{rowIndex + 1}} ({{stringUtils.pluraliseWithCount(row?.columns.length, 'column')}})</div>
+        <div class="form-group form-inline">
+          <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">Row Type:</label>
+          <select class="form-control input-sm ml-2"
+                  [(ngModel)]="row.type"
+                  (ngModelChange)="changeType($event)"
+                  [id]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">
+            <option *ngFor="let type of enumKeyValuesFor"
+                    [ngValue]="type.value">{{type.value}}</option>
         </select>
         <app-actions-dropdown class="ml-2"
                               [rowIndex]="rowIndex"
@@ -80,8 +82,9 @@
           </div>
         </div>
       </ng-container>
+      </div>
     </div>
-  </ng-container>
+  </div>
   <ng-container *ngIf="!siteEditService.active()">
     <ng-container *ngFor="let row of pageContent?.rows; let rowIndex = index;">
       <ng-container *ngIf="false">{{'row ' + (rowIndex + 1) + ' ' + row.type  }}</ng-container>
@@ -105,13 +108,13 @@
     </ng-container>
   </ng-container>
 </ng-container>
-<ng-container *ngIf="!pageContent && queryCompleted">
+<ng-container *ngIf="!actions.pageContentFound(pageContent,queryCompleted)">
   <ng-container *ngIf="siteEditService.active()">
     <div class="col-12 alert {{notifyTarget.alertClass}} mt-3">
       <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
       <strong class="ml-2">{{notifyTarget.alertTitle}}</strong>
       <span class="p-2">{{notifyTarget.alertMessage}}. <a (click)="createContent()" class="rams-text-decoration-pink"
-                                                         type="button">Create content</a></span>
+                                                          type="button">Create content</a></span>
     </div>
   </ng-container>
   <ng-container *ngIf="!siteEditService.active()">

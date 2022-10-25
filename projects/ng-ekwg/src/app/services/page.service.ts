@@ -22,6 +22,7 @@ export class PageService {
   }
 
   public pages: Page[] = [
+    HOME,
     {href: "walks", title: "Walks"},
     {href: "social", title: "Social"},
     {href: "join-us", title: "Join Us"},

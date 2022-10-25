@@ -92,16 +92,16 @@
     <input type="submit" value="Save File" [disabled]="pendingCompletion()" (click)="saveCommitteeFile()"
            title="Save File"
            [ngClass]="pendingCompletion() ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-    <input *ngIf="!pendingDeletion() && display.allowDeleteCommitteeFile(committeeFile)" type="submit"
+    <input *ngIf="!this.display.confirm.deleteConfirmOutstanding() && display.allowDeleteCommitteeFile(committeeFile)" type="submit"
            value="Delete File"
-           [disabled]="pendingCompletion()" (click)="deleteCommitteeFile()" title="Delete File"
+           [disabled]="pendingCompletion()" (click)="this.display.confirm.toggleOnDeleteConfirm();" title="Delete File"
            [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-    <input *ngIf="pendingDeletion()" type="submit" value="Confirm Delete of File"
+    <input *ngIf="this.display.confirm.deleteConfirmOutstanding()" type="submit" value="Confirm Delete of File"
            [disabled]="notifyTarget.busy" (click)="confirmDeleteCommitteeFile()"
            title="Confirm delete of this File"
            [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left button-confirm'">
-    <input *ngIf="pendingDeletion()" type="submit" value="Cancel Delete of File"
-           [disabled]="notifyTarget.busy" (click)="cancelDeleteCommitteeFile()"
+    <input *ngIf="this.display.confirm.deleteConfirmOutstanding()" type="submit" value="Cancel Delete of File"
+           [disabled]="notifyTarget.busy" (click)="this.display.confirm.clear();"
            title="Confirm delete of this File"
            [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-left': 'button-form button-form-left amber-confirm'">
     <input type="submit" value="Cancel Change" [disabled]="notifyTarget.busy" (click)="close()"

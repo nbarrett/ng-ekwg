@@ -26,7 +26,7 @@ describe("UrlService", () => {
 
   it("should return baseUrl as the path segment before /", () => {
     const service: UrlService = TestBed.inject(UrlService);
-    expect(service.baseUrl(URL_PATH)).toBe("https://www.ekwg.co.uk");
+    expect(service.baseUrl()).toBe("https://www.ekwg.co.uk");
   });
 
   describe("area", () => {
