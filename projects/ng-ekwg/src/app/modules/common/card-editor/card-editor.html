@@ -10,7 +10,7 @@
          target="_self">{{column.title}}</a>
     </h4>
     <app-image-cropper
-      *ngIf="editActive"
+      *ngIf="pageContentEdit.editActive"
       [preloadImage]="column?.imageSource"
       (imageChange)="imageChanged($event)"
       (quit)="exitImageEdit()"
@@ -19,63 +19,65 @@
     <ng-container *ngIf="siteEditService.active()">
       <div class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title')">Title</label>
+               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title-' + contentPath)">Title</label>
         <input [(ngModel)]="column.title"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title')"
+               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title-' + contentPath)"
                class="form-control input-sm" placeholder="Enter slide title"
                type="text">
       </div>
       <div class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href')">Link</label>
+               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)">Link</label>
         <input [(ngModel)]="column.href"
                [typeahead]="siteLinks"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href')"
+               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)"
                class="form-control input-sm" placeholder="Enter href value">
       </div>
       <div class="form-group">
         <div class="custom-control custom-radio custom-control-inline">
-          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image')"
+          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image-' + contentPath)"
                  type="radio"
                  class="custom-control-input"
-                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
+                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type-' + contentPath)"
                  [ngModel]="imageType"
                  (change)="changeToImageType()"
                  value="image"/>
           <label class="custom-control-label"
-                 [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image')">Use Image</label>
+                 [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image-' + contentPath)">
+            Use Image</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon')"
+          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon-' + contentPath)"
                  type="radio"
-                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type')"
+                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type-' + contentPath)"
                  class="custom-control-input"
                  [ngModel]="imageType"
                  (change)="changeToIconType()"
                  value="icon"/>
-          <label class="custom-control-label" [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon')">Use
-            Icon</label>
+          <label class="custom-control-label"
+                 [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon-' + contentPath)">
+            Use Icon</label>
         </div>
       </div>
       <div *ngIf="imageType==='icon'" class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon')">Icon</label>
+               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon-' + contentPath)">Icon</label>
         <input [(ngModel)]="column.icon"
                [typeahead]="iconService.iconKeys"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon')"
+               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon-' + contentPath)"
                class="form-control input-sm" placeholder="Enter icon value">
       </div>
       <div *ngIf="imageType==='image'" class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource')">Image Source</label>
+               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource-' + contentPath)">Image Source</label>
         <input [(ngModel)]="column.imageSource"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource')"
+               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource-' + contentPath)"
                class="form-control input-sm" placeholder="Enter image source value"
                type="text">
       </div>
       <div class="form-group">
-        <label [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level')">Access</label>
-        <select [(ngModel)]="column.accessLevel" [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level')"
+        <label [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level-' + contentPath)">Access</label>
+        <select [(ngModel)]="column.accessLevel" [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level-' + contentPath)"
                 class="form-control input-sm">
           <option *ngFor="let accessLevel of memberResourcesReferenceData.accessLevels()"
                   [textContent]="accessLevel.description"
@@ -93,7 +95,7 @@
                          [id]="column?.contentTextId"
                          [name]="actions.rowColFor(rowIndex, columnIndex)">
 
-      <div *ngIf="!editActive"
+      <div *ngIf="!pageContentEdit.editActive"
            (click)="editImage()"
            delay=500 tooltip="edit image" class="badge-button">
         <fa-icon [icon]="faPencil"></fa-icon>

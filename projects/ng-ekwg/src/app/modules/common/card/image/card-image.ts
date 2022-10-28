@@ -44,12 +44,12 @@ export class CardImageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
+    this.logger.debug("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
   }
 
   hrefUrl() {
     const url = this.imageLink.startsWith("http") ? this.imageLink : null;
-    this.logger.info("hrefUrl:imageLink", this.imageLink, "url:", url);
+    this.logger.debug("hrefUrl:imageLink", this.imageLink, "url:", url);
     return url;
   }
 }

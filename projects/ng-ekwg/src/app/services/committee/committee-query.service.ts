@@ -38,7 +38,7 @@ export class CommitteeQueryService {
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
     committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
     committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
   }
 

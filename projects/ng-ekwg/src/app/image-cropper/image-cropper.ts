@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import {
   faArrowRightArrowLeft,
   faClose,
@@ -23,15 +23,14 @@ import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, Ima
 import { NgxLoggerLevel } from "ngx-logger";
 import { FileUtilsService } from "../file-utils.service";
 import { AlertTarget } from "../models/alert-target.model";
-import { AwsFileData, AwsFileUploadResponse, Compression, FileNameData, ImageData } from "../models/aws-object.model";
+import { AwsFileData, AwsFileUploadResponse, DescribedDimensions, FileNameData, ImageData } from "../models/aws-object.model";
 import { DateValue } from "../models/date.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { FileUploadService } from "../services/file-upload.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../services/notifier.service";
 import { NumberUtilsService } from "../services/number-utils.service";
-
-const MAX_SIZE = 9984;
+import { UrlService } from "../services/url.service";
 
 @Component({
   selector: "app-image-cropper",
@@ -39,7 +38,7 @@ const MAX_SIZE = 9984;
   styleUrls: ["./image-cropper.sass"]
 })
 
-export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
+export class ImageCropperAndResizerComponent implements OnInit {
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
   @Input() preloadImage: string;
   @Output() quit: EventEmitter<void> = new EventEmitter();
@@ -47,42 +46,35 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   @Output() imageChange: EventEmitter<AwsFileData> = new EventEmitter();
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  imageChangedEvent: Event;
-  croppedImage: any = "";
   canvasRotation = 0;
-  resizeToWidth = 0;
   rotation = 0;
   scale = 1;
-  showCropper = false;
   containWithinAspectRatio = false;
   transform: ImageTransform = {};
-  original: ImageData;
-  private maintainQuality = false;
-  originalSize = "";
-  croppedSize = "";
   private logger: Logger;
   public fileNameData: FileNameData;
   public hasFileOver = false;
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  public originalFile: File;
-  public format: OutputFormat = "png";
+  public format: OutputFormat = "jpeg";
   public aspectRatio: number;
-  public dimensions: Dimensions[] = [
-    {width: 1, height: 1},
-    {width: 3, height: 2},
-    {width: 4, height: 3},
-    {width: 4, height: 6},
-    {width: 5, height: 4},
-    {width: 5, height: 7},
-    {width: 12, height: 18},
-    {width: 16, height: 9},
-    {width: 18, height: 24},
-    {width: 940, height: 300},
+  public dimensions: DescribedDimensions[] = [
+    {width: 1, height: 1, description: "Square"},
+    {width: 3, height: 2, description: "Classic 35mm still"},
+    {width: 4, height: 3, description: "Default"},
+    {width: 1.6180, height: 1, description: "The golden ratio"},
+    // {width: 5, height: 4},
+    {width: 5, height: 7, description: "Portrait"},
+    // {width: 12, height: 18},
+    {width: 16, height: 10, description: "A common computer screen ratio"},
+    {width: 16, height: 9, description: "HD video standard"},
+    // {width: 18, height: 24},
+    {width: 940, height: 300, description: "Home page"},
+    {width: 1116, height: 470, description: "Ramblers Landing page"},
   ];
-  public dimension: Dimensions = this.dimensions[0];
-  public compressionIndex = 0;
+
+  public dimension: DescribedDimensions = this.dimensions[0];
   faClose = faClose;
   faSave = faSave;
   faRotateRight = faRotateRight;
@@ -92,32 +84,22 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   faMagnifyingGlassPlus = faMagnifyingGlassPlus;
   faArrowRightArrowLeft = faArrowRightArrowLeft;
   faUpDown = faUpDown;
-
-  // faAngleDown = faAngleDown;
-  // faAngleUp = faAngleUp;
-  // faArrowLeft = faArrowLeft;
-  // faArrowLeftRotate = faArrowLeftRotate;
-  // faArrowRightFromFile = faArrowRightFromFile;
   faCompress = faCompress;
   faExpand = faExpand;
   faCompressAlt = faCompressAlt;
-  // faCrop = faCrop;
-  // faFilePen = faFilePen;
-  // faGripLines = faGripLines;
   faGripLinesVertical = faGripLinesVertical;
-  // faLeftRight = faLeftRight;
-  // faRotate = faRotate;
   faRulerCombined = faRulerCombined;
   faRulerVertical = faRulerVertical;
-  // faSave = faSave;
-  // faSpinner = faSpinner;
-  // faSyncAlt = faSyncAlt;
-  // faUndoAlt = faUndoAlt;
   action: string;
-  public compressions: Compression[];
+  maintainAspectRatio: boolean;
+  imageQuality = 80;
+  public originalFile: File;
+  public croppedFile: AwsFileData;
+  public originalImageData: ImageData;
 
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
+              private urlService: UrlService,
               private notifierService: NotifierService,
               private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
@@ -145,67 +127,54 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
           this.notify.clearBusy();
           this.notify.success({title: "File uploaded", message: this.fileNameData.title});
         }
-      }
-    );
-  }
-
-  ngAfterViewInit(): void {
+    });
     if (this.preloadImage) {
       this.notify.success({title: "Image Cropper", message: "loading file into editor"});
-      this.fileUtils.urlToFile(this.preloadImage, "file-crop.jpeg")
-        .then(file => this.processSingleFile(file));
+      const imageName = this.urlService.s3PathForImage(this.preloadImage);
+      this.fileUtils.urlToFile(imageName, imageName)
+        .then((file: File) => this.processSingleFile(file));
     }
   }
 
-  private calculateCompressions(): Compression[] {
-    return [0, 64, 128, 200, 256, 384, 512, 640, 768, 896, 1024, 2048, 3072, 3840, 4096, 5120, 6400, 7040, 8192, 8704, MAX_SIZE]
-      .filter((_: number, index) => this.original?.base64?.length || index === 0)
-      .map((item: number, index) => {
-        const bytes = item / MAX_SIZE * this.original?.base64?.length;
-        return ({
-          index,
-          bytes,
-          displaySize: item === 0 ? "(original bytes)" : this.numberUtils.humanFileSize2(bytes)
-        });
-      });
-  }
-
-  fileChangeEvent(event: Event): void {
-    this.imageChangedEvent = event;
-    this.logger.info("fileChangeEvent:event", event);
-  }
-
   imageCropped(event: ImageCroppedEvent) {
-    this.croppedImage = event.base64;
-    const awsFileData: AwsFileData = this.awsFileData();
-    this.logger.info("imageCropped:event", event, "awsFileData:", awsFileData);
-    this.croppedSize = this.numberUtils.humanFileSize(this.croppedImage.length);
+    const awsFileData: AwsFileData = this.awsFileData(this.preloadImage, event.base64);
+    this.croppedFile = awsFileData;
+    this.logger.info("imageCropped:quality,", this.imageQuality, "original size,", this.originalFile.size, this.originalSize(), "croppedFile size", this.croppedFile.file.size, "croppedSize:", this.croppedSize());
     this.imageChange.next(awsFileData);
   }
 
-  awsFileData(awsFileName?: string): AwsFileData {
+  awsFileData(awsFileName: string, croppedImage: string): AwsFileData {
     return {
       awsFileName,
-      image: this.croppedImage,
-      file: new File([base64ToFile(this.croppedImage)], this.originalFile.name, {lastModified: this.originalFile.lastModified, type: this.originalFile.type})
+      image: croppedImage,
+      file: new File([base64ToFile(croppedImage)], this.originalFile.name, {lastModified: this.originalFile.lastModified, type: this.originalFile.type})
     };
   }
 
-  imageLoaded($event: LoadedImage) {
-    this.showCropper = true;
-    this.logger.info("Image loaded:", $event);
-    this.original = $event.original;
-    this.originalSize = this.numberUtils.humanFileSize(this.original.base64.length);
-    this.setResizeToWidth();
-    this.compressions = this.calculateCompressions();
+  imagePresent(): boolean {
+    return !!(this?.croppedFile && this?.originalImageData);
   }
 
-  private setResizeToWidth() {
-    this.resizeToWidth = this.maintainQuality ? this.original.size.width : 1500;
+  croppedSize() {
+    return this.numberUtils.humanFileSize(this?.croppedFile?.file.size);
+  }
+
+  originalSize() {
+    return this.numberUtils.humanFileSize(this?.originalFile?.size);
+  }
+
+  imageLoaded(loadedImage: LoadedImage) {
+    this.originalImageData = loadedImage.original;
+    this.logger.debug("Image loaded:", this.originalImageData);
+  }
+
+  private cropForCurrentCompression() {
+    this.logger.debug("imageCropperComponent.crop() triggered with image quality:", this.imageQuality);
+    this.imageCropperComponent.crop();
   }
 
   cropperReady(sourceImageDimensions: Dimensions) {
-    this.logger.info("Cropper ready", sourceImageDimensions);
+    this.logger.debug("Cropper ready", sourceImageDimensions);
     this.notify.hide();
   }
 
@@ -214,7 +183,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   }
 
   loadImageFailed($event: void) {
-    this.logger.info("Load failed:", $event);
+    this.logger.debug("Load failed:", $event);
     this.notify.error({title: "Load failed", message: $event});
   }
 
@@ -257,7 +226,8 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.rotation = 0;
     this.canvasRotation = 0;
     this.transform = {};
-    this.setResizeToWidth();
+    this.imageQuality = 90;
+    this.manuallySubmitCrop();
   }
 
   zoomOut() {
@@ -288,11 +258,11 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   }
 
   resized($event: UIEvent) {
-    this.logger.info("resized:", $event);
+    this.logger.debug("resized:", $event);
   }
 
   resizeToWidthChanged($event: any) {
-    this.logger.info("resizeToWidthChanged:", $event);
+    this.logger.debug("resizeToWidthChanged:", $event);
     this.imageCropperComponent.crop();
   }
 
@@ -301,27 +271,23 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     fileElement.click();
   }
 
-  removeAttachment() {
-    this.fileNameData = undefined;
-  }
-
   public fileOver(e: any): void {
     this.hasFileOver = e;
   }
 
-  fileDropped($event: File[]) {
-    this.logger.info("fileDropped:", $event);
-    this.processSingleFile(first($event));
+  onFileDropped(files: File[]) {
+    this.logger.debug("fileDropped:", files);
+    this.processSingleFile(first(files));
   }
 
-  onFileSelect($event: File[]) {
-    this.processSingleFile(first($event));
+  onFileSelect(files: File[]) {
+    this.processSingleFile(first(files));
   }
 
   private processSingleFile(file: File) {
     this.notify.setBusy();
     this.uploader.clearQueue();
-    this.logger.info("processSingleFile:file:", file, "queue:", this.uploader.queue);
+    this.logger.debug("processSingleFile:file:", file, "queue:", this.uploader.queue, "original file size:", this.numberUtils.humanFileSize(file.size));
     this.notify.progress({title: "File upload", message: `loading preview for ${file.name}...`});
     this.originalFile = file;
   }
@@ -332,12 +298,15 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
 
   changeAspectRatio(event: any) {
     this.aspectRatio = this.dimension.width / this.dimension.height;
-    this.logger.info("changeAspectRatio:", event.target.value, "aspectRatio:", this.dimension);
+    this.maintainAspectRatio = !this.aspectRatioMaintained(this.dimension);
+    this.logger.debug("changeAspectRatio:", event.target.value, "dimension:", this.dimension, "aspectRatio ->", this.aspectRatio);
     this.imageCropperComponent.crop();
   }
 
-  changeCompression(event: any) {
-    this.logger.info("changeCompression:event:", event, "compressionIndex:", this.compressionIndex, "compression:", this.compressions[this.compressionIndex]);
+  manuallySubmitCrop() {
+    setTimeout(() => {
+      this.cropForCurrentCompression();
+    }, 0);
   }
 
   saveImage() {
@@ -345,13 +314,14 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
       this.notify.success({title: "File upload", message: "saving image"});
       this.action = "saving";
       this.uploader.clearQueue();
-      this.uploader.addToQueue([this.awsFileData().file]);
+      this.uploader.addToQueue([this.croppedFile.file]);
       this.uploader.uploadAll();
       this.uploader.response.subscribe((uploaderResponse: string) => {
         const response: AwsFileUploadResponse = JSON.parse(uploaderResponse);
         const awsFileName = `${response?.response?.fileNameData?.rootFolder}/${response?.response?.fileNameData?.awsFileName}`;
-        this.logger.info("received response:", uploaderResponse, "awsFileName:", awsFileName, "local originalFile.name:", this.originalFile.name, "aws originalFileName", response?.response?.fileNameData.originalFileName);
-        this.save.next(this.awsFileData(awsFileName));
+        this.croppedFile.awsFileName = awsFileName;
+        this.logger.debug("received response:", uploaderResponse, "awsFileName:", awsFileName, "local originalFile.name:", this.originalFile.name, "aws originalFileName", response?.response?.fileNameData.originalFileName);
+        this.save.next(this.croppedFile);
         this.action = null;
         this.notify.success({title: "File upload", message: "image was saved successfully"});
       });
@@ -364,6 +334,25 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
 
   progress() {
     return this.uploader.progress;
+  }
+
+  formatAspectRatio(dimensions: DescribedDimensions): string {
+    return this.aspectRatioMaintained(dimensions) ? "Free selection" : `${dimensions.width} x ${dimensions.height} ${dimensions.description ?
+      " (" + dimensions.description + ")" : ""}`;
+  }
+
+  private aspectRatioMaintained(dimensions: Dimensions): boolean {
+    return dimensions.width === 1 && dimensions.height === 1;
+  }
+
+  transformChanged(imageTransform: ImageTransform) {
+    this.logger.debug("transformChanged:", imageTransform);
+  }
+
+  changeRange($event: any) {
+    this.logger.info("changeRange:", $event.target?.value);
+    this.imageQuality = $event.target?.value;
+    this.manuallySubmitCrop();
   }
 
 }

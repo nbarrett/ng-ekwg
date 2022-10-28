@@ -20,6 +20,13 @@ export interface PageContent {
   rows: PageContentRow[]
 }
 
+export interface PageContentEditEvent {
+  columnIndex: number;
+  rowIndex: number;
+  path?: string;
+  editActive: boolean;
+}
+
 export interface PageContentApiResponse extends ApiResponse {
   request: any;
   response?: PageContent | PageContent[];

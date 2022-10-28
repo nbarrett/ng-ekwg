@@ -1,8 +1,8 @@
-<div class="row mb-n3">
-  <div *ngIf="true" class="mb-3 col-sm-12">
+<div class="card mb-2">
+  <div class="card-body">
     <div class="card-text">
       <div *ngIf="showAlertMessage()" class="row">
-        <div class="col-md-12 mb-10">
+        <div class="col-md-12 mb-2">
           <div class="alert {{notifyTarget.alert.class}}">
             <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
             <strong *ngIf="notifyTarget.alertTitle">
@@ -11,71 +11,23 @@
         </div>
       </div>
       <div class="row">
-        <ng-container *ngIf="false">
-          <div class="col">
-            <label for="resizeToWidth">Resize to width:</label>
+        <div class="col-12">
+          <input type="submit" [disabled]="notifyTarget.busy"
+                 value="Choose File"
+                 (click)="browseToFile(fileElement)"
+                 [ngClass]="{'disabled-button-form': notifyTarget.busy}">
+          <input #fileElement class="d-none" type="file" ng2FileSelect (onFileSelected)="onFileSelect($event)"
+                 [uploader]="uploader">
+        </div>
+        <div class="col-12">
+          <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
+               (fileOver)="fileOver($event)"
+               (onFileDrop)="onFileDropped($event)"
+               [uploader]="uploader"
+               class="drop-zone flex-grow-1 mb-2">Or drop file here
           </div>
-          <div class="col">
-            <input id="resizeToWidth" [(ngModel)]="resizeToWidth"
-                   (ngModelChange)="resizeToWidthChanged($event)"
-                   placeholder="Resize to width" type="number"
-                   class="form-control input-sm flex-grow-1"/>
-          </div>
-          <div class="col">
-            <label for="rotation">Rotation:</label>
-          </div>
-          <div class="col">
-            <input id="rotation" [(ngModel)]="rotation" placeholder="Rotation" type="number"
-                   (keyup)="updateRotation()"
-                   class="form-control input-sm flex-grow-1"/>
-          </div>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-  <div class="card-body">
-    <div class="row mt-2">
-      <div class="col-12">
-        <input type="submit" [disabled]="notifyTarget.busy"
-               value="Choose File"
-               (click)="browseToFile(fileElement)"
-               [ngClass]="{'disabled-button-form': notifyTarget.busy}">
-        <input #fileElement class="d-none" type="file" ng2FileSelect (onFileSelected)="onFileSelect($event)"
-               [uploader]="uploader">
-      </div>
-      <div class="col-12">
-        <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-             (fileOver)="fileOver($event)"
-             (onFileDrop)="fileDropped($event)"
-             [uploader]="uploader"
-             class="drop-zone dflex-grow-1 col">Or drop file here
         </div>
       </div>
-    </div>
-    <div class="row mb-2">
-      <div class="col-12">
-        <label for="aspect-ratio">Aspect Ratio:</label>
-        <select class="form-control input-sm"
-                [(ngModel)]="dimension"
-                (change)="changeAspectRatio($event)"
-                id="aspect-ratio">
-          <option *ngFor="let aspectRatio of dimensions"
-                  [ngValue]="aspectRatio">{{aspectRatio.width}} x {{aspectRatio.height}}</option>
-        </select>
-      </div>
-    </div>
-    <div class="row mb-2">
-      <div class="col-12">
-        <label for="compression">Crop to size:</label>
-        <select class="form-control input-sm"
-                [(ngModel)]="compressionIndex"
-                (ngModelChange)="changeCompression($event)"
-                id="compression">
-          <option *ngFor="let compression of compressions"
-                  [ngValue]="compression.index">{{compression.displaySize}}</option>
-        </select>
-      </div>
-    </div>
     <div class="row">
       <div class="col-6">
         <div class="badge-button w-100" (click)="rotateLeft()"
@@ -134,59 +86,98 @@
           <span>{{containWithinAspectRatio ? 'fill' : 'contain'}}</span>
         </div>
       </div>
-      <div class="col-6">
-        <div (click)="quit.next()"
-             delay=500 tooltip="quit without saving" class="badge-button w-100">
-          <fa-icon [icon]="faClose"></fa-icon>
-          <span>quit</span>
-        </div>
-      </div>
-      <div class="col-6">
-        <div (click)="saveImage()"
-             delay=500 tooltip="save changes" class="badge-button w-100">
-          <fa-icon [icon]="faSave"></fa-icon>
-          <span>save</span>
-        </div>
-      </div>
-      <div class="col-sm-12" *ngIf="action">
-        <div class="progress mb-2">
-          <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': progress() + '%' }">
-            {{action}} {{uploader.progress}}%
+    </div>
+      <div class="row">
+        <div class="col-sm-12" *ngIf="action">
+          <div class="progress mb-2">
+            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': progress() + '%' }">
+              {{action}} {{uploader.progress}}%
+            </div>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
+      <div class="row mt-2 mb-2">
+        <div class="col-sm-12">
           <image-cropper
             [allowMoveImage]="true"
             [imageFile]="originalFile"
-            [imageChangedEvent]="imageChangedEvent"
-            [maintainAspectRatio]="false"
+            [maintainAspectRatio]="maintainAspectRatio"
             [containWithinAspectRatio]="containWithinAspectRatio"
             [aspectRatio]="aspectRatio"
-            [onlyScaleDown]="false"
-            [roundCropper]="false"
             [canvasRotation]="canvasRotation"
             [transform]="transform"
-            [resizeToWidth]="resizeToWidth"
             (resize)="resized($event)"
             [alignImage]="'left'"
-            [style.display]="showCropper ? null : 'none'"
             [format]="format"
+            [imageQuality]="imageQuality"
+            (transformChange)="transformChanged($event)"
             (imageCropped)="imageCropped($event)"
             (imageLoaded)="imageLoaded($event)"
             (cropperReady)="cropperReady($event)"
             (loadImageFailed)="loadImageFailed($event)"
-          (error)="error($event)">
+            (error)="error($event)">
           </image-cropper>
         </div>
       </div>
-      <div class="col-sm-12">
-        Original Size: {{originalSize}}
+      <div class="row">
+        <div class="col-12 mb-2">
+          <label for="aspect-ratio">Aspect Ratio:</label>
+          <select class="form-control input-sm"
+                  [(ngModel)]="dimension"
+                  (change)="changeAspectRatio($event)"
+                  id="aspect-ratio">
+            <option *ngFor="let aspectRatio of dimensions"
+                    [ngValue]="aspectRatio">{{formatAspectRatio(aspectRatio)}}</option>
+          </select>
+        </div>
+        <div class="col-12 mb-2">
+          <label for="compression">Compress to size ({{imageQuality}}%):</label>
+          <input type="range" min="0" max="100" value="90" step="2" class="custom-range" id="compression"
+                 (change)="changeRange($event)">
+        </div>
       </div>
-      <div class="col-sm-12">
-        Cropped Size: {{croppedSize}}
+      <div class="row mb-2" *ngIf="imagePresent()">
+        <div class="col-sm-6">
+          Original Size: {{originalSize()}}
+        </div>
+        <div class="col-sm-6">
+          Cropped Size: {{croppedSize()}}
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-6">
+          <div (click)="quit.next()"
+               delay=500 tooltip="quit without saving" class="badge-button w-100">
+            <fa-icon [icon]="faClose"></fa-icon>
+            <span>quit</span>
+          </div>
+        </div>
+        <div class="col-6">
+          <div (click)="saveImage()"
+               delay=500 tooltip="save changes" class="badge-button w-100">
+            <fa-icon [icon]="faSave"></fa-icon>
+            <span>save</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
+<ng-container *ngIf="false">
+  <div class="col">
+    <label for="resizeToWidth">Resize to width:</label>
+  </div>
+  <div class="col">
+    <input id="resizeToWidth" (ngModelChange)="resizeToWidthChanged($event)"
+           placeholder="Resize to width" type="number"
+           class="form-control input-sm flex-grow-1"/>
+  </div>
+  <div class="col">
+    <label for="rotation">Rotation:</label>
+  </div>
+  <div class="col">
+    <input id="rotation" [(ngModel)]="rotation" placeholder="Rotation" type="number"
+           (keyup)="updateRotation()"
+           class="form-control input-sm flex-grow-1"/>
+  </div>
+</ng-container>

@@ -6,12 +6,6 @@ export interface FileNameData {
   title?: string;
 }
 
-export interface Compression {
-  index: number;
-  bytes: number;
-  displaySize: string;
-}
-
 export interface AwsFileData {
   awsFileName?: string;
   file: File;
@@ -56,7 +50,11 @@ export interface AwsFileUploadResponse {
 }
 
 export interface ImageData {
-    base64: string;
-    image: HTMLImageElement;
-    size: Dimensions;
+  base64: string;
+  image: HTMLImageElement;
+  size: Dimensions;
+}
+
+export interface DescribedDimensions extends Dimensions {
+  description?: string;
 }

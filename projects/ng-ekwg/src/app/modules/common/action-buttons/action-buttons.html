@@ -45,14 +45,15 @@
 </div>
 <div class="row">
   <ng-container *ngFor="let column of viewableColumns(); let columnIndex = index;">
-    <div [class]="slideClasses()"
-         [id]="actions.columnIdentifierFor(columnIndex,column.contentTextId || 'card')">
+    <div [class]="slideClasses(column)"
+         [id]="actions.columnIdentifierFor(columnIndex,pageContent.path + '-card')">
       <app-card-editor
         [rowIndex]="rowIndex"
         [column]="column"
         [pageContent]="pageContent"
         [contentPath]="contentPath"
-        [relativePath]="relativePath">
+        [relativePath]="relativePath"
+        (pageContentEditEvents)="listenForEvents($event)">
       </app-card-editor>
     </div>
   </ng-container>

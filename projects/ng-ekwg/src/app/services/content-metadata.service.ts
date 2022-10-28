@@ -10,7 +10,7 @@ import {
   ContentMetadataApiResponse,
   ContentMetadataItem,
   ImageTag,
-  RECENT_PHOTOS,
+  RECENT_PHOTOS, S3_BASE_URL, S3_METADATA_URL,
   S3Metadata,
   S3MetadataApiResponse
 } from "../models/content-metadata.model";
@@ -28,8 +28,6 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 })
 
 export class ContentMetadataService {
-  private S3_BASE_URL = "api/aws/s3";
-  private S3_METADATA_URL = "/api/aws/metadata/list-objects";
   private BASE_URL = "api/database/content-metadata";
   private logger: Logger;
   private contentMetadataSubject = new Subject<ContentMetadataApiResponse>();
@@ -52,8 +50,8 @@ export class ContentMetadataService {
     return this.s3MetadataSubject.asObservable();
   }
 
-  baseUrl(metaDataPathSegment: string) {
-    return `${this.S3_BASE_URL}/${metaDataPathSegment}`;
+  baseUrl(rootFolder: string) {
+    return `${S3_BASE_URL}/${rootFolder}`;
   }
 
   transformFiles(contentMetaData: ContentMetadataApiResponse, contentMetaDataType: string): ContentMetadata {
@@ -61,7 +59,7 @@ export class ContentMetadataService {
       ...contentMetaData?.response, files: contentMetaData?.response?.files
         .filter(file => file?.image)
         .map(file => ({
-          ...file, image: `${this.S3_BASE_URL}/${contentMetaDataType}/${last(file?.image?.split("/"))}`
+          ...file, image: `${S3_BASE_URL}/${contentMetaDataType}/${last(file?.image?.split("/"))}`
         }))
     };
   }
@@ -99,7 +97,7 @@ export class ContentMetadataService {
   }
 
   async listMetaData(prefix: string): Promise<S3Metadata[]> {
-    const apiResponse = await this.http.get<S3Metadata[]>(this.S3_METADATA_URL + "/" + prefix).toPromise();
+    const apiResponse = await this.http.get<S3Metadata[]>(`${S3_METADATA_URL}/${prefix}`).toPromise();
     this.logger.debug("listMetaData:prefix", prefix, "returning", apiResponse.length, "S3Metadata items");
     return apiResponse;
   }

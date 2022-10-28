@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { kebabCase } from "lodash-es";
 import flatten from "lodash-es/flatten";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
@@ -58,6 +59,7 @@ export class PageContentActionsService {
     const columnData: PageContentColumn = row.type === PageContentType.TEXT ?
       {columns: this.calculateColumnsFor(row, 1), accessLevel: AccessLevel.public} :
       {href: null, imageSource: null, title: null, accessLevel: AccessLevel.hidden};
+    row.maxColumns = row.maxColumns + 1;
     row.columns.splice(columnIndex, 0, columnData);
     this.logger.info("pageContent:", pageContent);
     this.notifyPageContentChanges();
@@ -106,15 +108,15 @@ export class PageContentActionsService {
   }
 
   rowColumnIdentifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
-    return `${identifier}-${this.rowColFor(rowIndex, columnIndex)}`;
+    return kebabCase(`${identifier}-${this.rowColFor(rowIndex, columnIndex)}`);
   }
 
   columnIdentifierFor(columnIndex: number, identifier: string): string {
-    return `${identifier}-${this.rowColFor(null, columnIndex)}`;
+    return kebabCase(`${identifier}-${this.rowColFor(null, columnIndex)}`);
   }
 
   rowIdentifierFor(rowIndex: number, identifier: string): string {
-    return `${identifier}-${this.rowColFor(rowIndex, null)}`;
+    return kebabCase(`${identifier}-${this.rowColFor(rowIndex, null)}`);
   }
 
   descriptionFor(rowIndex, columnIndex, identifier: string): string {

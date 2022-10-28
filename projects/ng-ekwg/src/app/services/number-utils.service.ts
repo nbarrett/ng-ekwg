@@ -50,7 +50,7 @@ export class NumberUtilsService {
     return returnValue;
   }
 
-  humanFileSize(bytes, si = false, dp = 1) {
+  humanFileSizeOther(bytes, si = false, dp = 1) {
     const thresh = si ? 1000 : 1024;
 
     if (Math.abs(bytes) < thresh) {
@@ -71,18 +71,18 @@ export class NumberUtilsService {
     return bytes.toFixed(dp) + " " + units[u];
   }
 
-  humanFileSizeValor(size: number) {
+  humanFileSizeMbOnly(size: number) {
     return this.asNumber(size / 1024 / 1024, 2) + " mb";
   }
 
-  humanFileSize2(size) {
+  humanFileSize(size) {
     if (size < 1024) {
-      return size + " B";
+      return size + " b";
     }
     const i = Math.floor(Math.log(size) / Math.log(1024));
     let num: string | number = (size / Math.pow(1024, i));
     const round = Math.round(num);
     num = round < 10 ? num.toFixed(2) : round < 100 ? num.toFixed(1) : round;
-    return `${num} ${"KMGTPEZY"[i - 1]}B`;
+    return `${num} ${"kmgtpezy"[i - 1]}b`;
   }
 }

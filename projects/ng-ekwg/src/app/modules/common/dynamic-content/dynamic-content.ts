@@ -47,7 +47,7 @@ export class DynamicContentComponent implements OnInit {
   faTableCells = faTableCells;
   public area: string;
   providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }];
-  enumKeyValuesFor: KeyValue[] = enumKeyValues(PageContentType);
+  enumKeyValuesForPageContentType: KeyValue[] = enumKeyValues(PageContentType);
   public editNameEnabled: true;
   public contentDescription: string;
   public queryCompleted = false;
@@ -66,7 +66,7 @@ export class DynamicContentComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -76,7 +76,7 @@ export class DynamicContentComponent implements OnInit {
       this.relativePath = paramMap.get("relativePath");
       this.contentPath = this.pageService.contentPath(this.relativePath, this.anchor);
       this.contentDescription = this.pageService.contentDescription(this.relativePath);
-      this.logger.info("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
+      this.logger.debug("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
       this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
       this.logger.debug("Finding page content for " + this.contentPath);
       this.refreshPageContent();

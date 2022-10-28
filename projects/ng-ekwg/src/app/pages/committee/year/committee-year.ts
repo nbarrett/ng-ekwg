@@ -63,7 +63,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {
@@ -108,7 +108,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     const relativeUrl = this.committeeYear?.latestYear ? `${this.urlService.relativeUrl()}/year/${this.committeeQueryService?.latestYear()}` : this.urlService.relativeUrl();
     this.logger.debug("pageContentRow:", pageContentRow, "relativeUrl:", relativeUrl, "committeeYear:", this.committeeYear);
     const pageContentColumn: PageContentColumn = pageContentRow?.columns.find(column => relativeUrl.endsWith(column.href));
-    return pageContentColumn?.imageSource;
+    return this.urlService.resourceRelativePathForAWSFileName(pageContentColumn?.imageSource);
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile) {

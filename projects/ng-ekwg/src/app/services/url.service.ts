@@ -8,6 +8,7 @@ import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
+import { S3_BASE_URL } from "../models/content-metadata.model";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -19,13 +20,16 @@ import { isMongoId } from "./mongo-utils";
 
 export class UrlService {
   private logger: Logger;
-  private API_PATH_PREFIX = "api/aws/s3/";
 
   constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
               private location: Location,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
+  }
+
+  s3PathForImage(imageSource: string): string {
+    return imageSource ? imageSource.includes(S3_BASE_URL) ? imageSource : `${S3_BASE_URL}/${imageSource}` : null;
   }
 
   pathContains(path: string): boolean {
@@ -128,11 +132,11 @@ export class UrlService {
   }
 
   resourceUrlForAWSFileName(fileName): string {
-    return this.baseUrl() + "/" + this.API_PATH_PREFIX + fileName;
+    return `${this.baseUrl()}/${S3_BASE_URL}/${fileName}`;
   }
 
   resourceRelativePathForAWSFileName(fileName: string): string {
-    return this.API_PATH_PREFIX + fileName;
+    return fileName ? fileName.includes(S3_BASE_URL) ? fileName : `${S3_BASE_URL}/${fileName}` : null;
   }
 
   hasRouteParameter(parameter): boolean {

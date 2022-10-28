@@ -37,8 +37,8 @@
                   [(ngModel)]="row.type"
                   (ngModelChange)="changeType($event)"
                   [id]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">
-            <option *ngFor="let type of enumKeyValuesFor"
-                    [ngValue]="type.value">{{type.value}}</option>
+            <option *ngFor="let type of enumKeyValuesForPageContentType"
+                    [ngValue]="type.value">{{stringUtils.asTitle(type.value)}}</option>
         </select>
         <app-actions-dropdown class="ml-2"
                               [rowIndex]="rowIndex"

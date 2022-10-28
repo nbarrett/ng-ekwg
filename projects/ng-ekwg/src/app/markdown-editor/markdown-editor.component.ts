@@ -43,6 +43,11 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   public content: ContentText = {};
   private saveEnabled = false;
 
+  @Input("editNameEnabled") set acceptChangesFrom(editNameEnabled: boolean) {
+    this.logger.debug("editNameEnabled:", editNameEnabled);
+    this.editNameEnabled = editNameEnabled;
+  }
+
   @Input() data: ContentText;
   @Input() name: string;
   @Input() id: string;
@@ -50,12 +55,12 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   @Input() text: string;
   @Input() rows: number;
   @Input() actionCaptionSuffix: string;
-  @Input() editNameEnabled: boolean;
   @Input() deleteEnabled: boolean;
   @Input() clearEnabled: boolean;
   @Input() initialView: View;
   @Input() description: string;
   @Output() saved: EventEmitter<ContentText> = new EventEmitter();
+  private editNameEnabled: boolean;
   private initialised: boolean;
   faSpinner = faSpinner;
   faPencil = faPencil;

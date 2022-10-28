@@ -12,12 +12,10 @@
          dropdownToggle>Column<span class="caret"></span></a>
       <ul *dropdownMenu class="dropdown-menu" role="menu">
         <li role="menuitem"><a (click)="actions.addColumn(row, columnIndex, pageContent)"
-                               class="dropdown-item">Insert to
-          left</a>
+                               class="dropdown-item">Insert to left</a>
         </li>
         <li role="menuitem"><a (click)="actions.addColumn(row, columnIndex+1, pageContent)"
-                               class="dropdown-item">Insert to
-          right</a>
+                               class="dropdown-item">Insert to right</a>
         </li>
         <li role="menuitem"><a (click)="actions.deleteColumn(row, columnIndex, pageContent)"
                                class="dropdown-item">Remove</a>

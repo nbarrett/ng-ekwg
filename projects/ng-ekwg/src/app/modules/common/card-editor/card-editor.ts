@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AwsFileData } from "../../../models/aws-object.model";
-import { ImageType, PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
+import { ImageType, PageContent, PageContentColumn, PageContentEditEvent, PageContentRow } from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { IconService } from "../../../services/icon-service/icon-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -21,6 +21,7 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
   styleUrls: ["./card-editor.sass"]
 })
 export class CardEditorComponent implements OnInit {
+  @Output() pageContentEditEvents: EventEmitter<PageContentEditEvent> = new EventEmitter();
   @Input()
   public pageContent: PageContent;
   @Input()
@@ -33,11 +34,10 @@ export class CardEditorComponent implements OnInit {
   relativePath: string;
   @Input()
   editNameEnabled: boolean;
-
+  public pageContentEdit: PageContentEditEvent;
   public row: PageContentRow;
   public awsFileData: AwsFileData;
   private logger: Logger;
-  editActive: boolean;
   public faPencil = faPencil;
   public siteLinks: string[] = [];
   public imageType: ImageType;
@@ -54,18 +54,19 @@ export class CardEditorComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
     this.columnIndex = this.row.columns.indexOf(this.column);
     this.imageType = this.column.imageSource ? ImageType.IMAGE : ImageType.ICON;
-    this.logger.info("ngOnInit:column", this.column, "this.row:", this.row, "this.imageType:", this.imageType);
+    this.pageContentEdit = {path: this.pageContent.path, columnIndex: this.columnIndex, rowIndex: this.rowIndex, editActive: false};
+    this.logger.debug("ngOnInit:column", this.column, "this.row:", this.row, "this.imageType:", this.imageType, "pageContentEdit:", this.pageContentEdit);
   }
 
   imageSourceOrPreview(): string {
-    return this.awsFileData?.image || this.column?.imageSource;
+    return this.awsFileData?.image || this.urlService.s3PathForImage(this.column?.imageSource);
   }
 
   imageChanged(awsFileData: AwsFileData) {
@@ -74,21 +75,28 @@ export class CardEditorComponent implements OnInit {
   }
 
   exitImageEdit() {
-    this.editActive = false;
+    this.pageContentEdit.editActive = false;
+    this.logAndSendEvent();
     this.awsFileData = null;
   }
 
+  private logAndSendEvent() {
+    this.logger.info("sending pageContentEditEvent:", this.pageContentEdit);
+    this.pageContentEditEvents.next(this.pageContentEdit);
+  }
+
   editImage() {
-    this.editActive = true;
+    this.pageContentEdit.editActive = true;
+    this.logAndSendEvent();
     this.pageContentService.all().then(response => {
       this.siteLinks = uniq(response.map(item => item.path)).sort();
       this.logger.info("siteLinks:", this.siteLinks);
     });
   }
 
-  imagedSaved(event: AwsFileData) {
-    const imageSource = this.urlService.resourceRelativePathForAWSFileName(event.awsFileName);
-    this.logger.info("imagedSaved:", event, "setting imageSource for column", this.column, "to", imageSource);
+  imagedSaved(awsFileData: AwsFileData) {
+    const imageSource = awsFileData.awsFileName;
+    this.logger.info("imagedSaved:", awsFileData, "setting imageSource for column", this.column, "to", imageSource);
     this.column.imageSource = imageSource;
   }
 

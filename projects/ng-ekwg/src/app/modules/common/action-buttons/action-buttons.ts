@@ -1,10 +1,10 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { max, min } from "lodash-es";
+import { isEqual, max, min } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../../../models/broadcast.model";
-import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
+import { PageContent, PageContentColumn, PageContentEditEvent, PageContentRow } from "../../../models/content-text.model";
 import { DeviceSize } from "../../../models/page.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { CARD_MARGIN_BOTTOM, cardClasses } from "../../../services/card-utils";
@@ -28,7 +28,6 @@ export class ActionButtonsComponent implements OnInit {
   @Input()
   public editNameEnabled: boolean;
 
-  public rows: PageContentRow[];
   private logger: Logger;
   public contentPath: string;
   public slideIndex = 0;
@@ -38,7 +37,7 @@ export class ActionButtonsComponent implements OnInit {
   public row: PageContentRow;
   public activeEditColumnIndex: number;
   public faPencil = faPencil;
-
+  private pageContentEditEvents: PageContentEditEvent[] = [];
   constructor(
     public siteEditService: SiteEditService,
     private urlService: UrlService,
@@ -48,7 +47,7 @@ export class ActionButtonsComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ActionButtonsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ActionButtonsComponent, NgxLoggerLevel.INFO);
   }
 
   @HostListener("window:resize", ["event"])
@@ -58,16 +57,13 @@ export class ActionButtonsComponent implements OnInit {
 
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
-    this.logger.info("ngOnInit:editNameEnabled", this.editNameEnabled);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      this.relativePath = paramMap.get("relativePath");
-      this.contentPath = this.pageService.contentPath(this.relativePath);
-      this.logger.info("initialised with contentPath:", this.contentPath);
-    });
+    this.logger.debug("ngOnInit:editNameEnabled", this.editNameEnabled);
+    this.contentPath = this.pageContent.path;
+    this.logger.debug("initialised with contentPath:", this.contentPath);
     this.determineViewableSlideCount();
     this.pageColumnsChanged();
     this.broadcastService.on(NamedEventType.PAGE_CONTENT_CHANGED, () => {
-      this.logger.info("event received:", NamedEventType.PAGE_CONTENT_CHANGED);
+      this.logger.debug("event received:", NamedEventType.PAGE_CONTENT_CHANGED);
       this.pageColumnsChanged();
     });
   }
@@ -90,18 +86,24 @@ export class ActionButtonsComponent implements OnInit {
     } else {
       this.maxViewableSlideCount = 4;
     }
-    this.logger.info("determineViewableSlideCount:", window.innerWidth, "maxViewableSlideCount", this.maxViewableSlideCount);
+    this.logger.debug("determineViewableSlideCount:", window.innerWidth, "maxViewableSlideCount", this.maxViewableSlideCount);
   }
 
-  slideClasses() {
-    return cardClasses(this.row.maxColumns || this.actualViewableSlideCount, CARD_MARGIN_BOTTOM);
+  slideClasses(column: PageContentColumn) {
+    return this.columnInEditMode(column) ? "col-md-6" : cardClasses(this.row.maxColumns || this.actualViewableSlideCount, CARD_MARGIN_BOTTOM);
+  }
+
+  private columnInEditMode(column: PageContentColumn) {
+    const columnIndex = this.row.columns.indexOf(column);
+    return this.pageContentEditEvents.find(item => isEqual(item,
+      {columnIndex, rowIndex: this.rowIndex, path: this.pageContent.path, editActive: true}));
   }
 
   viewableColumns(): PageContentColumn[] {
     if (this.row.showSwiper) {
       const endIndex = this.slideIndex + this.maxViewableSlideCount;
       const viewableSlides: PageContentColumn[] = this.pageContentColumns().slice(this.slideIndex, endIndex);
-      this.logger.info("viewableSlides:slideIndex", this.slideIndex, "end index:", endIndex, "all slides:", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
+      this.logger.debug("viewableSlides:slideIndex", this.slideIndex, "end index:", endIndex, "all slides:", this.pageContentColumns(), "viewableSlideCount:", this.maxViewableSlideCount, "viewableSlides:", viewableSlides);
       return viewableSlides;
     } else {
       return this.pageContentColumns();
@@ -110,16 +112,16 @@ export class ActionButtonsComponent implements OnInit {
 
   back() {
     this.slideIndex = max([0, this.slideIndex - 1]);
-    this.logger.info("back:slideIndex", this.slideIndex);
+    this.logger.debug("back:slideIndex", this.slideIndex);
   }
 
   forward() {
     const columnCount = this.pageContentColumns().length;
     if (this.forwardPossible()) {
       this.slideIndex = min([this.slideIndex + 1, columnCount - 1]);
-      this.logger.info("forward:slideIndex", this.slideIndex);
+      this.logger.debug("forward:slideIndex", this.slideIndex);
     } else {
-      this.logger.info("forward:cant go further - slideIndex", this.slideIndex);
+      this.logger.debug("forward:cant go further - slideIndex", this.slideIndex);
     }
   }
 
@@ -129,13 +131,25 @@ export class ActionButtonsComponent implements OnInit {
 
   backDisabled(): boolean {
     const disabled = this.slideIndex === 0;
-    this.logger.info("backDisabled:", disabled);
+    this.logger.debug("backDisabled:", disabled);
     return disabled;
   }
 
   forwardDisabled(): boolean {
     const disabled = !this.forwardPossible();
-    this.logger.info("forwardDisabled:", disabled);
+    this.logger.debug("forwardDisabled:", disabled);
     return disabled;
+  }
+
+  listenForEvents(pageContentEditEvent: PageContentEditEvent) {
+    if (pageContentEditEvent.editActive) {
+      this.pageContentEditEvents.push(pageContentEditEvent);
+      this.logger.info("received pageContentEditEvent:", pageContentEditEvent, "added to:", this.pageContentEditEvents);
+    } else {
+      this.pageContentEditEvents = this.pageContentEditEvents
+        .filter(item => !isEqual(pageContentEditEvent, item));
+      this.logger.info("received pageContentEditEvent:", pageContentEditEvent, "removed from:", this.pageContentEditEvents);
+    }
+
   }
 }
