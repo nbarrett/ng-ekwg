@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faCopy, faEnvelope, faMapMarkerAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faEnvelope, faHouse, faMapMarkerAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faFile } from "@fortawesome/free-solid-svg-icons/faFile";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { SocialEvent } from "../../../models/social-events.model";
@@ -28,7 +29,8 @@ export class SocialViewComponent implements OnInit {
   faEnvelope = faEnvelope;
   faPhone = faPhone;
   faMapMarkerAlt = faMapMarkerAlt;
-
+  faHouse = faHouse;
+  faFile = faFile;
   constructor(
     public googleMapsService: GoogleMapsService,
     private notifierService: NotifierService,

@@ -30,49 +30,49 @@
       </div>
     <div class="row">
       <div class="col-6">
-        <div class="badge-button w-100" (click)="rotateLeft()"
+        <div [ngClass]="buttonClass(action)" (click)="rotateLeft()"
              delay=500 tooltip="Rotate left">
           <fa-icon [icon]="faRotateLeft"></fa-icon>
           <span>left</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="rotateRight()"
+        <div [ngClass]="buttonClass(action)" (click)="rotateRight()"
              delay=500 tooltip="Rotate right">
           <fa-icon [icon]="faRotateRight"></fa-icon>
           <span>right</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="flipHorizontal()"
+        <div [ngClass]="buttonClass(action)" (click)="flipHorizontal()"
              delay=500 tooltip="Flip horizontal">
           <fa-icon [icon]="faArrowRightArrowLeft"></fa-icon>
           <span>flip</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="flipVertical()"
+        <div [ngClass]="buttonClass(action)" (click)="flipVertical()"
              delay=500 tooltip="Flip vertical">
           <fa-icon [icon]="faUpDown"></fa-icon>
           <span>flip</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="zoomIn()"
+        <div [ngClass]="buttonClass(action)" (click)="zoomIn()"
              delay=500 tooltip="Zoom in">
           <fa-icon [icon]="faMagnifyingGlassPlus"></fa-icon>
           <span>zoom</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="zoomOut()"
+        <div [ngClass]="buttonClass(action)" (click)="zoomOut()"
              delay=500 tooltip="Zoom out">
           <fa-icon [icon]="faMagnifyingGlassMinus"></fa-icon>
           <span>zoom</span>
         </div>
       </div>
       <div class="col-6">
-        <div class="badge-button w-100" (click)="resetImage()"
+        <div [ngClass]="buttonClass(action)" (click)="resetImage()"
              delay=500 tooltip="Reset image">
           <fa-icon [icon]="faRedoAlt"></fa-icon>
           <span>reset</span>
@@ -81,21 +81,12 @@
       <div class="col-6">
         <div (click)="toggleContainWithinAspectRatio()"
              delay=500 [tooltip]="containWithinAspectRatio? 'fill aspect ratio' : 'contain within aspect ratio'"
-             class="badge-button w-100">
+             [ngClass]="buttonClass(action)">
           <fa-icon [icon]="containWithinAspectRatio? faCompress: faExpand"></fa-icon>
           <span>{{containWithinAspectRatio ? 'fill' : 'contain'}}</span>
         </div>
       </div>
     </div>
-      <div class="row">
-        <div class="col-sm-12" *ngIf="action">
-          <div class="progress mb-2">
-            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': progress() + '%' }">
-              {{action}} {{uploader.progress}}%
-            </div>
-          </div>
-        </div>
-      </div>
       <div class="row mt-2 mb-2">
         <div class="col-sm-12">
           <image-cropper
@@ -133,7 +124,7 @@
         <div class="col-12 mb-2">
           <label for="compression">Compress to size ({{imageQuality}}%):</label>
           <input type="range" min="0" max="100" value="90" step="2" class="custom-range" id="compression"
-                 (change)="changeRange($event)">
+                 (change)="changeRange($event, true)" (input)="changeRange($event, false)">
         </div>
       </div>
       <div class="row mb-2" *ngIf="imagePresent()">
@@ -144,17 +135,26 @@
           Cropped Size: {{croppedSize()}}
         </div>
       </div>
+      <div class="row">
+        <div class="col-sm-12" *ngIf="action">
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': progress() + '%' }">
+              {{action}} {{uploader.progress}}%
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row mb-2">
         <div class="col-6">
           <div (click)="quit.next()"
-               delay=500 tooltip="quit without saving" class="badge-button w-100">
+               delay=500 tooltip="quit without saving" [ngClass]="buttonClass(action)">
             <fa-icon [icon]="faClose"></fa-icon>
             <span>quit</span>
           </div>
         </div>
         <div class="col-6">
           <div (click)="saveImage()"
-               delay=500 tooltip="save changes" class="badge-button w-100">
+               delay=500 tooltip="save changes" [ngClass]="buttonClass(action)">
             <fa-icon [icon]="faSave"></fa-icon>
             <span>save</span>
           </div>

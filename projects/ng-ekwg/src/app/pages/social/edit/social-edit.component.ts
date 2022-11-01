@@ -3,11 +3,11 @@ import { Component, Input, OnInit } from "@angular/core";
 import { faCopy, faEye, faPencil } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
-import isEmpty from "lodash-es/isEmpty";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { AwsFileData } from "../../../models/aws-object.model";
 import { DateValue } from "../../../models/date.model";
 import { MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
@@ -36,6 +36,7 @@ import { SocialDisplayService } from "../social-display.service";
 @Component({
   selector: "app-social-edit",
   templateUrl: "social-edit.component.html",
+  styleUrls: ["social-edit.component.sass"]
 })
 export class SocialEditComponent implements OnInit {
   @Input()
@@ -56,6 +57,8 @@ export class SocialEditComponent implements OnInit {
   faCopy = faCopy;
   faEye = faEye;
   faPencil = faPencil;
+  editActive: boolean;
+  public awsFileData: AwsFileData;
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -77,7 +80,7 @@ export class SocialEditComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialEditComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -214,6 +217,14 @@ export class SocialEditComponent implements OnInit {
       .catch((error) => this.notify.error(error));
   }
 
+  imageCroppingError(errorEvent: ErrorEvent) {
+    this.notify.error({
+      title: "Image cropping error occurred",
+      message: (errorEvent ? (". Error was: " + JSON.stringify(errorEvent)) : "")
+    });
+    this.notify.clearBusy();
+  }
+
   handleError(errorResponse) {
     this.notify.error({
       title: "Your changes could not be saved",
@@ -305,6 +316,27 @@ export class SocialEditComponent implements OnInit {
       confirm: this.display.confirm
     }));
     this.close();
+  }
+
+  imageChanged(awsFileData: AwsFileData) {
+    this.logger.info("imageChanged:", awsFileData);
+    this.awsFileData = awsFileData;
+  }
+
+  exitImageEdit() {
+    this.editActive = false;
+    this.awsFileData = null;
+  }
+
+  imagedSaved(awsFileData: AwsFileData) {
+    const thumbnail = awsFileData.awsFileName;
+    this.logger.info("imagedSaved:", awsFileData, "setting thumbnail to", thumbnail);
+    this.socialEvent.thumbnail = thumbnail;
+    this.awsFileData = null;
+  }
+
+  editImage() {
+    this.editActive = true;
   }
 
 }

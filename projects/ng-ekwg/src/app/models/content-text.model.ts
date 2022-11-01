@@ -38,6 +38,8 @@ export enum PageContentType {
 }
 
 export enum ImageType {
+  ERROR = "error",
+  MISSING = "missing",
   IMAGE = "image",
   ICON = "icon",
 }

@@ -2,7 +2,7 @@
   <div class="wrapper w-100 position-relative">
     <img *ngIf="socialEvent?.thumbnail" class="h-100 w-100 position-absolute"
          role="presentation"
-         [src]="socialEvent?.thumbnail">
+         [src]="urlService.imageSource(socialEvent?.thumbnail)">
   </div>
   <div class="card-body">
     <div class="position-relative">
@@ -21,16 +21,6 @@
     <div class="row" *ngIf="display.allow.detailView">
       <div class="col-sm-12">
         <p markdown [data]="socialEvent?.longerDescription"></p>
-        <ul class="list-arrows">
-          <li *ngIf="display.attachmentExists(socialEvent)">
-            <a target="_blank"
-               [href]="display.attachmentUrl(socialEvent)">{{display.attachmentTitle(socialEvent)}}</a>
-          </li>
-          <li *ngIf="!socialEvent?.thumbnail && socialEvent?.link">
-            <a target="_blank"
-               [href]="socialEvent?.link">{{socialEvent?.linkTitle || 'Link: ' + socialEvent?.link}}</a>
-          </li>
-        </ul>
       </div>
     </div>
     <div class="row" *ngIf="display.allow.detailView">
@@ -49,6 +39,19 @@
                    target="_blank">{{socialEvent?.postcode}}</a>
 
               </p>
+            </div>
+          </app-related-link>
+          <app-related-link *ngIf="socialEvent?.link">
+            <app-copy-icon [icon]="faHouse" title [value]="socialEvent.link"
+                           [elementName]="socialEvent.link"></app-copy-icon>
+            <div content>
+              <a tooltip="Click to visit {{socialEvent.link}}" [href]="socialEvent.link" target="_blank">{{socialEvent.linkTitle || 'Social Event Venue'}}</a>
+            </div>
+          </app-related-link>
+          <app-related-link *ngIf="socialEvent?.attachment">
+            <fa-icon title [icon]="faFile" class="fa-icon ml-1 mr-1"></fa-icon>
+            <div content>
+              <a tooltip="Click to view attachment" [href]="display.attachmentUrl(socialEvent)" target="_blank">{{display.attachmentTitle(socialEvent)}}</a>
             </div>
           </app-related-link>
           <app-related-link>

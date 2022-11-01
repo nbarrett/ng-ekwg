@@ -14,16 +14,29 @@ import { UrlService } from "../../../../services/url.service";
 export class CardImageComponent implements OnInit {
   private logger: Logger;
   faImage = faImage;
+  IMAGE_LOAD_ERROR = "Image load error";
+  NO_IMAGE_AVAILABLE = "No image available";
 
   constructor(public urlService: UrlService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CardImageComponent, NgxLoggerLevel.INFO);
   }
+  public imageText = null;
+  public imageSource: string;
+
+  @Input("imageSource") set acceptChangesFrom(imageSource: string) {
+    this.logger.debug("imageSource:", imageSource);
+    this.imageSource = imageSource;
+    if (!imageSource) {
+      this.imageText = this.NO_IMAGE_AVAILABLE;
+    } else {
+      this.imageText = null;
+    }
+  }
 
   @Input()
   public imageType: ImageType;
-  @Input()
-  public imageSource: string;
+
   @Input()
   public imageLink: string;
   @Input()
@@ -31,8 +44,8 @@ export class CardImageComponent implements OnInit {
 
   faSearch = faSearch;
 
-  cardShouldHaveImage(): boolean {
-    return (!this.imageType || this.imageType === ImageType.IMAGE) && !!this.imageSource;
+  displayImage(): boolean {
+    return (!this.imageType || this.imageType === ImageType.IMAGE) && !!this.imageSource && !this.cardImageLoadError();
   }
 
   cardShouldHaveIcon(): boolean {
@@ -40,16 +53,24 @@ export class CardImageComponent implements OnInit {
   }
 
   cardMissingImage(): boolean {
-    return this.imageType === ImageType.IMAGE && !this.imageSource;
+    return this.imageText === this.IMAGE_LOAD_ERROR || ((this.imageType === ImageType.IMAGE || !this.imageType) && !this.imageSource);
+  }
+
+  cardImageLoadError(): boolean {
+    return this.imageText === this.IMAGE_LOAD_ERROR;
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
+    this.logger.info("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
   }
 
-  hrefUrl() {
-    const url = this.imageLink.startsWith("http") ? this.imageLink : null;
-    this.logger.debug("hrefUrl:imageLink", this.imageLink, "url:", url);
-    return url;
+  imageError(errorEvent: ErrorEvent) {
+    this.logger.info("imageError:", errorEvent);
+    this.imageText = this.IMAGE_LOAD_ERROR;
+  }
+
+  imageLoaded(event: Event) {
+    this.logger.info("imageLoaded:", event);
+    this.imageText = null;
   }
 }

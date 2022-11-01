@@ -96,7 +96,7 @@ describe("UrlService", () => {
 
     it("should return a path to an aws file name", () => {
       const service: UrlService = TestBed.inject(UrlService);
-      expect(service.resourceUrlForAWSFileName("file.pdf")).toBe("https://www.ekwg.co.uk/api/aws/s3/file.pdf");
+      expect(service.absolutePathForAWSFileName("file.pdf")).toBe("https://www.ekwg.co.uk/api/aws/s3/file.pdf");
     });
 
   });

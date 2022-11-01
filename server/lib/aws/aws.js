@@ -12,6 +12,7 @@ router.get("/s3/policy", controllers.s3Policy);
 router.get("/config", controllers.getConfig);
 router.get("/metadata/list-objects/:prefix", controllers.listObjects);
 router.get("/s3/:bucket*", controllers.getObject);
+router.get("/url-to-file", controllers.urlToFile);
 router.get("/s3/object/:bucket*", controllers.getObjectAsBase64);
 
 

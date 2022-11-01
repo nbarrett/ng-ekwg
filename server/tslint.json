@@ -5,16 +5,27 @@
   ],
   "rulesDirectory": "node_modules/tslint-microsoft-contrib",
   "rules": {
-    "space-before-function-paren": [true, {"anonymous": "always", "named": "never", "asyncArrow": "always"}],
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "named": "never",
+        "asyncArrow": "always"
+      }
+    ],
+    "no-shadowed-variable": false,
     "no-implicit-dependencies": false,
     "no-submodule-imports": false,
     "no-string-literal": false,
     "no-console": false,
-    "quotemark": [true, "double", "avoid-escape"],
+    "quotemark": [
+      true,
+      "double",
+      "avoid-escape"
+    ],
     "one-variable-per-declaration": false,
     "member-access": false,
-    "typedef-whitespace":
-    [
+    "typedef-whitespace": [
       true,
       {
         "call-signature": "nospace",

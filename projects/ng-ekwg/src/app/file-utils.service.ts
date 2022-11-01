@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
-import { ImageCroppedEvent } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadataService } from "./services/content-metadata.service";
 import { DateUtilsService } from "./services/date-utils.service";
@@ -21,37 +20,7 @@ export class FileUtilsService {
     this.logger = loggerFactory.createLogger(FileUtilsService, NgxLoggerLevel.OFF);
   }
 
-  imageCropped(event: ImageCroppedEvent, name: string) {
-    return this.base64ToFileWithName(
-      event.base64, name,
-    );
-  }
-
-  public async loadBase64Image(url: string): Promise<string> {
-    const blob = await this.blobFrom(url);
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64data = reader.result;
-        resolve(base64data as string);
-      };
-    });
-  }
-
-  private async blobFrom(url: string): Promise<Blob> {
-    const blob = await (await fetch(url)).blob();
-    this.logger.info("loadBase64Image:url:", blob);
-    return blob;
-  }
-
-  public async urlToFile(url: string, fileName: string): Promise<File> {
-    const blob = await this.blobFrom(url);
-    return new File([blob], fileName, {type: blob.type});
-  }
-
   base64ToFileWithName(data, filename) {
-
     const arr = data.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);

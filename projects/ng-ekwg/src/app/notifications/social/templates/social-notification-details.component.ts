@@ -9,6 +9,7 @@ import { CommitteeConfigService } from "../../../services/committee/commitee-con
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { UrlService } from "../../../services/url.service";
 
 @Component({
   selector: "app-social-notification-details",
@@ -26,6 +27,7 @@ export class SocialNotificationDetailsComponent implements OnInit {
   private dataSub: Subscription;
 
   constructor(
+    public urlService: UrlService,
     public googleMapsService: GoogleMapsService,
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,

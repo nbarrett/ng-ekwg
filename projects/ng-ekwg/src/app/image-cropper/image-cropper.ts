@@ -22,7 +22,7 @@ import { FileUploader } from "ng2-file-upload";
 import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage, OutputFormat } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
 import { FileUtilsService } from "../file-utils.service";
-import { AlertTarget } from "../models/alert-target.model";
+import { AlertMessage, AlertTarget } from "../models/alert-target.model";
 import { AwsFileData, AwsFileUploadResponse, DescribedDimensions, FileNameData, ImageData } from "../models/aws-object.model";
 import { DateValue } from "../models/date.model";
 import { BroadcastService } from "../services/broadcast-service";
@@ -41,7 +41,9 @@ import { UrlService } from "../services/url.service";
 export class ImageCropperAndResizerComponent implements OnInit {
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
   @Input() preloadImage: string;
+  @Input() rootFolder: string;
   @Output() quit: EventEmitter<void> = new EventEmitter();
+  @Output() cropError: EventEmitter<ErrorEvent> = new EventEmitter();
   @Output() save: EventEmitter<AwsFileData> = new EventEmitter();
   @Output() imageChange: EventEmitter<AwsFileData> = new EventEmitter();
   public notify: AlertInstance;
@@ -64,12 +66,9 @@ export class ImageCropperAndResizerComponent implements OnInit {
     {width: 3, height: 2, description: "Classic 35mm still"},
     {width: 4, height: 3, description: "Default"},
     {width: 1.6180, height: 1, description: "The golden ratio"},
-    // {width: 5, height: 4},
     {width: 5, height: 7, description: "Portrait"},
-    // {width: 12, height: 18},
     {width: 16, height: 10, description: "A common computer screen ratio"},
     {width: 16, height: 9, description: "HD video standard"},
-    // {width: 18, height: 24},
     {width: 940, height: 300, description: "Home page"},
     {width: 1116, height: 470, description: "Ramblers Landing page"},
   ];
@@ -109,17 +108,18 @@ export class ImageCropperAndResizerComponent implements OnInit {
   ngOnInit(): void {
     this.logger.debug("constructed with fileNameData", this.fileNameData);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.uploader = this.fileUploadService.createUploaderFor("site-content", false);
+    const rootFolder = this.rootFolder || "site-content";
+    this.uploader = this.fileUploadService.createUploaderFor(rootFolder, false);
     this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
-        this.logger.debug("response", response, "type", typeof response);
-        this.notify.clearBusy();
-        if (response instanceof HttpErrorResponse) {
-          this.notify.error({title: "Upload failed", message: response.error});
-        } else if (response === "Unauthorized") {
-          this.notify.error({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
-        } else {
-          const uploadResponse = JSON.parse(response);
-          this.fileNameData = uploadResponse.response.fileNameData;
+      this.logger.debug("response", response, "type", typeof response);
+      this.notify.clearBusy();
+      if (response instanceof HttpErrorResponse) {
+        this.throwOrNotifyError({title: "Upload failed", message: response.error});
+      } else if (response === "Unauthorized") {
+        this.throwOrNotifyError({title: "Upload failed", message: response + " - try logging out and logging back in again and trying this again."});
+      } else {
+        const uploadResponse = JSON.parse(response);
+        this.fileNameData = uploadResponse.response.fileNameData;
           if (this.fileNameData) {
             this.fileNameData.title = this?.existingTitle;
           }
@@ -130,9 +130,9 @@ export class ImageCropperAndResizerComponent implements OnInit {
     });
     if (this.preloadImage) {
       this.notify.success({title: "Image Cropper", message: "loading file into editor"});
-      const imageName = this.urlService.s3PathForImage(this.preloadImage);
-      this.fileUtils.urlToFile(imageName, imageName)
-        .then((file: File) => this.processSingleFile(file));
+      this.fileUploadService.urlToFile(this.preloadImage, this.preloadImage)
+        .then((file: File) => this.processSingleFile(file))
+        .catch(error => this.throwOrNotifyError({title: "Unexpected Error", message: error}));
     }
   }
 
@@ -179,12 +179,12 @@ export class ImageCropperAndResizerComponent implements OnInit {
   }
 
   error(errorEvent: ErrorEvent) {
-    this.notify.error({title: "Unexpected Error", message: errorEvent});
+    this.throwOrNotifyError({title: "Unexpected Error", message: errorEvent});
   }
 
   loadImageFailed($event: void) {
     this.logger.debug("Load failed:", $event);
-    this.notify.error({title: "Load failed", message: $event});
+    this.throwOrNotifyError({title: "Load failed", message: $event});
   }
 
   rotateLeft() {
@@ -328,8 +328,13 @@ export class ImageCropperAndResizerComponent implements OnInit {
     } catch (error) {
       this.logger.error("received error response:", error);
       this.action = null;
-      this.notify.error({title: "File upload", message: error});
+      this.throwOrNotifyError({title: "File upload", message: error});
     }
+  }
+
+  throwOrNotifyError(message: AlertMessage) {
+    this.logger.error("throwOrNotifyError:", message);
+    this.notify.error(message);
   }
 
   progress() {
@@ -349,11 +354,16 @@ export class ImageCropperAndResizerComponent implements OnInit {
     this.logger.debug("transformChanged:", imageTransform);
   }
 
-  changeRange($event: any) {
+  changeRange($event: any, crop: boolean) {
     this.logger.info("changeRange:", $event.target?.value);
     this.imageQuality = $event.target?.value;
-    this.manuallySubmitCrop();
+    if (crop) {
+      this.manuallySubmitCrop();
+    }
   }
 
+  buttonClass(disabledAction: any) {
+    return !!disabledAction ? "badge-button disabled w-100" : "badge-button w-100";
+  }
 }
 

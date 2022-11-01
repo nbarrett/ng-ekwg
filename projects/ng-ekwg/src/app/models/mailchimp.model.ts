@@ -1,4 +1,5 @@
 import { ApiResponse } from "./api-response.model";
+import { AuditStatus } from "./audit";
 
 export interface MailchimpConfigResponse {
   id: string;
@@ -276,11 +277,6 @@ export interface MailchimpListAudit {
   listType: string;
   status: AuditStatus;
   audit: any;
-}
-
-export enum AuditStatus {
-  warning = "warning",
-  error = "error",
 }
 
 export interface MailchimpListAuditApiResponse extends ApiResponse {

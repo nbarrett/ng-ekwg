@@ -66,7 +66,7 @@ export class CardEditorComponent implements OnInit {
   }
 
   imageSourceOrPreview(): string {
-    return this.awsFileData?.image || this.urlService.s3PathForImage(this.column?.imageSource);
+    return this.awsFileData?.image || this.column?.imageSource;
   }
 
   imageChanged(awsFileData: AwsFileData) {

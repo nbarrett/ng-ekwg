@@ -43,7 +43,7 @@ export class StringUtilsService {
     if (extractedMessage instanceof TypeError) {
       returnValue = extractedMessage.toString();
     } else if (extractedMessage instanceof HttpErrorResponse) {
-      returnValue = extractedMessage.statusText + " - " + this.stringifyObject(extractedMessage.error);
+      returnValue = extractedMessage.statusText + " - " + this.stringifyObject(extractedMessage.message);
     } else if (has(extractedMessage, ["error", "message"])) {
       returnValue = extractedMessage.error.message + (extractedMessage.error.error ? " - " + extractedMessage.error.error : "");
     } else if (has(extractedMessage, ["error", "errmsg"])) {
@@ -91,7 +91,7 @@ export class StringUtilsService {
   }
 
   isAlertMessage(message: any): message is AlertMessage {
-    return has(message, ["message"]) && has(message, ["title"]);
+    return message?.message && message?.title;
   }
 
   stripLineBreaks(str, andTrim: boolean) {

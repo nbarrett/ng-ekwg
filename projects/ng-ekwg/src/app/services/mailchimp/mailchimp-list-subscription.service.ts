@@ -2,8 +2,8 @@ import { Injectable } from "@angular/core";
 import { cloneDeep } from "lodash-es";
 import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuditStatus } from "../../models/audit";
 import {
-  AuditStatus,
   MailchimpBatchSubscriptionResponse,
   MailchimpEmailWithError,
   MailchimpMember,

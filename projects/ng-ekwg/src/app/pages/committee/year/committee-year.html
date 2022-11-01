@@ -6,7 +6,7 @@
     <div class="wrapper w-100 position-relative">
       <img class="h-100 w-100 position-absolute"
            role="presentation"
-           [src]="imageSource">
+           [src]="urlService.imageSource(imageSource)">
     </div>
     <div class="card-body">
       <div class="card-title mb-4"><h4>Committee events for {{committeeYear?.year}}</h4></div>

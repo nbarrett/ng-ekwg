@@ -95,33 +95,61 @@
             </div>
       </tab>
       <tab heading="Thumbnail Image">
+        <ng-template #linkAndThumbnail>
+          <div class="form-group">
+            <label for="img-thumbnail">Thumbnail</label>
+            <input [disabled]="!display.allow.edits || editActive"
+                   [(ngModel)]="socialEvent.thumbnail"
+                   type="text" value="" class="form-control input-sm"
+                   id="img-thumbnail"
+                   placeholder="Enter a thumbnail image">
+          </div>
+          <div class="form-group">
+            <label for="link">Link</label>
+            <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.link"
+                   type="text" value="" class="form-control input-sm" id="link"
+                   placeholder="Enter a link">
+          </div>
+          <div class="form-group">
+            <label for="linkTitle">Display title for link</label>
+            <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.linkTitle"
+                   type="text" value="" class="form-control input-sm" id="linkTitle"
+                   placeholder="Enter a title for link">
+          </div>
+          <div class="form-group">
+            <label for="linkTitle" class="mr-2">Link Preview: </label>
+            <a [disabled]="!display.allow.edits"
+               [href]="socialEvent.link">{{socialEvent.linkTitle || socialEvent.link}}</a>
+          </div>
+        </ng-template>
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label for="img-thumbnail">Thumbnail</label>
-                <input [disabled]="!display.allow.edits"
-                       [(ngModel)]="socialEvent.thumbnail"
-                       type="text" value="" class="form-control input-sm"
-                       id="img-thumbnail"
-                       placeholder="Enter a thumbnail image">
-              </div>
-              <div class="form-group">
-                <label for="link">Link</label>
-                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.link"
-                       type="text" value="" class="form-control input-sm" id="link"
-                       placeholder="Enter a link">
-              </div>
-              <div class="form-group">
-                <label for="linkTitle">Display title for link</label>
-                <input [disabled]="!display.allow.edits" [(ngModel)]="socialEvent.linkTitle"
-                       type="text" value="" class="form-control input-sm" id="linkTitle"
-                       placeholder="Enter a title for link">
-              </div>
+            <div class="col-sm-6" *ngIf="!editActive">
+              <ng-container *ngTemplateOutlet="linkAndThumbnail"></ng-container>
+            </div>
+            <div class="col-sm-6" *ngIf="editActive">
+              <app-image-cropper
+                [rootFolder]="'imagesSocialEvents'"
+                [preloadImage]="socialEvent.thumbnail"
+                (imageChange)="imageChanged($event)"
+                (error)="imageCroppingError($event)"
+                (cropError)="imageCroppingError($event)"
+                (quit)="exitImageEdit()"
+                (save)="imagedSaved($event)">
+              </app-image-cropper>
             </div>
             <div class="col-sm-6">
-<!--              <h6>Card Preview</h6>-->
-              <app-social-card [socialEvent]="socialEvent"></app-social-card>
+              <div class="position-relative">
+                <app-social-card [socialEvent]="socialEvent" [imagePreview]="awsFileData?.image"></app-social-card>
+                <div (click)="editImage()"
+                     delay=500 tooltip="edit image" class="button-form-right badge-button edit-image">
+                  <fa-icon [icon]="faPencil"></fa-icon>
+                  <span>edit image</span>
+                </div>
+              </div>
+              <div *ngIf="editActive" class="mt-3">
+                <ng-container *ngTemplateOutlet="linkAndThumbnail"></ng-container>
+              </div>
             </div>
           </div>
         </div>

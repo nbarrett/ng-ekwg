@@ -59,7 +59,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     public actions: PageContentActionsService,
     public committeeQueryService: CommitteeQueryService,
     private committeeFileService: CommitteeFileService,
-    private urlService: UrlService,
+    public urlService: UrlService,
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
@@ -108,7 +108,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     const relativeUrl = this.committeeYear?.latestYear ? `${this.urlService.relativeUrl()}/year/${this.committeeQueryService?.latestYear()}` : this.urlService.relativeUrl();
     this.logger.debug("pageContentRow:", pageContentRow, "relativeUrl:", relativeUrl, "committeeYear:", this.committeeYear);
     const pageContentColumn: PageContentColumn = pageContentRow?.columns.find(column => relativeUrl.endsWith(column.href));
-    return this.urlService.resourceRelativePathForAWSFileName(pageContentColumn?.imageSource);
+    return this.urlService.imageSource(pageContentColumn?.imageSource);
   }
 
   selectCommitteeFile(committeeFile: CommitteeFile) {

@@ -1,4 +1,5 @@
 import { Dimensions } from "ngx-image-cropper";
+import { AuditStatus } from "./audit";
 
 export interface FileNameData {
   originalFileName?: string;
@@ -12,41 +13,44 @@ export interface AwsFileData {
   image: string;
 }
 
-export interface AuditStatus {
-  info
-}
-
 export interface AuditMessage {
   status: AuditStatus;
   message: string;
 }
 
+export interface ServerFileNameData {
+  rootFolder: string;
+  originalFileName: string;
+  awsFileName: string;
+}
+
+export interface UploadedFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  destination: string;
+  filename: string;
+  path: string;
+  size: number
+}
+
+export interface AwsFileUploadResponseData {
+  files: {},
+  auditLog: AuditMessage[],
+  awsInfo: {
+    responseData: {
+      ETag: string;
+    },
+    information: string;
+  },
+  fileNameData: ServerFileNameData,
+  uploadedFile: UploadedFile
+}
+
 export interface AwsFileUploadResponse {
-  response: {
-    files: {},
-    auditLog: AuditMessage[],
-    awsInfo: {
-      responseData: {
-        ETag: string;
-      },
-      information: string;
-    },
-    fileNameData: {
-      rootFolder: string;
-      originalFileName: string;
-      awsFileName: string;
-    },
-    uploadedFile: {
-      fieldname: string;
-      originalname: string;
-      encoding: string;
-      mimetype: string;
-      destination: string;
-      filename: string;
-      path: string;
-      size: number
-    }
-  }
+  response: AwsFileUploadResponseData
+  error?: any;
 }
 
 export interface ImageData {

@@ -1,6 +1,6 @@
 <div>
   <img *ngIf="socialEvent?.thumbnail" style="width:100%; margin-bottom: 15px"
-       [src]="socialEvent?.thumbnail">
+       [src]="urlService.imageSource(socialEvent?.thumbnail)">
   <h3 *ngIf="socialEvent.notification.content.title.include"><strong
     [textContent]="socialEvent.briefDescription"></strong>
   </h3>
@@ -54,10 +54,10 @@
                                                                                      [textContent]="display.attachmentTitle(socialEvent)"></a>
         </td>
       </tr>
-      <tr *ngIf="socialEvent.link">
+      <tr *ngIf="socialEvent?.link">
         <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Link:</td>
         <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
-          <a target="_blank" [href]="socialEvent.link">{{socialEvent.linkTitle || socialEvent.link}}</a></td>
+          <a target="_blank" [href]="socialEvent?.link">{{socialEvent?.linkTitle || socialEvent?.link}}</a></td>
       </tr>
     </table>
   </div>

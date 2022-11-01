@@ -8,7 +8,7 @@ import last from "lodash-es/last";
 import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
-import { S3_BASE_URL } from "../models/content-metadata.model";
+import { BASE64_PREFIX, S3_BASE_URL } from "../models/content-metadata.model";
 import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -25,11 +25,7 @@ export class UrlService {
               private location: Location,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
-    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
-  }
-
-  s3PathForImage(imageSource: string): string {
-    return imageSource ? imageSource.includes(S3_BASE_URL) ? imageSource : `${S3_BASE_URL}/${imageSource}` : null;
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
   }
 
   pathContains(path: string): boolean {
@@ -117,22 +113,44 @@ export class UrlService {
     if (this.isNotificationUrlConfig(linkConfig)) {
       return this.resourceUrl(linkConfig.area, linkConfig.subArea, linkConfig.id, linkConfig.relative);
     } else {
-      return this.resourceUrlForAWSFileName(linkConfig.name);
+      return this.absolutePathForAWSFileName(linkConfig.name);
     }
   }
 
-  routerLinkUrl(url: string) {
-    const routerLinkUrl = url.startsWith("http") ? null : "/" + url;
-    this.logger.info("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
+  routerLinkUrl(url: string): string {
+    const routerLinkUrl = this.isRemoteUrl(url) ? null : "/" + url;
+    this.logger.debug("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
     return routerLinkUrl;
+  }
+
+  public isRemoteUrl(url: string): boolean {
+    return url?.startsWith("http");
+  }
+
+  imageSource(url: string): string {
+    if (this.isRemoteUrl(url)) {
+      this.logger.debug("imageSourceUrl:isRemoteUrl:returning", url);
+      return url;
+    } else if (this.isBase64Image(url)) {
+      this.logger.debug("imageSourceUrl:isBase64Image:returning", url);
+      return url;
+    } else {
+      const relativeUrl = this.resourceRelativePathForAWSFileName(url);
+      this.logger.debug("relativeUrl:relativeUrl:returning", relativeUrl);
+      return relativeUrl;
+    }
   }
 
   isNotificationUrlConfig(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): linkConfig is NotificationUrlConfig {
     return (linkConfig as NotificationUrlConfig).area !== undefined;
   }
 
-  resourceUrlForAWSFileName(fileName): string {
+  absolutePathForAWSFileName(fileName): string {
     return `${this.baseUrl()}/${S3_BASE_URL}/${fileName}`;
+  }
+
+  removeS3PrefixFrom(fileName): string {
+    return fileName?.includes(S3_BASE_URL) ? fileName.substring(S3_BASE_URL) : fileName;
   }
 
   resourceRelativePathForAWSFileName(fileName: string): string {
@@ -170,5 +188,9 @@ export class UrlService {
 
   areaUrl(): string {
     return tail(new URL(this.absUrl()).pathname.substring(1).split("/")).join("/");
+  }
+
+  private isBase64Image(url: string): boolean {
+    return url?.startsWith(BASE64_PREFIX);
   }
 }

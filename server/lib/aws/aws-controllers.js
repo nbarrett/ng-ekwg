@@ -4,7 +4,7 @@ const {first} = require("lodash");
 const debug = require("debug")(envConfig.logNamespace("aws"));
 debug.enabled = true;
 const AWS = require("@aws-sdk/client-s3");
-const http = require("http");
+const https = require("https");
 const crypto = require("crypto");
 const s3Config = {
   accessKeyId: envConfig.aws.accessKeyId,
@@ -16,7 +16,7 @@ const fs = require("fs");
 const path = require("path");
 const {GetObjectCommand} = require('@aws-sdk/client-s3');
 const baseHostingUrl = envConfig.aws.baseHostingUrl;
-debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl,"http.globalAgent.maxSockets:", http.globalAgent.maxSockets);
+debug("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl,"http.globalAgent.maxSockets:", https.globalAgent.maxSockets);
 
 function expiryTime() {
   const _date = new Date();
@@ -75,7 +75,8 @@ exports.getObject = async (req, res) => {
   try {
     debug("getting object command using options", options)
     const s3Item = await s3.send(getObjectCommand);
-    res.writeHead(200, {'Content-Type': 'image/jpeg; charset=UTF-8'});
+    debug("got object", s3Item)
+    res.writeHead(200);
     s3Item.Body.pipe(res);
     debug("returned object command using options", options)
   } catch (err) {
@@ -196,4 +197,15 @@ exports.putObjectDirect = (rootFolder, fileName, localFileName) => {
       debug(errorMessage, "->", error);
       return ({responseData: error, error: errorMessage});
     });
+};
+
+exports.urlToFile = (req, res) => {
+  const remoteUrl = req.query.url;
+  debug("req.query.url:", remoteUrl);
+  debug("downloading remote image from",  remoteUrl);
+  https.get(remoteUrl, serverResponse => {
+    serverResponse.pipe(res);
+  }).on("error", e => {
+    debug("Got error", e.message, "on s3 request", remoteUrl);
+  });
 };

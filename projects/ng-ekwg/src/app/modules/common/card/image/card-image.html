@@ -1,8 +1,8 @@
-<img *ngIf="cardShouldHaveImage()" class="card-img-top" height="200"
-     [src]="imageSource" [routerLink]="urlService.routerLinkUrl(imageLink)">
-<div *ngIf="cardMissingImage()|| cardShouldHaveIcon()" class="row no-image">
+<img *ngIf="displayImage()" class="card-img-top" height="200" (load)="imageLoaded($event)" (error)="imageError($event)"
+     [src]="urlService.imageSource(imageSource)" [routerLink]="urlService.routerLinkUrl(imageLink)">
+<div *ngIf="cardMissingImage() || cardShouldHaveIcon()" class="row no-image">
   <div class="col align-self-center text-center">
     <fa-icon [icon]="icon || faImage" class="fa-icon fa-3x"></fa-icon>
-    <div *ngIf="!icon">No image available</div>
+    <div *ngIf="!icon">{{imageText}}</div>
   </div>
 </div>
