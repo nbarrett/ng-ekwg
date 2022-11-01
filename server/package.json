@@ -70,7 +70,7 @@
     "lodash": "4.17.20",
     "lodash-es": "4.17.15",
     "mailchimp-api": "2.0.4",
-    "matchdep": "0.3.0",
+    "matchdep": "2.0.0",
     "mkdirpsync": "^0.1.0",
     "mocha": "8.0.1",
     "moment": "2.19.3",
