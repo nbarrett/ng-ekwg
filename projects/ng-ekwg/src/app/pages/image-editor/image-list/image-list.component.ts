@@ -2,14 +2,17 @@ import { Location } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Params, Router } from "@angular/router";
+import { min } from "lodash-es";
 import first from "lodash-es/first";
+import range from "lodash-es/range";
 import { FileUploader } from "ng2-file-upload";
+import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ALL_TAGS, ContentMetadata, ContentMetadataItem, ImageTag, RECENT_PHOTOS, S3Metadata } from "../../../models/content-metadata.model";
+import { ALL_TAGS, ContentMetadata, ContentMetadataItem, IMAGES_HOME, ImageTag, RECENT_PHOTOS, S3Metadata } from "../../../models/content-metadata.model";
 import { MemberResourcesPermissions } from "../../../models/member-resource.model";
 import { Confirm } from "../../../models/ui-actions";
 import { move, sortBy } from "../../../services/arrays";
@@ -22,6 +25,7 @@ import { ImageTagDataService } from "../../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { NumberUtilsService } from "../../../services/number-utils.service";
 import { RouterHistoryService } from "../../../services/router-history.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -40,6 +44,7 @@ export class ImageListComponent implements OnInit {
   public destinationType: string;
   public imageSource: string;
   public selectedTag: ImageTag = RECENT_PHOTOS;
+  public lastSelectedTag: ImageTag;
   public filterType = "recent";
   public eventFilter: string;
   public uploader: FileUploader;
@@ -54,9 +59,14 @@ export class ImageListComponent implements OnInit {
   public currentImageIndex: number;
   private searchChangeObservable = new Subject<string>();
   ready = false;
+  public pageNumber = 1;
+  private pageCount: number;
+  private pageSize = 10;
+  private pages: number[];
 
   constructor(private stringUtils: StringUtilsService,
               public imageTagDataService: ImageTagDataService,
+              public numberUtils: NumberUtilsService,
               private router: Router,
               private imageDuplicatesService: ImageDuplicatesService,
               private committeeQueryService: CommitteeQueryService,
@@ -71,7 +81,7 @@ export class ImageListComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -111,19 +121,65 @@ export class ImageListComponent implements OnInit {
       }
     });
     this.selectTag();
-    this.applyFilters();
+    this.applyFilter();
     this.imageTagDataService.imageTags()
       .subscribe((imageTags: ImageTag[]) => {
         if (this.contentMetadata) {
           this.contentMetadata.imageTags = imageTags.filter(tag => tag.key > 0);
-          this.logger.debug("received imageTags:", imageTags, "contentMetadata imageTags:", this.contentMetadata.imageTags);
+          this.logger.info("received imageTags:", imageTags, "contentMetadata imageTags:", this.contentMetadata.imageTags);
         }
+        this.lastSelectedTag = this.contentMetadata.imageTags[0];
         this.selectTag();
       });
     this.applyAllowEdits();
     this.searchChangeObservable.pipe(debounceTime(500))
       .pipe(distinctUntilChanged())
-      .subscribe(() => this.applyFilters());
+      .subscribe(() => this.applyFilter());
+  }
+
+  pageChanged(event: PageChangedEvent): void {
+    this.logger.debug("event:", event);
+    this.goToPage(event.page);
+  }
+
+  previousPage() {
+    if (this.pageNumber > 1) {
+      this.goToPage(this.pageNumber - 1);
+    }
+  }
+
+  nextPage() {
+    if (this.pageNumber < this.pageCount) {
+      this.goToPage(this.pageNumber + 1);
+    }
+  }
+
+  goToPage(pageNumber) {
+    this.logger.info("goToPage", pageNumber);
+    this.pageNumber = pageNumber;
+    this.applyPagination();
+  }
+
+  paginate(contentMetadataItems: ContentMetadataItem[], pageSize, pageNumber): ContentMetadataItem[] {
+    return contentMetadataItems.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+  }
+
+  private applyPagination() {
+    this.pages = range(1, this.pageCount + 1);
+    const filteredImageCount = this.filteredImages().length;
+    const currentPageImages: ContentMetadataItem[] = this.currentPageImages();
+    this.logger.info("applyPagination: filtered image count", filteredImageCount, "filtered image count", filteredImageCount, "current page image count", currentPageImages.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages, "currentPageImages:", currentPageImages.map(item => item.text));
+    if (currentPageImages.length === 0) {
+      this.notify.progress("No images found");
+    } else {
+      const offset = (this.pageNumber - 1) * this.pageSize + 1;
+      const pageIndicator = this.pages.length > 1 ? `Page ${this.pageNumber} of ${this.pageCount}` : `Page ${this.pageNumber}`;
+      this.notify.progress(`${pageIndicator}  — showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(filteredImageCount, "image")}`);
+    }
+  }
+
+  currentPageImages(): ContentMetadataItem[] {
+    return this.paginate(this.filteredImages(), this.pageSize, this.pageNumber) || [];
   }
 
   onFileSelect($file: File[]) {
@@ -142,7 +198,7 @@ export class ImageListComponent implements OnInit {
     this.logger.debug("fileDropped:", $event);
   }
 
-  filesFiltered(): ContentMetadataItem[] {
+  filteredImages(): ContentMetadataItem[] {
     return this.filteredFiles;
   }
 
@@ -151,12 +207,21 @@ export class ImageListComponent implements OnInit {
     this.searchChangeObservable.next(searchEntry);
   }
 
-  applyFiltersFromTag() {
-    this.logger.debug("applyFiltersFromTag:this.selectedTag", this.selectedTag);
-    if (this.filterType !== "all") {
-      this.updateQueryParams({story: this.selectedTag.key});
+  changeLastSelectedTagOrFirst(): ImageTag {
+    if ([ALL_TAGS, RECENT_PHOTOS].includes(this.selectedTag)) {
+      return this.selectableTags()[0];
+    } else {
+      return this.selectedTag;
     }
-    this.applyFilters();
+  }
+
+  applyFiltersFromTag(imageTag: ImageTag) {
+    this.selectedTag = imageTag;
+    this.logger.info("applyFiltersFromTag:this.selectedTag", this.selectedTag, "imageTag", imageTag);
+    if (this.filterType !== "all") {
+      this.updateQueryParams({story: this?.selectedTag?.key});
+    }
+    this.applyFilter();
   }
 
   private updateQueryParams(queryParams: Params) {
@@ -165,9 +230,11 @@ export class ImageListComponent implements OnInit {
     });
   }
 
-  applyFilters() {
+  applyFilter() {
     this.ready = false;
     this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.selectedTag, this.showDuplicates, this.filterText);
+    this.pageCount = this.calculatePageCount();
+    this.applyPagination();
     this.imageDuplicatesService.populateFrom(this.contentMetadata, this.filteredFiles);
     this.logger.debug("applyFilters:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files");
     setTimeout(() => {
@@ -178,17 +245,18 @@ export class ImageListComponent implements OnInit {
   refreshImageMetaData(imageSource: string) {
     this.notify.setBusy();
     this.imageSource = imageSource;
-    this.urlService.navigateTo("image-editor", imageSource);
+    this.urlService.navigateUnconditionallyTo("image-editor", imageSource);
 
     Promise.all([
       this.contentMetadataService.items(imageSource)
-        .then((contentMetaData) => {
+        .then((contentMetaData: ContentMetadata) => {
+          this.logger.info("contentMetaData:", contentMetaData);
           this.contentMetadata = contentMetaData;
           this.imageTagDataService.populateFrom(contentMetaData.imageTags);
-          this.applyFilters();
+          this.applyFilter();
         }),
       this.contentMetadataService.listMetaData(imageSource)
-        .then((s3Metadata) => {
+        .then((s3Metadata: S3Metadata[]) => {
           this.s3Metadata = s3Metadata;
         })])
       .then(() => {
@@ -201,7 +269,6 @@ export class ImageListComponent implements OnInit {
         });
         this.logger.debug("refreshImageMetaData:imageSource", imageSource, "returning", this.contentMetadata.files.length, "ContentMetadataItem items");
         this.notify.clearBusy();
-        this.notify.hide();
       })
       .catch(response => this.notify.error({title: "Failed to refresh images", message: response}));
   }
@@ -217,16 +284,16 @@ export class ImageListComponent implements OnInit {
 
   reverseSortOrder() {
     this.contentMetadata.files = this.contentMetadata.files.reverse();
-    this.applyFilters();
+    this.applyFilter();
   }
 
   sortByDate() {
     this.contentMetadata.files = this.contentMetadata.files.sort(sortBy("-date"));
-    this.applyFilters();
+    this.applyFilter();
   }
 
   imageTitleLength() {
-    if (this.imageSource === "imagesHome") {
+    if (this.imageSource === IMAGES_HOME) {
       return 50;
     } else {
       return 20;
@@ -241,7 +308,7 @@ export class ImageListComponent implements OnInit {
   }
 
   public exitBackToPreviousWindow() {
-    this.routerHistoryService.navigateBackToLastMainPage();
+    this.routerHistoryService.navigateBackToLastMainPage(true);
   }
 
   applyAllowEdits() {
@@ -257,7 +324,7 @@ export class ImageListComponent implements OnInit {
     if (this.contentMetadataService.canMoveUp(this.contentMetadata.files, item)) {
       move(this.contentMetadata.files, currentIndex, currentIndex - 1);
       this.logger.debug("moved up item with index", currentIndex, "to", this.contentMetadataService.findIndex(this.contentMetadata.files, item), "in total of", this.contentMetadata.files.length, "items");
-      this.applyFilters();
+      this.applyFilter();
     } else {
       this.logger.warn("cant move up item with index", currentIndex);
     }
@@ -268,7 +335,7 @@ export class ImageListComponent implements OnInit {
     if (this.contentMetadataService.canMoveDown(this.contentMetadata.files, item)) {
       move(this.contentMetadata.files, currentIndex, currentIndex + 1);
       this.logger.debug("moved down item with index", currentIndex, "to", this.contentMetadataService.findIndex(this.contentMetadata.files, item), "for item", item.text, "in total of", this.contentMetadata.files.length, "items");
-      this.applyFilters();
+      this.applyFilter();
     } else {
       this.logger.warn("cant move down item", currentIndex);
     }
@@ -294,7 +361,7 @@ export class ImageListComponent implements OnInit {
     if (index >= 0) {
       this.contentMetadata.files.splice(index, 1);
       this.logger.debug("delete:after count", this.contentMetadata.files.length);
-      this.applyFilters();
+      this.applyFilter();
     } else {
       this.logger.warn("cant delete", item);
     }
@@ -309,7 +376,7 @@ export class ImageListComponent implements OnInit {
       const index = 0;
       this.logger.debug("insert:new item", item, "in index position:", index, "item:", item);
       this.contentMetadata.files.splice(index, 0, item);
-      this.applyFilters();
+      this.applyFilter();
     }
   }
 
@@ -342,7 +409,7 @@ export class ImageListComponent implements OnInit {
     } else {
       this.selectedTag = this.selectableTags()[0];
     }
-    this.applyFilters();
+    this.applyFilter();
     this.updateQueryParams({story: this.selectedTag.key});
   }
 
@@ -364,4 +431,13 @@ export class ImageListComponent implements OnInit {
       this.logger.debug("story:", story, "imageTagDataService.currentTag", this.imageTagDataService.currentTag(), "selectedTag:", this.selectedTag);
     });
   }
+
+  maxSize() {
+    return min([this.calculatePageCount(), 5]);
+  }
+
+  private calculatePageCount(): number {
+    return this.numberUtils.asNumber(this.filteredImages().length / this.pageSize, 0);
+  }
+
 }

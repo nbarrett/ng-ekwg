@@ -1,10 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { PlacementForBs5 } from "ngx-bootstrap/positioning";
-import { MapPlacementInToRL } from "ngx-bootstrap/positioning/models";
 import { NgxLoggerLevel } from "ngx-logger";
 import { groupEventTypeFor } from "../../models/committee.model";
-import { ContentMetadataItem } from "../../models/content-metadata.model";
+import { ContentMetadataItem, IMAGES_HOME } from "../../models/content-metadata.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -64,7 +62,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.contentMetadataService.items("imagesHome")
+    this.contentMetadataService.items(IMAGES_HOME)
       .then(contentMetaData => {
         this.allSlides = contentMetaData.files;
         this.imageTagDataService.populateFrom(contentMetaData.imageTags);

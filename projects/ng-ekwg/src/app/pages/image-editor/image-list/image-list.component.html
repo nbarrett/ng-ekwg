@@ -8,144 +8,121 @@
   </div>
   <div *ngIf="allow.edit && contentMetadata">
     <div class="row">
-      <div class="col-sm-6">
-        <h1>EKWG Image Editor
-          <br/>
-          <small>Add, remove, replace or re-order images for carousels</small>
-        </h1>
+      <div class="col-sm-12">
+        <app-markdown-editor name="image-editor-help" description="Image Editor help"></app-markdown-editor>
       </div>
-      <div class="col-sm-6">
-        <div class="form-group">
-          <label for="imageSource">Edit images from</label>
-          <select [(ngModel)]="imageSource" id="imageSource" class="form-control rounded"
-                  (ngModelChange)="refreshImageMetaData(imageSource)">
-            <option selected="selected" value="imagesHome">Home Page</option>
-            <option value="imagesSocialEvents">Social Events</option>
-          </select>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-sm-3">
+            <h6>Edit images from</h6>
+            <select [(ngModel)]="imageSource" id="imageSource" class="form-control rounded"
+                    (ngModelChange)="refreshImageMetaData(imageSource)">
+              <option selected="selected" value="imagesHome">Home Page</option>
+              <option value="imagesSocialEvents">Social Events</option>
+            </select>
+          </div>
+          <div class="col-sm-9 mt-auto">
+            <input type="submit" value="Save changes and exit" (click)="saveChangeAndExit()"
+                   title="Save changes and exit"
+                   class="button-form"/>
+            <input type="submit" value="Exit without saving" (click)="exitBackToPreviousWindow()"
+                   title="Exit without saving" class="button-form"/>
+            <input type="submit" value="Sort by latest date" (click)="sortByDate()" title="Sort by latest date"
+                   class="button-form"/>
+            <input type="submit" value="Reverse sort order" (click)="reverseSortOrder()"
+                   title="Reverse sort order"
+                   class="button-form"/>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="green-bullets-no-rule">
-      <ul>Directions for this page
-        <li>This page allows EKWG site content administrators to add, remove, replace or re-order images that are
-          displayed inside scrolling 'carousels' on the Home and the Social Events pages.
-        </li>
-        <li *ngIf="imageSource == 'imagesHome'">Please note of order for images to appear correctly for this view,
-          they must first be cropped to 940 pixels wide x 300 pixels high. This editor can't do that cropping
-          for you! (yet)
-        </li>
-        <li>Use the buttons below each image to <b>replace</b>, <b>delete</b> or <b>insert</b> a new
-          image, or <b>move up or down</b> an existing image.
-        </li>
-        <li>Use the buttons just below these directions to save all of the changes you've just made or to exit
-          without saving if you've done something by mistake that you want to
-          undo!
-        </li>
-        <li>Add or change the title to the right of each image. This is displayed in white over the image. Try to
-          keep this below {{imageTitleLength()}} characters otherwise it will wrap onto the next
-          line and won't look quite as good.
-        </li>
-        <li>You can click <b>Sort by latest date</b> to sort images most recent first, based on the
-          <b>Image
-            Date</b>. You can also <b>Reverse sort order</b> to get the carousel to start displaying the images from the
-          other end of the sort sequence
-        </li>
-      </ul>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 form-inline">
-        <input type="submit" value="Save changes and exit" (click)="saveChangeAndExit()" title="Save changes and exit"
-               class="button-form"/>
-        <input type="submit" value="Exit without saving" (click)="exitBackToPreviousWindow()"
-               title="Exit without saving" class="button-form"/>
-        <input type="submit" value="Sort by latest date" (click)="sortByDate()" title="Sort by latest date"
-               class="button-form"/>
-        <input type="submit" value="Reverse sort order" (click)="reverseSortOrder()"
-               title="Reverse sort order"
-               class="button-form"/>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm-12 form-inline">
-        <div class="custom-control custom-radio custom-control-inline pl-0 ml-2 mt-3">
+        <h6>Image Filtering</h6>
+        <div class="custom-control custom-radio custom-control-inline">
           <input [disabled]="notifyTarget.busy" id="recent-photos-filter"
                  type="radio"
                  class="custom-control-input"
                  [(ngModel)]="filterType"
                  (click)="filterFor('recent')"
                  value="recent"/>
-          <label class="custom-control-label bold" for="recent-photos-filter">Show recent photos</label>
+          <label class="custom-control-label" for="recent-photos-filter">Show recent photos</label>
+        </div>
+        <div (click)="applyFiltersFromTag(lastSelectedTag)"
+             class="custom-control custom-radio custom-control-inline">
           <input [disabled]="notifyTarget.busy" id="tag-filter"
                  type="radio"
                  class="custom-control-input"
                  [(ngModel)]="filterType"
                  value="choose"/>
-          <label class="custom-control-label" for="tag-filter" class="bold">Show images tagged with:</label>
-          <select [disabled]="filterType!=='choose'" [(ngModel)]="selectedTag"
+          <label class="custom-control-label" for="tag-filter">Show images tagged with:</label>
+        </div>
+        <div (click)="applyFiltersFromTag(lastSelectedTag)"
+             class="custom-control custom-radio custom-control-inline">
+          <select [disabled]="filterType!=='choose'"
+                  [(ngModel)]="lastSelectedTag"
                   id="filterByTag"
-                  class="form-control rounded mr-12"
-                  (ngModelChange)="applyFiltersFromTag()">
+                  class="form-control"
+                  (ngModelChange)="applyFiltersFromTag($event)">
             <option *ngFor="let imageTag of selectableTags(); trackBy: tagTracker"
                     [ngValue]="imageTag"
                     [textContent]="imageTag.subject">
           </select>
+        </div>
+        <div class="custom-control custom-radio custom-control-inline">
           <input [disabled]="notifyTarget.busy" id="all-photos-filter"
                  type="radio"
                  class="custom-control-input"
                  [(ngModel)]="filterType"
                  (click)="filterFor('all')"
                  value="all"/>
-          <label class="custom-control-label" for="all-photos-filter" class="bold">Show all photos</label>
+          <label class="custom-control-label" for="all-photos-filter">Show all photos</label>
         </div>
-      </div>
-      <div class="col-sm-6 form-inline mt-22">
-        <label for="search">Search for:</label>
-        <input autofocus [(ngModel)]="filterText" type="text"
-               (ngModelChange)="onSearchChange($event)" class="form-control input-md rounded ml-8 w-100" id="search"
-               placeholder="any text">
-      </div>
-      <div class="col-sm-6 mt-8">
-        <div class="custom-control custom-checkbox">
-          <input
-            [(ngModel)]="showDuplicates"
-            (ngModelChange)="applyFilters()"
-            type="checkbox" class="custom-control-input"
-            id="show-duplicates">
-          <label class="custom-control-label" for="show-duplicates">Show images that have duplicated images</label>
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <label for="search">Filter images for text</label>
+            <input [(ngModel)]="filterText" type="text"
+                   (ngModelChange)="onSearchChange($event)" class="form-control input-md rounded ml-8 w-100"
+                   id="search"
+                   placeholder="any text">
+          </div>
+          <div class="col-sm-6 mt-auto">
+            <div class="custom-control custom-checkbox">
+              <input
+                [(ngModel)]="showDuplicates"
+                (ngModelChange)="applyFilter()"
+                type="checkbox" class="custom-control-input"
+                id="show-duplicates">
+              <label class="custom-control-label" for="show-duplicates">Show images that have duplicated
+                images</label>
+            </div>
+          </div>
         </div>
+        <h6>Pagination</h6>
+        <div class="row">
+          <div class="col-sm-12 mt-3 d-flex">
+            <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="maxSize()"
+                        [totalItems]="filteredImages().length" [(ngModel)]="pageNumber"
+                        (pageChanged)="pageChanged($event)"></pagination>
+            <div *ngIf="notifyTarget.showAlert" class="flex-grow-1 alert {{notifyTarget.alertClass}}">
+              <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+              <strong *ngIf="notifyTarget.alertTitle">
+                {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+            </div>
+          </div>
+        </div>
+        <ng-container
+          *ngFor="let imageMetaDataItem of currentPageImages();let index = index; trackBy: metadataItemTracker;">
+          <app-edit-image [index]="index"
+                          [rootFolder]="imageSource"
+                          [filteredFiles]="currentPageImages()"
+                          [item]="imageMetaDataItem"
+                          (imageInsert)="imageInsert($event)"
+                          (imageChange)="imageChange($event)"
+                          (delete)="delete($event)"
+                          (moveUp)="moveUp($event)"
+                          (moveDown)="moveDown($event)">
+          </app-edit-image>
+        </ng-container>
       </div>
     </div>
-    <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-      <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon><strong *ngIf="notifyTarget.alertTitle">
-      {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
-    </div>
-    <input #fileElement id="browse-to-file" name="browse-to-file" class="d-none"
-           type="file" value="Upload"
-           ng2FileSelect (onFileSelected)="onFileSelect($event)" [uploader]="uploader"/>
-    <div *ngIf="false" ng2FileDrop [ngClass]="{'file-over': hasFileOver}"
-         (onFileDrop)="fileDropped($event)"
-         [uploader]="uploader"
-         class="drop-zone">Or drop file here
-    </div>
-    <div class="progress mt-3" *ngIf="notifyTarget.busy">
-      <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }">
-        uploading {{uploader.progress}}%
-      </div>
-    </div>
-    <cdk-virtual-scroll-viewport *ngIf="ready" [itemSize]="50" class="visible-viewport">
-      <div *cdkVirtualFor="let imageMetaDataItem of filesFiltered();let index = index; trackBy: metadataItemTracker;"
-           class="img-thumbnail">
-        <app-edit-image [index]="index"
-                        [filteredFiles]="filesFiltered()"
-                        [fileElement]="fileElement"
-                        [item]="imageMetaDataItem"
-                        (imageInsert)="imageInsert($event)"
-                        (imageChange)="imageChange($event)"
-                        (delete)="delete($event)"
-                        (moveUp)="moveUp($event)"
-                        (moveDown)="moveDown($event)">
-        </app-edit-image>
-      </div>
-    </cdk-virtual-scroll-viewport>
   </div>
 </app-page>

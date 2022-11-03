@@ -88,7 +88,7 @@
       </div>
     </div>
       <div class="row mt-2 mb-2">
-        <div class="col-sm-12">
+        <div class="col-sm-12 img-fluid w-100">
           <image-cropper
             [allowMoveImage]="true"
             [imageFile]="originalFile"
@@ -115,7 +115,7 @@
           <label for="aspect-ratio">Aspect Ratio:</label>
           <select class="form-control input-sm"
                   [(ngModel)]="dimension"
-                  (change)="changeAspectRatio($event)"
+                  (change)="changeAspectRatioSettingsAndCrop($event)"
                   id="aspect-ratio">
             <option *ngFor="let aspectRatio of dimensions"
                     [ngValue]="aspectRatio">{{formatAspectRatio(aspectRatio)}}</option>
@@ -123,7 +123,7 @@
         </div>
         <div class="col-12 mb-2">
           <label for="compression">Compress to size ({{imageQuality}}%):</label>
-          <input type="range" min="0" max="100" value="90" step="2" class="custom-range" id="compression"
+          <input type="range" min="1" max="100" value="90" step="1" class="custom-range" id="compression"
                  (change)="changeRange($event, true)" (input)="changeRange($event, false)">
         </div>
       </div>
@@ -135,8 +135,8 @@
           Cropped Size: {{croppedSize()}}
         </div>
       </div>
-      <div class="row">
-        <div class="col-sm-12" *ngIf="action">
+      <div class="row" *ngIf="action">
+        <div class="col-sm-12 mb-2 mt-2">
           <div class="progress">
             <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': progress() + '%' }">
               {{action}} {{uploader.progress}}%

@@ -40,6 +40,7 @@ import { UrlService } from "../services/url.service";
 
 export class ImageCropperAndResizerComponent implements OnInit {
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
+  @Input() selectAspectRatio: string;
   @Input() preloadImage: string;
   @Input() rootFolder: string;
   @Output() quit: EventEmitter<void> = new EventEmitter();
@@ -73,7 +74,6 @@ export class ImageCropperAndResizerComponent implements OnInit {
     {width: 1116, height: 470, description: "Ramblers Landing page"},
   ];
 
-  public dimension: DescribedDimensions = this.dimensions[0];
   faClose = faClose;
   faSave = faSave;
   faRotateRight = faRotateRight;
@@ -92,6 +92,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
   action: string;
   maintainAspectRatio: boolean;
   imageQuality = 80;
+  public dimension: DescribedDimensions;
   public originalFile: File;
   public croppedFile: AwsFileData;
   public originalImageData: ImageData;
@@ -120,13 +121,13 @@ export class ImageCropperAndResizerComponent implements OnInit {
       } else {
         const uploadResponse = JSON.parse(response);
         this.fileNameData = uploadResponse.response.fileNameData;
-          if (this.fileNameData) {
-            this.fileNameData.title = this?.existingTitle;
-          }
-          this.logger.debug("JSON response:", uploadResponse, "committeeFile:", this.fileNameData);
-          this.notify.clearBusy();
-          this.notify.success({title: "File uploaded", message: this.fileNameData.title});
+        if (this.fileNameData) {
+          this.fileNameData.title = this?.existingTitle;
         }
+        this.logger.debug("JSON response:", uploadResponse, "committeeFile:", this.fileNameData);
+        this.notify.clearBusy();
+        this.notify.success({title: "File uploaded", message: this.fileNameData.title});
+      }
     });
     if (this.preloadImage) {
       this.notify.success({title: "Image Cropper", message: "loading file into editor"});
@@ -134,6 +135,12 @@ export class ImageCropperAndResizerComponent implements OnInit {
         .then((file: File) => this.processSingleFile(file))
         .catch(error => this.throwOrNotifyError({title: "Unexpected Error", message: error}));
     }
+    if (this.selectAspectRatio) {
+      this.dimension = this.dimensions.find(item => item.description.toLowerCase() === this.selectAspectRatio.toLowerCase()) || this.dimensions[0];
+    } else {
+      this.dimension = this.dimensions[0];
+    }
+    this.changeAspectRatioSettings();
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -182,7 +189,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
     this.throwOrNotifyError({title: "Unexpected Error", message: errorEvent});
   }
 
-  loadImageFailed($event: void) {
+  loadImageFailed($event: any) {
     this.logger.debug("Load failed:", $event);
     this.throwOrNotifyError({title: "Load failed", message: $event});
   }
@@ -296,11 +303,15 @@ export class ImageCropperAndResizerComponent implements OnInit {
     return this.notifyTarget.busy || this.notifyTarget.showAlert;
   }
 
-  changeAspectRatio(event: any) {
+  changeAspectRatioSettingsAndCrop(event: any) {
+    this.changeAspectRatioSettings();
+    this.logger.info("changeAspectRatio:dimension:", this.dimension, "aspectRatio ->", this.aspectRatio,"event:", event);
+    this.imageCropperComponent.crop();
+  }
+
+  private changeAspectRatioSettings() {
     this.aspectRatio = this.dimension.width / this.dimension.height;
     this.maintainAspectRatio = !this.aspectRatioMaintained(this.dimension);
-    this.logger.debug("changeAspectRatio:", event.target.value, "dimension:", this.dimension, "aspectRatio ->", this.aspectRatio);
-    this.imageCropperComponent.crop();
   }
 
   manuallySubmitCrop() {

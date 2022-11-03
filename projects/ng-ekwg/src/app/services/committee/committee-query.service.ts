@@ -49,7 +49,7 @@ export class CommitteeQueryService {
     this.logger.debug("groupEventsFilter:fromDate", this.displayDatePipe.transform(fromDate), "toDate", this.displayDatePipe.transform(toDate));
     const events: GroupEvent[] = [];
     const promises = [];
-    const committeeContactDetails: CommitteeMember = this.committeeReferenceData.committeeMembersForRole("secretary")[0];
+    const committeeContactDetails: CommitteeMember = this.committeeReferenceData?.committeeMembersForRole("secretary")[0];
     if (groupEventsFilter.includeWalks) {
       promises.push(
         this.walksService.all({criteria: {walkDate: {$gte: fromDate, $lte: toDate}}})

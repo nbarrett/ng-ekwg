@@ -8,7 +8,7 @@
             (activeSlideChange)="activeSlideChange(false, $event)">
     <app-carousel-story-navigator></app-carousel-story-navigator>
     <slide *ngFor="let slide of viewableSlides; let index = index;">
-      <img class="img-responsive center-block" loading="lazy" *ngIf="slide" [src]="slide.image" [alt]="slide.text"
+      <img class="img-fluid" loading="lazy" *ngIf="slide" [src]="slide.image" [alt]="slide.text"
            style="display: block; width: 100%;">
       <div class="carousel-caption">
         <h4>{{slide.text}}</h4>

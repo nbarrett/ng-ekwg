@@ -1,5 +1,5 @@
-<div *ngIf="!currentWalkId">
-  <div *ngIf="showPagination">
+<ng-container *ngIf="!currentWalkId">
+  <ng-container *ngIf="showPagination">
     <div class="d-flex pb-0">
       <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
              (ngModelChange)="onSearchChange($event)"
@@ -29,8 +29,8 @@
         </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="!showPagination">
+  </ng-container>
+  <ng-container *ngIf="!showPagination">
     <div class="d-lg-flex pb-0">
       <div class="form-group mr-lg-3 mb-lg-0">
         <input [(ngModel)]="filterParameters.quickSearch" #quickSearch
@@ -63,5 +63,5 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </ng-container>
+</ng-container>

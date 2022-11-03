@@ -1,14 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
-import { keys } from "lodash-es";
 import isArray from "lodash-es/isArray";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
+import { AwsFileData } from "../../../models/aws-object.model";
 import { GroupEvent, GroupEventsFilter, GroupEventType, groupEventTypeFor, GroupEventTypes } from "../../../models/committee.model";
-import { ContentMetadataItem, ImageTag } from "../../../models/content-metadata.model";
+import { ContentMetadataItem, IMAGES_HOME, ImageTag } from "../../../models/content-metadata.model";
 import { DateValue } from "../../../models/date.model";
 import { CommitteeQueryService } from "../../../services/committee/committee-query.service";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
@@ -26,21 +26,37 @@ import { UrlService } from "../../../services/url.service";
   selector: "app-edit-image",
   templateUrl: "./image-edit.component.html"
 })
-export class ImageEditComponent implements OnInit, OnChanges {
+export class ImageEditComponent implements OnInit {
   private logger: Logger;
   public groupEvents: GroupEvent[] = [];
-  @Input() item: ContentMetadataItem;
-  @Input() index: number;
-  @Input() filteredFiles: ContentMetadataItem[];
-  @Input() fileElement: HTMLInputElement;
+  public item: ContentMetadataItem;
+  public index: number;
+  public filteredFiles: ContentMetadataItem[];
+  public canMoveUp = true;
+  public canMoveDown = true;
+
+  @Input("index") set acceptChangesFromIndex(index: number) {
+    this.index = index;
+  }
+
+  @Input("item") set acceptChangesFromItem(item: ContentMetadataItem) {
+    this.item = item;
+  }
+
+  @Input("filteredFiles") set acceptChangesFrom(filteredFiles: ContentMetadataItem[]) {
+    this.filteredFiles = filteredFiles;
+  }
+
+  @Input() rootFolder: string;
   @Output() imageChange: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() moveUp: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() moveDown: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() delete: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() imageInsert: EventEmitter<ContentMetadataItem> = new EventEmitter();
-  public canMoveUp: boolean;
-  public canMoveDown: boolean;
   faExclamation = faExclamation;
+  public editActive: boolean;
+  private awsFileData: AwsFileData;
+  public aspectRatio: string;
 
   constructor(private stringUtils: StringUtilsService,
               public imageDuplicatesService: ImageDuplicatesService,
@@ -54,33 +70,15 @@ export class ImageEditComponent implements OnInit, OnChanges {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ImageEditComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit:item", this.item, "index:", this.index);
+    this.aspectRatio = this.rootFolder === IMAGES_HOME ? "Home page" : null;
+    this.logger.debug("ngOnInit:item", this.item, "index:", this.index, "this.aspectRatio:", this.aspectRatio);
+    this.editActive = !this.item.image;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.item) {
-      this.item = changes.item.currentValue;
-      this.logger.debug("ngOnChanges:item", this.item, "(index is", this.index, ")");
-    } else if (changes.index) {
-      this.index = changes.index.currentValue;
-      this.logger.debug("ngOnChanges:index", this.index);
-    } else if (changes.filteredFiles) {
-      this.filteredFiles = changes.filteredFiles.currentValue;
-      this.logger.debug("ngOnChanges:filteredFiles", this.filteredFiles);
-    } else {
-      keys(changes).forEach(key => {
-        if (!changes[key].firstChange) {
-          this.logger.debug("ngOnChanges:untracked changes in:", key, "currentValue:", changes[key].currentValue);
-        }
-      });
-    }
-    this.canMoveUp = this.contentMetadataService.canMoveUp(this.filteredFiles, this.item);
-    this.canMoveDown = this.contentMetadataService.canMoveDown(this.filteredFiles, this.item);
-  }
 
   onImageDateChange(dateValue: DateValue) {
     if (dateValue) {
@@ -99,16 +97,6 @@ export class ImageEditComponent implements OnInit, OnChanges {
       this.logger.debug("ignoring event", stories);
     }
     this.callImageChange();
-  }
-
-  browseToFile(fileElement: HTMLInputElement) {
-    this.logger.debug("browsing from ", fileElement);
-    fileElement.click();
-  }
-
-  replace(fileElement: HTMLInputElement) {
-    this.imageChange.emit(this.emitValue());
-    this.browseToFile(fileElement);
   }
 
   callMoveUp() {
@@ -131,13 +119,11 @@ export class ImageEditComponent implements OnInit, OnChanges {
     return this.item;
   }
 
-  callInsert(fileElement: HTMLInputElement) {
-    this.logger.debug("callInsert:", fileElement);
-    this.item = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: []};
+  callInsert() {
+    this.logger.debug("callInsert");
+    this.item = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: this.item?.tags || []};
     this.imageInsert.emit(this.emitValue());
-    this.replace(fileElement);
   }
-
 
   filterEventsBySourceAndDate(dateSource: string, date: number) {
     this.logger.debug("eventsFilteredFrom:", dateSource, "date:", date);
@@ -203,4 +189,36 @@ export class ImageEditComponent implements OnInit, OnChanges {
     this.filterEventsBySourceAndDate(this.item.dateSource, this.item.date);
   }
 
+  imageChanged(awsFileData: AwsFileData) {
+    this.logger.info("imageChanged:", awsFileData);
+    this.awsFileData = awsFileData;
+  }
+
+  imageCroppingError(errorEvent: ErrorEvent) {
+    // this.notify.error({
+    //   title: "Image cropping error occurred",
+    //   message: (errorEvent ? (". Error was: " + JSON.stringify(errorEvent)) : "")
+    // });
+    // this.notify.clearBusy();
+  }
+
+  exitImageEdit() {
+    this.editActive = false;
+    this.awsFileData = null;
+  }
+
+  imagedSaved(awsFileData: AwsFileData) {
+    const thumbnail = awsFileData.awsFileName;
+    this.logger.info("imagedSaved:", awsFileData, "setting thumbnail to", thumbnail);
+    this.item.image = thumbnail;
+    this.exitImageEdit();
+  }
+
+  imageSourceOrPreview(): string {
+    return this.urlService.imageSource(this.awsFileData?.image || this.item.image);
+  }
+
+  editImage() {
+    this.editActive = true;
+  }
 }

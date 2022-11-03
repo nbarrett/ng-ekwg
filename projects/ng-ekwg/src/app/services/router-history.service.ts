@@ -29,7 +29,7 @@ export class RouterHistoryService {
       });
   }
 
-  navigateBackToLastMainPage() {
+  navigateBackToLastMainPage(unconditionally?: boolean) {
     const validPages: string[] = this.pageService.pages.map(page => page.href);
     const lastPage = this.pageHistory.reverse()
       .find(page => {
@@ -39,7 +39,12 @@ export class RouterHistoryService {
         return match;
       });
     this.logger.debug("event:pageHistory", this.pageHistory, "lastPage ->", lastPage);
-    this.urlService.navigateTo(lastPage);
+    if (unconditionally) {
+      this.urlService.navigateUnconditionallyTo(lastPage);
+    } else {
+      this.urlService.navigateTo(lastPage);
+    }
+
   }
 
   setRoot() {

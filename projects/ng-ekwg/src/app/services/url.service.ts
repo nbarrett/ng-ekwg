@@ -36,13 +36,17 @@ export class UrlService {
     if (this.siteEdit.active()) {
       return Promise.resolve(false);
     } else {
-      const url = `${this.pageUrl(pathSegments.filter(item => item).join("/"))}`;
-      this.logger.debug("navigating to pathSegments:", pathSegments, "->", url);
-      return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
-        this.logger.debug("activated:", activated, "area is now:", this.area());
-        return activated;
-      });
+      return this.navigateUnconditionallyTo(...pathSegments);
     }
+  }
+
+  navigateUnconditionallyTo(...pathSegments: string[]): Promise<boolean> {
+    const url = `${this.pageUrl(pathSegments.filter(item => item).join("/"))}`;
+    this.logger.info("navigating to pathSegments:", pathSegments, "->", url);
+    return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
+      this.logger.info("activated:", activated, "area is now:", this.area());
+      return activated;
+    });
   }
 
   navigateToUrl(url: string, $event: MouseEvent) {

@@ -39,7 +39,7 @@ export class ContentMetadataService {
               public imageTagDataService: ImageTagDataService,
               private imageDuplicatesService: ImageDuplicatesService,
               private commonDataService: CommonDataService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.DEBUG);
   }
 
   contentMetadataNotifications(): Observable<MemberApiResponse> {
@@ -102,7 +102,7 @@ export class ContentMetadataService {
     return apiResponse;
   }
 
-  finalFilterAndSort(showDuplicates: boolean, prefiltered: ContentMetadataItem[], filterText: string): ContentMetadataItem[] {
+  filterAndSort(showDuplicates: boolean, prefiltered: ContentMetadataItem[], filterText: string): ContentMetadataItem[] {
     const filtered: ContentMetadataItem[] = showDuplicates ? prefiltered
       ?.filter(item => this.imageDuplicatesService.duplicatedContentMetadataItems(item).length > 0)
       .sort(sortBy(showDuplicates ? "image" : "-date")) : prefiltered;
@@ -112,17 +112,17 @@ export class ContentMetadataService {
   filterSlides(allSlides: ContentMetadataItem[], tag: ImageTag, showDuplicates?: boolean, filterText?: string): ContentMetadataItem[] {
     this.logger.debug("filterSlides:allSlides count", allSlides?.length, "tag:", tag, "showDuplicates:", showDuplicates);
     if (tag === ALL_TAGS) {
-      const filteredSlides: ContentMetadataItem[] = this.finalFilterAndSort(showDuplicates, allSlides, filterText);
+      const filteredSlides: ContentMetadataItem[] = this.filterAndSort(showDuplicates, allSlides, filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from", tag?.subject, "showDuplicates:", showDuplicates);
       return filteredSlides;
     } else if (tag === RECENT_PHOTOS) {
       const excludeFromRecentKeys: number[] = this.imageTagDataService.imageTagsSorted().filter(tag => tag.excludeFromRecent).map(tag => tag.key);
       const sinceDate = this.dateUtils.momentNow().add(-6, "months");
-      const filteredSlides = this.finalFilterAndSort(showDuplicates, allSlides?.filter(file => file.date >= sinceDate.valueOf() && !(file.tags.find(tag => excludeFromRecentKeys.includes(tag)))), filterText);
+      const filteredSlides = this.filterAndSort(showDuplicates, allSlides?.filter(file => file.date >= sinceDate.valueOf() && !(file.tags.find(tag => excludeFromRecentKeys.includes(tag)))), filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from", tag?.subject, "since", this.dateUtils.displayDate(sinceDate), "excludeFromRecentKeys:", excludeFromRecentKeys.join(", "), "showDuplicates:", showDuplicates);
       return filteredSlides;
     } else {
-      const filteredSlides = this.finalFilterAndSort(showDuplicates, allSlides?.filter(file => file?.tags?.includes(tag.key)), filterText);
+      const filteredSlides = this.filterAndSort(showDuplicates, allSlides?.filter(file => file?.tags?.includes(tag.key)), filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from tag:", tag?.subject, "showDuplicates:", showDuplicates);
       return filteredSlides || [];
     }
