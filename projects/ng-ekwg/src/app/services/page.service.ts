@@ -1,12 +1,11 @@
 import { Injectable } from "@angular/core";
 import { last } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Page } from "../models/page.model";
+import { Link } from "../models/page.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { StringUtilsService } from "./string-utils.service";
+import { SystemConfigService } from "./system/system-config.service";
 import { UrlService } from "./url.service";
-
-export const HOME: Page = {href: "", title: "Home"};
 
 @Injectable({
   providedIn: "root"
@@ -16,27 +15,21 @@ export class PageService {
   private logger: Logger;
 
   constructor(private stringUtils: StringUtilsService,
+              private systemConfigService: SystemConfigService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(PageService, NgxLoggerLevel.OFF);
+    this.systemConfigService.events().subscribe(item => this.pages = item.system.group.pages);
   }
 
-  public pages: Page[] = [
-    HOME,
-    {href: "walks", title: "Walks"},
-    {href: "social", title: "Social"},
-    {href: "join-us", title: "Join Us"},
-    {href: "contact-us", title: "Contact Us"},
-    {href: "committee", title: "Committee"},
-    {href: "admin", title: "Admin"},
-    {href: "how-to", title: "How-to"}];
+  public pages: Link[] = [];
 
-  pageForArea(area: string): Page {
+  pageForArea(area: string): Link {
     area = area.replace("/", "");
-    return this.pages.find(page => page.href === area) || HOME;
+    return this.pages.find(page => page.href === area) || this.pages[0];
   }
 
-  pagesFor(area: string, relativePath: string): Page[] {
+  pagesFor(area: string, relativePath: string): Link[] {
     return this.basePagesForArea(area).concat(this.relativePages(area, this.urlService.toPathSegments(relativePath)));
   }
 
@@ -62,12 +55,12 @@ export class PageService {
     return this.urlService.toPathSegments(relativePath);
   }
 
-  private basePagesForArea(area: string): Page[] {
+  private basePagesForArea(area: string): Link[] {
     return this.pages
-      .filter(page => page === HOME || page?.title?.toLowerCase() === area?.toLowerCase());
+      .filter((page, index) => index === 0 || page?.title?.toLowerCase() === area?.toLowerCase());
   }
 
-  private relativePages(area: string, pathSegments: string[]): Page[] {
+  private relativePages(area: string, pathSegments: string[]): Link[] {
     this.logger.info("area:", area, "pathSegments:", pathSegments);
     return pathSegments
       ?.filter(item => item !== last(pathSegments))

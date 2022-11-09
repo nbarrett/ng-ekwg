@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Page } from "../../../models/page.model";
+import { Link } from "../../../models/page.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
@@ -17,7 +17,7 @@ export class DynamicContentPageComponent implements OnInit {
   public relativePath: string;
   public pageTitle: string;
   public area: string;
-  private page: Page;
+  private page: Link;
 
   constructor(
     private route: ActivatedRoute,

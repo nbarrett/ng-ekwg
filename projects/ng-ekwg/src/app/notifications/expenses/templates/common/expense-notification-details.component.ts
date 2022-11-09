@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Organisation } from "../../../../models/system.model";
+import { SystemConfigService } from "../../../../services/system/system-config.service";
 import { ExpenseClaim } from "../../expense.model";
 import { Member } from "../../../../models/member.model";
 import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
@@ -15,9 +17,12 @@ export class ExpenseNotificationDetailsComponent implements OnInit, AfterViewIni
   public expenseClaim: ExpenseClaim;
   protected logger: Logger;
   public members: Member[];
+  public group: Organisation;
 
   constructor(
     public display: ExpenseDisplayService,
+    private systemConfigService: SystemConfigService,
+
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ExpenseNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
@@ -25,6 +30,7 @@ export class ExpenseNotificationDetailsComponent implements OnInit, AfterViewIni
   ngOnInit() {
     this.logger.debug("ngOnInit:data ->", this.expenseClaim);
     this.members = this.display.members;
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
   }
 
   ngAfterViewInit(): void {

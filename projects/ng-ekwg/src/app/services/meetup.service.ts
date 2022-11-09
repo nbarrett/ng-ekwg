@@ -67,8 +67,8 @@ export class MeetupService {
       });
   }
 
-  getConfig() {
-    return this.configService.getConfig("meetup", {
+  getConfig(): Promise<MeetupConfig> {
+    return this.configService.getConfig<MeetupConfig>("meetup", {
       meetup: {
         publishStatus: MeetupStatus.DRAFT,
         guestLimit: 8,

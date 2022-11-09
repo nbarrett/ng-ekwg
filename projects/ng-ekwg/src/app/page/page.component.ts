@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Page } from "../models/page.model";
+import { Link } from "../models/page.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { PageService } from "../services/page.service";
 import { StringUtilsService } from "../services/string-utils.service";
@@ -19,7 +19,7 @@ export class PageComponent implements OnInit {
 
   public open: boolean;
   private logger: Logger;
-  pages: Page[] = [];
+  pages: Link[] = [];
   public pathSegments: string[];
 
   constructor(private pageService: PageService,

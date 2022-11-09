@@ -124,7 +124,7 @@ export class WalkEditComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData);
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    this.configService.getConfig("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
+    this.configService.getConfig<MeetupConfig>("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
     this.logger.debug("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();

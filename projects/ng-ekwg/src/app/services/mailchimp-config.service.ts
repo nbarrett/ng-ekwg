@@ -31,8 +31,8 @@ export class MailchimpConfigService {
     });
   }
 
-  saveConfig(config) {
-    return this.config.saveConfig("mailchimp", config);
+  saveConfig(config: MailchimpConfigResponse) {
+    return this.config.saveConfig<MailchimpConfigResponse>("mailchimp", config);
   }
 
 }

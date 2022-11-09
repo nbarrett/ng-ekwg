@@ -15,6 +15,7 @@ import {
   SaveSegmentResponse
 } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
+import { Organisation } from "../../../models/system.model";
 import { ConfirmType } from "../../../models/ui-actions";
 import { CommitteeNotificationComponentAndData, CommitteeNotificationDirective } from "../../../notifications/committee/committee-notification.directive";
 import { CommitteeNotificationDetailsComponent } from "../../../notifications/committee/templates/committee-notification-details.component";
@@ -34,6 +35,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 import { UrlService } from "../../../services/url.service";
 import { CommitteeDisplayService } from "../committee-display.service";
 
@@ -58,6 +60,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
   private config: MailchimpConfigResponse;
   public campaigns: MailchimpCampaignListResponse;
   public relativePath: string;
+  private group: Organisation;
 
   constructor(
     private route: ActivatedRoute,
@@ -76,6 +79,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     private mailchimpLinkService: MailchimpLinkService,
     private memberLoginService: MemberLoginService,
     private mailchimpListService: MailchimpListService,
+    private systemConfigService: SystemConfigService,
     private urlService: UrlService,
     protected dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
@@ -87,6 +91,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
       this.notification = {
@@ -119,7 +124,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
       };
       if (this.committeeFile) {
         this.notification.content.title.value = this.committeeFile.fileType;
-        this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the EKWG website. The file information is as follows:";
+        this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the " + this?.group?.shortName + " website. The file information is as follows:";
         }
       this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
       this.logger.debug("initialised on open: notification ->", this.notification);
@@ -288,7 +293,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     this.logger.debug("notification.content.destinationType", this.notification.content.destinationType, "notification.content.addresseeType", this.notification.content.addresseeType);
   }
 
-  editAllEKWGRecipients() {
+  editAllGroupRecipients() {
     this.notification.content.destinationType = "custom";
     this.notification.content.campaignId = this.campaignIdFor("general");
     this.notification.content.list = "general";

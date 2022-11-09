@@ -6,6 +6,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { MailchimpConfigResponse } from "../../../models/mailchimp.model";
 import { Member } from "../../../models/member.model";
+import { Organisation } from "../../../models/system.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-campaign.service";
@@ -15,6 +16,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { RouterHistoryService } from "../../../services/router-history.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -34,6 +36,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   public readonly credentialOneLabel = "User name or email address";
   public readonly credentialTwoLabel = "Ramblers membership number or home postcode";
   private forgottenPasswordMember: Member;
+  public group: Organisation;
 
   constructor(private authService: AuthService,
               private mailchimpCampaignService: MailchimpCampaignService,
@@ -46,6 +49,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
               private stringUtils: StringUtilsService,
               private urlService: UrlService,
               public bsModalRef: BsModalRef,
+              private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.OFF);
   }
@@ -58,6 +62,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:forgot password", loginResponse);
       if (loginResponse.member) {
@@ -112,7 +117,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     this.logger.debug("config.mailchimp.segments.general.forgottenPasswordSegmentId", config.mailchimp.segments.general.forgottenPasswordSegmentId);
     return this.mailchimpCampaignService.replicateAndSendWithOptions({
       campaignId: config.mailchimp.campaigns.forgottenPassword.campaignId,
-      campaignName: "EKWG website password reset instructions (" + member + ")",
+      campaignName: `${this?.group?.shortName} website password reset instructions (${member})`,
       segmentId: config.mailchimp.segments.general.forgottenPasswordSegmentId
     });
   }

@@ -52,7 +52,7 @@ export class ConfigService {
     return apiResponse.response;
   }
 
-  getConfig(key: string, defaultOnEmpty?: object): Promise<any> {
+  getConfig<T>(key: string, defaultOnEmpty?: object): Promise<T> {
     const criteria: any = {};
     criteria[key] = {$exists: true};
     return this.query({criteria})
@@ -72,7 +72,7 @@ export class ConfigService {
 
   }
 
-  saveConfig(key, config: any) {
+  saveConfig<T>(key, config: T) {
     this.logger.debug("saveConfig:", key, "config:", config);
     if (has(config, key)) {
       return this.createOrUpdate(config);

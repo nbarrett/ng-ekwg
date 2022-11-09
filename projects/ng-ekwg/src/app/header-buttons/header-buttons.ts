@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { SystemConfigResponse } from "../models/system.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { SystemConfigService } from "../services/system/system-config.service";
 import { UrlService } from "../services/url.service";
 
 @Component({
@@ -11,16 +13,14 @@ import { UrlService } from "../services/url.service";
 })
 export class HeaderButtonsComponent implements OnInit {
   private logger: Logger;
-  public sites = [
-    {href: "http://www.kentramblers.org.uk", title: "Kent Ramblers"},
-    {href: "https://beta.ramblers.org.uk", title: "National Ramblers"}];
+  public systemConfigResponse: SystemConfigResponse;
 
-  constructor(loggerFactory: LoggerFactory, public urlService: UrlService) {
-    this.logger = loggerFactory.createLogger(HeaderButtonsComponent, NgxLoggerLevel.OFF);
+  constructor(private systemConfigService: SystemConfigService, loggerFactory: LoggerFactory, public urlService: UrlService) {
+    this.logger = loggerFactory.createLogger(HeaderButtonsComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
-    this.logger.info("HeaderButtonsComponent created with sites:", this.sites);
+    this.systemConfigService.events().subscribe(item => this.systemConfigResponse = item);
   }
 
 }

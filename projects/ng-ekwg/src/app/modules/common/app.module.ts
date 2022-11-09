@@ -39,7 +39,7 @@ import { SharedModule } from "../../shared-module";
 import { SiteEditComponent } from "../../site-edit/site-edit.component";
 import { CardContainerComponent } from "./card-container/card-container.component";
 import { NavbarContentComponent } from "./navbar-content/navbar-content";
-import { NavbarComponent } from "./navbar/navigator";
+import { NavbarComponent } from "./navbar/navbar";
 
 @NgModule({
   declarations: [

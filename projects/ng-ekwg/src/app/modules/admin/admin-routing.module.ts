@@ -11,6 +11,7 @@ import { MemberLoginAuditComponent } from "../../pages/admin/member-login-audit/
 import { ChangePasswordComponent } from "../../pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
+import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
 import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
 import { hasDynamicPath } from "../../services/path-matchers";
 import { DynamicContentPageComponent } from "../common/dynamic-content-page/dynamic-content-page";
@@ -30,6 +31,7 @@ import { AdminModule } from "./admin.module";
     {path: "contact-details", component: ContactDetailsComponent, canActivate: [LoggedInGuard]},
     {path: "member-bulk-load/:tab", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
     {path: "member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
+    {path: "system-settings", component: SystemSettingsComponent, canActivate: [AdminAuthGuard]},
     {path: "set-password/:password-reset-id", component: SetPasswordComponent},
     {matcher: hasDynamicPath, component: DynamicContentPageComponent},
   ])]

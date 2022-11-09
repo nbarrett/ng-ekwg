@@ -1,0 +1,147 @@
+<app-page area="committee" pageTitle="System Settings">
+  <div class="row">
+    <div class="col-sm-12">
+      <tabset class="custom-tabset" *ngIf="config">
+        <tab heading="Group Details">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Web Url</label>
+                  <input [(ngModel)]="config.system.group.href"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter a link">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Long Name</label>
+                  <input [(ngModel)]="config.system.group.longName"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter a title for group short name">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Short Name</label>
+                  <input [(ngModel)]="config.system.group.shortName"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter a title for group short name">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Ramblers Group Code</label>
+                  <input [(ngModel)]="config.system.group.groupCode"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter the Ramblers group code">
+                </div>
+              </div>
+            </div>
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Pages on Site ({{config.system.group.pages.length}})</div>
+              <div class="col-sm-12">
+                <app-links-edit [links]="config.system.group.pages"></app-links-edit>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Website Header">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Header Buttons ({{config.system.header.navigationButtons.length}})</div>
+              <div class="col-sm-12">
+                <app-links-edit [links]="config.system.header.navigationButtons"></app-links-edit>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Website Footer">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Column 1: External Urls</div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="facebook-href">Facebook</label>
+                  <input [(ngModel)]="config.system.externalUrls.facebook"
+                         type="text" value="" class="form-control input-sm" id="facebook-href"
+                         placeholder="Enter a group url for Facebook">
+                </div>
+                <div class="form-group">
+                  <label for="meetup-href">Meetup</label>
+                  <input [(ngModel)]="config.system.externalUrls.meetup"
+                         type="text" value="" class="form-control input-sm" id="meetup-href"
+                         placeholder="Enter a group url for Meetup">
+                </div>
+                <div class="form-group">
+                  <label for="youtube-href">Youtube</label>
+                  <input [(ngModel)]="config.system.externalUrls.youtube"
+                         type="text" value="" class="form-control input-sm" id="youtube-href"
+                         placeholder="Enter a group url for Youtube">
+                </div>
+                <div class="form-group">
+                  <label for="twitter-href">Twitter</label>
+                  <input [(ngModel)]="config.system.externalUrls.twitter"
+                         type="text" value="" class="form-control input-sm" id="twitter-href"
+                         placeholder="Enter a group url for Twitter">
+                </div>
+                <div class="form-group">
+                  <label for="instagram-href">Instagram</label>
+                  <input [(ngModel)]="config.system.externalUrls.instagram"
+                         type="text" value="" class="form-control input-sm" id="instagram-href"
+                         placeholder="Enter a group url for Instagram">
+                </div>
+              </div>
+            </div>
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Column 2: Quick Links ({{config.system.footer.quickLinks.length}})</div>
+              <div class="col-sm-12">
+                <app-links-edit [links]="config.system.footer.quickLinks"></app-links-edit>
+              </div>
+            </div>
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Column 3: Legals ({{config.system.footer.legals.length}})</div>
+              <div class="col-sm-12">
+                <app-links-edit [links]="config.system.footer.legals"></app-links-edit>
+              </div>
+            </div>
+            <div class="row img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Column 4: Download Links</div>
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="area-long-name">Apple</label>
+                  <input [(ngModel)]="config.system.footer.appDownloads.apple"
+                         id="area-long-name"
+                         class="form-control input-sm">
+                </div>
+                <div class="form-group">
+                  <label for="area-short-name">Google</label>
+                  <input [(ngModel)]="config.system.footer.appDownloads.google"
+                         id="area-short-name"
+                         class="form-control input-sm">
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+      </tabset>
+      <div *ngIf="notifyTarget.showAlert" class="row">
+        <div class="col-sm-12 mb-10">
+          <div class="alert {{notifyTarget.alert.class}}">
+            <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+            <strong *ngIf="notifyTarget.alertTitle">
+              {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <input type="submit" value="Save" (click)="save()"
+             title="Save notification settings"
+             class="button-form button-confirm green-confirm button-form-left">
+      <input type="submit" value="Cancel" (click)="cancel()"
+             title="Cancel without saving"
+             class="button-form button-confirm button-form-left">
+    </div>
+  </div>
+</app-page>

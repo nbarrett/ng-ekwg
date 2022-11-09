@@ -9,6 +9,7 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
 import { SaveSegmentResponse } from "../../../models/mailchimp.model";
 import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
+import { Organisation } from "../../../models/system.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -20,12 +21,14 @@ import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-s
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 
 @Component({
   selector: "app-member-admin-send-emails-modal",
   templateUrl: "./send-emails-modal.component.html",
   styleUrls: ["./send-emails-modal.component.sass"]
 })
+
 export class SendEmailsModalComponent implements OnInit {
   tooltips: TooltipDirective[] = [];
   private notify: AlertInstance;
@@ -42,6 +45,7 @@ export class SendEmailsModalComponent implements OnInit {
   public emailType: MemberEmailType;
   public helpInfo: { monthsInPast: number; showHelp: boolean };
   faQuestion = faQuestion;
+  private group: Organisation;
 
   constructor(private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
@@ -54,63 +58,17 @@ export class SendEmailsModalComponent implements OnInit {
               private mailchimpConfigService: MailchimpConfigService,
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
+              private systemConfigService: SystemConfigService,
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SendEmailsModalComponent, NgxLoggerLevel.OFF);
   }
 
-  selectClick(select: NgSelectComponent) {
-    this.logger.debug("selectClick:select.isOpen", select.isOpen);
-  }
-
-  onChange(event?: any) {
-    this.notify.warning({
-      title: "Member selection",
-      message: `${this.selectedMemberIds.length} members manually selected`
-    });
-  }
-
-  groupBy(member: MemberFilterSelection) {
-    return member.memberGrouping;
-  }
-
-  groupValue(_: string, children: any[]) {
-    return ({name: children[0].memberGrouping, total: children.length});
-  }
-
-  emailTypeChanged(memberEmailType: MemberEmailType) {
-    this.populateMembers(memberEmailType.memberSelectorName);
-    this.tooltips.forEach(tooltip => tooltip.hide());
-    this.helpInfo.showHelp = false;
-  }
-
-  memberSelectorNamed(name: string): MemberSelector {
-    return this.memberSelectors().find(item => item.name === name);
-  }
-
-  memberSelectors(): MemberSelector[] {
-    return [
-      {
-        name: "recently-added",
-        memberMapper: (member) => this.renderCreatedInformation(member),
-        memberFilter: (member) => this.recentlyAddedMembers(member)
-      },
-      {
-        name: "expired-members",
-        memberMapper: (member) => this.renderExpiryInformation(member),
-        memberFilter: (member) => this.expiredMembers(member)
-      },
-      {
-        name: "missing-from-bulk-load-members",
-        memberMapper: (member) => this.renderExpiryInformation(member),
-        memberFilter: (member) => this.missingFromBulkLoad(member)
-      }];
-  }
-
   ngOnInit() {
     this.logger.debug("constructed with members", this.members.length, "members");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.memberFilterDate = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf());
     this.mailchimpConfig.getConfig()
       .then(config => {
@@ -163,6 +121,54 @@ export class SendEmailsModalComponent implements OnInit {
           monthsInPast: 1,
         };
       });
+  }
+
+  selectClick(select: NgSelectComponent) {
+    this.logger.debug("selectClick:select.isOpen", select.isOpen);
+  }
+
+  onChange(event?: any) {
+    this.notify.warning({
+      title: "Member selection",
+      message: `${this.selectedMemberIds.length} members manually selected`
+    });
+  }
+
+  groupBy(member: MemberFilterSelection) {
+    return member.memberGrouping;
+  }
+
+  groupValue(_: string, children: any[]) {
+    return ({name: children[0].memberGrouping, total: children.length});
+  }
+
+  emailTypeChanged(memberEmailType: MemberEmailType) {
+    this.populateMembers(memberEmailType.memberSelectorName);
+    this.tooltips.forEach(tooltip => tooltip.hide());
+    this.helpInfo.showHelp = false;
+  }
+
+  memberSelectorNamed(name: string): MemberSelector {
+    return this.memberSelectors().find(item => item.name === name);
+  }
+
+  memberSelectors(): MemberSelector[] {
+    return [
+      {
+        name: "recently-added",
+        memberMapper: (member) => this.renderCreatedInformation(member),
+        memberFilter: (member) => this.recentlyAddedMembers(member)
+      },
+      {
+        name: "expired-members",
+        memberMapper: (member) => this.renderExpiryInformation(member),
+        memberFilter: (member) => this.expiredMembers(member)
+      },
+      {
+        name: "missing-from-bulk-load-members",
+        memberMapper: (member) => this.renderExpiryInformation(member),
+        memberFilter: (member) => this.missingFromBulkLoad(member)
+      }];
   }
 
   passwordResetCaption() {
@@ -306,7 +312,7 @@ export class SendEmailsModalComponent implements OnInit {
       });
 
     return Promise.all(saveMemberPromises)
-      .then(() => this.notifySuccess(`EKWG group membership has now been removed for ${saveMemberPromises.length} member(s)`));
+      .then(() => this.notifySuccess(`${this?.group?.shortName} group membership has now been removed for ${saveMemberPromises.length} member(s)`));
   }
 
   cancelSendEmails() {

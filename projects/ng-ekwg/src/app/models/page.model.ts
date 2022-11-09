@@ -1,4 +1,4 @@
-export interface Page {
+export interface Link {
   href?: string;
   title?: string;
 }

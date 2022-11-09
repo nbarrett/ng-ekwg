@@ -1,8 +1,10 @@
 import { Component, HostListener, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
+import { Organisation } from "../../../models/system.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -13,15 +15,16 @@ import { UrlService } from "../../../services/url.service";
 export class NavbarComponent implements OnInit {
   private logger: Logger;
   public navbarContentWithinCollapse: boolean;
+  public group: Organisation;
+  public navbarExpanded = false;
 
   constructor(
+    private systemConfigService: SystemConfigService,
     private broadcastService: BroadcastService<boolean>,
     public urlService: UrlService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
   }
-
-  public navbarExpanded = false;
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
@@ -39,6 +42,7 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {
       this.logger.info("menu toggled with event:", event);
       this.navbarExpanded = event.data;

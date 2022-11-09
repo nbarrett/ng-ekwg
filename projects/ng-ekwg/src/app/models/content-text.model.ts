@@ -1,6 +1,6 @@
 import { ApiResponse } from "./api-response.model";
 import { AccessLevel } from "./member-resource.model";
-import { Page } from "./page.model";
+import { Link } from "./page.model";
 
 export interface ContentText {
   id?: string;
@@ -51,7 +51,7 @@ export interface PageContentRow {
   columns: PageContentColumn[];
 }
 
-export interface PageContentColumn extends Page {
+export interface PageContentColumn extends Link {
   columns?: number;
   contentTextId?: string;
   imageSource?: string;

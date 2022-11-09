@@ -1,49 +1,73 @@
 <div class="text-center">
   <ul
     class="icon-container d-inline-flex justify-content-between align-items-center list-unstyled w-100 mt-3 mb-5 mb-lg-3">
-    <li class="mb-0"><a href="https://www.facebook.com/ramblers" target="_blank" class="d-block p-1">
+    <li *ngIf="externalUrls?.facebook" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Facebook page (opens a new browser tab)'"><a [href]="externalUrls?.facebook" target="_blank"
+                                                       class="d-block p-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
         <use href="/assets/images/new-brand/svg-icons.svg#i-facebook"
              xlink:href="/assets/images/new-brand/svg-icons.svg#i-facebook"></use>
       </svg>
       <span class="sr-only">
- Visit our Facebook page (opens a new browser tag)
- </span></a></li>
-    <li class="mb-0"><a href="https://www.twitter.com/RamblersGB" target="_blank" class="d-block p-1"
-    >
+        Visit our Facebook page (opens a new browser tag)
+      </span>
+    </a>
+    </li>
+    <li *ngIf="externalUrls?.twitter" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Twitter page (opens a new browser tab)'"><a [href]="externalUrls?.twitter" target="_blank"
+                                                      class="d-block p-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
         <use href="/assets/images/new-brand/svg-icons.svg#i-twitter"
              xlink:href="/assets/images/new-brand/svg-icons.svg#i-twitter"></use>
       </svg>
       <span class="sr-only">
- Visit our Twitter page (opens a new browser tag)
- </span></a></li>
-    <li class="mb-0"><a href="https://www.linkedin.com/company/the-ramblers/" target="_blank"
-                        class="d-block p-1">
+        Visit our Twitter page (opens a new browser tag)
+      </span>
+    </a></li>
+    <li *ngIf="externalUrls?.linkedIn" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Linked in page (opens a new browser tab)'"><a [href]="externalUrls?.linkedIn"
+                                                                          target="_blank"
+                                                                          class="d-block p-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
         <use href="/assets/images/new-brand/svg-icons.svg#i-linkedin-in"
              xlink:href="/assets/images/new-brand/svg-icons.svg#i-linkedin-in"></use>
       </svg>
       <span class="sr-only">
- Visit our Linkedin page (opens a new browser tag)
- </span></a></li>
-    <li class="mb-0"><a href="https://www.youtube.com/channel/UCJCBIF0hopTSb8tjfeE6rMQ"
-                        target="_blank" class="d-block p-1">
+        Visit our Linkedin page (opens a new browser tag)
+      </span>
+    </a></li>
+    <li *ngIf="externalUrls?.youtube" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Youtube page (opens a new browser tab)'"><a [href]="externalUrls?.youtube"
+                                                                          target="_blank" class="d-block p-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
         <use href="/assets/images/new-brand/svg-icons.svg#i-youtube"
              xlink:href="/assets/images/new-brand/svg-icons.svg#i-youtube"></use>
       </svg>
       <span class="sr-only">
- Visit our Youtube page (opens a new browser tag)
- </span></a></li>
-    <li class="mb-0"><a href="https://www.instagram.com/ramblersgb" target="_blank"
-                        class="d-block p-1">
+        Visit our Youtube page (opens a new browser tag)
+      </span>
+    </a></li>
+    <li *ngIf="externalUrls?.instagram" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Instagram page (opens a new browser tab)'"><a [href]="externalUrls?.instagram" target="_blank"
+                                                        class="d-block p-1">
       <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
         <use href="/assets/images/new-brand/svg-icons.svg#i-instagram"
              xlink:href="/assets/images/new-brand/svg-icons.svg#i-instagram"></use>
       </svg>
       <span class="sr-only">
- Visit our Instagram page (opens a new browser tag)
- </span></a></li>
+        Visit our Instagram page (opens a new browser tag)
+      </span>
+    </a></li>
+    <li *ngIf="externalUrls?.meetup" class="mb-0" tooltipPlacement="top"
+        [tooltip]="'View our Meetup page (opens a new browser tab)'"><a [href]="externalUrls?.meetup" target="_blank"
+                                                     class="d-block p-1">
+      <svg xmlns="http://www.w3.org/2000/svg" class="icon d-flex icon">
+        <use href="/assets/images/new-brand/svg-icons.svg#i-meetup"
+             xlink:href="/assets/images/new-brand/svg-icons.svg#i-meetup"></use>
+      </svg>
+      <span class="sr-only">
+        Visit our Meetup page (opens a new browser tag)
+      </span>
+    </a></li>
   </ul>
 </div>

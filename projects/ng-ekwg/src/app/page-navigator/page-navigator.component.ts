@@ -1,10 +1,10 @@
 import { Component } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../models/broadcast.model";
-import { Page } from "../models/page.model";
+import { Link } from "../models/page.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { HOME, PageService } from "../services/page.service";
+import { PageService } from "../services/page.service";
 import { UrlService } from "../services/url.service";
 
 @Component({
@@ -22,20 +22,20 @@ export class PageNavigatorComponent {
     this.logger = loggerFactory.createLogger(PageNavigatorComponent, NgxLoggerLevel.OFF);
   }
 
-  isOnPage(page: Page): boolean {
+  isOnPage(link: Link): boolean {
     const relativeUrlFirstSegment = this.urlService.relativeUrlFirstSegment();
-    if (page === HOME) {
+    if (link.href === "") {
       const isOnPage = this.urlService.relativeUrlFirstSegment() === "/";
-      this.logger.debug("isOnPage", page, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
+      this.logger.debug("isOnPage", link, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
       return isOnPage;
     } else {
-      const isOnPage = relativeUrlFirstSegment.endsWith(page.href);
-      this.logger.debug("isOnPage", page, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
+      const isOnPage = relativeUrlFirstSegment.endsWith(link.href);
+      this.logger.debug("isOnPage", link, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
       return isOnPage;
     }
   }
 
-  pages(): Page[] {
+  pages(): Link[] {
     return this.pageService.pages;
   }
 

@@ -1,4 +1,4 @@
-<div class="footer bg-dark text-white py-5 container-fluid">
+<div *ngIf="footer" class="footer bg-dark text-white py-5 container-fluid">
   <div class="row">
     <div class="col">
       <div class="container">
@@ -14,49 +14,52 @@
           <div class="col-sm-4 col-lg-3 col-12">
             <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
               <p class="h5 mb-3 mb-lg-5 text-green">Quick links</p>
-              <li><a href="https://beta.ramblers.org.uk/about-us">About us</a></li>
-              <li><a href="https://beta.ramblers.org.uk/#modal">Jobs</a></li>
-              <li><a href="https://beta.ramblers.org.uk/contact-us">Contact us</a></li>
-              <li><a href="https://beta.ramblers.org.uk/#modal">Site map</a>
-              </li>
+              <ng-container *ngFor="let link of footer?.quickLinks">
+                <li tooltipPlacement="left"
+                    [tooltip]="'View ' + link.title +' (opens a new browser tab)'"><a [href]="link.href">{{link.title}}</a></li>
+              </ng-container>
             </ul>
           </div>
           <div class="col-sm-4 col-lg-3 col-12">
-            <ul class="custom-nav list-unstyled text-center text-nowrap mb-5"><p class="h5 mb-3 mb-lg-5 text-green">
-              Legals</p>
-              <li><a href="https://beta.ramblers.org.uk/#modal">Privacy Policy</a></li>
-              <li><a href="https://beta.ramblers.org.uk/#modal">Terms and Conditions</a></li>
-              <li><a href="https://beta.ramblers.org.uk/#modal">Cookie Policy</a></li>
+            <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
+              <p class="h5 mb-3 mb-lg-5 text-green">Legals</p>
+              <ng-container *ngFor="let link of footer?.legals">
+                <li tooltipPlacement="left"
+                    [tooltip]="'View ' + link.title +' (opens a new browser tab)'"><a
+                  [href]="link.href">{{link.title}}</a></li>
+              </ng-container>
             </ul>
           </div>
           <div class="col-sm-4 col-lg-3 col-12">
-            <ul class="custom-nav list-unstyled text-center text-nowrap mb-5"
-            ><p class="h5 mb-3 mb-lg-5 text-green">
-              Download the app</p>
-              <li><a href="https://apps.apple.com/gb/app/ramblers/id1356478889"
-                     target="_blank" class="brand-badge"><img
-                alt="Download the Rambler app on the Apple App Store (opens a new browser tab)"
-                src="/assets/images/new-brand/apple-badge.svg" class="app-download-image"></a>
+            <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
+              <p class="h5 mb-3 mb-lg-5 text-green">Download the app</p>
+              <li *ngIf="footer.appDownloads.apple" tooltipPlacement="left"
+                  tooltip="Download the Ramblers app on the Apple App Store (opens a new browser tab)">
+                <a [href]="footer.appDownloads.apple"
+                   target="_blank" class="brand-badge"><img
+                  alt="Download the Ramblers app on the Apple App Store (opens a new browser tab)"
+                  src="/assets/images/new-brand/apple-badge.svg" class="app-download-image"></a>
               </li>
-              <li><a target="_blank"
-                     href="https://play.google.com/store/apps/details?id=uk.org.ramblers.walkreg&amp;pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1"
-                     class="brand-badge"><img
-                alt="Download the Ramblers app on Google Play (opens a new browser tab)"
-                src="/assets/images/new-brand/google-play-badge.png" class="app-download-image"></a>
+              <li *ngIf="footer.appDownloads.google" tooltipPlacement="left"
+                  tooltip="Download the Ramblers app on Google Play (opens a new browser tab)">
+                <a [href]="footer.appDownloads.google"
+                   class="brand-badge"><img
+                  alt="Download the Ramblers app on Google Play (opens a new browser tab)"
+                  src="/assets/images/new-brand/google-play-badge.png" class="app-download-image">
+                </a>
               </li>
             </ul>
           </div>
         </div>
         <div class="row logo-row-top pt-4 flex-column-reverse flex-md-row">
           <div class="col">
-            <div class="text-center text-md-left"><p class="mb-2"
-            >
+            <div class="text-center text-md-left"><p class="mb-2">
               <small class="d-block">
                 Ramblers Charity England &amp; Wales No: 1093577 Scotland
                 No: SC039799
               </small></p>
               <p class="mb-0"><small>
-                ©&nbsp;Ramblers 2022
+                ©&nbsp;Ramblers&nbsp;{{year}}
               </small></p></div>
           </div>
           <div class="text-center text-md-right mt-2 mb-3 my-md-0 pr-md-0 col">

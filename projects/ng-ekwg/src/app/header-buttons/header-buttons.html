@@ -1,7 +1,7 @@
 <div class="text-center text-sm-right d-block d-sm-flex" data-v-346f2b12="">
   <button (click)="urlService.navigateToUrl(site.href,$event);" type="button"
           class="btn mx-auto mb-3 mb-sm-0 mr-sm-3 d-block d-sm-inline-block btn-primary text-black"
-          *ngFor="let site of sites">
+          *ngFor="let site of systemConfigResponse?.system?.header?.navigationButtons">
     {{site.title}}
   </button>
 </div>
