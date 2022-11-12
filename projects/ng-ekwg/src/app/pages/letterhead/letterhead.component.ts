@@ -6,7 +6,7 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
   selector: "app-letterhead",
   styleUrls: ["./letterhead.component.sass"],
   template: `
-    <app-page [area]="'committee'" [pageTitle]="'Configure Letterheads'">
+    <app-page>
       <div class="row">
         <div class="col-sm-12">
           <h1 class="mb-2 ml-2 mt-3">Configure letterheads</h1>

@@ -7,6 +7,7 @@ import { ContentMetadataService } from "../../services/content-metadata.service"
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
+import { PageService } from "../../services/page.service";
 import { UrlService } from "../../services/url.service";
 import { SiteEditService } from "../../site-edit/site-edit.service";
 
@@ -32,6 +33,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    public pageService: PageService,
     public imageTagDataService: ImageTagDataService,
     private memberLoginService: MemberLoginService,
     private contentMetadataService: ContentMetadataService,
@@ -52,6 +54,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.pageService.setTitle("Home");
     this.imageTagDataService.selectedTag().subscribe(tag => {
       if (tag) {
         this.viewableSlides = [];

@@ -23,8 +23,9 @@ export interface PageContent {
 export interface PageContentEditEvent {
   columnIndex: number;
   rowIndex: number;
-  path?: string;
-  editActive: boolean;
+  path: string;
+  image?: string;
+  editActive?: boolean;
 }
 
 export interface PageContentApiResponse extends ApiResponse {

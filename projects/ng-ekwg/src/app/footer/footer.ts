@@ -6,7 +6,7 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SystemConfigService } from "../services/system/system-config.service";
 
 @Component({
-  selector: "app-new-brand-footer",
+  selector: "app-footer",
   templateUrl: "./footer.html",
   styleUrls: ["./footer.sass"]
 })

@@ -16,6 +16,7 @@ export class CardImageComponent implements OnInit {
   faImage = faImage;
   IMAGE_LOAD_ERROR = "Image load error";
   NO_IMAGE_AVAILABLE = "No image available";
+  public height: any;
 
   constructor(public urlService: UrlService,
               loggerFactory: LoggerFactory) {
@@ -36,11 +37,14 @@ export class CardImageComponent implements OnInit {
 
   @Input()
   public imageType: ImageType;
-
   @Input()
   public imageLink: string;
   @Input()
   public icon: IconProp;
+  @Input()
+  public unconstrainedHeight: boolean;
+  @Input()
+  public smallIconContainer: boolean;
 
   faSearch = faSearch;
 
@@ -62,6 +66,11 @@ export class CardImageComponent implements OnInit {
 
   ngOnInit() {
     this.logger.info("ngOnInit:imageSource", this.imageSource, "imageLink:", this.imageLink, "icon:", this.icon);
+    if (this.unconstrainedHeight) {
+      this.height = null;
+    } else {
+      this.height = 200;
+    }
   }
 
   imageError(errorEvent: ErrorEvent) {

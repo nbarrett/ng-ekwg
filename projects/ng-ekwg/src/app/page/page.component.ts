@@ -1,10 +1,9 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Link } from "../models/page.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { PageService } from "../services/page.service";
 import { StringUtilsService } from "../services/string-utils.service";
-import { UrlService } from "../services/url.service";
+import { SystemConfigService } from "../services/system/system-config.service";
 
 @Component({
   selector: "app-page",
@@ -13,26 +12,29 @@ import { UrlService } from "../services/url.service";
 })
 export class PageComponent implements OnInit {
 
-  @Input() pageTitle: string;
-  @Input() area: string;
-  @Input() relativePath: string;
+  public pageTitle: string;
 
-  public open: boolean;
+  @Input("pageTitle") set acceptPageTitleChange(pageTitle: string) {
+    this.logger.debug("Input:pageTitle:", pageTitle);
+    this.pageTitle = pageTitle;
+    this.pageService.setTitle(pageTitle);
+  }
+
   private logger: Logger;
-  pages: Link[] = [];
-  public pathSegments: string[];
 
-  constructor(private pageService: PageService,
+  constructor(public pageService: PageService,
               private stringUtils: StringUtilsService,
+              private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageComponent, NgxLoggerLevel.DEBUG);
   }
 
-  ngOnInit(): void {
-    this.logger.debug("area:", this.area, "relativePath:", this.relativePath);
-    this.pages = this.pageService.pagesFor(this.area, this.relativePath)
-    this.logger.debug("pageTitle:", this.pageTitle, "lastBreadcrumb:", this.area, "pages:", this.pages);
+  ngOnInit() {
   }
 
+
+  suppliedOrDefaultPageTitle() {
+    return this.pageTitle || this.pageService.pageSubtitle();
+  }
 }
 

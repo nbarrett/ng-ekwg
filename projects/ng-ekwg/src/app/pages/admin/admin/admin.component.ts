@@ -12,6 +12,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { PageContentService } from "../../../services/page-content.service";
+import { PageService } from "../../../services/page.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -37,7 +38,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   public allowAdminEdits: boolean;
   itemCols: number;
 
-  constructor(private memberLoginService: MemberLoginService,
+  constructor(private pageService: PageService,
+              private memberLoginService: MemberLoginService,
               private notifierService: NotifierService,
               public pageContentService: PageContentService,
               public contentTextService: ContentTextService,
@@ -53,6 +55,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.pageService.setTitle();
     this.generateActionButtons();
     this.setPrivileges();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);

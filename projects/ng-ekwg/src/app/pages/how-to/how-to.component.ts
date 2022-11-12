@@ -24,6 +24,7 @@ import { MemberResourcesService } from "../../services/member-resources/member-r
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberResourcesReferenceDataService } from "../../services/member/member-resources-reference-data.service";
 import { AlertInstance, NotifierService } from "../../services/notifier.service";
+import { PageService } from "../../services/page.service";
 import { UrlService } from "../../services/url.service";
 import { SiteEditService } from "../../site-edit/site-edit.service";
 import { HowToModalComponent } from "./how-to-modal.component";
@@ -51,6 +52,7 @@ export class HowToComponent implements OnInit, OnDestroy {
   faSearch = faSearch;
 
   constructor(
+    private pageService: PageService,
     private contentMetadataService: ContentMetadataService,
     private memberResourcesReferenceDataService: MemberResourcesReferenceDataService,
     private authService: AuthService,
@@ -74,22 +76,22 @@ export class HowToComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.pageService.setTitle();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.authService.authResponse().subscribe(() => this.authChanges());
     this.siteEditService.events.subscribe(() => this.authChanges());
     this.notify.setBusy();
     this.destinationType = "";
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      const memberResourceId = paramMap.get("member-resource-id");
-      this.logger.debug("memberResourceId from route params:", paramMap, memberResourceId);
-      if (memberResourceId) {
-        this.memberResourceId = memberResourceId;
+    this.route.paramMap.subscribe((_: ParamMap) => {
+      if (this.urlService.pathContainsMongoId()) {
+        this.logger.debug("memberResourceId from route params:", this.urlService.lastPathSegment());
+        this.memberResourceId = this.urlService.lastPathSegment();
       }
     });
     this.filterParameters.filter = this.memberResourcesReferenceData.accessLevelViewTypes()[0];
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.success({
-      title: "Finding social events",
+      title: "Finding how-to articles",
       message: "please wait..."
     });
     if (this.memberResourceId) {

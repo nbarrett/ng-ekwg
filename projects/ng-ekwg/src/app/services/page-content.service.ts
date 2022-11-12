@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DataQueryOptions } from "../models/api-request.model";
 import { PageContent } from "../models/content-text.model";
@@ -12,11 +13,13 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 export class PageContentService {
   private logger: Logger;
   private BASE_URL = "/api/database/page-content";
+  public siteLinks: string[] = [];
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.INFO);
+    this.refreshSiteLinks();
   }
 
   async all(): Promise<PageContent[]> {
@@ -61,4 +64,10 @@ export class PageContentService {
     return apiResponse.response;
   }
 
+  refreshSiteLinks() {
+    this.all().then(response => {
+      this.siteLinks = uniq(response.map(item => item.path)).sort();
+      this.logger.info("siteLinks:", this.siteLinks);
+    });
+  }
 }

@@ -63,7 +63,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnDestroy(): void {
@@ -97,6 +97,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
   }
 
   private async setupDataForYear(): Promise<void> {
+    this.logger.info("committeeYear:", this.committeeYear, "committeeYearTitle:", this.committeeYearTitle);
     this.committeeYearTitle = this.committeeYear?.year ? `${this.committeeYear?.year} Committee` : "";
     this.filesForYear = this.committeeQueryService.committeeFilesForYear(this.committeeYear?.year);
     const pageContent: PageContent = await this.pageContentService.findByPath(committeeYearsPath);

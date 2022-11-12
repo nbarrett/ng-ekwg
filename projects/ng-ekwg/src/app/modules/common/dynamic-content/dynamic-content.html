@@ -53,33 +53,57 @@
       </app-action-buttons>
       <ng-container *ngIf="actions.isTextRow(row)">
         <div class="row">
-          <div *ngFor="let column of row?.columns; let columnIndex = index;"
-               [class]="slideClasses(row?.columns.length)">
-            <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
-                                 [category]="contentPath"
-                                 [editNameEnabled]="editNameEnabled"
-                                 [clearEnabled]="true"
-                                 [description]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, contentDescription)"
-                                 [id]="column?.contentTextId"
-                                 [initialView]="initialView(column)"
-                                 [name]="actions.rowColFor(rowIndex, columnIndex)">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text input-sm">width:</div>
+          <ng-container *ngFor="let column of row?.columns; let columnIndex = index;">
+            <div [class]="'col-sm-' + column.columns">
+              <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
+                                   [category]="contentPath"
+                                   [editNameEnabled]="editNameEnabled"
+                                   [clearEnabled]="true"
+                                   [description]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, contentDescription)"
+                                   [id]="column?.contentTextId"
+                                   [initialView]="initialView(column)"
+                                   [name]="actions.rowColFor(rowIndex, columnIndex)">
+                <div class="input-group mr-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text input-sm">width:</div>
+                  </div>
+                  <input #input (input)="actions.changeColumnWidthFor(input, column)"
+                         [value]="column.columns"
+                         autocomplete="columns"
+                         class="form-control input-sm column-input" placeholder="Enter number of columns (1-12)"
+                         type="number">
                 </div>
-                <input #input (input)="actions.changeColumnWidthFor(input, column)"
-                       [value]="column.columns"
-                       autocomplete="columns"
-                       class="form-control input-sm column-input" placeholder="Enter number of columns (1-12)"
-                       type="number">
+                <div (click)="editImage(rowIndex, columnIndex)"
+                     delay=500 tooltip="edit image" class="badge-button">
+                  <fa-icon [icon]="column.imageSource? faPencil : faAdd"></fa-icon>
+                  <span>{{column.imageSource ? 'edit' : 'add'}} image</span>
+                </div>
+                <app-image-cropper
+                  *ngIf="editActive(rowIndex, columnIndex)"
+                  [preloadImage]="column?.imageSource"
+                  (imageChange)="imageChanged(rowIndex, columnIndex, $event)"
+                  (quit)="exitImageEdit(rowIndex, columnIndex)"
+                  (save)="imagedSaved(column, $event)">
+                </app-image-cropper>
+                <app-actions-dropdown class="ml-2"
+                                      [columnIndex]="columnIndex"
+                                      [pageContent]="pageContent"
+                                      [row]="row">
+                </app-actions-dropdown>
+              </app-markdown-editor>
+              <div *ngIf="imageSource(rowIndex, columnIndex, column?.imageSource)" class="mt-2 mb-3">
+                <app-card-image
+                  [unconstrainedHeight]="true"
+                  [imageSource]="imageSource(rowIndex, columnIndex, column?.imageSource)"
+                  [imageLink]="column.href">
+                </app-card-image>
+                <label [for]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')">Image Source:</label>
+                <input [(ngModel)]="column.imageSource"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')"
+                       type="text" class="form-control">
               </div>
-              <app-actions-dropdown class="ml-2"
-                                    [columnIndex]="columnIndex"
-                                    [pageContent]="pageContent"
-                                    [row]="row">
-              </app-actions-dropdown>
-            </app-markdown-editor>
-          </div>
+            </div>
+          </ng-container>
         </div>
       </ng-container>
       </div>
@@ -95,14 +119,20 @@
       </app-action-buttons>
       <ng-container *ngIf="actions.isTextRow(row)">
         <div class="row">
-          <app-markdown-editor *ngFor="let column of row?.columns; let columnIndex = index;"
-                               [class]="'col-sm-' + column.columns"
-                               [id]="column?.contentTextId"
-                               [editNameEnabled]="editNameEnabled"
-                               [description]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,contentDescription)"
-                               [category]="contentPath"
-                               [name]="actions.rowColFor(rowIndex, columnIndex)">
-          </app-markdown-editor>
+          <div *ngFor="let column of row?.columns; let columnIndex = index;"
+               [class]="'col-sm-' + column.columns">
+            <app-markdown-editor [id]="column?.contentTextId"
+                                 [editNameEnabled]="editNameEnabled"
+                                 [description]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,contentDescription)"
+                                 [category]="contentPath"
+                                 [name]="actions.rowColFor(rowIndex, columnIndex)">
+            </app-markdown-editor>
+            <app-card-image *ngIf="column?.imageSource"
+                            [unconstrainedHeight]="true"
+                            [imageSource]="column?.imageSource"
+                            [imageLink]="column.href">
+            </app-card-image>
+          </div>
         </div>
       </ng-container>
     </ng-container>

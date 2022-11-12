@@ -1,5 +1,6 @@
 <div class="card shadow clickable h-100 mb-4">
   <app-card-image
+    [smallIconContainer]="smallIconContainer"
     [imageType]="imageType"
     [icon]="iconService.iconForName(column.icon)"
     [imageSource]="imageSourceOrPreview()"
@@ -29,7 +30,7 @@
         <label class="form-label"
                [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)">Link</label>
         <input [(ngModel)]="column.href"
-               [typeahead]="siteLinks"
+               [typeahead]="pageContentService.siteLinks"
                [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)"
                class="form-control input-sm" placeholder="Enter href value">
       </div>

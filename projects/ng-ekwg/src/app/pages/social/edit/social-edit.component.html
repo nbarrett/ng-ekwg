@@ -141,7 +141,7 @@
             <div class="col-sm-6">
               <div class="position-relative">
                 <app-social-card [socialEvent]="socialEvent" [imagePreview]="awsFileData?.image"></app-social-card>
-                <div (click)="editImage()"
+                <div *ngIf="!editActive" (click)="editImage()"
                      delay=500 tooltip="edit image" class="button-form-right badge-button edit-image">
                   <fa-icon [icon]="faPencil"></fa-icon>
                   <span>edit image</span>

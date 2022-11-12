@@ -23,20 +23,14 @@ export class PageNavigatorComponent {
   }
 
   isOnPage(link: Link): boolean {
-    const relativeUrlFirstSegment = this.urlService.relativeUrlFirstSegment();
-    if (link.href === "") {
-      const isOnPage = this.urlService.relativeUrlFirstSegment() === "/";
-      this.logger.debug("isOnPage", link, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
-      return isOnPage;
-    } else {
-      const isOnPage = relativeUrlFirstSegment.endsWith(link.href);
-      this.logger.debug("isOnPage", link, "relativeUrlFirstSegment", relativeUrlFirstSegment, "->", isOnPage);
-      return isOnPage;
-    }
+    const firstPathSegment: string = this.urlService.firstPathSegment() || "";
+    const isOnPage = firstPathSegment === link?.href;
+    this.logger.debug("isOnPage", link, "firstPathSegment", firstPathSegment, "->", isOnPage);
+    return isOnPage;
   }
 
   pages(): Link[] {
-    return this.pageService.pages;
+    return this.pageService?.group?.pages || [];
   }
 
   unToggleMenu() {

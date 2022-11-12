@@ -18,6 +18,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { PageContentService } from "../../../services/page-content.service";
+import { PageService } from "../../../services/page.service";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
@@ -38,7 +39,8 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
   public committeeYear: CommitteeYear;
   private committeeFileId: string;
 
-  constructor(private memberLoginService: MemberLoginService,
+  constructor(private pageService: PageService,
+              private memberLoginService: MemberLoginService,
               private memberService: MemberService,
               private notifierService: NotifierService,
               private route: ActivatedRoute,
@@ -61,6 +63,7 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.pageService.setTitle();
     this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
     this.destinationType = "";
     this.selected = {

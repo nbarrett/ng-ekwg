@@ -61,11 +61,6 @@ export class UrlService {
     }
   }
 
-  relativeUrlFirstSegment(optionalUrl?: string): string {
-    const url = new URL(optionalUrl || this.absUrl());
-    return "/" + (first(this.toPathSegments(url.pathname.substring(1))) || "");
-  }
-
   absUrl(): string {
     this.logger.debug("absUrl: document.location.href", this.document.location.href);
     return this.document.location.href;
@@ -81,16 +76,20 @@ export class UrlService {
     return "/" + url.pathname.substring(1);
   }
 
-  relativeUrlAsPathSegments(): string[] {
-    return this.toPathSegments(this.relativeUrl());
+  area(): string {
+    return this.firstPathSegment();
+  }
+
+  firstPathSegment(): string {
+    return first(this.pathSegments());
   }
 
   lastPathSegment() {
-    return last(this.relativeUrlAsPathSegments());
+    return last(this.pathSegments());
   }
 
-  toPathSegments(relativePath: string): string[] {
-    return relativePath ? relativePath?.split("/").filter(item => !isEmpty(item)) : [];
+  pathSegments(): string[] {
+    return this.location.path()?.split("/").filter(item => !isEmpty(item));
   }
 
   pathContainsMongoId(): boolean {
@@ -103,10 +102,6 @@ export class UrlService {
 
   resourceUrl(area: string, subArea: string, id: string, relative?: boolean): string {
     return [relative ? null : this.baseUrl(), area, subArea, id].filter(item => !!item).join("/");
-  }
-
-  area(optionalUrl?: string): string {
-    return this.relativeUrlFirstSegment(optionalUrl).substring(1);
   }
 
   refresh(): void {

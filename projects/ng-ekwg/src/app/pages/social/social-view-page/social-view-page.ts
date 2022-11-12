@@ -15,23 +15,27 @@ export class SocialViewPageComponent implements OnInit {
   private logger: Logger;
   public relativePath: string;
   public actions: Actions = new Actions();
+  public socialEvent: SocialEvent;
 
   constructor(
     private route: ActivatedRoute,
     private urlService: UrlService,
     private pageService: PageService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialViewPageComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialViewPageComponent, NgxLoggerLevel.INFO);
   }
 
-  @Input()
-  public socialEvent: SocialEvent;
+  @Input("socialEvent") set acceptSocialEventChange(socialEvent: SocialEvent) {
+    this.logger.info("Input:socialEvent:", socialEvent);
+    this.socialEvent = socialEvent;
+  }
 
   pageTitle(): string {
-    return this.actions.editModeActive() ? "Social Event Edit" : "Social Event Detail";
+    return this.socialEvent?.briefDescription || (this.actions.editModeActive() ? "Social Event Edit" : "Social Event Detail");
   }
 
   ngOnInit() {
+    this.logger.info("socialEvent", this.socialEvent);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.relativePath = paramMap.get("relativePath");
       this.logger.info("initialised with path:", this.relativePath, "contentPath:", this.pageService.contentPath(this.relativePath));

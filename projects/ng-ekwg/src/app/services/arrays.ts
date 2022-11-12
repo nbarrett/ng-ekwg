@@ -12,8 +12,9 @@ export const uniq = (values: any[]) => {
   return [...new Set(values)].sort();
 };
 
-export function move(array: any[], fromIndex: number, toIndex: number) {
+export function move(array: any[], fromIndex: number, toIndex: number): any[] {
   array.splice(toIndex, 0, array.splice(fromIndex, 1)[0]);
+  return array;
 }
 
 export const sortBy = (...properties: string[]) => (nextItem, currentItem) => properties

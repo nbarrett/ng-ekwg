@@ -6,6 +6,7 @@ debug.enabled = true;
 const AWS = require("@aws-sdk/client-s3");
 const https = require("https");
 const crypto = require("crypto");
+const logObject = false;
 const s3Config = {
   accessKeyId: envConfig.aws.accessKeyId,
   secretAccessKey: envConfig.aws.secretAccessKey,
@@ -75,7 +76,9 @@ exports.getObject = async (req, res) => {
   try {
     debug("getting object command using options", options)
     const s3Item = await s3.send(getObjectCommand);
-    debug("got object", s3Item)
+    if (logObject) {
+      debug("got object", s3Item)
+    }
     res.writeHead(200);
     s3Item.Body.pipe(res);
     debug("returned object command using options", options)

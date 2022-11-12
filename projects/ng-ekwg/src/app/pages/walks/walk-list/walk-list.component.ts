@@ -20,6 +20,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { NumberUtilsService } from "../../../services/number-utils.service";
+import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
@@ -51,6 +52,7 @@ export class WalkListComponent implements OnInit {
   public pages: number[] = [];
 
   constructor(
+    private pageService: PageService,
     public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private memberService: MemberService,
@@ -89,6 +91,7 @@ export class WalkListComponent implements OnInit {
     });
     this.display.refreshCachedData();
     this.refreshWalks("ngOnInit");
+    this.pageService.setTitle("Home");
     this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
     this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
     this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshWalks(NamedEventType.REFRESH));

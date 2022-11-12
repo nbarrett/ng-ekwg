@@ -10,6 +10,7 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { CARD_MARGIN_BOTTOM, cardClasses } from "../../../services/card-utils";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
+import { PageContentEditService } from "../../../services/page-content-edit.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -37,9 +38,10 @@ export class ActionButtonsComponent implements OnInit {
   public row: PageContentRow;
   public activeEditColumnIndex: number;
   public faPencil = faPencil;
-  private pageContentEditEvents: PageContentEditEvent[] = [];
+  public pageContentEditEvents: PageContentEditEvent[] = [];
   constructor(
     public siteEditService: SiteEditService,
+    public pageContentEditService: PageContentEditService,
     private urlService: UrlService,
     private pageService: PageService,
     private stringUtils: StringUtilsService,
@@ -93,7 +95,7 @@ export class ActionButtonsComponent implements OnInit {
     return this.columnInEditMode(column) ? "col-md-6" : cardClasses(this.row.maxColumns || this.actualViewableSlideCount, CARD_MARGIN_BOTTOM);
   }
 
-  private columnInEditMode(column: PageContentColumn) {
+  columnInEditMode(column: PageContentColumn) {
     const columnIndex = this.row.columns.indexOf(column);
     return this.pageContentEditEvents.find(item => isEqual(item,
       {columnIndex, rowIndex: this.rowIndex, path: this.pageContent.path, editActive: true}));
@@ -141,15 +143,10 @@ export class ActionButtonsComponent implements OnInit {
     return disabled;
   }
 
-  listenForEvents(pageContentEditEvent: PageContentEditEvent) {
-    if (pageContentEditEvent.editActive) {
-      this.pageContentEditEvents.push(pageContentEditEvent);
-      this.logger.info("received pageContentEditEvent:", pageContentEditEvent, "added to:", this.pageContentEditEvents);
-    } else {
-      this.pageContentEditEvents = this.pageContentEditEvents
-        .filter(item => !isEqual(pageContentEditEvent, item));
-      this.logger.info("received pageContentEditEvent:", pageContentEditEvent, "removed from:", this.pageContentEditEvents);
-    }
 
+  smallIconContainer(): boolean {
+    const smallIcons = this.row.columns.filter(item => item.imageSource).length === 0;
+    this.logger.debug("smallIconContainer:", this.row, "->", smallIcons);
+    return smallIcons;
   }
 }

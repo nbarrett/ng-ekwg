@@ -20,7 +20,7 @@ export class PageContentActionsService {
               private broadcastService: BroadcastService<PageContent>,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.INFO);
   }
 
   saveContentTextId(contentText: ContentText, rowIndex: number, column: PageContentColumn, pageContent: PageContent) {
@@ -79,11 +79,11 @@ export class PageContentActionsService {
     return columns;
   }
 
-
-  changeColumnWidthFor($event: HTMLInputElement, column: PageContentColumn) {
-    const inputValue = +$event.value;
-    const columnWidth: number = inputValue > 12 ? 12 : inputValue < 1 ? 1 : +$event.value;
-    $event.value = columnWidth.toString();
+  changeColumnWidthFor(inputElement: HTMLInputElement, column: PageContentColumn) {
+    const inputValue = +inputElement.value;
+    const columnWidth: number = inputValue > 12 ? 12 : inputValue < 1 ? 1 : +inputElement.value;
+    inputElement.value = columnWidth.toString();
+    this.logger.info("inputElement.value:", inputElement.value, "columnWidth:", columnWidth,);
     column.columns = columnWidth;
     this.logger.info("changeColumnsFor:", column, columnWidth,);
   }

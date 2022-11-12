@@ -15,6 +15,7 @@ import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { PageService } from "../../../services/page.service";
 import { SocialEventsService } from "../../../services/social-events/social-events.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
@@ -42,7 +43,8 @@ export class SocialHomeComponent implements OnInit {
   public currentPageSocials: SocialEvent[] = [];
   showSearch: false;
 
-  constructor(private authService: AuthService,
+  constructor(public pageService: PageService,
+              private authService: AuthService,
               private stringUtils: StringUtilsService,
               private searchFilterPipe: SearchFilterPipe,
               private notifierService: NotifierService,
@@ -66,6 +68,7 @@ export class SocialHomeComponent implements OnInit {
       if (socialEventId) {
         this.socialEventId = socialEventId;
       }
+      this.pageService.setTitle("Home");
     });
     this.notify.success({
       title: "Finding social events",

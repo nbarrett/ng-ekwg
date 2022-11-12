@@ -34,12 +34,13 @@ export class CardEditorComponent implements OnInit {
   relativePath: string;
   @Input()
   editNameEnabled: boolean;
+  @Input()
+  public smallIconContainer: boolean;
   public pageContentEdit: PageContentEditEvent;
   public row: PageContentRow;
   public awsFileData: AwsFileData;
   private logger: Logger;
   public faPencil = faPencil;
-  public siteLinks: string[] = [];
   public imageType: ImageType;
   public columnIndex: number;
 
@@ -54,7 +55,7 @@ export class CardEditorComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -88,10 +89,6 @@ export class CardEditorComponent implements OnInit {
   editImage() {
     this.pageContentEdit.editActive = true;
     this.logAndSendEvent();
-    this.pageContentService.all().then(response => {
-      this.siteLinks = uniq(response.map(item => item.path)).sort();
-      this.logger.info("siteLinks:", this.siteLinks);
-    });
   }
 
   imagedSaved(awsFileData: AwsFileData) {

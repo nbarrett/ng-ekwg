@@ -154,12 +154,12 @@ describe("UrlService", () => {
 
     it("should return first path segment after base url including slash", () => {
       const service: UrlService = TestBed.inject(UrlService);
-      expect(service.relativeUrlFirstSegment()).toBe("/admin");
+      expect(service.firstPathSegment()).toBe("/admin");
     });
 
     it("should allow passed parameter to be processed", () => {
       const service: UrlService = TestBed.inject(UrlService);
-      expect(service.relativeUrlFirstSegment(INJECTED_URL)).toBe("/walks");
+      expect(service.firstPathSegment(INJECTED_URL)).toBe("/walks");
     });
 
   });

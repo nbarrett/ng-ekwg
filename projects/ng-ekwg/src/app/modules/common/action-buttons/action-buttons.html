@@ -48,12 +48,13 @@
     <div [class]="slideClasses(column)"
          [id]="actions.columnIdentifierFor(columnIndex,pageContent.path + '-card')">
       <app-card-editor
+        [smallIconContainer]="smallIconContainer()"
         [rowIndex]="rowIndex"
         [column]="column"
         [pageContent]="pageContent"
         [contentPath]="contentPath"
         [relativePath]="relativePath"
-        (pageContentEditEvents)="listenForEvents($event)">
+        (pageContentEditEvents)="pageContentEditEvents = pageContentEditService.handleEvent($event, pageContentEditEvents)">
       </app-card-editor>
     </div>
   </ng-container>

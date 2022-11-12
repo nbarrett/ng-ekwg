@@ -1,4 +1,4 @@
-<app-page area="walks" pageTitle="Walk Export">
+<app-page>
   <tabset class="custom-tabset">
     <tab active="true" [heading]="'Walk upload selection'">
       <div class="img-thumbnail thumbnail-admin-edit">
@@ -35,8 +35,8 @@
                   <table class="round styled-table table-striped table-hover table-sm table-pointer">
                     <thead>
                     <tr>
-                      <th>Export</th>
-                      <th>Published</th>
+                      <th>Click to Export</th>
+                      <th>Already Published</th>
                       <th>Walk Date</th>
                       <th>Description</th>
                       <th>Problems</th>
@@ -45,8 +45,12 @@
                     <tbody>
                     <tr *ngFor="let walkExport of walksForExport">
                       <td (click)="changeWalkExportSelection(walkExport)"
-                          [ngClass]="walkExport.selected ? 'checkbox-on' : 'checkbox-off'"></td>
-                      <td [ngClass]="walkExport.publishedOnRamblers ? 'checkbox-on' : 'checkbox-off'"></td>
+                          [ngClass]="walkExport.selected ? 'yes' : 'no'">
+                        <div class="custom-control custom-checkbox">
+                          <input [ngModel]="walkExport.selected"
+                                 type="checkbox" class="custom-control-input">
+                          <label class="custom-control-label"></label></div></td>
+                      <td>{{walkExport.publishedOnRamblers}}</td>
                       <td class="nowrap">{{walkExport.walk.walkDate | displayDate}}</td>
                       <td>{{walkExport.walk.briefDescriptionAndStartPoint}}</td>
                       <td>{{walkExport.validationMessages.join(", ")}}</td>

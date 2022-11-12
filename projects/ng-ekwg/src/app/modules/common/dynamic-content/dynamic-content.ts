@@ -1,15 +1,15 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { View } from "../../../markdown-editor/markdown-editor.component";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { AwsFileData } from "../../../models/aws-object.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { PageContent, PageContentColumn, PageContentType } from "../../../models/content-text.model";
-import { LoginResponse } from "../../../models/member.model";
+import { PageContent, PageContentColumn, PageContentEditEvent, PageContentType } from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { cardClasses } from "../../../services/card-utils";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
@@ -18,6 +18,7 @@ import { MemberResourcesReferenceDataService } from "../../../services/member/me
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
+import { PageContentEditService } from "../../../services/page-content-edit.service";
 import { PageContentService } from "../../../services/page-content.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
@@ -40,6 +41,7 @@ export class DynamicContentComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   public pageTitle: string;
   faPencil = faPencil;
+  faAdd = faAdd;
   faPlusCircle = faPlusCircle;
   faMinusCircle = faMinusCircle;
   faSave = faSave;
@@ -51,9 +53,10 @@ export class DynamicContentComponent implements OnInit {
   public editNameEnabled: true;
   public contentDescription: string;
   public queryCompleted = false;
-
+  public pageContentEditEvents: PageContentEditEvent[] = [];
   constructor(
     public siteEditService: SiteEditService,
+    public pageContentEditService: PageContentEditService,
     private memberResourcesReferenceData: MemberResourcesReferenceDataService,
     private route: ActivatedRoute,
     private notifierService: NotifierService,
@@ -74,29 +77,29 @@ export class DynamicContentComponent implements OnInit {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.area = this.urlService.area();
       this.relativePath = paramMap.get("relativePath");
-      this.contentPath = this.pageService.contentPath(this.relativePath, this.anchor);
-      this.contentDescription = this.pageService.contentDescription(this.relativePath);
+      this.contentPath = this.pageService.contentPath(this.anchor);
+      this.contentDescription = this.pageService.contentDescription(this.anchor);
       this.logger.debug("initialised with relativePath:", this.relativePath, "contentPath:", this.contentPath);
-      this.pageTitle = this.pageService.pageTitle(this.relativePath || this.area);
+      this.pageTitle = this.pageService.pageSubtitle();
       this.logger.debug("Finding page content for " + this.contentPath);
       this.refreshPageContent();
-      this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshPageContent());
+      this.authService.authResponse().subscribe(() => this.refreshPageContent());
       this.broadcastService.on(NamedEventType.SAVE_PAGE_CONTENT, (namedEvent: NamedEvent<PageContent>) => {
         this.logger.info("event received:", namedEvent);
         if (namedEvent.data.id === this.pageContent.id) {
           this.savePageContent();
         }
       });
-      this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (namedEvent: NamedEvent<PageContent>) => {
-        this.logger.info("event received:", namedEvent);
-        this.pageContent.rows.forEach(row => row.columns.forEach(column => {
-          if (column.contentTextId === namedEvent?.data?.id) {
-            this.logger.info("removing link to content " + namedEvent.data.id);
-            delete column.contentTextId;
-          }
-        }));
-        this.savePageContent();
-      });
+    });
+    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (namedEvent: NamedEvent<PageContent>) => {
+      this.logger.info("event received:", namedEvent);
+      this.pageContent.rows.forEach(row => row.columns.forEach(column => {
+        if (column.contentTextId === namedEvent?.data?.id) {
+          this.logger.info("removing link to content " + namedEvent.data.id);
+          delete column.contentTextId;
+        }
+      }));
+      this.savePageContent();
     });
   }
 
@@ -124,23 +127,43 @@ export class DynamicContentComponent implements OnInit {
   }
 
   private refreshPageContent() {
+    this.logger.info("refreshPageContent for", this.contentPath);
     this.pageContentService.findByPath(this.contentPath)
       .then(pageContent => {
-        this.pageContent = this.pageContentFilteredForAccessLevel(pageContent);
-        this.queryCompleted = true;
         if (pageContent) {
-          this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
+          this.logger.info("findByPath", this.contentPath, "returned:", pageContent);
+          this.successfulPageContentReceived(pageContent);
         } else {
-          this.logger.info("Page content not found for", this.contentPath, "pageContent:", this.pageContent);
-          this.notify.warning({
-            title: `Page not found`,
-            message: `The ${this.contentPath} page content was not found`
-          });
+          this.pageContentService.findByPath(`${this.urlService.firstPathSegment()}#${this.anchor}`)
+            .then(pageContent => {
+              if (pageContent) {
+                this.successfulPageContentReceived(pageContent);
+              } else {
+                this.notify.warning({
+                  title: `Page not found`,
+                  message: `The ${this.contentPath} page content was not found`
+                });
+              }
+            });
         }
       }).catch(error => {
       this.logger.info("Page content error found for", this.contentPath, error);
       this.queryCompleted = true;
     });
+  }
+
+  private successfulPageContentReceived(pageContent: PageContent) {
+    this.pageContent = this.pageContentFilteredForAccessLevel(pageContent);
+    this.queryCompleted = true;
+    if (pageContent) {
+      this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
+    } else {
+      this.logger.info("Page content not found for", this.contentPath, "pageContent:", this.pageContent);
+      this.notify.warning({
+        title: `Page not found`,
+        message: `The ${this.contentPath} page content was not found`
+      });
+    }
   }
 
   slideClasses(columnCount: number | undefined) {
@@ -171,6 +194,41 @@ export class DynamicContentComponent implements OnInit {
 
   public initialView(column: PageContentColumn): View {
     return column?.contentTextId ? View.VIEW : View.EDIT;
+  }
+
+  editImage(rowIndex: number, columnIndex: number) {
+    this.pageContentEditEvents = this.pageContentEditService.handleEvent({path: this.pageContent.path, rowIndex, columnIndex, editActive: true}, this.pageContentEditEvents);
+  }
+
+  imageSource(rowIndex: number, columnIndex: number, imageSource: string) {
+    return this.pageContentEditService.eventMatching(this.pageContentEditEvents, {path: this.pageContent.path, rowIndex, columnIndex})?.image || imageSource;
+  }
+
+  imageChanged(rowIndex: number, columnIndex: number, awsFileData: AwsFileData) {
+    this.logger.info("imageChanged:", awsFileData);
+    this.pageContentEditEvents = this.pageContentEditService.handleEvent({
+      path: this.pageContent.path,
+      rowIndex,
+      columnIndex,
+      editActive: true,
+      image: awsFileData.image
+    }, this.pageContentEditEvents);
+  }
+
+  editActive(rowIndex: number, columnIndex: number): boolean {
+    const editActive = this.pageContentEditService.eventMatching(this.pageContentEditEvents, {columnIndex, rowIndex, path: this.pageContent.path})?.editActive;
+    this.logger.debug("editActive:rowIndex:", rowIndex, "columnIndex:", columnIndex, "pageContentEditEvents:", this.pageContentEditEvents, "->", editActive);
+    return editActive;
+  }
+
+  exitImageEdit(rowIndex: number, columnIndex: number) {
+    this.logger.info("exitImageEdit:rowIndex:", rowIndex, "columnIndex:", columnIndex);
+    this.pageContentEditEvents = this.pageContentEditService.handleEvent({path: this.pageContent.path, rowIndex, columnIndex, editActive: false}, this.pageContentEditEvents);
+  }
+
+  imagedSaved(column: PageContentColumn, awsFileData: AwsFileData) {
+    this.logger.info("imagedSaved:", awsFileData, "setting imageSource for column", column, "to", awsFileData.awsFileName);
+    column.imageSource = awsFileData.awsFileName;
   }
 
 }

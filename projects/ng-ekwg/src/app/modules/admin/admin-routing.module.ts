@@ -25,7 +25,6 @@ import { AdminModule } from "./admin.module";
     {path: "mailing-preferences", component: MailingPreferencesModalComponent, canActivate: [AdminAuthGuard]},
     {path: "member-login-audit", component: MemberLoginAuditComponent, canActivate: [AdminAuthGuard]},
     {path: "member-admin", component: MemberAdminComponent, canActivate: [AdminAuthGuard]},
-    {path: "profile", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},
     {path: "change-password", component: ChangePasswordComponent, canActivate: [LoggedInGuard]},
     {path: "email-subscriptions", component: EmailSubscriptionsComponent, canActivate: [LoggedInGuard]},
     {path: "contact-details", component: ContactDetailsComponent, canActivate: [LoggedInGuard]},
