@@ -6,7 +6,6 @@ import { ForgotPasswordComponent } from "./login/forgot-password.component";
 import { LoginComponent } from "./login/login.component";
 import { LogoutComponent } from "./logout/logout.component";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
-import { ContactUsPageComponent } from "./pages/contact-us/contact-us-page.component";
 import { HomeComponent } from "./pages/home/home.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
 import { HowToComponent } from "./pages/how-to/how-to.component";
@@ -21,7 +20,6 @@ const routes: Routes = [
   {path: "committee", loadChildren: () => import("./modules/committee/committee-routing.module").then(module => module.CommitteeRoutingModule)},
   {path: "social", loadChildren: () => import("./modules/social/social-routing.module").then(module => module.SocialRoutingModule)},
   {path: "walks", loadChildren: () => import("./modules/walks/walks-routing.module").then(module => module.WalksRoutingModule)},
-  {path: "contact-us", component: ContactUsPageComponent},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "home", component: HomeComponent},
   {path: "how-to", component: HowToComponent},

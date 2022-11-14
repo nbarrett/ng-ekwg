@@ -19,7 +19,6 @@ import { MainLogoComponent } from "../../main-logo/main-logo.component";
 import { MainTitleComponent } from "../../main-title/main-title.component";
 import { MeetupDescriptionComponent } from "../../notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "../../page-navigator/page-navigator.component";
-import { ContactUsPageComponent } from "../../pages/contact-us/contact-us-page.component";
 import { FacebookComponent } from "../../pages/facebook/facebook.component";
 import { HomeComponent } from "../../pages/home/home.component";
 import { PrivacyPolicyComponent } from "../../pages/home/privacy-policy.component";
@@ -44,7 +43,6 @@ import { NavbarComponent } from "./navbar/navbar";
   declarations: [
     CarouselStoryNavigatorComponent,
     ChangedItemsPipe,
-    ContactUsPageComponent,
     ContainerComponent,
     FooterIconsComponent,
     ForgotPasswordComponent,
