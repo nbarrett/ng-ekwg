@@ -25,7 +25,7 @@ export class UrlService {
               private location: Location,
               private siteEdit: SiteEditService,
               private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
-    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
 
   pathContains(path: string): boolean {
@@ -118,7 +118,7 @@ export class UrlService {
 
   routerLinkUrl(url: string): string {
     const routerLinkUrl = this.isRemoteUrl(url) ? null : "/" + url;
-    this.logger.debug("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
+    this.logger.info("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
     return routerLinkUrl;
   }
 

@@ -81,7 +81,7 @@ export class ImageListComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -128,7 +128,7 @@ export class ImageListComponent implements OnInit {
           this.contentMetadata.imageTags = imageTags.filter(tag => tag.key > 0);
           this.logger.info("received imageTags:", imageTags, "contentMetadata imageTags:", this.contentMetadata.imageTags);
         }
-        this.lastSelectedTag = this.contentMetadata.imageTags[0];
+        this.lastSelectedTag = first(this.contentMetadata?.imageTags);
         this.selectTag();
       });
     this.applyAllowEdits();

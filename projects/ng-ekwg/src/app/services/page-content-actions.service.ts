@@ -20,7 +20,7 @@ export class PageContentActionsService {
               private broadcastService: BroadcastService<PageContent>,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.OFF);
   }
 
   saveContentTextId(contentText: ContentText, rowIndex: number, column: PageContentColumn, pageContent: PageContent) {

@@ -20,7 +20,7 @@ export class CardImageComponent implements OnInit {
 
   constructor(public urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardImageComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CardImageComponent, NgxLoggerLevel.OFF);
   }
   public imageText = null;
   public imageSource: string;

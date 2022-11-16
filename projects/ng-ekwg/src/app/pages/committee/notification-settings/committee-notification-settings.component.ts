@@ -53,7 +53,7 @@ export class CommitteeNotificationSettingsComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(CommitteeNotificationSettingsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

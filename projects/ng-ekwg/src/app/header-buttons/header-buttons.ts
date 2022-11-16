@@ -16,7 +16,7 @@ export class HeaderButtonsComponent implements OnInit {
   public systemConfigResponse: SystemConfigResponse;
 
   constructor(private systemConfigService: SystemConfigService, loggerFactory: LoggerFactory, public urlService: UrlService) {
-    this.logger = loggerFactory.createLogger(HeaderButtonsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(HeaderButtonsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

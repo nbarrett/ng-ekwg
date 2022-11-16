@@ -70,7 +70,7 @@ export class ImageEditComponent implements OnInit {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageEditComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ImageEditComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

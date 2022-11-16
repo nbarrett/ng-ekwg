@@ -51,12 +51,12 @@
               <div class="admin-header-white-background rounded">
                 <div class="row">
                   <div class="col-md-3">
-                    <input #fileElement type="submit" [disabled]="notifyTarget.busy"
+                    <input type="submit" [disabled]="notifyTarget.busy"
                            value="Browse for monthly reports file"
                            (click)="bulkUploadRamblersDataStart(fileElement)"
                            class="button-form mb-10 w-100"
                            [ngClass]="{'disabled-button-form': notifyTarget.busy }">
-                    <input class="d-none" id="browse-to-file" name="bulkUploadRamblersDataFile"
+                    <input #fileElement class="d-none" id="browse-to-file" name="bulkUploadRamblersDataFile"
                            type="file" value="Upload"
                            ng2FileSelect [uploader]="fileUploader">
                     <div ng2FileDrop [ngClass]="{'file-over': hasFileOver}"

@@ -103,7 +103,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
               private notifierService: NotifierService,
               private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {

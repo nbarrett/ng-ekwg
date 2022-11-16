@@ -69,7 +69,7 @@ export class DynamicContentComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -226,9 +226,10 @@ export class DynamicContentComponent implements OnInit {
     this.pageContentEditEvents = this.pageContentEditService.handleEvent({path: this.pageContent.path, rowIndex, columnIndex, editActive: false}, this.pageContentEditEvents);
   }
 
-  imagedSaved(column: PageContentColumn, awsFileData: AwsFileData) {
+  imagedSaved(rowIndex: number, columnIndex: number, column: PageContentColumn, awsFileData: AwsFileData) {
     this.logger.info("imagedSaved:", awsFileData, "setting imageSource for column", column, "to", awsFileData.awsFileName);
     column.imageSource = awsFileData.awsFileName;
+    this.pageContentEditEvents = this.pageContentEditService.handleEvent({path: this.pageContent.path, rowIndex, columnIndex, editActive: false}, this.pageContentEditEvents);
   }
 
 }

@@ -25,7 +25,7 @@ export class LinkEditComponent implements OnInit {
 
   constructor(
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LinkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(LinkEditComponent, NgxLoggerLevel.OFF);
   }
 
   uniqueIdFor(prefix: string) {

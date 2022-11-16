@@ -18,7 +18,7 @@ export class FooterComponent implements OnInit {
   constructor(private dateUtils: DateUtilsService,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FooterComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(FooterComponent, NgxLoggerLevel.OFF);
     this.logger.debug("constructed");
   }
 

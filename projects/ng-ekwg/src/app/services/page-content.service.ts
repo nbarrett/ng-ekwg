@@ -18,7 +18,7 @@ export class PageContentService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.OFF);
     this.refreshSiteLinks();
   }
 

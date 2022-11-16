@@ -25,7 +25,7 @@ export class IconExamplesComponent implements OnInit {
   constructor(
     public iconService: IconService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(IconExamplesComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(IconExamplesComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {

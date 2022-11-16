@@ -380,7 +380,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   }
 
   bulkUploadRamblersDataStart(fileElement: HTMLInputElement) {
-    this.logger.debug("bulkUploadRamblersDataStart:fileElement", fileElement);
+    this.logger.info("bulkUploadRamblersDataStart:fileElement", fileElement);
     fileElement.click();
   }
 }

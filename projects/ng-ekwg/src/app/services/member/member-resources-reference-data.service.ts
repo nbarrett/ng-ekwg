@@ -24,8 +24,16 @@ export class MemberResourcesReferenceDataService {
     this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.OFF);
   }
 
+  resourceSubjectForSubject(subject: string): ResourceSubject {
+    return this.subjects().find(item => item.id === subject);
+  }
+
   subjects(): ResourceSubject[] {
     return [
+      {
+        id: "guide",
+        description: "Guide"
+      },
       {
         id: "newsletter",
         description: "Newsletter"

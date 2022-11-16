@@ -49,7 +49,7 @@ export class ActionButtonsComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ActionButtonsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(ActionButtonsComponent, NgxLoggerLevel.OFF);
   }
 
   @HostListener("window:resize", ["event"])

@@ -12,7 +12,7 @@ export class DynamicContentPageComponent {
 
   constructor(
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentPageComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicContentPageComponent, NgxLoggerLevel.OFF);
   }
 
 }

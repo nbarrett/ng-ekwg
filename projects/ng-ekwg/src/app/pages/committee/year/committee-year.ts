@@ -63,7 +63,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnDestroy(): void {

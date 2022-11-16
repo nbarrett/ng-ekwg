@@ -13,7 +13,7 @@ export class PageContentEditService {
   private logger: Logger;
 
   constructor(loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentEditService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(PageContentEditService, NgxLoggerLevel.OFF);
   }
 
   handleEvent(pageContentEditEvent: PageContentEditEvent, pageContentEditEvents: PageContentEditEvent[]): PageContentEditEvent[] {

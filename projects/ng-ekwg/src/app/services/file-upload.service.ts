@@ -25,7 +25,7 @@ export class FileUploadService {
               private contentMetadataService: ContentMetadataService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FileUploadService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(FileUploadService, NgxLoggerLevel.OFF);
   }
 
   createUploaderFor(rootFolder: string, autoUpload?: boolean): FileUploader {

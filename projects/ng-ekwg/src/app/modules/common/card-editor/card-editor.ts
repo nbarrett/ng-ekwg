@@ -55,7 +55,7 @@ export class CardEditorComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(CardEditorComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
