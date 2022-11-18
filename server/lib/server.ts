@@ -39,7 +39,7 @@ import { meetup } from "./meetup/meetup";
 
 install();
 const debugLog = debug(envConfig.logNamespace("server"));
-const distFolder = path.resolve(__dirname, "../../../../dist/ng-ekwg");
+const distFolder = path.resolve(__dirname, "../../../../dist/ngx-ramblers");
 const currentDir = path.resolve(__dirname);
 debugLog("currentDir:", currentDir, "distFolder:", distFolder);
 const app = express();

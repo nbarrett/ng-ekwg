@@ -3,7 +3,7 @@ import mailchimp = require("@mailchimp/mailchimp_marketing");
 import debug = require("debug");
 import transforms = require("../mongo/controllers/transforms");
 import config = require("../mongo/models/config");
-import { MailchimpConfigResponse } from "../../../projects/ng-ekwg/src/app/models/mailchimp.model";
+import { MailchimpConfigResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../env-config/env-config";
 
 const debugLog = debug(envConfig.logNamespace("mailchimp-config"));

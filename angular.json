@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-ekwg": {
+    "ngx-ramblers": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -13,29 +13,29 @@
           "strict": true
         }
       },
-      "root": "projects/ng-ekwg",
-      "sourceRoot": "projects/ng-ekwg/src",
+      "root": "projects/ngx-ramblers",
+      "sourceRoot": "projects/ngx-ramblers/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ng-ekwg",
-            "index": "projects/ng-ekwg/src/index.html",
-            "main": "projects/ng-ekwg/src/main.ts",
-            "polyfills": "projects/ng-ekwg/src/polyfills.ts",
-            "tsConfig": "projects/ng-ekwg/tsconfig.app.json",
+            "outputPath": "dist/ngx-ramblers",
+            "index": "projects/ngx-ramblers/src/index.html",
+            "main": "projects/ngx-ramblers/src/main.ts",
+            "polyfills": "projects/ngx-ramblers/src/polyfills.ts",
+            "tsConfig": "projects/ngx-ramblers/tsconfig.app.json",
             "inlineStyleLanguage": "sass",
             "assets": [
-              "projects/ng-ekwg/src/favicon.ico",
+              "projects/ngx-ramblers/src/favicon.ico",
               {
-                "input": "projects/ng-ekwg/src/app/assets",
+                "input": "projects/ngx-ramblers/src/app/assets",
                 "glob": "**/**/*.*",
                 "output": "/assets"
               }
             ],
             "styles": [
-              "projects/ng-ekwg/src/app/assets/styles/styles.sass"
+              "projects/ngx-ramblers/src/app/assets/styles/styles.sass"
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.slim.min.js",
@@ -59,8 +59,8 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "projects/ng-ekwg/src/environments/environment.ts",
-                  "with": "projects/ng-ekwg/src/environments/environment.production.ts"
+                  "replace": "projects/ngx-ramblers/src/environments/environment.ts",
+                  "with": "projects/ngx-ramblers/src/environments/environment.production.ts"
                 }
               ],
               "outputHashing": "all"
@@ -79,14 +79,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "proxyConfig": "projects/ng-ekwg/proxy.config.json"
+            "proxyConfig": "projects/ngx-ramblers/proxy.config.json"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ng-ekwg:build:production"
+              "browserTarget": "ngx-ramblers:build:production"
             },
             "development": {
-              "browserTarget": "ng-ekwg:build:development"
+              "browserTarget": "ngx-ramblers:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -94,126 +94,23 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ng-ekwg:build"
+            "browserTarget": "ngx-ramblers:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/ng-ekwg/src/test.ts",
-            "polyfills": "projects/ng-ekwg/src/polyfills.ts",
-            "tsConfig": "projects/ng-ekwg/tsconfig.spec.json",
-            "karmaConfig": "projects/ng-ekwg/karma.conf.js",
+            "main": "projects/ngx-ramblers/src/test.ts",
+            "polyfills": "projects/ngx-ramblers/src/polyfills.ts",
+            "tsConfig": "projects/ngx-ramblers/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-ramblers/karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "projects/ng-ekwg/src/favicon.ico",
-              "projects/ng-ekwg/src/app/assets"
+              "projects/ngx-ramblers/src/favicon.ico",
+              "projects/ngx-ramblers/src/app/assets"
             ],
             "styles": [
-              "projects/ng-ekwg/src/app/assets/styles/styles.sass"
-            ],
-            "scripts": []
-          }
-        }
-      }
-    },
-    "example-app": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        },
-        "@schematics/angular:application": {
-          "strict": true
-        }
-      },
-      "root": "projects/example-app",
-      "sourceRoot": "projects/example-app/src",
-      "prefix": "my-org",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/example-app",
-            "index": "projects/example-app/src/index.html",
-            "main": "projects/example-app/src/main.ts",
-            "polyfills": "projects/example-app/src/polyfills.ts",
-            "tsConfig": "projects/example-app/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/example-app/src/favicon.ico",
-              "projects/example-app/src/assets"
-            ],
-            "styles": [
-              "projects/example-app/src/styles.scss"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "projects/example-app/src/environments/environment.ts",
-                  "with": "projects/example-app/src/environments/environment.prod.ts"
-                }
-              ],
-              "outputHashing": "all"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "production": {
-              "browserTarget": "example-app:build:production"
-            },
-            "development": {
-              "browserTarget": "example-app:build:development"
-            }
-          },
-          "defaultConfiguration": "development"
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "example-app:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/example-app/src/test.ts",
-            "polyfills": "projects/example-app/src/polyfills.ts",
-            "tsConfig": "projects/example-app/tsconfig.spec.json",
-            "karmaConfig": "projects/example-app/karma.conf.js",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/example-app/src/favicon.ico",
-              "projects/example-app/src/assets"
-            ],
-            "styles": [
-              "projects/example-app/src/styles.scss"
+              "projects/ngx-ramblers/src/app/assets/styles/styles.sass"
             ],
             "scripts": []
           }

@@ -1,6 +1,6 @@
 import { first, isObject, keys, map } from "lodash";
-import { AuditStatus } from "../../../projects/ng-ekwg/src/app/models/audit";
-import { AwsFileUploadResponse, AwsFileUploadResponseData, ServerFileNameData, UploadedFile } from "../../../projects/ng-ekwg/src/app/models/aws-object.model";
+import { AuditStatus } from "../../../projects/ngx-ramblers/src/app/models/audit";
+import { AwsFileUploadResponse, AwsFileUploadResponseData, ServerFileNameData, UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
 import { envConfig } from "../env-config/env-config";
 import { generateUid, uidFormat } from "../shared/string-utils";
 import debug = require("debug");
