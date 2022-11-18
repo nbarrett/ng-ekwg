@@ -12,7 +12,8 @@ import { CommitteeModule } from "./committee.module";
 @NgModule({
   imports: [CommitteeModule, RouterModule.forChild([
     {path: "configure-letterheads", component: LetterheadComponent},
-    {path: "send-email", component: CommitteeSendNotificationComponent},
+    {path: "send-notification/:committee-event-id", component: CommitteeSendNotificationComponent},
+    {path: "send-notification", component: CommitteeSendNotificationComponent},
     {path: "campaign-settings", component: CommitteeNotificationSettingsComponent},
     {path: "year/:year", component: CommitteeYearComponent},
     {matcher: hasMongoId, component: CommitteeHomeComponent},

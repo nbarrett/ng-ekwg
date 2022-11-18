@@ -14,7 +14,7 @@
     <a href="committee">Committee page</a>.
   </p>
 </div>
-<div *ngIf="notification?.groupEvents?.length>0">
+<div *ngIf="selectedGroupEvents().length > 0">
   <h4><strong style="font-size:14px">Up and coming events</strong></h4>
   <div *ngFor="let event of selectedGroupEvents()">
     <p style="font-size: 14px;font-weight: bold">

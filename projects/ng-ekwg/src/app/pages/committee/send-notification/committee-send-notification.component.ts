@@ -34,6 +34,7 @@ import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-s
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { SystemConfigService } from "../../../services/system/system-config.service";
 import { UrlService } from "../../../services/url.service";
@@ -59,11 +60,13 @@ export class CommitteeSendNotificationComponent implements OnInit {
   public selectableRecipients: MemberFilterSelection[];
   private config: MailchimpConfigResponse;
   public campaigns: MailchimpCampaignListResponse;
-  public relativePath: string;
+  public committeeEventId: string;
   private group: Organisation;
+  public pageTitle: string;
 
   constructor(
     private route: ActivatedRoute,
+    private pageService: PageService,
     private componentFactoryResolver: ComponentFactoryResolver,
     private mailchimpSegmentService: MailchimpSegmentService,
     private committeeQueryService: CommitteeQueryService,
@@ -94,43 +97,23 @@ export class CommitteeSendNotificationComponent implements OnInit {
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
-      this.notification = {
-        cancelled: false,
-        content: {
-          text: {value: "", include: true},
-          signoffText: {value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,", include: true},
-          includeDownloadInformation: !!this.committeeFile,
-          destinationType: "committee",
-          addresseeType: "Hi *|FNAME|*,",
-          selectedMemberIds: [],
-          signoffAs: {
-            include: true,
-            value: this.display.committeeReferenceData.loggedOnRole().type || "secretary"
-          },
-          title: {value: "Committee Notification", include: true}
-        },
-        groupEvents: [],
-        groupEventsFilter: {
-          selectAll: true,
-          fromDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf()),
-          toDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf()),
-          includeContact: true,
-          includeDescription: true,
-          includeLocation: true,
-          includeWalks: true,
-          includeSocialEvents: true,
-          includeCommitteeEvents: true
-        },
-      };
-      if (this.committeeFile) {
-        this.notification.content.title.value = this.committeeFile.fileType;
-        this.notification.content.text.value = "This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the " + this?.group?.shortName + " website. The file information is as follows:";
-        }
+      this.generateNotification();
       this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
       this.logger.debug("initialised on open: notification ->", this.notification);
       this.route.paramMap.subscribe((paramMap: ParamMap) => {
-        this.relativePath = paramMap.get("relativePath");
-        this.logger.info("initialised with path:", this.relativePath);
+        this.committeeEventId = paramMap.get("committee-event-id");
+        this.logger.info("initialised with committee-event-id:", this.committeeEventId);
+        this.committeeQueryService.queryFiles(this.committeeEventId)
+          .then(() => {
+            this.logger.info("this.committeeQueryService.committeeFiles:", this.committeeQueryService.committeeFiles);
+            if (this.committeeQueryService.committeeFiles?.length > 0) {
+              const committeeFile = this.committeeQueryService.committeeFiles[0];
+              this.committeeFile = committeeFile;
+              this.pageService.setTitle(committeeFile.fileType);
+              this.pageTitle = committeeFile.fileType;
+              this.generateNotification();
+            }
+          });
       });
 
       const promises: any[] = [
@@ -165,6 +148,41 @@ export class CommitteeSendNotificationComponent implements OnInit {
         this.notify.clearBusy();
       });
     });
+  }
+
+  private generateNotification() {
+    this.notification = {
+      cancelled: false,
+      content: {
+        text: {value: "", include: true},
+        signoffText: {value: "If you have any questions about the above, please don't hesitate to contact me.\n\nBest regards,", include: true},
+        includeDownloadInformation: !!this.committeeFile,
+        destinationType: "committee",
+        addresseeType: "Hi *|FNAME|*,",
+        selectedMemberIds: [],
+        signoffAs: {
+          include: true,
+          value: this.display.committeeReferenceData.loggedOnRole().type || "secretary"
+        },
+        title: {value: "Committee Notification", include: true}
+      },
+      groupEvents: [],
+      groupEventsFilter: {
+        selectAll: true,
+        fromDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf()),
+        toDate: this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().add(2, "weeks").valueOf()),
+        includeContact: true,
+        includeDescription: true,
+        includeLocation: true,
+        includeWalks: true,
+        includeSocialEvents: true,
+        includeCommitteeEvents: true
+      },
+    };
+    if (this.committeeFile) {
+      this.notification.content.title.value = this.committeeFile.fileType;
+      this.notification.content.text.value = `This is just a quick note to let you know in case you are interested, that I've uploaded a new file to the ${this?.group?.shortName} website. The file information is as follows:`;
+    }
   }
 
   populateGroupEvents(): Promise<GroupEvent[]> {

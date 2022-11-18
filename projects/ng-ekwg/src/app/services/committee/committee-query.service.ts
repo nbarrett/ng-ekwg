@@ -113,10 +113,10 @@ export class CommitteeQueryService {
   }
 
   queryAllFiles(): Promise<void> {
-    return this.queryFiles(null);
+    return this.queryFiles();
   }
 
-  queryFiles(committeeFileId: string): Promise<void> {
+  queryFiles(committeeFileId?: string): Promise<void> {
     this.logger.debug("queryFiles:committeeFileId:", committeeFileId);
     if (committeeFileId) {
       return this.committeeFileService.getById(committeeFileId).then(response => this.applyFiles([response]));
