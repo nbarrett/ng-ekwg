@@ -32,7 +32,8 @@
   <div class="col-sm-12">
     <app-markdown-editor class="green-bullets-no-rule"
                          name="welcome">
-      <div delay=500 tooltip="Edit images" class="badge-button" *ngIf="allowEdits()" [routerLink]="'image-editor/imagesHome'"
+      <div delay=500 tooltip="Edit images" class="badge-button" *ngIf="allowEdits()"
+           [routerLink]="'image-editor/imagesHome'"
            [queryParams]="{story: imageTagDataService.currentTag()?.key}">
         <fa-icon [icon]="faPencil"></fa-icon>
         <span>edit images</span></div>
@@ -40,6 +41,6 @@
   </div>
 </div>
 <div class="card-columns">
-  <app-facebook></app-facebook>
-  <app-instagram></app-instagram>
+  <app-facebook *ngIf="externalUrls?.facebook?.showFeed"></app-facebook>
+  <app-instagram *ngIf="externalUrls?.instagram?.showFeed"></app-instagram>
 </div>

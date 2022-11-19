@@ -1,13 +1,16 @@
 import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { groupEventTypeFor } from "../../models/committee.model";
 import { ContentMetadataItem, IMAGES_HOME } from "../../models/content-metadata.model";
+import { ExternalUrls } from "../../models/system.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { PageService } from "../../services/page.service";
+import { SystemConfigService } from "../../services/system/system-config.service";
 import { UrlService } from "../../services/url.service";
 import { SiteEditService } from "../../site-edit/site-edit.service";
 
@@ -26,6 +29,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   activeSlideIndex = 0;
   public showIndicators: boolean;
   faPencil = faPencil;
+  private configSubscription: Subscription;
+  public externalUrls: ExternalUrls;
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
@@ -36,6 +41,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     public pageService: PageService,
     public imageTagDataService: ImageTagDataService,
     private memberLoginService: MemberLoginService,
+    private systemConfigService: SystemConfigService,
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
@@ -50,9 +56,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.logger.debug("ngOnDestroy fired");
+    this.configSubscription.unsubscribe();
   }
 
   ngOnInit() {
+    this.configSubscription = this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
     this.logger.debug("ngOnInit");
     this.pageService.setTitle("Home");
     this.imageTagDataService.selectedTag().subscribe(tag => {

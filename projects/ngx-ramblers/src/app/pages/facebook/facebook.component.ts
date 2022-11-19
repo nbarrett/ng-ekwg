@@ -1,10 +1,11 @@
-import { Component, HostListener, OnInit } from "@angular/core";
-import { DomSanitizer } from "@angular/platform-browser";
-import min from "lodash-es/min";
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { NgxLoggerLevel } from "ngx-logger";
-import { InstagramMediaPost } from "../../models/instagram.model";
+import { Subscription } from "rxjs";
+import { Facebook } from "../../models/system.model";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
+import { SystemConfigService } from "../../services/system/system-config.service";
 import { UrlService } from "../../services/url.service";
 
 @Component({
@@ -12,61 +13,62 @@ import { UrlService } from "../../services/url.service";
   templateUrl: "./facebook.component.html",
   styleUrls: ["./facebook.component.sass"]
 })
-export class FacebookComponent implements OnInit {
+export class FacebookComponent implements OnInit, OnDestroy {
 
   private logger: Logger;
-  public recentMedia: InstagramMediaPost[];
-  pluginUrl: any;
-  appId = "643977439755625";
-  maxWidth = 570;
-  width = 0;
-  height = 642;
-  version = "v14.0";
-  facebookGroupUrl = "https://www.facebook.com/eastkentwalking";
-  facebookPagesUrl = "https://www.facebook.com/pages/East-Kent-Walking-Group/172849389464649";
-  scriptSrcUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://connect.facebook.net/en_GB/sdk.js#xfbml=1&autoLogAppEvents=1&version=${this.version}&appId=${this.appId}`);
-  initialised: true;
+  public facebook: Facebook;
+  public width = this.calculateWidth();
+  public height = 642;
+  version = "v15.0";
+  pluginUrl: SafeResourceUrl;
+  scriptSrcUrl: SafeResourceUrl;
+  initialised: boolean;
+  private configSubscription: Subscription;
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
-    const width = event?.target?.innerWidth;
-    this.setWidth(width);
   }
 
   constructor(private urlService: UrlService,
+              private systemConfigService: SystemConfigService,
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.OFF);
   }
 
-  private setWidth(width: number) {
-    this.width = min([width, this.maxWidth]);
-    this.logger.info("setWidth:window.innerWidth",window.innerWidth,"provided:", width, "setting:", this.width);
+  private calculateWidth(): number {
+    return window.innerWidth <= 375 ? window.innerWidth - 65 : window.innerWidth - 80;
   }
 
   parameters() {
     return [
-      "href=" + this.facebookGroupUrl,
+      `href=${this?.facebook?.groupUrl}`,
       "tabs=timeline",
-      "width=" + this.width,
-      "height=" + this.height,
+      `width=${this.width}`,
+      `height=${this.height}`,
       "small_header=false",
       "adapt_container_width=true",
       "hide_cover=false",
       "show_facepile=true",
-      "appId=" + this.appId
+      `appId=${this?.facebook?.appId}`
     ].join("&");
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit");
-    if (window.innerWidth < 1200) {
-      this.setWidth(420);
-    } else {
-      this.setWidth(570);
-    }
-    this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl("https://www.facebook.com/plugins/page.php?" + this.parameters());
+    this.logger.debug("ngOnInit window.innerWidth:", window.innerWidth);
+    this.configSubscription = this.systemConfigService.events().subscribe(item => {
+      this.facebook = item.system.externalUrls.facebook;
+      this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://www.facebook.com/plugins/page.php?${this.parameters()}`);
+      this.scriptSrcUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=${this.version}&appId=${this.facebook.appId}`);
+      this.logger.debug("facebook:", this.facebook, "pluginUrl:", this.pluginUrl, "scriptSrcUrl:", this.scriptSrcUrl);
+      this.systemConfigService.setAppState("facebook-initialised", true);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.configSubscription.unsubscribe();
+    this.logger.debug("ngOnDestroy");
   }
 
 }

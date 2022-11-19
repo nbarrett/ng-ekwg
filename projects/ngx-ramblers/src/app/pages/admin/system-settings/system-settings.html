@@ -62,10 +62,29 @@
               <div class="thumbnail-heading">Column 1: External Urls</div>
               <div class="col-md-12">
                 <div class="form-group">
-                  <label for="facebook-href">Facebook</label>
-                  <input [(ngModel)]="config.system.externalUrls.facebook"
-                         type="text" value="" class="form-control input-sm" id="facebook-href"
+                  <label for="facebook-group-url">Facebook Group Url</label>
+                  <input [(ngModel)]="config.system.externalUrls.facebook.groupUrl"
+                         type="text" value="" class="form-control input-sm" id="facebook-group-url"
                          placeholder="Enter a group url for Facebook">
+                </div>
+                <div class="form-group">
+                  <label for="facebook-pages-url">Facebook Pages Url (optional)</label>
+                  <input [(ngModel)]="config.system.externalUrls.facebook.pagesUrl"
+                         type="text" value="" class="form-control input-sm" id="facebook-pages-url"
+                         placeholder="Enter a pages url for Facebook">
+                </div>
+                <div class="form-group">
+                  <label for="facebook-appId">Facebook App Id</label>
+                  <input [(ngModel)]="config.system.externalUrls.facebook.appId"
+                         type="text" value="" class="form-control input-sm" id="facebook-appId"
+                         placeholder="Enter an app id for Facebook">
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="config.system.externalUrls.facebook.showFeed"
+                         type="checkbox" class="custom-control-input" id="facebook-show-feed">
+                  <label class="custom-control-label"
+                         for="facebook-show-feed">Show Facebook Feed
+                  </label>
                 </div>
                 <div class="form-group">
                   <label for="meetup-href">Meetup</label>
@@ -87,9 +106,16 @@
                 </div>
                 <div class="form-group">
                   <label for="instagram-href">Instagram</label>
-                  <input [(ngModel)]="config.system.externalUrls.instagram"
+                  <input [(ngModel)]="config.system.externalUrls.instagram.groupUrl"
                          type="text" value="" class="form-control input-sm" id="instagram-href"
                          placeholder="Enter a group url for Instagram">
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="config.system.externalUrls.instagram.showFeed"
+                         type="checkbox" class="custom-control-input" id="instagram-show-feed">
+                  <label class="custom-control-label"
+                         for="instagram-show-feed">Show Instagram Feed
+                  </label>
                 </div>
               </div>
             </div>

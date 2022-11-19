@@ -3,7 +3,7 @@ import { faAdd } from "@fortawesome/free-solid-svg-icons";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { SystemConfigResponse } from "../../../models/system.model";
+import { ExternalUrls, SystemConfigResponse } from "../../../models/system.model";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -43,9 +43,48 @@ export class SystemSettingsComponent implements OnInit {
     this.systemConfigService.events()
       .subscribe((config: SystemConfigResponse) => {
         this.config = config;
+        this.prepareMigrationIfRequired(config);
+        this.migrateDataIfRequired(config);
         this.logger.info("retrieved config", config);
-        // this.configQueried = true;
       });
+  }
+
+  private prepareMigrationIfRequired(config: SystemConfigResponse) {
+    const facebookMigrate = this.prepareMigration(config.system.externalUrls, "facebook");
+    const instagramMigrate = this.prepareMigration(config.system.externalUrls, "instagram");
+    if (facebookMigrate || instagramMigrate) {
+      this.systemConfigService.saveConfig(config);
+    }
+  }
+
+  private migrateDataIfRequired(config: SystemConfigResponse) {
+    if (!config.system.externalUrls.facebook) {
+      this.config.system.externalUrls.facebook = {appId: null, pagesUrl: null, groupUrl: null, showFeed: true};
+      this.logger.info("migrated facebook to", this.config.system.externalUrls.facebook);
+    } else {
+      this.logger.info("nothing to migrate for facebook", this.config.system.externalUrls.facebook);
+    }
+    if (!config.system.externalUrls.instagram) {
+      this.logger.info("migrated instagram to", this.config.system.externalUrls.instagram);
+      this.config.system.externalUrls.instagram = {groupUrl: null, showFeed: true};
+    } else {
+      this.logger.info("nothing to migrate for instagram", this.config.system.externalUrls.instagram);
+    }
+  }
+
+  private prepareMigration(externalUrls: ExternalUrls, field: string): boolean {
+    const needsMigration = this.needsMigration(externalUrls, field);
+    if (needsMigration) {
+      this.logger.info("externalUrls ", field, "with value", externalUrls[field], "needs migration");
+      externalUrls[field] = null;
+    } else {
+      this.logger.info("externalUrls ", field, "with value", externalUrls[field], "already migrated");
+    }
+    return needsMigration;
+  }
+
+  private needsMigration(externalUrls: ExternalUrls, field: string): boolean {
+    return typeof externalUrls[field] === "string";
   }
 
   save() {

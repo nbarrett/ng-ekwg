@@ -23,9 +23,21 @@ export interface Footer {
   }
 }
 
+export interface Instagram {
+  groupUrl?: string;
+  showFeed?: boolean;
+}
+
+export interface Facebook {
+  groupUrl?: string;
+  pagesUrl?: string;
+  appId?: string;
+  showFeed?: boolean;
+}
+
 export interface ExternalUrls {
-  facebook?: string;
-  instagram?: string;
+  facebook?: Facebook;
+  instagram?: Instagram;
   linkedIn?: string;
   meetup?: string;
   twitter?: string;

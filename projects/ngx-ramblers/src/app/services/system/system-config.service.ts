@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, ReplaySubject } from "rxjs";
-import { Organisation, SystemConfig, SystemConfigResponse } from "../../models/system.model";
+import { Organisation, SystemConfigResponse } from "../../models/system.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -13,6 +13,7 @@ export class SystemConfigService {
 
   private subject = new ReplaySubject<SystemConfigResponse>();
   private logger: Logger;
+  private state: { [key: string]: boolean } = {};
 
   constructor(private config: ConfigService,
               private memberLoginService: MemberLoginService,
@@ -46,10 +47,23 @@ export class SystemConfigService {
     };
   }
 
+  public setAppState(key: string, state: boolean): void {
+    this.state[key] = state;
+  }
+
+  public queryAppState(key: string): boolean {
+    return this.state[key];
+  }
+
   default(): SystemConfigResponse {
     return {
       system: {
-        externalUrls: {},
+        externalUrls: {
+          facebook: {appId: null, pagesUrl: null, groupUrl: null},
+          meetup: null,
+          instagram: null,
+          linkedIn: null
+        },
         area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.emptyOrganisation(),
         header: {navigationButtons: []},
         footer: {appDownloads: {apple: undefined, google: undefined}, legals: [], pages: [], quickLinks: []}

@@ -72,8 +72,11 @@ export class UrlService {
   }
 
   relativeUrl(optionalUrl?: string): string {
-    const url = new URL(optionalUrl || this.absUrl());
-    return "/" + url.pathname.substring(1);
+    return "/" + this.urlPath(optionalUrl);
+  }
+
+  urlPath(optionalUrl?: string) {
+    return new URL(optionalUrl || this.absUrl()).pathname.substring(1);
   }
 
   area(): string {
