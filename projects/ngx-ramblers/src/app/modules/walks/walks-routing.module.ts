@@ -22,11 +22,11 @@ import { WalksModule } from "./walks.module";
 @NgModule({
   imports: [WalksModule, RouterModule.forChild([
     {path: "add", component: WalkEditComponent, canActivate: [WalksAuthGuard]},
-    {path: "add-walk-slots", component: WalkAddSlotsComponent, canActivate: [WalksAuthGuard]},
-    {path: "edit/:walk-id", component: WalkEditFullPageComponent},
-    {path: "export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
-    {path: "meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
     {path: "admin", component: WalkAdminComponent, canActivate: [WalksAuthGuard]},
+    {path: "admin/add-walk-slots", component: WalkAddSlotsComponent, canActivate: [WalksAuthGuard]},
+    {path: "admin/export", component: WalkExportComponent, canActivate: [WalksAuthGuard]},
+    {path: "admin/meetup-settings", component: WalkMeetupSettingsComponent, canActivate: [WalksAuthGuard]},
+    {path: "edit/:walk-id", component: WalkEditFullPageComponent},
     {path: "carousel", component: ActionButtonsComponent},
     {path: "sub-page", component: WalkSubPageComponent},
     {matcher: hasMongoId, component: WalkViewComponent},
