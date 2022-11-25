@@ -9,6 +9,7 @@ import { SocialModule } from "./social.module";
 @NgModule({
   imports: [SocialModule, RouterModule.forChild([
     {matcher: hasMongoId, component: SocialViewPageComponent},
+    {path: "new", component: SocialViewPageComponent},
     {matcher: hasDynamicPath, component: DynamicContentPageComponent},
     {path: "**", component: SocialHomeComponent}
   ])]

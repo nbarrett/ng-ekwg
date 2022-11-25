@@ -11,6 +11,7 @@ import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
+import { SocialDisplayService } from "../social-display.service";
 
 @Component({
   selector: "app-social-search",
@@ -30,11 +31,11 @@ export class SocialSearchComponent implements OnInit {
   public showPagination = false;
   private logger: Logger;
   private searchChangeObservable: Subject<string>;
-  public showSearch = true;
 
   constructor(private route: ActivatedRoute,
               private walksReferenceService: WalksReferenceService,
               private memberLoginService: MemberLoginService,
+              public display: SocialDisplayService,
               private broadcastService: BroadcastService<any>,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SocialSearchComponent, NgxLoggerLevel.OFF);
@@ -61,4 +62,7 @@ export class SocialSearchComponent implements OnInit {
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.REFRESH, selectType));
   }
 
+  setFocusTo(input: HTMLInputElement) {
+    input.focus();
+  }
 }

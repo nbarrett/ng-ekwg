@@ -21,12 +21,12 @@
       <span [textContent]="event.eventDate | displayDate"></span>
       <span *ngIf="event.eventTime"> • <span [textContent]="event.eventTime"></span>
       </span>
-      • <span [textContent]="event.eventType.description"></span>
       •
-      <app-notification-url area="{{event.eventType.area}}"
-                            id="{{event.id}}"
-                            text="{{event.title}}"
-                            target="_blank"></app-notification-url>
+      <span [textContent]="event.eventType.description"></span>
+      •
+      <app-link area="{{event.eventType.area}}"
+                id="{{event.id}}"
+                text="{{event.title}}"></app-link>
       <span *ngIf="event.distance"> •
         <span [textContent]="event.distance"></span>
       </span>

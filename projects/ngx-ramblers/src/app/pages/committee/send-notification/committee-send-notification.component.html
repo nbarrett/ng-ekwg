@@ -297,10 +297,9 @@
                           •
                           <span>{{groupEvent?.eventType?.description}}</span>
                           •
-                          <app-notification-url [area]="groupEvent?.eventType.area"
-                                                [id]="groupEvent?.id"
-                                                [text]="groupEvent?.title"
-                                                target="_blank"></app-notification-url>
+                          <app-link [area]="groupEvent?.eventType.area"
+                                    [id]="groupEvent?.id"
+                                    [text]="groupEvent?.title"></app-link>
                           <span *ngIf="groupEvent.distance"> •
                               <span>{{groupEvent.distance}}</span>
                             </span>

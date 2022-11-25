@@ -18,8 +18,8 @@
                       <ul>The following data formats are supported:
                         <li>EKWG member data can be loaded into the site 'in bulk' from the monthly update files that up until September 2020 were emailed to
                           Membership Secretaries by Ramblers. This data was supplied in CSV format and was zipped. You can tell if it's the right format as it should
-                        have a filename of <b>KT50_MemberList.csv, KT50_new.zip, KT50_new.csv</b> or
-                          <b>KT50_reports_{{currentMemberBulkLoadDisplayDate()}}.zip</b>.</li>
+                        have a filename of <b>{{group.groupCode}}_MemberList.csv, {{group.groupCode}}_new.zip, {{group.groupCode}}_new.csv</b> or
+                          <b>{{group.groupCode}}_reports_{{currentMemberBulkLoadDisplayDate()}}.zip</b>.</li>
                         <li>Since September 2020, Ramblers have now switched to Using <a href="https://insight.ramblers.org.uk">InsightHub</a> for providing member data to Membership Secretaries. The format that is compatible with Member Admin is <a href="https://insight.ramblers.org.uk/#/views/MembershipSecretariesV4/FullList">Membership Secretaries FullList</a>.
                           The file that needs to be downloaded is named <b>Full List.xlsx</b></li>
                       </ul>
@@ -176,15 +176,15 @@
                         <tr *ngIf="uploadSession.files && uploadSession.files.archive">
                           <td>Zip file:</td>
                           <td>
-                            <app-notification-url
-                              name="{{uploadSession.files.archive}}"></app-notification-url>
+                            <app-link
+                              name="{{uploadSession.files.archive}}"></app-link>
                           </td>
                         </tr>
                         <tr *ngIf="uploadSession.files && uploadSession.files.data">
                           <td>Data file:</td>
                           <td>
-                            <app-notification-url name="{{uploadSession.files.data}}"
-                                                  id="data-file"></app-notification-url>
+                            <app-link name="{{uploadSession.files.data}}"
+                                      id="data-file"></app-link>
                           </td>
                         </tr>
                         <tr>

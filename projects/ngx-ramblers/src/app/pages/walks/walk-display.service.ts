@@ -184,10 +184,7 @@ export class WalkDisplayService {
   }
 
   walkLink(walk: Walk): string {
-    return walk && walk.id ? this.urlService.notificationHref({
-      area: "walks",
-      id: walk.id
-    }) : undefined;
+    return walk?.id ? this.urlService.linkUrl({area: "walks", id: walk.id}) : null;
   }
 
   ramblersLink(walk: Walk): string {

@@ -1,6 +1,5 @@
-import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faBan, faCircleCheck, faCircleInfo, faCirclePlus, faEnvelopesBulk, faPencil, faRemove, faSearch, faSpinner, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
@@ -18,6 +17,7 @@ import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { FontAwesomeIcon } from "../../../models/images.model";
 import { Member, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, SessionStatus } from "../../../models/member.model";
+import { Organisation } from "../../../models/system.model";
 import { ASCENDING, DESCENDING, MemberTableFilter, MemberUpdateAuditTableFilter } from "../../../models/table-filtering.model";
 import { EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
@@ -34,6 +34,7 @@ import { MemberUpdateAuditService } from "../../../services/member/member-update
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 import { UrlService } from "../../../services/url.service";
 import { MemberAdminModalComponent } from "../member-admin-modal/member-admin-modal.component";
 
@@ -69,6 +70,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   public quickSearch = "";
   public memberTabHeading: string;
   public auditTabHeading: string;
+  public group: Organisation;
   private subscription: Subscription;
   faEnvelopesBulk = faEnvelopesBulk;
   faSpinner = faSpinner;
@@ -81,6 +83,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private searchFilterPipe: SearchFilterPipe,
               private memberUpdateAuditService: MemberUpdateAuditService,
               private memberBulkLoadAuditService: MemberBulkLoadAuditService,
+              private systemConfigService: SystemConfigService,
               private notifierService: NotifierService,
               private modalService: BsModalService,
               private dateUtils: DateUtilsService,
@@ -100,7 +103,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
       this.logger.debug("loginResponse", loginResponse);
       this.urlService.navigateTo("admin");
     });
-
+    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");
       this.logger.debug("tab is", tab);

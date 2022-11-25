@@ -10,3 +10,9 @@ export interface DataQueryOptions {
   select?: object;
   sort?: object;
 }
+
+export enum DateCriteria {
+  CURRENT_OR_FUTURE_DATES = 1,
+  PAST_DATES = 2,
+  ALL_DATES = 3
+}

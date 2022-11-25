@@ -5,6 +5,7 @@ import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../auth/auth.service";
+import { DateCriteria } from "../../models/api-request.model";
 import { CommitteeMember } from "../../models/committee.model";
 import { Member, MemberFilterSelection } from "../../models/member.model";
 import { SocialEvent, SocialEventsPermissions } from "../../models/social-events.model";
@@ -18,6 +19,7 @@ import { CommitteeConfigService } from "../../services/committee/commitee-config
 import { CommitteeReferenceData } from "../../services/committee/committee-reference-data";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { DateUtilsService } from "../../services/date-utils.service";
+import { enumValues, KeyValue } from "../../services/enums";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
@@ -70,6 +72,14 @@ export class SocialDisplayService {
     return this.memberLoginService.memberLoggedIn();
   }
 
+  dateSelectionOptions(): KeyValue[] {
+    return enumValues(DateCriteria).map(item => ({key: item, value: this.socialEventsTitle(item)}));
+  }
+
+  inNewEventMode(): boolean {
+    return this.allow.edits && this.urlService.lastPathSegment() === "new";
+  }
+
   applyAllows() {
     this.allow.detailView = this.memberLoginService.allowSocialDetailView();
     this.allow.summaryView = this.memberLoginService.allowSocialAdminEdits() || !this.memberLoginService.allowSocialDetailView();
@@ -120,11 +130,7 @@ export class SocialDisplayService {
   }
 
   socialEventLink(socialEvent: SocialEvent, relative: boolean) {
-    return socialEvent?.id ? this.urlService.notificationHref({
-      area: "social",
-      id: socialEvent?.id,
-      relative
-    }) : undefined;
+    return socialEvent?.id ? this.urlService.linkUrl({area: "social", id: socialEvent?.id, relative}) : undefined;
   }
 
   copyToClipboard(socialEvent: SocialEvent, pop: TooltipDirective) {
@@ -132,12 +138,24 @@ export class SocialDisplayService {
   }
 
   attachmentUrl(socialEvent) {
-    return socialEvent && socialEvent.attachment ? `${this.attachmentBaseUrl}/${socialEvent.attachment.awsFileName}` : "";
+    return socialEvent?.attachment ? `${this.urlService.baseUrl()}/${this.attachmentBaseUrl}/${socialEvent.attachment.awsFileName}` : "";
   }
 
   attendeeList(socialEvent: SocialEvent, members: MemberFilterSelection[]) {
     return socialEvent?.attendees.map(memberId => members.find(member => member.id === memberId.id))
       .sort(sortBy("text")).map(item => item?.text).join(", ");
+  }
+
+  socialEventsTitle(filterType: number) {
+    this.logger.info("socialEventsTitle:", filterType);
+    switch (Number(filterType)) {
+      case DateCriteria.CURRENT_OR_FUTURE_DATES:
+        return "Future Social Events";
+      case DateCriteria.PAST_DATES:
+        return "Past Social Events";
+      case DateCriteria.ALL_DATES:
+        return "All Social Events";
+    }
   }
 
   createModalOptions(initialState?: any): ModalOptions {

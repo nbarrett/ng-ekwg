@@ -19,6 +19,12 @@ export enum EditMode {
   COPY_EXISTING = "Copy existing"
 }
 
+export enum StoredValue {
+  SOCIAL_QUICK_SEARCH = "social-quick-search",
+  SOCIAL_DATE_CRITERIA = "social-date-criteria",
+  SOCIAL_DATE_SORT = "social-date-sort"
+}
+
 export class Actions {
   private editMode: EditMode = EditMode.NONE;
 

@@ -2,14 +2,12 @@ import { DOCUMENT, Location } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
-import isArray from "lodash-es/isArray";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
-import some from "lodash-es/some";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
 import { BASE64_PREFIX, S3_BASE_URL } from "../models/content-metadata.model";
-import { NotificationAWSUrlConfig, NotificationUrlConfig } from "../models/resource.model";
+import { AWSLinkConfig, LinkConfig } from "../models/link.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { isMongoId } from "./mongo-utils";
@@ -21,10 +19,12 @@ import { isMongoId } from "./mongo-utils";
 export class UrlService {
   private logger: Logger;
 
-  constructor(@Inject(DOCUMENT) private document: Document, private router: Router,
+  constructor(@Inject(DOCUMENT) private document: Document,
+              private router: Router,
               private location: Location,
               private siteEdit: SiteEditService,
-              private loggerFactory: LoggerFactory, private route: ActivatedRoute) {
+              private loggerFactory: LoggerFactory,
+              private route: ActivatedRoute) {
     this.logger = loggerFactory.createLogger(UrlService, NgxLoggerLevel.OFF);
   }
 
@@ -61,13 +61,13 @@ export class UrlService {
     }
   }
 
-  absUrl(): string {
+  absoluteUrl(): string {
     this.logger.debug("absUrl: document.location.href", this.document.location.href);
     return this.document.location.href;
   }
 
   baseUrl(): string {
-    const url = new URL(this.absUrl());
+    const url = new URL(this.absoluteUrl());
     return `${url.protocol}//${url.host}`;
   }
 
@@ -76,7 +76,7 @@ export class UrlService {
   }
 
   urlPath(optionalUrl?: string) {
-    return new URL(optionalUrl || this.absUrl()).pathname.substring(1);
+    return new URL(optionalUrl || this.absoluteUrl()).pathname.substring(1);
   }
 
   area(): string {
@@ -111,8 +111,8 @@ export class UrlService {
     location.reload();
   }
 
-  notificationHref(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): string {
-    if (this.isNotificationUrlConfig(linkConfig)) {
+  linkUrl(linkConfig: LinkConfig | AWSLinkConfig): string {
+    if (this.isUrlWithId(linkConfig)) {
       return this.resourceUrl(linkConfig.area, linkConfig.subArea, linkConfig.id, linkConfig.relative);
     } else {
       return this.absolutePathForAWSFileName(linkConfig.name);
@@ -129,26 +129,26 @@ export class UrlService {
     return url?.startsWith("http");
   }
 
-  imageSource(url: string): string {
+  imageSource(url: string, absolute?: boolean): string {
     if (this.isRemoteUrl(url)) {
-      this.logger.debug("imageSourceUrl:isRemoteUrl:returning", url);
+      this.logger.info("imageSourceUrl:isRemoteUrl:returning", url);
       return url;
     } else if (this.isBase64Image(url)) {
-      this.logger.debug("imageSourceUrl:isBase64Image:returning", url);
+      this.logger.info("imageSourceUrl:isBase64Image:returning", url);
       return url;
     } else {
-      const relativeUrl = this.resourceRelativePathForAWSFileName(url);
-      this.logger.debug("relativeUrl:relativeUrl:returning", relativeUrl);
-      return relativeUrl;
+      const imageSource = absolute ? this.absolutePathForAWSFileName(url) : this.resourceRelativePathForAWSFileName(url);
+      this.logger.info("imageSource:url", url, "absolute:", absolute, "returning", imageSource);
+      return imageSource;
     }
   }
 
-  isNotificationUrlConfig(linkConfig: NotificationUrlConfig | NotificationAWSUrlConfig): linkConfig is NotificationUrlConfig {
-    return (linkConfig as NotificationUrlConfig).area !== undefined;
+  isUrlWithId(linkConfig: LinkConfig | AWSLinkConfig): linkConfig is LinkConfig {
+    return (linkConfig as LinkConfig).id !== undefined;
   }
 
   absolutePathForAWSFileName(fileName): string {
-    return `${this.baseUrl()}/${S3_BASE_URL}/${fileName}`;
+    return `${this.baseUrl()}/${this.resourceRelativePathForAWSFileName(fileName)}`;
   }
 
   removeS3PrefixFrom(fileName): string {
@@ -163,22 +163,6 @@ export class UrlService {
     return this.router.url.split("/").includes(parameter);
   }
 
-  isArea(...areas: string[]): boolean {
-    return some(isArray(areas) ? areas : [areas], (area) => {
-      const matched = area === this.area();
-      this.logger.debug("this.area()", this.area(), "isArea", area, "matched", matched);
-      return matched;
-    });
-  }
-
-  isSubArea(...subAreas: string[]): boolean {
-    return some(isArray(subAreas) ? subAreas : [subAreas], (subArea) => {
-      const matched = this.areaUrl().includes(subArea);
-      this.logger.debug("this.subArea()", this.areaUrl(), "isSubArea", subArea, "matched", matched);
-      return matched;
-    });
-  }
-
   pageUrl(page?: string): string {
     const pageOrEmpty = (page ? page : "");
     return pageOrEmpty.startsWith("/") ? pageOrEmpty : "/" + pageOrEmpty;
@@ -189,7 +173,7 @@ export class UrlService {
   }
 
   areaUrl(): string {
-    return tail(new URL(this.absUrl()).pathname.substring(1).split("/")).join("/");
+    return tail(new URL(this.absoluteUrl()).pathname.substring(1).split("/")).join("/");
   }
 
   private isBase64Image(url: string): boolean {

@@ -12,13 +12,13 @@
             <div class="col-sm-7"><label>Send to:</label>
               <div class="form-group">
                 <div class="custom-control custom-radio">
-                  <input (click)="clearRecipients()" id="all-ekwg-social"
+                  <input (click)="clearRecipients()" id="all-social-members"
                          type="radio"
                          class="custom-control-input"
                          [(ngModel)]="socialEvent?.notification?.content.destinationType"
                          name="send-to"
-                         value="all-ekwg-social"/>
-                  <label class="custom-control-label" for="all-ekwg-social">{{display.memberFilterSelections?.length}}
+                         value="all-social-members"/>
+                  <label class="custom-control-label" for="all-social-members">{{display.memberFilterSelections?.length}}
                     Social Group Members</label>
                   <a class="ml-4" *ngIf="display.memberFilterSelections.length>0"
                      (click)="editAllSocialRecipients()">(edit)</a>
@@ -87,9 +87,9 @@
           </div>
           <div class="row" *ngIf="socialEvent.notification.content.destinationType ==='custom'">
             <div class="col-sm-12">
-              <div class="form-group" triggers="" #tooltip2="bs-tooltip" placement="bottom"
+              <div class="form-group" placement="bottom"
                    [tooltip]="helpMembers()">
-                <ng-select #select [items]="display.memberFilterSelections"
+                <ng-select [items]="display.memberFilterSelections"
                            bindLabel="text"
                            name="member-selector"
                            bindValue="id"
@@ -126,7 +126,6 @@
                   </label>
                 </div>
                 <textarea [(ngModel)]="socialEvent.briefDescription"
-                          type="text"
                           class="form-control input-sm"
                           [disabled]="!socialEvent?.notification?.content?.title?.include"
                           rows="1"
@@ -211,7 +210,6 @@
                   </label>
                 </div>
                 <textarea [(ngModel)]="socialEvent.notification.content.text.value"
-                          type="text"
                           class="form-control input-sm" rows="5"
                           id="free-text"
                           [disabled]="!socialEvent?.notification?.content?.text?.include"
@@ -245,7 +243,7 @@
                   <label class="custom-control-label"
                          for="include-attachment">Include link to attachment:
                     <span
-                      style="font-weight: normal"> {{attachmentTitle(socialEvent)}}</span>
+                      style="font-weight: normal"> {{display.attachmentTitle(socialEvent)}}</span>
                   </label>
                 </div>
               </div>
@@ -268,7 +266,6 @@
                   </label>
                 </div>
                 <textarea [(ngModel)]="socialEvent.notification.content.signoffText.value"
-                          type="text"
                           class="form-control input-sm"
                           [disabled]="!socialEvent?.notification?.content?.signoffText?.include"
                           rows="3"

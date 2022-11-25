@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   eventUrl(slide: ContentMetadataItem) {
-    return this.urlService.notificationHref({
+    return this.urlService.linkUrl({
       area: slide.dateSource,
       id: slide.eventId
     });

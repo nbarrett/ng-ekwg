@@ -7,7 +7,7 @@
   <div class="card-body">
     <div class="position-relative">
       <input *ngIf="display.allow.edits" type="submit" value="edit"
-             (click)="editSocialEvent(socialEvent)" [disabled]="notifyTarget.busy"
+             (click)="editSocialEvent()" [disabled]="notifyTarget.busy"
              [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'"
              title="Edit social event" class="button-form button-form-right">
     </div>

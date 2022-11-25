@@ -1,6 +1,6 @@
 <div>
   <img *ngIf="socialEvent?.thumbnail" style="width:100%; margin-bottom: 15px"
-       [src]="urlService.imageSource(socialEvent?.thumbnail)">
+       [src]="urlService.imageSource(socialEvent?.thumbnail, true)">
   <h3 *ngIf="socialEvent.notification.content.title.include"><strong
     [textContent]="socialEvent.briefDescription"></strong>
   </h3>
@@ -49,15 +49,21 @@
       </tr>
       <tr *ngIf="socialEvent.notification.content.attachment.include && socialEvent.attachment">
         <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Attachment:</td>
-        <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px"><a target="_blank" id="attachment"
-                                                                                     [href]="display.attachmentUrl(socialEvent)"
-                                                                                     [textContent]="display.attachmentTitle(socialEvent)"></a>
+        <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+          <a target="_blank" id="attachment"
+             [href]="display.attachmentUrl(socialEvent)"
+             [textContent]="display.attachmentTitle(socialEvent)"></a>
         </td>
       </tr>
       <tr *ngIf="socialEvent?.link">
-        <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Link:</td>
+        <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">Venue Link:</td>
         <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
           <a target="_blank" [href]="socialEvent?.link">{{socialEvent?.linkTitle || socialEvent?.link}}</a></td>
+      </tr>
+      <tr>
+        <td style="border:1px solid lightgrey; font-weight: bold; padding: 6px">View Social On Website:</td>
+        <td style="border:1px solid lightgrey; font-weight: normal; padding: 6px">
+          <app-link area="social" id="{{socialEvent.id}}" text="click here"></app-link></td>
       </tr>
     </table>
   </div>

@@ -3,21 +3,25 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject, Subscription } from "rxjs";
-import { debounceTime, distinctUntilChanged } from "rxjs/operators";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { DateCriteria } from "../../../models/api-request.model";
 import { ApiAction } from "../../../models/api-response.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { FilterParameters, SocialEvent, SocialEventApiResponse } from "../../../models/social-events.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageService } from "../../../services/page.service";
 import { SocialEventsService } from "../../../services/social-events/social-events.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { UrlService } from "../../../services/url.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { SocialDisplayService } from "../social-display.service";
 
@@ -28,28 +32,29 @@ import { SocialDisplayService } from "../social-display.service";
 })
 export class SocialHomeComponent implements OnInit {
   private subscription: Subscription;
-  private searchChangeObservable: Subject<string>;
   private logger: Logger;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public socialEventId: string;
-  public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: 1};
-  private pageSize: number;
-  public pageNumber: number;
+  public filterParameters: FilterParameters = {fieldSort: 1, quickSearch: "", selectType: DateCriteria.CURRENT_OR_FUTURE_DATES};
+  private pageSize = 8;
+  public pageNumber = 1;
   public pageCount: number;
   public pages: number[] = [];
   public socialEvents: SocialEvent[] = [];
   public filteredSocialEvents: SocialEvent[] = [];
-  public currentPageSocials: SocialEvent[] = [];
-  showSearch: false;
+  public currentPageSocials: SocialEvent[] = this.filteredSocialEvents;
 
   constructor(public pageService: PageService,
+              private numberUtils: NumberUtilsService,
               private authService: AuthService,
               private stringUtils: StringUtilsService,
               private searchFilterPipe: SearchFilterPipe,
               private notifierService: NotifierService,
               public display: SocialDisplayService,
               private apiResponseProcessor: ApiResponseProcessor,
+              private urlService: UrlService,
+              private broadcastService: BroadcastService<any>,
               private route: ActivatedRoute,
               private socialEventsService: SocialEventsService,
               private siteEditService: SiteEditService,
@@ -62,6 +67,8 @@ export class SocialHomeComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("ngOnInit started");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshSocialEvents());
+    this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToSocialEvents(searchTerm));
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const socialEventId = paramMap.get("relativePath");
       this.logger.debug("socialEventId from route params:", paramMap, socialEventId);
@@ -75,10 +82,6 @@ export class SocialHomeComponent implements OnInit {
       message: "please wait..."
     });
     this.refreshSocialEvents();
-    this.searchChangeObservable = new Subject<string>();
-    this.searchChangeObservable.pipe(debounceTime(1000))
-      .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.applyFilterToSocialEvents(searchTerm));
     this.subscription = this.socialEventsService.notifications().subscribe((apiResponse: SocialEventApiResponse) => {
       this.logger.info("received apiResponse:", apiResponse);
       if (apiResponse.error) {
@@ -122,11 +125,11 @@ export class SocialHomeComponent implements OnInit {
 
   criteria() {
     switch (Number(this.filterParameters.selectType)) {
-      case 1:
+      case DateCriteria.CURRENT_OR_FUTURE_DATES:
         return {eventDate: {$gte: this.todayValue()}};
-      case 2:
+      case DateCriteria.PAST_DATES:
         return {eventDate: {$lt: this.todayValue()}};
-      case 3:
+      case DateCriteria.ALL_DATES:
         return {};
     }
   }
@@ -136,12 +139,14 @@ export class SocialHomeComponent implements OnInit {
   }
 
   applyFilterToSocialEvents(searchTerm?: string) {
-    this.logger.debug("applyFilterToSocialEvents:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
+    this.logger.info("applyFilterToSocialEvents:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
     this.filteredSocialEvents = this.searchFilterPipe.transform(this.socialEvents, this.filterParameters.quickSearch);
     const filteredCount = (this.filteredSocialEvents?.length) || 0;
     const eventCount = (this.socialEvents?.length) || 0;
     this.notify.progress(`${filteredCount} of ${eventCount} social event${eventCount === 1 ? "" : "s"} shown`);
+    this.applyPagination();
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SHOW_PAGINATION, this.pages.length > 1));
     this.notify.clearBusy();
     this.verifyReady();
   }
@@ -153,7 +158,7 @@ export class SocialHomeComponent implements OnInit {
   }
 
   pageChanged(event: PageChangedEvent): void {
-    this.logger.debug("event:", event);
+    this.logger.info("event:", event);
     this.goToPage(event.page);
   }
 
@@ -164,7 +169,7 @@ export class SocialHomeComponent implements OnInit {
   }
 
   nextPage() {
-    if (this.pageNumber < this.pageCount) {
+    if (this.pageNumber < this.pages.length) {
       this.goToPage(this.pageNumber + 1);
     }
   }
@@ -179,12 +184,17 @@ export class SocialHomeComponent implements OnInit {
   }
 
   private applyPagination() {
+    this.pageCount = this.numberUtils.asNumber((this.filteredSocialEvents.length / this.pageSize), 0);
     this.currentPageSocials = this.paginate(this.filteredSocialEvents, this.pageSize, this.pageNumber);
     this.pages = range(1, this.pageCount + 1);
-    this.logger.info("total social event count", this.socialEvents.length, "filteredSocialEvents count", this.filteredSocialEvents.length, "currentPageSocials count", this.currentPageSocials.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
-    const offset = (this.pageNumber - 1) * this.pageSize + 1;
-    const pageIndicator = this.pages.length > 1 ? `page ${this.pageNumber} of ${this.pageCount}` : "";
-    this.notify.progress(`Showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(this.socialEvents.length, "social event")} ${pageIndicator}`);
+    const filteredImageCount = this.filteredSocialEvents.length;
+    this.logger.info("applyPagination: filtered social event count", filteredImageCount, "filtered social event count", filteredImageCount, "current page social count", this.currentPageSocials.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages, "currentPageSocials:", this.currentPageSocials.map(item => item.id));
+    if (this.currentPageSocials.length === 0) {
+      this.notify.progress("No social events found");
+    } else {
+      const offset = (this.pageNumber - 1) * this.pageSize + 1;
+      const pageIndicator = this.pageCount > 1 ? `Page ${this.pageNumber} of ${this.pageCount}` : `Page ${this.pageNumber}`;
+      this.notify.progress(`${pageIndicator} — showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(filteredImageCount, "social event")}`);
+    }
   }
-
 }

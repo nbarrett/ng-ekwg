@@ -5,6 +5,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { Actions } from "../../../models/ui-actions";
+import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -35,6 +36,7 @@ export class SocialViewComponent implements OnInit {
     public googleMapsService: GoogleMapsService,
     private notifierService: NotifierService,
     public display: SocialDisplayService,
+    private dateUtils: DateUtilsService,
     public urlService: UrlService,
     private socialEventsService: SocialEventsService,
     loggerFactory: LoggerFactory) {
@@ -52,6 +54,9 @@ export class SocialViewComponent implements OnInit {
       this.socialEventsService.getById(socialEventId).then(data => {
         this.socialEvent = data;
       });
+    } else if (this.display.inNewEventMode()) {
+      this.logger.debug("creating new social event");
+      this.editSocialEvent();
     }
     this.notify.success({
       title: "Single social event showing",
@@ -59,11 +64,8 @@ export class SocialViewComponent implements OnInit {
     });
   }
 
-  editSocialEvent(socialEvent) {
+  editSocialEvent() {
     this.display.confirm.clear();
-    if (!socialEvent.attendees) {
-      socialEvent.attendees = [];
-    }
     const existingRecordEditEnabled = this.display.allow.edits;
     this.display.allow.copy = existingRecordEditEnabled;
     this.display.allow.delete = existingRecordEditEnabled;

@@ -91,7 +91,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
   }
 
   initialiseNotification() {
-    this.defaultNotificationField(["destinationType"], "all-ekwg-social");
+    this.defaultNotificationField(["destinationType"], "all-social-members");
     this.defaultNotificationField(["addresseeType"], "Hi *|FNAME|*,");
     this.defaultNotificationField(["title"], {include: true});
     this.defaultNotificationField(["text"], {include: true, value: ""});
@@ -149,14 +149,6 @@ export class SocialSendNotificationModalComponent implements OnInit {
     const roles = this.display.committeeMembersPlusOrganiser(this.socialEvent, members);
     this.roles.replyTo = roles;
     this.roles.signoff = roles;
-  }
-
-  attachmentTitle(socialEvent) {
-    return socialEvent && socialEvent.attachment ? (socialEvent.attachment.title || socialEvent.attachmentTitle || "Attachment: " + socialEvent.attachment.originalFileName) : "";
-  }
-
-  attachmentUrl(socialEvent) {
-    return socialEvent && socialEvent.attachment ? this.urlService.baseUrl() + this.attachmentBaseUrl + "/" + socialEvent.attachment.awsFileName : "";
   }
 
   editAllSocialRecipients() {
@@ -283,8 +275,8 @@ export class SocialSendNotificationModalComponent implements OnInit {
       .then((config) => {
         const campaignId = config.mailchimp.campaigns.socialEvents.campaignId;
         switch (this.socialEvent?.notification?.content.destinationType) {
-          case "all-ekwg-social":
-            this.logger.debug("about to replicateAndSendWithOptions to all-ekwg-social with campaignName", campaignName, "campaign Id", campaignId);
+          case "all-social-members":
+            this.logger.debug("about to replicateAndSendWithOptions to aall-social-members with campaignName", campaignName, "campaign Id", campaignId);
             return this.mailchimpCampaignService.replicateAndSendWithOptions({
               campaignId,
               campaignName,

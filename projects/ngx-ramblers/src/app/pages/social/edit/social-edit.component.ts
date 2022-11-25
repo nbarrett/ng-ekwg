@@ -85,18 +85,24 @@ export class SocialEditComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.notify.setBusy();
     if (this.urlService.pathContainsMongoId()) {
+      this.notify.setBusy();
       const socialEventId = this.urlService.lastPathSegment();
       this.logger.debug("finding socialEvent from socialEventId:", socialEventId);
       this.socialEventsService.getById(socialEventId).then(data => {
         this.socialEvent = data;
+        if (!this.socialEvent.attendees) {
+          this.socialEvent.attendees = [];
+        }
         this.eventDate = this.dateUtils.asDateValue(this.socialEvent.eventDate);
         this.existingTitle = this.socialEvent?.attachment?.title;
         this.campaignSearchTerm = "Master";
         this.notify.hide();
         this.selectedMemberIds = this.socialEvent.attendees.map(attendee => attendee.id);
       });
+    } else if (this.display.inNewEventMode()) {
+      const todayValue = this.dateUtils.momentNowNoTime().valueOf();
+      this.socialEvent = {eventDate: todayValue, attendees: []};
     } else {
       this.notify.error({title: "Cannot edit social event", message: "path does not contain social event id"});
     }
@@ -271,6 +277,9 @@ export class SocialEditComponent implements OnInit {
     this.display.confirm.clear();
     this.actions.clearEditMode();
     this.logger.info("close:this.actions", this.actions, "this.display.confirm", this.display.confirm);
+    if (this.display.inNewEventMode()) {
+      this.urlService.navigateTo("social");
+    }
   }
 
   confirmDeleteSocialEvent() {

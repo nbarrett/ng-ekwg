@@ -4,12 +4,12 @@ import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { SocialEvent } from "../../../models/social-events.model";
+import { FilterParameters, SocialEvent } from "../../../models/social-events.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../pipes/line-feeds-to-breaks.pipe";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
-import { cardClasses, CARD_MARGIN_BOTTOM } from "../../../services/card-utils";
+import { CARD_MARGIN_BOTTOM, cardClasses } from "../../../services/card-utils";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -32,6 +32,8 @@ export class SocialListCardsComponent implements OnInit {
   public notify: AlertInstance;
   private logger: Logger;
   faCopy = faCopy;
+  faSearch = faSearch;
+  public filterParameters: FilterParameters;
 
   constructor(public googleMapsService: GoogleMapsService,
               private authService: AuthService,
@@ -53,11 +55,18 @@ export class SocialListCardsComponent implements OnInit {
     this.logger = loggerFactory.createLogger(SocialListCardsComponent, NgxLoggerLevel.OFF);
   }
 
+  addSocialEvent() {
+    this.urlService.navigateTo("social", "new");
+  }
+
   @Input()
   public notifyTarget: AlertTarget;
   @Input()
   public filteredSocialEvents: SocialEvent[];
-  faSearch = faSearch;
+
+  @Input("filterParameters") set acceptChangesFromFilterParameters(filterParameters: FilterParameters) {
+    this.filterParameters = filterParameters;
+  }
 
   ngOnInit() {
   }

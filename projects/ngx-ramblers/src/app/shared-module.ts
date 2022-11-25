@@ -41,7 +41,7 @@ import { DynamicContentComponent } from "./modules/common/dynamic-content/dynami
 import { IconExamplesComponent } from "./modules/common/icon-examples/icon-examples";
 import { LoginRequiredComponent } from "./modules/common/login-required/login-required";
 import { SvgComponent } from "./modules/common/svg/svg";
-import { NotificationUrlComponent } from "./notification-url/notification-url.component";
+import { LinkComponent } from "./link/link";
 import { PageComponent } from "./page/page.component";
 import { LinkEditComponent } from "./modules/common/link-edit/link-edit";
 import { LinksEditComponent } from "./modules/common/links-edit/links-edit";
@@ -155,7 +155,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
     MoneyPipe,
-    NotificationUrlComponent,
+    LinkComponent,
     PageComponent,
     PanelExpanderComponent,
     RelatedLinkComponent,
@@ -216,7 +216,7 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     ModalModule,
     MoneyPipe,
     NgSelectModule,
-    NotificationUrlComponent,
+    LinkComponent,
     PageComponent,
     PaginationModule,
     PanelExpanderComponent,

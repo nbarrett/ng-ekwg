@@ -32,11 +32,6 @@ export class PageService {
     });
   }
 
-  pageForArea(area: string): Link {
-    area = area.replace("/", "");
-    return this.group ? (this.group.pages.find(page => page.href === area) || this.group.pages[0]) : null;
-  }
-
   areaTitle(): string {
     return this.stringUtils.asTitle(this.urlService.area() || "home");
   }
