@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { max } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { ALL_PHOTOS, ImageTag, RECENT_PHOTOS } from "../models/content-metadata.model";
 import { sortBy } from "./arrays";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -12,9 +12,9 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 })
 export class ImageTagDataService {
   private logger: Logger;
-  private tagSubjects = new Subject<ImageTag[]>();
+  private tagSubjects = new BehaviorSubject<ImageTag[]>([]);
   private imageTagData: ImageTag[] = [];
-  private selectedSubject = new Subject<ImageTag>();
+  private selectedSubject = new BehaviorSubject<ImageTag>(null);
   public activeTag: ImageTag;
   private story: string;
 
@@ -30,7 +30,7 @@ export class ImageTagDataService {
 
   private syncTagWithStory() {
     const tag = this.findTag(this.story);
-    this.logger.info("received story parameter:", this.story, "setting activeTag to:", tag);
+    this.logger.debug("received story parameter:", this.story, "setting activeTag to:", tag);
     this.activeTag = tag;
     if (tag) {
       this.publishTag(tag);
@@ -53,6 +53,7 @@ export class ImageTagDataService {
   }
 
   private publishChanges() {
+    this.logger.info("publishChanges:", this.imageTagData);
     this.tagSubjects.next(this.imageTagData);
   }
 
@@ -89,7 +90,7 @@ export class ImageTagDataService {
 
   isActive(tag: ImageTag): boolean {
     const active = (this.activeTag?.key === tag?.key) || (!this.activeTag && tag === RECENT_PHOTOS);
-    this.logger.info("activeTag:", this.activeTag, "supplied tag", tag, "-> active:", active);
+    this.logger.debug("activeTag:", this.activeTag, "supplied tag", tag, "-> active:", active);
     return active;
   }
 

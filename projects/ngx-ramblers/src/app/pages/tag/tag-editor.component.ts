@@ -51,7 +51,7 @@ export class TagEditorComponent implements OnInit {
   private logger: Logger;
 
   constructor(public stringUtils: StringUtilsService,
-              private imageTagData: ImageTagDataService,
+              private imageTagDataService: ImageTagDataService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(TagEditorComponent, NgxLoggerLevel.OFF);
   }
@@ -61,22 +61,22 @@ export class TagEditorComponent implements OnInit {
     if (!this.tags) {
       this.tags = [];
     }
-    this.logger.debug("created tags for", this.text, this.tags);
-    this.imageTagData.imageTags().subscribe(data => this.populateData(data));
+    this.logger.debug("ngOnInit:tags for:", this.text, "->", this.tags);
+    this.imageTagDataService.imageTags().subscribe(data => this.populateData(data));
   }
 
   private populateData(imageTags: ImageTag[]) {
     const tagData: TagData[] = imageTags.map(item => ({key: item.key, value: item.subject}));
     this.logger.debug("refreshed tag lookups with:", imageTags, "transformed to tagData:", tagData);
     this.tagLookups.next(tagData);
-    this.editableTags = this?.tags?.map(tag => ({value: this.imageTagData.findTag(tag)?.subject}));
+    this.editableTags = this?.tags?.map(tag => ({value: this.imageTagDataService.findTag(tag)?.subject}));
   }
 
   onAdd(data) {
     const tagData: TagData = data.added;
     const preAddTags: number[] = cloneDeep(this.tags);
     if (!tagData.key) {
-      const newImage: ImageTag = this.imageTagData.addTag(tagData.value);
+      const newImage: ImageTag = this.imageTagDataService.addTag(tagData.value);
       this.tags.push(newImage.key);
       this.logger.debug("adding new Image tag", newImage);
     } else if (!this.tags.includes(tagData.key)) {
@@ -87,14 +87,14 @@ export class TagEditorComponent implements OnInit {
     if (isEqual(preAddTags, this.tags)) {
       this.logger.debug("onAdd:", this.text, "no change to tags", tagData);
     } else {
-      const emitValue = this.imageTagData.asImageTags(this.tags);
+      const emitValue = this.imageTagDataService.asImageTags(this.tags);
       this.logger.debug("onAdd:", this.text, "preAddTags:", preAddTags, "postAddTags:", this.tags, "emitting:", emitValue);
       this.tagsChange.emit(emitValue);
     }
   }
 
   onRemove(data: TagData[]) {
-    const stories = this.imageTagData.asImageTags(data.map(item => item.key));
+    const stories = this.imageTagDataService.asImageTags(data.map(item => item.key));
     this.logger.debug("onRemove tag data", data, "stories", stories);
     this.tagsChange.emit(stories);
   }
