@@ -2,7 +2,6 @@ import { DOCUMENT, Location } from "@angular/common";
 import { Inject, Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import first from "lodash-es/first";
-import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -92,7 +91,9 @@ export class UrlService {
   }
 
   pathSegments(): string[] {
-    return this.location.path()?.split("/").filter(item => !isEmpty(item));
+    const pathSegments = this.router.parseUrl(this.router.url)?.root?.children?.primary?.segments?.map(item => item.path) || [];
+    this.logger.info("pathSegments:", pathSegments);
+    return pathSegments;
   }
 
   pathContainsMongoId(): boolean {

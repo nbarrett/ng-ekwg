@@ -5,12 +5,13 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { DataQueryOptions } from "../models/api-request.model";
 import {
-  ALL_TAGS,
   ContentMetadata,
   ContentMetadataApiResponse,
   ContentMetadataItem,
+  ImageFilterType,
   ImageTag,
-  RECENT_PHOTOS, S3_BASE_URL, S3_METADATA_URL,
+  S3_BASE_URL,
+  S3_METADATA_URL,
   S3Metadata,
   S3MetadataApiResponse
 } from "../models/content-metadata.model";
@@ -109,19 +110,19 @@ export class ContentMetadataService {
     return this.searchFilterPipe.transform(filtered, filterText);
   }
 
-  filterSlides(allSlides: ContentMetadataItem[], tag: ImageTag, showDuplicates?: boolean, filterText?: string): ContentMetadataItem[] {
+  filterSlides(allSlides: ContentMetadataItem[], filterType: ImageFilterType, tag?: ImageTag, showDuplicates?: boolean, filterText?: string): ContentMetadataItem[] {
     this.logger.debug("filterSlides:allSlides count", allSlides?.length, "tag:", tag, "showDuplicates:", showDuplicates);
-    if (tag === ALL_TAGS) {
+    if (filterType === ImageFilterType.ALL) {
       const filteredSlides: ContentMetadataItem[] = this.filterAndSort(showDuplicates, allSlides, filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from", tag?.subject, "showDuplicates:", showDuplicates);
       return filteredSlides;
-    } else if (tag === RECENT_PHOTOS) {
+    } else if (filterType === ImageFilterType.RECENT) {
       const excludeFromRecentKeys: number[] = this.imageTagDataService.imageTagsSorted().filter(tag => tag.excludeFromRecent).map(tag => tag.key);
       const sinceDate = this.dateUtils.momentNow().add(-6, "months");
       const filteredSlides = this.filterAndSort(showDuplicates, allSlides?.filter(file => file.date >= sinceDate.valueOf() && !(file.tags.find(tag => excludeFromRecentKeys.includes(tag)))), filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from", tag?.subject, "since", this.dateUtils.displayDate(sinceDate), "excludeFromRecentKeys:", excludeFromRecentKeys.join(", "), "showDuplicates:", showDuplicates);
       return filteredSlides;
-    } else {
+    } else if (tag) {
       const filteredSlides = this.filterAndSort(showDuplicates, allSlides?.filter(file => file?.tags?.includes(tag.key)), filterText);
       this.logger.debug(filteredSlides?.length, "slides selected from tag:", tag?.subject, "showDuplicates:", showDuplicates);
       return filteredSlides || [];

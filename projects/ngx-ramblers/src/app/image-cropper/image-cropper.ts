@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
 import {
   faArrowRightArrowLeft,
   faClose,
@@ -38,7 +38,17 @@ import { UrlService } from "../services/url.service";
   styleUrls: ["./image-cropper.sass"]
 })
 
-export class ImageCropperAndResizerComponent implements OnInit {
+export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
+
+  constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
+              private fileUploadService: FileUploadService,
+              private urlService: UrlService,
+              private notifierService: NotifierService,
+              private fileUtils: FileUtilsService,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(ImageCropperAndResizerComponent, NgxLoggerLevel.DEBUG);
+  }
+
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
   @Input() selectAspectRatio: string;
   @Input() preloadImage: string;
@@ -97,13 +107,10 @@ export class ImageCropperAndResizerComponent implements OnInit {
   public croppedFile: AwsFileData;
   public originalImageData: ImageData;
 
-  constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
-              private fileUploadService: FileUploadService,
-              private urlService: UrlService,
-              private notifierService: NotifierService,
-              private fileUtils: FileUtilsService,
-              loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperComponent, NgxLoggerLevel.OFF);
+  ngAfterViewInit(): void {
+    this.imageCropperComponent.loadImageFailed.subscribe(error => {
+      this.throwOrNotifyError({title: "Image Load Failed", message: error});
+    });
   }
 
   ngOnInit(): void {
@@ -305,7 +312,7 @@ export class ImageCropperAndResizerComponent implements OnInit {
 
   changeAspectRatioSettingsAndCrop(event: any) {
     this.changeAspectRatioSettings();
-    this.logger.info("changeAspectRatio:dimension:", this.dimension, "aspectRatio ->", this.aspectRatio,"event:", event);
+    this.logger.info("changeAspectRatio:dimension:", this.dimension, "aspectRatio ->", this.aspectRatio, "event:", event);
     this.imageCropperComponent.crop();
   }
 
@@ -376,5 +383,49 @@ export class ImageCropperAndResizerComponent implements OnInit {
   buttonClass(disabledAction: any) {
     return !!disabledAction ? "badge-button disabled w-100" : "badge-button w-100";
   }
-}
 
+  loadMime(file: File, callback: (message: string) => any) {
+
+    // List of known mimes
+    const mimes = [
+      {
+        mime: "image/jpeg",
+        pattern: [0xFF, 0xD8, 0xFF],
+        mask: [0xFF, 0xFF, 0xFF],
+      },
+      {
+        mime: "image/png",
+        pattern: [0x89, 0x50, 0x4E, 0x47],
+        mask: [0xFF, 0xFF, 0xFF, 0xFF],
+      }
+      // you can expand this list @see https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
+    ];
+
+    function check(bytes, mime) {
+      for (let i = 0, l = mime.mask.length; i < l; ++i) {
+        if ((bytes[i] & mime.mask[i]) - mime.pattern[i] !== 0) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    const blob = file.slice(0, 4); // read the first 4 bytes of the file
+
+    const reader = new FileReader();
+    reader.onloadend = (e: any) => {
+      if (e.target.readyState === FileReader.DONE) {
+        const bytes = new Uint8Array(e.target.result);
+
+        for (let i = 0, l = mimes.length; i < l; ++i) {
+          if (check(bytes, mimes[i])) {
+            return callback("Mime: " + mimes[i].mime + " <br> Browser:" + file.type);
+          }
+        }
+
+        return callback("Mime: unknown <br> Browser:" + file.type);
+      }
+    };
+    reader.readAsArrayBuffer(blob);
+  }
+}

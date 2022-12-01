@@ -34,7 +34,7 @@
                          name="welcome">
       <div delay=500 tooltip="Edit images" class="badge-button" *ngIf="allowEdits()"
            [routerLink]="'image-editor/imagesHome'"
-           [queryParams]="{story: imageTagDataService.currentTag()?.key}">
+           [queryParams]="{story: imageTagDataService.activeTag?.key}">
         <fa-icon [icon]="faPencil"></fa-icon>
         <span>edit images</span></div>
     </app-markdown-editor>

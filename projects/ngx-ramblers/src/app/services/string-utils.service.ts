@@ -110,4 +110,13 @@ export class StringUtilsService {
   pluraliseWithCount(count: number, text: string) {
     return `${count} ${count === 1 ? text : text + "s"}`;
   }
+
+  kebabCase(...strings: any[]): string {
+    const returnValue = strings
+      .map(item => this.asTitle(item))
+      .map(item => this.replaceAll(" ", "-", item).toString().toLowerCase())
+      .join("-");
+    this.logger.debug("input:", strings, "output:", returnValue);
+    return returnValue;
+  }
 }

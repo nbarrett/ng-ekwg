@@ -1,5 +1,4 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { isEqual, max, min } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -45,7 +44,6 @@ export class ActionButtonsComponent implements OnInit {
     private urlService: UrlService,
     private pageService: PageService,
     private stringUtils: StringUtilsService,
-    private route: ActivatedRoute,
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {

@@ -1,21 +1,21 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { cloneDeep, isEqual } from "lodash-es";
-import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { TagData, TagifySettings } from "ngx-tagify";
 import { ReplaySubject } from "rxjs";
-import { ImageTag, RECENT_PHOTOS } from "../../models/content-metadata.model";
+import { ImageTag } from "../../models/content-metadata.model";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
+import { StringUtilsService } from "../../services/string-utils.service";
 
 @Component({
   selector: "app-tag-editor",
   styleUrls: ["./tag-editor.component.sass"],
   template: `
-    <label [for]="label()">Image Tags</label>
+    <label [for]="stringUtils.kebabCase('image-tags', text)">Image Tags</label>
     <tagify [(ngModel)]="editableTags"
-            inputClass="round-small"
-            [id]="label()"
+            inputClass="round"
+            [id]="stringUtils.kebabCase('image-tags', text)"
             [settings]="settings"
             [whitelist]="tagLookups"
             [readonly]="readonly"
@@ -33,7 +33,7 @@ export class TagEditorComponent implements OnInit {
   editableTags: TagData[] = [];
   settings: TagifySettings = {
     placeholder: "Click to select",
-    blacklist: [RECENT_PHOTOS.subject],
+    blacklist: [],
     dropdown: {
       maxItems: 20,
       classname: "tags-look",
@@ -50,14 +50,12 @@ export class TagEditorComponent implements OnInit {
   readonly = false;
   private logger: Logger;
 
-  constructor(private imageTagData: ImageTagDataService,
+  constructor(public stringUtils: StringUtilsService,
+              private imageTagData: ImageTagDataService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(TagEditorComponent, NgxLoggerLevel.OFF);
   }
 
-  label(): string {
-    return "image-tags-" + kebabCase(this.text);
-  }
 
   ngOnInit() {
     if (!this.tags) {
@@ -68,7 +66,7 @@ export class TagEditorComponent implements OnInit {
   }
 
   private populateData(imageTags: ImageTag[]) {
-    const tagData: TagData[] = imageTags.filter(item => item.key !== RECENT_PHOTOS.key).map(item => ({key: item.key, value: item.subject}));
+    const tagData: TagData[] = imageTags.map(item => ({key: item.key, value: item.subject}));
     this.logger.debug("refreshed tag lookups with:", imageTags, "transformed to tagData:", tagData);
     this.tagLookups.next(tagData);
     this.editableTags = this?.tags?.map(tag => ({value: this.imageTagData.findTag(tag)?.subject}));

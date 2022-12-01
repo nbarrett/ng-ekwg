@@ -1,18 +1,18 @@
 import { Location } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, ParamMap, Params, Router } from "@angular/router";
+import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import { min } from "lodash-es";
 import first from "lodash-es/first";
 import range from "lodash-es/range";
 import { FileUploader } from "ng2-file-upload";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ALL_TAGS, ContentMetadata, ContentMetadataItem, IMAGES_HOME, ImageTag, RECENT_PHOTOS, S3Metadata } from "../../../models/content-metadata.model";
+import { ALL_PHOTOS, ContentMetadata, ContentMetadataItem, ImageFilterType, IMAGES_HOME, ImageTag, RECENT_PHOTOS, S3Metadata } from "../../../models/content-metadata.model";
 import { MemberResourcesPermissions } from "../../../models/member-resource.model";
 import { Confirm } from "../../../models/ui-actions";
 import { move, sortBy } from "../../../services/arrays";
@@ -43,14 +43,13 @@ export class ImageListComponent implements OnInit {
   public confirm = new Confirm();
   public destinationType: string;
   public imageSource: string;
-  public selectedTag: ImageTag = RECENT_PHOTOS;
-  public lastSelectedTag: ImageTag;
-  public filterType = "recent";
+  public filterType: ImageFilterType;
   public eventFilter: string;
   public uploader: FileUploader;
   public contentMetadata: ContentMetadata;
   public s3Metadata: S3Metadata[] = [];
   public filteredFiles: ContentMetadataItem[] = [];
+  public currentPageImages: ContentMetadataItem[] = [];
   public allow: MemberResourcesPermissions = {};
   public showDuplicates = false;
   public toggled: boolean;
@@ -58,11 +57,11 @@ export class ImageListComponent implements OnInit {
   public hasFileOver = false;
   public currentImageIndex: number;
   private searchChangeObservable = new Subject<string>();
-  ready = false;
   public pageNumber = 1;
   private pageCount: number;
   private pageSize = 10;
   private pages: number[];
+  private imageTagDataServiceSubscription: Subscription;
 
   constructor(private stringUtils: StringUtilsService,
               public imageTagDataService: ImageTagDataService,
@@ -85,16 +84,17 @@ export class ImageListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("ngOnInit");
+    this.logger.info("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.destinationType = "";
+    this.filterType = ImageFilterType.RECENT;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const imageSource = paramMap.get("image-source");
       if (imageSource) {
         this.imageSource = imageSource;
-        this.logger.debug("imageSource from route params:", this.imageSource);
+        this.logger.info("imageSource from route params:", this.imageSource);
         this.refreshImageMetaData(this.imageSource);
         this.uploader = this.fileUploadService.createUploaderFor(imageSource);
         this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
@@ -120,7 +120,19 @@ export class ImageListComponent implements OnInit {
         );
       }
     });
-    this.selectTag();
+    this.imageTagDataServiceSubscription = this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
+      this.logger.info(tag, "selectedTag().subscribe");
+      if (tag) {
+        if (tag === RECENT_PHOTOS) {
+          this.filterType = ImageFilterType.RECENT;
+        } else if (tag === ALL_PHOTOS) {
+          this.filterType = ImageFilterType.ALL;
+        } else {
+          this.filterType = ImageFilterType.TAG;
+        }
+      }
+      this.applyFilter();
+    });
     this.applyFilter();
     this.imageTagDataService.imageTags()
       .subscribe((imageTags: ImageTag[]) => {
@@ -128,8 +140,6 @@ export class ImageListComponent implements OnInit {
           this.contentMetadata.imageTags = imageTags.filter(tag => tag.key > 0);
           this.logger.info("received imageTags:", imageTags, "contentMetadata imageTags:", this.contentMetadata.imageTags);
         }
-        this.lastSelectedTag = first(this.contentMetadata?.imageTags);
-        this.selectTag();
       });
     this.applyAllowEdits();
     this.searchChangeObservable.pipe(debounceTime(500))
@@ -166,20 +176,17 @@ export class ImageListComponent implements OnInit {
 
   private applyPagination() {
     this.pages = range(1, this.pageCount + 1);
-    const filteredImageCount = this.filteredImages().length;
-    const currentPageImages: ContentMetadataItem[] = this.currentPageImages();
-    this.logger.info("applyPagination: filtered image count", filteredImageCount, "filtered image count", filteredImageCount, "current page image count", currentPageImages.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages, "currentPageImages:", currentPageImages.map(item => item.text));
-    if (currentPageImages.length === 0) {
+    const filteredImageCount = this.filteredFiles.length;
+    this.currentPageImages = this.paginate(this.filteredFiles, this.pageSize, this.pageNumber) || [];
+    this.logger.debug("applyPagination: filtered image count", filteredImageCount, "filtered image count", filteredImageCount, "current page image count", this.currentPageImages.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
+    if (this.currentPageImages.length === 0) {
       this.notify.progress("No images found");
     } else {
       const offset = (this.pageNumber - 1) * this.pageSize + 1;
       const pageIndicator = this.pages.length > 1 ? `Page ${this.pageNumber} of ${this.pageCount}` : `Page ${this.pageNumber}`;
-      this.notify.progress(`${pageIndicator}  — showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(filteredImageCount, "image")}`);
+      const toNumber = min([offset + this.pageSize - 1, filteredImageCount]);
+      this.notify.progress(`${pageIndicator}  — showing ${offset} to ${toNumber} of ${this.stringUtils.pluraliseWithCount(filteredImageCount, "image")}`);
     }
-  }
-
-  currentPageImages(): ContentMetadataItem[] {
-    return this.paginate(this.filteredImages(), this.pageSize, this.pageNumber) || [];
   }
 
   onFileSelect($file: File[]) {
@@ -198,48 +205,24 @@ export class ImageListComponent implements OnInit {
     this.logger.debug("fileDropped:", $event);
   }
 
-  filteredImages(): ContentMetadataItem[] {
-    return this.filteredFiles;
-  }
-
   onSearchChange(searchEntry: string) {
-    this.logger.debug("received searchEntry:" + searchEntry);
+    this.logger.info("received searchEntry:" + searchEntry);
     this.searchChangeObservable.next(searchEntry);
   }
 
-  changeLastSelectedTagOrFirst(): ImageTag {
-    if ([ALL_TAGS, RECENT_PHOTOS].includes(this.selectedTag)) {
-      return this.selectableTags()[0];
-    } else {
-      return this.selectedTag;
-    }
-  }
-
-  applyFiltersFromTag(imageTag: ImageTag) {
-    this.selectedTag = imageTag;
-    this.logger.info("applyFiltersFromTag:this.selectedTag", this.selectedTag, "imageTag", imageTag);
-    if (this.filterType !== "all") {
-      this.updateQueryParams({story: this?.selectedTag?.key});
-    }
+  filterByTag(tagSubject: string) {
+    this.logger.info("filterByTag:tagSubject:", tagSubject);
+    this.imageTagDataService.select(tagSubject);
     this.applyFilter();
   }
 
-  private updateQueryParams(queryParams: Params) {
-    this.router.navigate([], {
-      queryParams, queryParamsHandling: "merge"
-    });
-  }
-
   applyFilter() {
-    this.ready = false;
-    this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.selectedTag, this.showDuplicates, this.filterText);
+    this.logger.debug("applyFilters start:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files", "tag:", this.imageTagDataService.activeTag, "showDuplicates:", this.showDuplicates, "filterText:", this.filterText);
+    this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.filterType, this.imageTagDataService.activeTag, this.showDuplicates, this.filterText) || [];
     this.pageCount = this.calculatePageCount();
     this.applyPagination();
     this.imageDuplicatesService.populateFrom(this.contentMetadata, this.filteredFiles);
-    this.logger.debug("applyFilters:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files");
-    setTimeout(() => {
-      this.ready = true;
-    }, 0);
+    this.logger.debug("applyFilters finished:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files", "tag:", this.imageTagDataService.activeTag, "showDuplicates:", this.showDuplicates, "filterText:", this.filterText);
   }
 
   refreshImageMetaData(imageSource: string) {
@@ -248,17 +231,18 @@ export class ImageListComponent implements OnInit {
     this.urlService.navigateUnconditionallyTo("image-editor", imageSource);
 
     Promise.all([
-      this.contentMetadataService.items(imageSource)
-        .then((contentMetaData: ContentMetadata) => {
-          this.logger.info("contentMetaData:", contentMetaData);
-          this.contentMetadata = contentMetaData;
-          this.imageTagDataService.populateFrom(contentMetaData.imageTags);
-          this.applyFilter();
-        }),
-      this.contentMetadataService.listMetaData(imageSource)
-        .then((s3Metadata: S3Metadata[]) => {
-          this.s3Metadata = s3Metadata;
-        })])
+        this.contentMetadataService.items(imageSource)
+          .then((contentMetaData: ContentMetadata) => {
+            this.logger.info("contentMetaData:", contentMetaData);
+            this.contentMetadata = contentMetaData;
+            this.imageTagDataService.populateFrom(contentMetaData.imageTags);
+          }),
+        this.contentMetadataService.listMetaData(imageSource)
+          .then((s3Metadata: S3Metadata[]) => {
+            this.s3Metadata = s3Metadata;
+          })
+      ]
+    )
       .then(() => {
         this.contentMetadata.files = this.contentMetadata.files.map(file => {
           return {
@@ -267,6 +251,7 @@ export class ImageListComponent implements OnInit {
             dateSource: file.dateSource || "upload"
           };
         });
+        this.applyFilter();
         this.logger.debug("refreshImageMetaData:imageSource", imageSource, "returning", this.contentMetadata.files.length, "ContentMetadataItem items");
         this.notify.clearBusy();
       })
@@ -392,44 +377,9 @@ export class ImageListComponent implements OnInit {
     return item._id || index;
   }
 
-  filterForAll() {
-    this.selectedTag = ALL_TAGS;
-  }
-
-  filterForRecent() {
-    this.selectedTag = RECENT_PHOTOS;
-  }
-
-  filterFor(choice: string) {
-    this.filterType = choice;
-    if (choice === "all") {
-      this.selectedTag = ALL_TAGS;
-    } else if (choice === "recent") {
-      this.selectedTag = RECENT_PHOTOS;
-    } else {
-      this.selectedTag = this.selectableTags()[0];
-    }
+  filterFor(choice: any) {
+    this.logger.info("filterFor:choice:", choice);
     this.applyFilter();
-    this.updateQueryParams({story: this.selectedTag.key});
-  }
-
-  private selectTag() {
-    this.route.queryParams.subscribe(params => {
-      const story = params["story"];
-      this.selectedTag = this.imageTagDataService.findTag(story) || this.imageTagDataService.currentTag() || RECENT_PHOTOS;
-      switch (this.selectedTag) {
-        case RECENT_PHOTOS:
-          this.filterType = "recent";
-          break;
-        case ALL_TAGS:
-          this.filterType = "all";
-          break;
-        default:
-          this.filterType = "choose";
-          break;
-      }
-      this.logger.debug("story:", story, "imageTagDataService.currentTag", this.imageTagDataService.currentTag(), "selectedTag:", this.selectedTag);
-    });
   }
 
   maxSize() {
@@ -437,7 +387,7 @@ export class ImageListComponent implements OnInit {
   }
 
   private calculatePageCount(): number {
-    return this.numberUtils.asNumber(this.filteredImages().length / this.pageSize, 0);
+    return this.numberUtils.asNumber(this.filteredFiles?.length / this.pageSize, 0);
   }
 
 }

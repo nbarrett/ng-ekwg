@@ -1,7 +1,7 @@
 import { ApiResponse, WithMongoId } from "./api-response.model";
 
 export const RECENT_PHOTOS: ImageTag = {key: 0, sortIndex: 0, subject: "Recent Photos"};
-export const ALL_TAGS: ImageTag = {key: -1, subject: "Anything"};
+export const ALL_PHOTOS: ImageTag = {key: -1, sortIndex: -1, subject: "All Photos"};
 export const S3_BASE_URL = "api/aws/s3";
 export const S3_METADATA_URL = "api/aws/metadata/list-objects";
 export const BASE64_PREFIX = "data:image/jpeg;base64";
@@ -48,4 +48,10 @@ export interface ImageTag {
   sortIndex?: number;
   subject: string;
   excludeFromRecent?: boolean;
+}
+
+export enum ImageFilterType {
+  ALL = "all",
+  RECENT = "recent",
+  TAG = "tag"
 }

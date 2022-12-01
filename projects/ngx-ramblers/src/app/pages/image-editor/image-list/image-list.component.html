@@ -1,11 +1,5 @@
 <app-page>
-  <div *ngIf="!allow.edit">
-    <div class="img-thumbnail"><img src="/assets/images/ramblers/icon-members.png"
-                           alt="members area"/>
-      You need to be logged of with the correct administration privileges to view this page. Click the link above to
-      login.
-    </div>
-  </div>
+  <app-login-required></app-login-required>
   <div *ngIf="allow.edit && contentMetadata">
     <div class="row">
       <div class="col-sm-12">
@@ -42,37 +36,39 @@
                  type="radio"
                  class="custom-control-input"
                  [(ngModel)]="filterType"
-                 (click)="filterFor('recent')"
+                 (ngModelChange)="filterFor('recent')"
                  value="recent"/>
           <label class="custom-control-label" for="recent-photos-filter">Show recent photos</label>
         </div>
-        <div (click)="applyFiltersFromTag(lastSelectedTag)"
-             class="custom-control custom-radio custom-control-inline">
-          <input [disabled]="notifyTarget.busy" id="tag-filter"
-                 type="radio"
-                 class="custom-control-input"
-                 [(ngModel)]="filterType"
-                 value="choose"/>
-          <label class="custom-control-label" for="tag-filter">Show images tagged with:</label>
-        </div>
-        <div (click)="applyFiltersFromTag(lastSelectedTag)"
-             class="custom-control custom-radio custom-control-inline">
-          <select [disabled]="filterType!=='choose'"
-                  [(ngModel)]="lastSelectedTag"
-                  id="filterByTag"
-                  class="form-control"
-                  (ngModelChange)="applyFiltersFromTag($event)">
-            <option *ngFor="let imageTag of selectableTags(); trackBy: tagTracker"
-                    [ngValue]="imageTag"
-                    [textContent]="imageTag.subject">
-          </select>
-        </div>
+        <ng-container *ngIf="selectableTags().length>0">
+          <div
+            class="custom-control custom-radio custom-control-inline">
+            <input [disabled]="notifyTarget.busy" id="tag-filter"
+                   type="radio"
+                   class="custom-control-input"
+                   [(ngModel)]="filterType"
+                   (ngModelChange)="filterFor('tag')"
+                   value="tag"/>
+            <label class="custom-control-label" for="tag-filter">Show images tagged with:</label>
+          </div>
+          <div
+            class="custom-control custom-radio custom-control-inline">
+            <select [disabled]="filterType !== 'tag'"
+                    [ngModel]="imageTagDataService?.activeTag?.subject"
+                    id="filterByTag"
+                    class="form-control"
+                    (ngModelChange)="filterByTag($event)">
+              <option *ngFor="let imageTag of selectableTags(); trackBy: tagTracker"
+                      [ngValue]="imageTag.subject">{{imageTag.subject}}
+            </select>
+          </div>
+        </ng-container>
         <div class="custom-control custom-radio custom-control-inline">
           <input [disabled]="notifyTarget.busy" id="all-photos-filter"
                  type="radio"
                  class="custom-control-input"
                  [(ngModel)]="filterType"
-                 (click)="filterFor('all')"
+                 (ngModelChange)="filterFor('all')"
                  value="all"/>
           <label class="custom-control-label" for="all-photos-filter">Show all photos</label>
         </div>
@@ -100,7 +96,7 @@
         <div class="row">
           <div class="col-sm-12 mt-3 d-flex">
             <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="maxSize()"
-                        [totalItems]="filteredImages().length" [(ngModel)]="pageNumber"
+                        [totalItems]="filteredFiles.length" [(ngModel)]="pageNumber"
                         (pageChanged)="pageChanged($event)"></pagination>
             <div *ngIf="notifyTarget.showAlert" class="flex-grow-1 alert {{notifyTarget.alertClass}}">
               <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
@@ -110,10 +106,10 @@
           </div>
         </div>
         <ng-container
-          *ngFor="let imageMetaDataItem of currentPageImages();let index = index; trackBy: metadataItemTracker;">
+          *ngFor="let imageMetaDataItem of currentPageImages;let index = index; trackBy: metadataItemTracker;">
           <app-edit-image [index]="index"
                           [rootFolder]="imageSource"
-                          [filteredFiles]="currentPageImages()"
+                          [filteredFiles]="currentPageImages"
                           [item]="imageMetaDataItem"
                           (imageInsert)="imageInsert($event)"
                           (imageChange)="imageChange($event)"

@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import isArray from "lodash-es/isArray";
 import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
+import { AlertTarget } from "../../../models/alert-target.model";
 import { AwsFileData } from "../../../models/aws-object.model";
 import { GroupEvent, GroupEventsFilter, GroupEventType, groupEventTypeFor, GroupEventTypes } from "../../../models/committee.model";
 import { ContentMetadataItem, IMAGES_HOME, ImageTag } from "../../../models/content-metadata.model";
@@ -17,7 +17,7 @@ import { FileUploadService } from "../../../services/file-upload.service";
 import { ImageDuplicatesService } from "../../../services/image-duplicates-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
-import { NotifierService } from "../../../services/notifier.service";
+import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { RouterHistoryService } from "../../../services/router-history.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
@@ -34,6 +34,8 @@ export class ImageEditComponent implements OnInit {
   public filteredFiles: ContentMetadataItem[];
   public canMoveUp = true;
   public canMoveDown = true;
+  public notify: AlertInstance;
+  public notifyTarget: AlertTarget = {};
 
   @Input("index") set acceptChangesFromIndex(index: number) {
     this.index = index;
@@ -41,6 +43,7 @@ export class ImageEditComponent implements OnInit {
 
   @Input("item") set acceptChangesFromItem(item: ContentMetadataItem) {
     this.item = item;
+    this.checkDuplicates(item);
   }
 
   @Input("filteredFiles") set acceptChangesFrom(filteredFiles: ContentMetadataItem[]) {
@@ -53,12 +56,12 @@ export class ImageEditComponent implements OnInit {
   @Output() moveDown: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() delete: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() imageInsert: EventEmitter<ContentMetadataItem> = new EventEmitter();
-  faExclamation = faExclamation;
   public editActive: boolean;
   private awsFileData: AwsFileData;
   public aspectRatio: string;
+  public dateSources: GroupEventType[];
 
-  constructor(private stringUtils: StringUtilsService,
+  constructor(public stringUtils: StringUtilsService,
               public imageDuplicatesService: ImageDuplicatesService,
               private committeeQueryService: CommitteeQueryService,
               public contentMetadataService: ContentMetadataService,
@@ -75,14 +78,19 @@ export class ImageEditComponent implements OnInit {
 
   ngOnInit() {
     this.aspectRatio = this.rootFolder === IMAGES_HOME ? "Home page" : null;
-    this.logger.debug("ngOnInit:item", this.item, "index:", this.index, "this.aspectRatio:", this.aspectRatio);
     this.editActive = !this.item.image;
+    this.logger.info("ngOnInit:item", this.item, "index:", this.index, "this.aspectRatio:", this.aspectRatio, "editActive:", this.editActive);
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.dateSources = [{
+      area: "upload",
+      eventType: "Upload Date",
+      description: "Upload Date"
+    }].concat(map(GroupEventTypes, (item) => item));
   }
-
 
   onImageDateChange(dateValue: DateValue) {
     if (dateValue) {
-      this.logger.debug("date changed from:", this.dateUtils.displayDateAndTime(this.item.date), "to", this.dateUtils.displayDateAndTime(dateValue.date));
+      this.logger.info("date changed from:", this.dateUtils.displayDateAndTime(this.item.date), "to", this.dateUtils.displayDateAndTime(dateValue.date));
       this.item.date = dateValue.value;
       this.filterEventsBySourceAndDate(this.item.dateSource, this.item.date);
     }
@@ -125,8 +133,17 @@ export class ImageEditComponent implements OnInit {
     this.imageInsert.emit(this.emitValue());
   }
 
+  checkDuplicates(item: ContentMetadataItem) {
+    if (this.imageDuplicatesService.duplicatedContentMetadataItems(item).length > 0) {
+      this.notify.error({
+        title: this.imageDuplicatesService.duplicateCount(item),
+        message: this.imageDuplicatesService.duplicates(item)
+      });
+    }
+  }
+
   filterEventsBySourceAndDate(dateSource: string, date: number) {
-    this.logger.debug("eventsFilteredFrom:", dateSource, "date:", date);
+    this.logger.info("eventsFilteredFrom:", dateSource, "date:", date);
     const groupEventsFilter: GroupEventsFilter = {
       selectAll: true,
       fromDate: this.dateUtils.asDateValue(this.dateUtils.asMoment(date).add(-520, "weeks").valueOf()),
@@ -149,7 +166,6 @@ export class ImageEditComponent implements OnInit {
         this.logger.debug("groupEvents", events);
         return events;
       });
-
   }
 
   selectClick(select: NgSelectComponent) {
@@ -165,14 +181,6 @@ export class ImageEditComponent implements OnInit {
       this.logger.debug("onChange:not event found from", this.item);
     }
     this.imageChange.emit(this.emitValue());
-  }
-
-  dateSources(): GroupEventType[] {
-    return [{
-      area: "upload",
-      eventType: "Upload Date",
-      description: "Upload Date"
-    }].concat(map(GroupEventTypes, (item) => item));
   }
 
   refreshGroupEventsIfRequired() {
@@ -195,11 +203,12 @@ export class ImageEditComponent implements OnInit {
   }
 
   imageCroppingError(errorEvent: ErrorEvent) {
-    // this.notify.error({
-    //   title: "Image cropping error occurred",
-    //   message: (errorEvent ? (". Error was: " + JSON.stringify(errorEvent)) : "")
-    // });
-    // this.notify.clearBusy();
+    this.logger.info("errorEvent:", errorEvent);
+    this.notify.error({
+      title: "Image cropping error occurred",
+      message: (errorEvent ? (". Error was: " + JSON.stringify(errorEvent)) : "")
+    });
+    this.notify.clearBusy();
   }
 
   exitImageEdit() {
