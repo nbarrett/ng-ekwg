@@ -43,9 +43,13 @@ export class FileUploadService {
 
   public async urlToFile(url: string, fileName: string): Promise<File> {
     const blob = await this.requestLocalOrRemote(url);
-    const file = new File([blob], fileName, {type: "image/jpeg"});
+    const file = this.createImageFileFrom(blob, fileName);
     this.logger.info("urlToFile received:blob", blob, "converted to file:", file);
     return file;
+  }
+
+  public createImageFileFrom(blob: Blob, fileName: string) {
+    return new File([blob], fileName, {type: "image/jpeg"});
   }
 
   private requestLocalOrRemote(url: string): Promise<Blob> {

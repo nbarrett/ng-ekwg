@@ -21,7 +21,7 @@ function uploadFile(req, res) {
   };
   const bulkUploadError = {error: undefined};
 
-  debugAndInfo("Received file request with keys:", keys(req), "req.query", req.query);
+  debugAndInfo("Received file request with req.query", req.query);
   const rootFolder: string = req.query["root-folder"];
   const uploadedFile: UploadedFile = uploadedFileInfo();
   const fileNameData: ServerFileNameData = generateFileNameData(uploadedFile);

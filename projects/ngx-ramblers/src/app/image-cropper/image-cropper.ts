@@ -46,7 +46,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
               private notifierService: NotifierService,
               private fileUtils: FileUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageCropperAndResizerComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ImageCropperAndResizerComponent, NgxLoggerLevel.OFF);
   }
 
   @ViewChild(ImageCropperComponent) imageCropperComponent: ImageCropperComponent;
@@ -302,8 +302,16 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.notify.setBusy();
     this.uploader.clearQueue();
     this.logger.debug("processSingleFile:file:", file, "queue:", this.uploader.queue, "original file size:", this.numberUtils.humanFileSize(file.size));
+    if (this?.croppedFile?.awsFileName) {
+      this.logger.debug("processSingleFile:retaining existing loaded filename:", this.croppedFile.awsFileName, "file being processed:", file.name, " will be ignored");
+      const myRenamedFile = this.fileUploadService.createImageFileFrom(file, this.croppedFile.awsFileName)
+      this.logger.debug("processSingleFile:renamed file:", myRenamedFile);
+      this.originalFile = myRenamedFile;
+    } else {
+      this.logger.debug("processSingleFile:no existing loaded filename to retain - file being processed:", file.name, " will be used as original");
+      this.originalFile = file;
+    }
     this.notify.progress({title: "File upload", message: `loading preview for ${file.name}...`});
-    this.originalFile = file;
   }
 
   showAlertMessage(): boolean {
