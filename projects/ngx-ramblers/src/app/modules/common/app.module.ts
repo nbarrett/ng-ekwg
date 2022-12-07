@@ -15,7 +15,8 @@ import { ForgotPasswordComponent } from "../../login/forgot-password.component";
 import { LoginComponent } from "../../login/login.component";
 import { SetPasswordComponent } from "../../login/set-password.component";
 import { LogoutComponent } from "../../logout/logout.component";
-import { MainLogoComponent } from "../../main-logo/main-logo.component";
+import { LetterheadLogoConfigComponent } from "../../pages/letterhead/letterhead-logo-config.component";
+import { LetterheadLogoComponent } from "../../pages/letterhead/letterhead-logo/letterhead-logo";
 import { MeetupDescriptionComponent } from "../../notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "../../page-navigator/page-navigator.component";
 import { FacebookComponent } from "../../pages/facebook/facebook.component";
@@ -54,13 +55,14 @@ import { NavbarComponent } from "./navbar/navbar";
     HomeComponent,
     LetterheadComponent,
     LetterheadTitleConfigComponent,
+    LetterheadLogoConfigComponent,
     LetterheadTitleOutputComponent,
     LetterheadTitlePartConfigComponent,
     LoginComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
-    MainLogoComponent,
+    LetterheadLogoComponent,
     MeetupDescriptionComponent,
     FooterComponent,
     PageNavigatorComponent,

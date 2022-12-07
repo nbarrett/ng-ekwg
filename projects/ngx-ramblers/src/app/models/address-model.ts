@@ -1,4 +1,3 @@
-import { ExpenseClaim } from "../notifications/expenses/expense.model";
 import { ApiResponse } from "./api-response.model";
 
 export interface PostcodeLookupServiceResponse {

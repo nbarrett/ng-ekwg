@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { Organisation } from "../../../models/system.model";
+import { LogoFileData, SystemConfig } from "../../../models/system.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { SystemConfigService } from "../../../services/system/system-config.service";
@@ -15,8 +15,9 @@ import { UrlService } from "../../../services/url.service";
 export class NavbarComponent implements OnInit {
   private logger: Logger;
   public navbarContentWithinCollapse: boolean;
-  public group: Organisation;
+  public logo: LogoFileData;
   public navbarExpanded = false;
+  public system: SystemConfig;
 
   constructor(
     private systemConfigService: SystemConfigService,
@@ -42,7 +43,10 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
+    this.systemConfigService.events().subscribe(item => {
+      this.system = item.system;
+      this.logo = this.system?.logos?.images?.find(logo => logo.originalFileName === this.system?.header?.selectedLogo);
+    });
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {
       this.logger.info("menu toggled with event:", event);
       this.navbarExpanded = event.data;

@@ -3,7 +3,7 @@ import { faAdd } from "@fortawesome/free-solid-svg-icons";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ExternalUrls, SystemConfigResponse } from "../../../models/system.model";
+import { ExternalUrls, LogoFileData, SystemConfigResponse } from "../../../models/system.model";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -24,7 +24,6 @@ export class SystemSettingsComponent implements OnInit {
   public config: SystemConfigResponse;
   faAdd = faAdd;
   faSave = faSave;
-  public editing: boolean;
 
   constructor(private systemConfigService: SystemConfigService,
               private notifierService: NotifierService,
@@ -98,4 +97,19 @@ export class SystemSettingsComponent implements OnInit {
     this.urlService.navigateTo("admin");
   }
 
+  createNewLogo() {
+    if (!this.config.system.logos) {
+      this.config.system.logos = {rootFolder: "logos", images: []};
+    }
+
+    this.config.system.logos.images.splice(0, 0, {padding: 16, width: 150, originalFileName: null, awsFileName: null});
+  }
+
+  headerLogoChanged(logo: string) {
+    this.config.system.header.selectedLogo = logo;
+  }
+
+  headerLogoDefault(image: LogoFileData): boolean {
+    return this.config.system.header.selectedLogo === image.originalFileName;
+  }
 }

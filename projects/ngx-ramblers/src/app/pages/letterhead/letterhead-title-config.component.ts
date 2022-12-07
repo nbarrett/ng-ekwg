@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
+import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { TitleLine } from "./letterhead.component";
@@ -7,17 +8,19 @@ import { TitleLine } from "./letterhead.component";
   selector: "app-letterhead-title-config",
   styleUrls: ["./letterhead.component.sass"],
   template: `
-    <div class="img-thumbnail ml-2 p-4">
+    <div class="p-4">
       <div class="row">
         <div class="col-sm-12">
-          <h4><div class="custom-control custom-checkbox">
-            <input class="custom-control-input"
-                   [(ngModel)]="titleLine.include"
-                   type="checkbox"
-                   id="show-title-{{titleLine.name}}">
-            <label class="custom-control-label"
-                   for="show-title-{{titleLine.name}}">{{titleLine.name}}</label>
-          </div></h4>
+          <h4>
+            <div class="custom-control custom-checkbox">
+              <input class="custom-control-input"
+                     [(ngModel)]="titleLine.include"
+                     type="checkbox"
+                     id="show-title-{{titleLine?.name}}">
+              <label class="custom-control-label"
+                     for="show-title-{{titleLine?.name}}">{{titleLine?.name}}</label>
+            </div>
+          </h4>
           <div class="form-inline">
             <div class="custom-control custom-checkbox">
               <input class="custom-control-input"
@@ -72,7 +75,7 @@ export class LetterheadTitleConfigComponent implements OnInit {
     "ramblers_icon_9_close_x_rgb",
   ];
 
-  public iconType: string = this.iconTypes[0];
+  public iconType: string;
   @Input()
   public titleLine: TitleLine;
 
@@ -82,8 +85,9 @@ export class LetterheadTitleConfigComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    if (!this.titleLine.iconType) {
-      this.titleLine.iconType = this.iconTypes[0];
+    this.iconType = first(this.iconTypes);
+    if (!this?.titleLine?.iconType && this.titleLine) {
+      this.titleLine.iconType = this.iconType;
     }
   }
 

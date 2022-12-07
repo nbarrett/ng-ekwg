@@ -46,9 +46,23 @@ export interface ExternalUrls {
 
 export interface Header {
   navigationButtons: Link[];
+  selectedLogo: string;
+}
+
+export interface LogoFileData {
+  awsFileName?: string;
+  originalFileName?: string;
+  width: number;
+  padding: number;
+}
+
+export interface Logos {
+  rootFolder: string;
+  images: LogoFileData[]
 }
 
 export interface SystemConfig extends Identifiable {
+  logos: Logos
   header: Header,
   footer: Footer
   group: Organisation;

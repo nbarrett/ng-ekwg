@@ -25,7 +25,7 @@ export class SvgComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.href = "/assets/images/new-brand/svg-icons.svg#" + this.icon;
+    this.href = "/assets/images/local/svg-icons.svg#" + this.icon;
     this.logger.info("created with href:", this.href);
 
   }

@@ -3,6 +3,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faImage, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ImageType } from "../../../../models/content-text.model";
+import { ImageMessage } from "../../../../models/images.model";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
 import { UrlService } from "../../../../services/url.service";
 
@@ -14,8 +15,6 @@ import { UrlService } from "../../../../services/url.service";
 export class CardImageComponent implements OnInit {
   private logger: Logger;
   faImage = faImage;
-  IMAGE_LOAD_ERROR = "Image load error";
-  NO_IMAGE_AVAILABLE = "No image available";
   public height: any;
 
   constructor(public urlService: UrlService,
@@ -29,7 +28,7 @@ export class CardImageComponent implements OnInit {
     this.logger.debug("imageSource:", imageSource);
     this.imageSource = imageSource;
     if (!imageSource) {
-      this.imageText = this.NO_IMAGE_AVAILABLE;
+      this.imageText = ImageMessage.NO_IMAGE_AVAILABLE;
     } else {
       this.imageText = null;
     }
@@ -57,11 +56,11 @@ export class CardImageComponent implements OnInit {
   }
 
   cardMissingImage(): boolean {
-    return this.imageText === this.IMAGE_LOAD_ERROR || ((this.imageType === ImageType.IMAGE || !this.imageType) && !this.imageSource);
+    return this.imageText === ImageMessage.IMAGE_LOAD_ERROR || ((this.imageType === ImageType.IMAGE || !this.imageType) && !this.imageSource);
   }
 
   cardImageLoadError(): boolean {
-    return this.imageText === this.IMAGE_LOAD_ERROR;
+    return this.imageText === ImageMessage.IMAGE_LOAD_ERROR;
   }
 
   ngOnInit() {
@@ -75,7 +74,7 @@ export class CardImageComponent implements OnInit {
 
   imageError(errorEvent: ErrorEvent) {
     this.logger.info("imageError:", errorEvent);
-    this.imageText = this.IMAGE_LOAD_ERROR;
+    this.imageText = ImageMessage.IMAGE_LOAD_ERROR;
   }
 
   imageLoaded(event: Event) {

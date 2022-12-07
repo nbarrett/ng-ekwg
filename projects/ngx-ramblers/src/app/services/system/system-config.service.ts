@@ -58,6 +58,7 @@ export class SystemConfigService {
   default(): SystemConfigResponse {
     return {
       system: {
+        logos: {rootFolder: "", images: []},
         externalUrls: {
           facebook: {appId: null, pagesUrl: null, groupUrl: null},
           meetup: null,
@@ -65,7 +66,7 @@ export class SystemConfigService {
           linkedIn: null
         },
         area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.emptyOrganisation(),
-        header: {navigationButtons: []},
+        header: {selectedLogo: null, navigationButtons: []},
         footer: {appDownloads: {apple: undefined, google: undefined}, legals: [], pages: [], quickLinks: []}
       }
     };

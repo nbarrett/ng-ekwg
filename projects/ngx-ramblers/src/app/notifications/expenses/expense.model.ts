@@ -1,10 +1,9 @@
 import { Type } from "@angular/core";
-import { PageContent } from "../../models/content-text.model";
-import { ExpenseNotificationDirective } from "./expense-notification.directive";
-import { ExpenseNotificationDetailsComponent } from "./templates/common/expense-notification-details.component";
-import { AlertInstance } from "../../services/notifier.service";
 import { ApiResponse } from "../../models/api-response.model";
 import { Member } from "../../models/member.model";
+import { AlertInstance } from "../../services/notifier.service";
+import { ExpenseNotificationDirective } from "./expense-notification.directive";
+import { ExpenseNotificationDetailsComponent } from "./templates/common/expense-notification-details.component";
 
 export interface ExpenseFilter {
   filter: (arg?: any) => boolean;
@@ -46,7 +45,6 @@ export interface ExpenseItem {
     awsFileName?: string;
     originalFileName?: string;
     title: string;
-    fileNameData: any;
   };
 }
 
