@@ -6,7 +6,7 @@ export class DisplayDateAndTimePipe implements PipeTransform {
   constructor(private dateUtils: DateUtilsService) {
   }
 
-  transform(dateValue: any) {
+  transform(dateValue: any): string {
     return this.dateUtils.displayDateAndTime(dateValue);
   }
 

@@ -1,5 +1,6 @@
 import { Time } from "@angular/common";
 import { Injectable } from "@angular/core";
+import range from "lodash-es/range";
 import moment from "moment-timezone";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DateValue } from "../models/date.model";
@@ -14,7 +15,7 @@ import { isDateValue } from "./type-guards";
 
 export class DateUtilsService {
   private logger: Logger;
-
+  MILLISECONDS_IN_ONE_DAY = 86400000;
   constructor(private numberUtils: NumberUtilsService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.OFF);
@@ -142,6 +143,10 @@ export class DateUtilsService {
   startTime(walk: Walk): number {
     const startTime: Time = this.parseTime(walk.startTime);
     return this.asMoment(walk.walkDate).add(startTime.hours, "hours").add(startTime.minutes, "minutes").valueOf();
+  }
+
+  inclusiveDayRange(fromDate: number, toDate: number): number[] {
+    return range(fromDate, toDate + 1, this.MILLISECONDS_IN_ONE_DAY);
   }
 
 }

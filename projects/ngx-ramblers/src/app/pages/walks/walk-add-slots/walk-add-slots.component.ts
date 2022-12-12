@@ -2,8 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import difference from "lodash-es/difference";
-import map from "lodash-es/map";
-import times from "lodash-es/times";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
 import { NamedEventType } from "../../../models/broadcast.model";
@@ -117,18 +115,16 @@ export class WalkAddSlotsComponent implements OnInit {
         this.notify.clearBusy();
         const sunday = this.dateUtils.momentNowNoTime().day(7);
         const until = this.dateUtils.asMoment(this.untilDate).startOf("day");
-        const weeks = until.clone().diff(sunday, "weeks");
-        const allGeneratedSlots = times(weeks, (index) => {
-          return this.dateUtils.asValueNoTime(sunday.clone().add(index, "week"));
-        }).filter((date) => {
+        const allGeneratedSlots = this.dateUtils.inclusiveDayRange(sunday.valueOf(), until.valueOf())
+          .filter(item => this.dateUtils.asMoment(item).day() === 0).filter((date) => {
           return this.dateUtils.asString(date, undefined, "DD-MMM") !== "25-Dec";
         });
-        const existingDates = map(this.walksQueryService.activeWalks(walks), "walkDate");
-        this.logger.debug("sunday", sunday, "until", until, "weeks", weeks);
-        this.logger.debug("existingDatesAsDates", existingDates.map(date => this.displayDateAndTime.transform(date)));
-        this.logger.debug("allGeneratedSlotsAsDates", allGeneratedSlots.map(date => this.displayDateAndTime.transform(date)));
+        const existingDates: number[] = this.walksQueryService.activeWalks(walks).map(walk => walk.walkDate);
+        this.logger.debug("sunday", sunday, "until", until);
+        this.logger.debug("existingDatesAsStrings", existingDates.map(date => this.displayDate.transform(date)));
+        this.logger.debug("allGeneratedSlotsAsStrings", allGeneratedSlots.map(date => this.displayDate.transform(date)));
         const requiredSlots = difference(allGeneratedSlots, existingDates);
-        const requiredDates = this.displayDates.transform(requiredSlots);
+        const requiredDates: string = this.displayDates.transform(requiredSlots);
         this.createSlots(requiredSlots, {
           title: "Add walk slots",
           message: " - You are about to add " + requiredSlots.length + " walk slots up to "

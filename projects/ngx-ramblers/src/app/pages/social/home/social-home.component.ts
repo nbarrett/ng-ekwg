@@ -184,7 +184,7 @@ export class SocialHomeComponent implements OnInit {
   }
 
   private applyPagination() {
-    this.pageCount = this.numberUtils.asNumber((this.filteredSocialEvents.length / this.pageSize), 0);
+    this.pageCount = Math.ceil(this.filteredSocialEvents.length / this.pageSize);
     this.currentPageSocials = this.paginate(this.filteredSocialEvents, this.pageSize, this.pageNumber);
     this.pages = range(1, this.pageCount + 1);
     const filteredImageCount = this.filteredSocialEvents.length;

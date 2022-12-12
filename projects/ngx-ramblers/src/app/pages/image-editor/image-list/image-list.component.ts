@@ -387,7 +387,7 @@ export class ImageListComponent implements OnInit {
   }
 
   private calculatePageCount(): number {
-    return this.numberUtils.asNumber(this.filteredFiles?.length / this.pageSize, 0);
+    return Math.ceil(this.filteredFiles?.length / this.pageSize);
   }
 
 }

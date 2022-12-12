@@ -121,10 +121,10 @@ export class WalkListComponent implements OnInit {
   }
 
   private applyPagination() {
-    this.pageCount = this.numberUtils.asNumber((this.filteredWalks.length / this.pageSize), 0);
+    this.pageCount = Math.ceil(this.filteredWalks.length / this.pageSize);
     this.currentPageWalks = this.paginate(this.filteredWalks, this.pageSize, this.pageNumber);
     this.pages = range(1, this.pageCount + 1);
-    this.logger.info("total walks count", this.walks.length, "filteredWalks count", this.filteredWalks.length, "currentPageWalks count", this.currentPageWalks.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
+    this.logger.info("total walks count", this.walks.length, "walks:", this.walks, "filteredWalks count", this.filteredWalks.length, "currentPageWalks count", this.currentPageWalks.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
     const offset = (this.pageNumber - 1) * this.pageSize + 1;
     const pageIndicator = this.pages.length > 1 ? `page ${this.pageNumber} of ${this.pageCount}` : "";
     this.notify.progress(`Showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(this.walks.length, "walk")} ${pageIndicator}`);
