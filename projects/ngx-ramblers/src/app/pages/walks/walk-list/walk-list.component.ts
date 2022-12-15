@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { LoginResponse } from "../../../models/member.model";
+import { DeviceSize } from "../../../models/page.model";
 import { DisplayedWalk, EventType, FilterParameters, Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -28,6 +30,7 @@ import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalksService } from "../../../services/walks/walks.service";
 import { SiteEditService } from "../../../site-edit/site-edit.service";
+import { LoginModalComponent } from "../../login/login-modal/login-modal.component";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
@@ -50,8 +53,13 @@ export class WalkListComponent implements OnInit {
   public pageNumber: number;
   public pageCount: number;
   public pages: number[] = [];
+  config: ModalOptions = {
+    animated: false,
+    initialState: {}
+  };
 
   constructor(
+    private modalService: BsModalService,
     private pageService: PageService,
     public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
@@ -101,6 +109,12 @@ export class WalkListComponent implements OnInit {
 
   walkTracker(index: number, walk: DisplayedWalk) {
     return walk.walk.id;
+  }
+
+  maxSize(): number {
+    const maxSize = window.innerWidth <= DeviceSize.SMALL ? 3 : 5;
+    this.logger.info("window.innerWidth:", window.innerWidth, "->", maxSize);
+    return maxSize;
   }
 
   paginate(walks: DisplayedWalk[], pageSize, pageNumber): DisplayedWalk[] {
@@ -226,8 +240,8 @@ export class WalkListComponent implements OnInit {
       });
   }
 
-  loginOrLogout() {
-
+  login() {
+    this.modalService.show(LoginModalComponent, this.config);
   }
 
   allowEdits() {

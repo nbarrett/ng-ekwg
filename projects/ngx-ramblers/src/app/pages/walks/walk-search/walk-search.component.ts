@@ -5,6 +5,7 @@ import { Subject } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
+import { DeviceSize } from "../../../models/page.model";
 import { FilterParameters } from "../../../models/walk.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -12,7 +13,7 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 
 @Component({
-  selector: "app-walks-search[notifyTarget]",
+  selector: "app-walks-search",
   templateUrl: "./walk-search.component.html"
 })
 export class WalkSearchComponent implements OnInit {
@@ -64,4 +65,10 @@ export class WalkSearchComponent implements OnInit {
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.REFRESH, selectType));
   }
 
+  showAlertInline(): boolean {
+    const showAlertInline: boolean = window.innerWidth >= DeviceSize.SMALL;
+    this.logger.info("window.innerWidth:", window.innerWidth, "showAlertInline ->", showAlertInline);
+    return showAlertInline;
+
+  }
 }

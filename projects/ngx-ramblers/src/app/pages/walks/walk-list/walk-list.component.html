@@ -3,7 +3,7 @@
     <div class="mb-3 col-sm-12">
       <h4 class="card-title">Walks Programme</h4>
       <app-walks-search [filterParameters]="filterParameters" [notifyTarget]="notifyTarget">
-        <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="5"
+        <pagination class="pagination rounded" [boundaryLinks]=true [rotate]="true" [maxSize]="maxSize()"
                     [totalItems]="walks?.length" [(ngModel)]="pageNumber"
                     (pageChanged)="pageChanged($event)"></pagination>
 
@@ -64,12 +64,11 @@
               <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail"
                  [textContent]="displayedWalk.walk.displayName"
                  name="displayName"
-                 tooltip="Click to email {{displayedWalk.walk.displayName}} at {{viewWalkField(displayedWalk, 'contactEmail')}}"
+                 tooltip="Click to email {{displayedWalk.walk.displayName}} at {{displayedWalk.walk.contactEmail}}"
                  tooltipPlacement="left"></a>
               <span class="tooltip-link" *ngIf="!allowDetailView()" tooltipPlacement="left"
-                    (click)="loginOrLogout()" tooltipTrigger="mouseenter"
-                    tooltip="Click again to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}"
-                    [textContent]="displayedWalk.walk.displayName"></span></td>
+                    (click)="login()" tooltip="Click to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}">
+                {{displayedWalk.walk.displayName}}</span></td>
             <td class="d-none d-lg-table-cell" width="11%" id="contactPhone-{{index}}">
               <a *ngIf="allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone"
                  [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
@@ -81,8 +80,7 @@
                                     name="contactPhone"
                                     tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
                                     tooltipPlacement="left"></span></a>
-              <app-panel-expander class="d-none d-lg-table-cell" [walk]="displayedWalk.walk" [expandable]="true"
-                                  [expandAction]="'full details'">
+              <app-panel-expander class="d-none d-lg-inline" [walk]="displayedWalk.walk" [expandable]="true">
               </app-panel-expander>
             </td>
           </tr>

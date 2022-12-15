@@ -21,7 +21,7 @@
     </div>
     <div class="d-flex mt-3">
       <ng-content></ng-content>
-      <div class="form-group mb-0 flex-grow-1">
+      <div *ngIf="showAlertInline()" class="flex-grow-1">
         <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
           <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
           <strong>{{notifyTarget.alertTitle}}</strong>
@@ -29,6 +29,13 @@
         </div>
       </div>
     </div>
+    <ng-container *ngIf="!showAlertInline()">
+      <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+        <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+        <strong>{{notifyTarget.alertTitle}}</strong>
+        {{notifyTarget.alertMessage}}
+      </div>
+    </ng-container>
   </ng-container>
   <ng-container *ngIf="!showPagination">
     <div class="d-lg-flex pb-0">
