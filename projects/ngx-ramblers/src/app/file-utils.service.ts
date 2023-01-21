@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import first from "lodash-es/first";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -36,6 +37,13 @@ export class FileUtilsService {
 
   basename(path) {
     return path.split(/[\\/]/).pop();
+  }
+
+  fileNameNoExtension(path): string {
+    const basename = this.basename(path);
+    const fileNameNoExtension: string = first(basename.split("."));
+    this.logger.debug("fileNameNoExtension:path", path, "basename:", basename, "returning:", fileNameNoExtension);
+    return fileNameNoExtension;
   }
 
   path(path) {

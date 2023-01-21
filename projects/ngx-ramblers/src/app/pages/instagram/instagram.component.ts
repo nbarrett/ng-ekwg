@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { take } from "lodash-es";
+import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
 import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ExternalUrls } from "../../models/system.model";

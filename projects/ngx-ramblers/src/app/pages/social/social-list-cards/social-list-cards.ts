@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { faCopy, faSearch } from "@fortawesome/free-solid-svg-icons";
+import min from "lodash-es/min";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuthService } from "../../../auth/auth.service";
@@ -72,7 +73,7 @@ export class SocialListCardsComponent implements OnInit {
   }
 
   slideClasses() {
-    return cardClasses(this.filteredSocialEvents.length, CARD_MARGIN_BOTTOM);
+    return cardClasses(min([this.filteredSocialEvents.length, 2]), CARD_MARGIN_BOTTOM);
   }
 
 }

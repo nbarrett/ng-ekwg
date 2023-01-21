@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
-import { range } from "lodash-es";
+import range from "lodash-es/range";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { ContentText } from "../../../models/content-text.model";
 import { MeetupConfigParameters } from "../../../models/meetup-config.model";
-import { BroadcastService} from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { ConfigService } from "../../../services/config.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MeetupService } from "../../../services/meetup.service";

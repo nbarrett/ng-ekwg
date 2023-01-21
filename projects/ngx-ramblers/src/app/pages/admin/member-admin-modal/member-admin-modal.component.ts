@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { omit } from "lodash-es";
+import omit from "lodash-es/omit";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../../functions/chain";

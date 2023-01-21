@@ -4,7 +4,8 @@ export const RECENT_PHOTOS: ImageTag = {key: 0, sortIndex: 0, subject: "Recent P
 export const ALL_PHOTOS: ImageTag = {key: -1, sortIndex: -1, subject: "All Photos"};
 export const S3_BASE_URL = "api/aws/s3";
 export const S3_METADATA_URL = "api/aws/metadata/list-objects";
-export const BASE64_PREFIX = "data:image/jpeg;base64";
+export const BASE64_PREFIX_JPEG = "data:image/jpeg;base64";
+export const BASE64_PREFIX_PNG = "data:image/png;base64";
 export const IMAGES_HOME = "imagesHome";
 export interface ContentMetadata {
   id: string;

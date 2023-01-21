@@ -13,11 +13,12 @@
         "asyncArrow": "always"
       }
     ],
-    "no-shadowed-variable": false,
-    "no-implicit-dependencies": false,
-    "no-submodule-imports": false,
-    "no-string-literal": false,
     "no-console": false,
+    "no-duplicate-imports": false,
+    "no-implicit-dependencies": false,
+    "no-shadowed-variable": false,
+    "no-string-literal": false,
+    "no-submodule-imports": false,
     "quotemark": [
       true,
       "double",

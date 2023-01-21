@@ -1,4 +1,4 @@
-import { ApiResponse, Identifiable } from "./api-response.model";
+import { Identifiable } from "./api-response.model";
 import { Link } from "./page.model";
 
 export interface Organisation {
@@ -49,20 +49,29 @@ export interface Header {
   selectedLogo: string;
 }
 
-export interface LogoFileData {
+export interface Image {
   awsFileName?: string;
   originalFileName?: string;
   width: number;
   padding: number;
 }
 
-export interface Logos {
-  rootFolder: string;
-  images: LogoFileData[]
+export enum BannerImageType {
+  backgrounds = "backgrounds",
+  bannerPhotos = "banner-photos",
+  icons = "icons",
+  logos = "logos"
+}
+
+export interface Images {
+  rootFolder: BannerImageType;
+  images: Image[]
 }
 
 export interface SystemConfig extends Identifiable {
-  logos: Logos
+  icons: Images;
+  backgrounds: Images
+  logos: Images
   header: Header,
   footer: Footer
   group: Organisation;
@@ -71,8 +80,18 @@ export interface SystemConfig extends Identifiable {
   externalUrls: ExternalUrls
 }
 
-export interface SystemConfigApiResponse extends ApiResponse {
-  request: any;
-  response?: SystemConfig;
+export interface ColourSelector {
+  class: string;
+  badgeClass?: string;
+  name: string
 }
 
+export const colourSelectors: ColourSelector[] = [
+  {class: "d-none", name: "Hide"},
+  {class: "colour-cloudy", badgeClass: "badge badge-cloudy", name: "Cloudy"},
+  {class: "colour-granite", badgeClass: "badge badge-granite", name: "Granite"},
+  {class: "colour-mintcake", badgeClass: "badge badge-mintcake", name: "Mintcake"},
+  {class: "colour-rosycheeks", badgeClass: "badge badge-rosycheeks", name: "Rosy Cheeks"},
+  {class: "colour-sunrise", badgeClass: "badge badge-sunrise", name: "Sunrise"},
+  {class: "colour-sunset", badgeClass: "badge badge-sunset", name: "Sunset"},
+];

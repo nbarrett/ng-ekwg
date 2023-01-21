@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { each } from "lodash-es";
+import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { share } from "rxjs/operators";

@@ -70,7 +70,6 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  public format: OutputFormat = "jpeg";
   public aspectRatio: number;
   public dimensions: DescribedDimensions[] = [
     {width: 1, height: 1, description: "Square"},
@@ -148,6 +147,14 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
       this.dimension = this.dimensions[0];
     }
     this.changeAspectRatioSettings();
+  }
+
+  format(): OutputFormat {
+    if (this?.originalFile?.name?.endsWith("png")) {
+      return "png";
+    } else {
+      return "jpeg";
+    }
   }
 
   imageCropped(event: ImageCroppedEvent) {

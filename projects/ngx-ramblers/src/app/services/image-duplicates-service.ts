@@ -1,5 +1,8 @@
 import { Injectable } from "@angular/core";
-import { cloneDeep, each, groupBy, isEqual } from "lodash-es";
+import cloneDeep from "lodash-es/cloneDeep";
+import each from "lodash-es/each";
+import groupBy from "lodash-es/groupBy";
+import isEqual from "lodash-es/isEqual";
 import { NgxLoggerLevel } from "ngx-logger";
 import { ContentMetadata, ContentMetadataItem, DuplicateImages } from "../models/content-metadata.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";

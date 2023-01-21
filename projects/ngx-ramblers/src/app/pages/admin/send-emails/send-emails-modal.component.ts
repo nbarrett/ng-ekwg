@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
-import { map } from "lodash-es";
+import map from "lodash-es/map";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";

@@ -1,6 +1,8 @@
 import { Component, HostListener, Input, OnInit } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { isEqual, max, min } from "lodash-es";
+import isEqual from "lodash-es/isEqual";
+import max from "lodash-es/max";
+import min from "lodash-es/min";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../../../models/broadcast.model";
 import { PageContent, PageContentColumn, PageContentEditEvent, PageContentRow } from "../../../models/content-text.model";

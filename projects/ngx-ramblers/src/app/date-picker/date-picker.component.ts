@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import { kebabCase } from "lodash-es";
+import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DateValue } from "../models/date.model";
 import { DateUtilsService } from "../services/date-utils.service";

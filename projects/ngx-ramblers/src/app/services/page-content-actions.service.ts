@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { kebabCase } from "lodash-es";
 import flatten from "lodash-es/flatten";
+import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
 import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType } from "../models/content-text.model";

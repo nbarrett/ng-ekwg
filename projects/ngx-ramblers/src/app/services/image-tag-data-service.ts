@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { max } from "lodash-es";
+import max from "lodash-es/max";
 import { NgxLoggerLevel } from "ngx-logger";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { ALL_PHOTOS, ImageTag, RECENT_PHOTOS } from "../models/content-metadata.model";
 import { sortBy } from "./arrays";
 import { Logger, LoggerFactory } from "./logger-factory.service";

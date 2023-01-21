@@ -1,11 +1,13 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { uniq } from "lodash-es";
+import uniq from "lodash-es/uniq";
 import { NgxLoggerLevel } from "ngx-logger";
+import { AuthService } from "../auth/auth.service";
 import { DataQueryOptions } from "../models/api-request.model";
 import { PageContent } from "../models/content-text.model";
 import { CommonDataService } from "./common-data-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
+import { MemberLoginService } from "./member/member-login.service";
 
 @Injectable({
   providedIn: "root"
@@ -17,6 +19,8 @@ export class PageContentService {
 
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
+              private authService: AuthService,
+              public memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(PageContentService, NgxLoggerLevel.OFF);
     this.refreshSiteLinks();
@@ -65,9 +69,11 @@ export class PageContentService {
   }
 
   refreshSiteLinks() {
-    this.all().then(response => {
-      this.siteLinks = uniq(response.map(item => item.path)).sort();
-      this.logger.info("siteLinks:", this.siteLinks);
-    });
+    if (this.memberLoginService.allowContentEdits()) {
+      this.all().then(response => {
+        this.siteLinks = uniq(response.map(item => item.path)).sort();
+        this.logger.info("siteLinks:", this.siteLinks);
+      });
+    }
   }
 }

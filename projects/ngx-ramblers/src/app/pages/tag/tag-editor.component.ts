@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { cloneDeep, isEqual } from "lodash-es";
+import cloneDeep from "lodash-es/cloneDeep";
+import isEqual from "lodash-es/isEqual";
 import { NgxLoggerLevel } from "ngx-logger";
 import { TagData, TagifySettings } from "ngx-tagify";
 import { ReplaySubject } from "rxjs";

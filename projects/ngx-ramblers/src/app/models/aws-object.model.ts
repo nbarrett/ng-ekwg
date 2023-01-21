@@ -35,15 +35,18 @@ export interface UploadedFile {
   size: number
 }
 
+export interface AwsInfo {
+  responseData: {
+    ETag?: string;
+  },
+  information?: string;
+  error?: any;
+}
+
 export interface AwsFileUploadResponseData {
   files: {},
   auditLog: AuditMessage[],
-  awsInfo: {
-    responseData: {
-      ETag: string;
-    },
-    information: string;
-  },
+  awsInfo: AwsInfo,
   fileNameData: ServerFileNameData,
   uploadedFile: UploadedFile
 }

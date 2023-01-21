@@ -15,10 +15,18 @@ import { ForgotPasswordComponent } from "../../login/forgot-password.component";
 import { LoginComponent } from "../../login/login.component";
 import { SetPasswordComponent } from "../../login/set-password.component";
 import { LogoutComponent } from "../../logout/logout.component";
-import { LetterheadLogoConfigComponent } from "../../pages/letterhead/letterhead-logo-config.component";
-import { LetterheadLogoComponent } from "../../pages/letterhead/letterhead-logo/letterhead-logo";
 import { MeetupDescriptionComponent } from "../../notifications/walks/templates/meetup/meetup-description.component";
 import { PageNavigatorComponent } from "../../page-navigator/page-navigator.component";
+import { BannerImageSelectorComponent } from "../../pages/banner/banner-image-selector.component";
+import { BannerLogoAndTextLinesOutputComponent } from "../../pages/banner/banner-logo-and-text-lines-output.component";
+import { BannerHeadLogoComponent } from "../../pages/banner/banner-logo/banner-logo";
+import { BannerPapercutOutputComponent } from "../../pages/banner/banner-papercut-output.component";
+import { BannerTitleConfigComponent } from "../../pages/banner/banner-title-config.component";
+import { BannerTitleOutputComponent } from "../../pages/banner/banner-title-output.component";
+import { BannerTitlePartConfigComponent } from "../../pages/banner/banner-title-part-config.component";
+import { BannerComponent } from "../../pages/banner/banner.component";
+import { ColourSelectorComponent } from "../../pages/banner/colour-selector";
+import { IconSelectorComponent } from "../../pages/banner/icon-selector";
 import { FacebookComponent } from "../../pages/facebook/facebook.component";
 import { HomeComponent } from "../../pages/home/home.component";
 import { PrivacyPolicyComponent } from "../../pages/home/privacy-policy.component";
@@ -27,10 +35,6 @@ import { HowToComponent } from "../../pages/how-to/how-to.component";
 import { HowToSubjectListingComponent } from "../../pages/how-to/subject-listing/subject-listing";
 import { InstagramComponent } from "../../pages/instagram/instagram.component";
 import { JoinUsComponent } from "../../pages/join-us/join-us.component";
-import { LetterheadTitleConfigComponent } from "../../pages/letterhead/letterhead-title-config.component";
-import { LetterheadTitleOutputComponent } from "../../pages/letterhead/letterhead-title-output.component";
-import { LetterheadTitlePartConfigComponent } from "../../pages/letterhead/letterhead-title-part-config.component";
-import { LetterheadComponent } from "../../pages/letterhead/letterhead.component";
 import { LoginModalComponent } from "../../pages/login/login-modal/login-modal.component";
 import { ChangedItemsPipe } from "../../pipes/changed-items.pipe";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -42,40 +46,44 @@ import { NavbarComponent } from "./navbar/navbar";
 
 @NgModule({
   declarations: [
+    BannerComponent,
+    BannerLogoAndTextLinesOutputComponent,
+    BannerPapercutOutputComponent,
+    ColourSelectorComponent,
+    IconSelectorComponent,
+    BannerHeadLogoComponent,
+    BannerImageSelectorComponent,
+    BannerTitleConfigComponent,
+    BannerTitleOutputComponent,
+    BannerTitlePartConfigComponent,
+    CardContainerComponent,
     CarouselStoryNavigatorComponent,
     ChangedItemsPipe,
     ContainerComponent,
+    FacebookComponent,
+    FooterComponent,
     FooterIconsComponent,
     ForgotPasswordComponent,
-    NewBrandHomeComponent,
-    HowToComponent,
-    HowToSubjectListingComponent,
-    HowToModalComponent,
-    JoinUsComponent,
+    HeaderBarComponent,
+    HeaderButtonsComponent,
     HomeComponent,
-    LetterheadComponent,
-    LetterheadTitleConfigComponent,
-    LetterheadLogoConfigComponent,
-    LetterheadTitleOutputComponent,
-    LetterheadTitlePartConfigComponent,
+    HowToComponent,
+    HowToModalComponent,
+    HowToSubjectListingComponent,
+    InstagramComponent,
+    JoinUsComponent,
     LoginComponent,
     LoginModalComponent,
     LoginPanelComponent,
     LogoutComponent,
-    LetterheadLogoComponent,
     MeetupDescriptionComponent,
-    FooterComponent,
-    PageNavigatorComponent,
     NavbarComponent,
+    NavbarContentComponent,
+    NewBrandHomeComponent,
+    PageNavigatorComponent,
     PrivacyPolicyComponent,
     SetPasswordComponent,
     SiteEditComponent,
-    HeaderBarComponent,
-    HeaderButtonsComponent,
-    InstagramComponent,
-    FacebookComponent,
-    CardContainerComponent,
-    NavbarContentComponent,
   ],
   imports: [
     AppRoutingModule,

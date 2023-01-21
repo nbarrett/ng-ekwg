@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, ReplaySubject } from "rxjs";
-import { Organisation, SystemConfigResponse } from "../../models/system.model";
+import { Images, BannerImageType, Organisation, SystemConfigResponse } from "../../models/system.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { StringUtilsService } from "../string-utils.service";
 
 @Injectable({
   providedIn: "root"
@@ -17,6 +18,7 @@ export class SystemConfigService {
 
   constructor(private config: ConfigService,
               private memberLoginService: MemberLoginService,
+              public stringUtils: StringUtilsService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SystemConfigService, NgxLoggerLevel.OFF);
     this.refresh();
@@ -31,6 +33,10 @@ export class SystemConfigService {
 
   private async getConfig(): Promise<SystemConfigResponse> {
     return (await this.config.getConfig<SystemConfigResponse>("system", this.default()));
+  }
+
+  imageTypeDescription(imageType: BannerImageType) {
+    return this.stringUtils.asTitle(imageType);
   }
 
   saveConfig(config: SystemConfigResponse) {
@@ -55,10 +61,16 @@ export class SystemConfigService {
     return this.state[key];
   }
 
+  public defaultImages(imageType: BannerImageType): Images {
+    return {rootFolder: imageType, images: []};
+  }
+
   default(): SystemConfigResponse {
     return {
       system: {
-        logos: {rootFolder: "", images: []},
+        backgrounds: this.defaultImages(BannerImageType.backgrounds),
+        icons: this.defaultImages(BannerImageType.icons),
+        logos: this.defaultImages(BannerImageType.logos),
         externalUrls: {
           facebook: {appId: null, pagesUrl: null, groupUrl: null},
           meetup: null,

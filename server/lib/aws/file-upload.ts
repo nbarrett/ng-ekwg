@@ -1,11 +1,11 @@
-import { first, isObject, keys, map } from "lodash";
+import { first, isObject, map } from "lodash";
 import { AuditStatus } from "../../../projects/ngx-ramblers/src/app/models/audit";
 import { AwsFileUploadResponse, AwsFileUploadResponseData, ServerFileNameData, UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
 import { envConfig } from "../env-config/env-config";
 import { generateUid, uidFormat } from "../shared/string-utils";
+import { aws } from "./aws-controllers";
 import debug = require("debug");
 import path = require("path");
-import aws = require("../aws/aws-controllers");
 
 const debugLog = debug(envConfig.logNamespace("s3-file-upload"));
 

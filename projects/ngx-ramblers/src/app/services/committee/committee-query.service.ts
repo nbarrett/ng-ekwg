@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { first } from "lodash-es";
+import  first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
 import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsFilter, GroupEventTypes } from "../../models/committee.model";

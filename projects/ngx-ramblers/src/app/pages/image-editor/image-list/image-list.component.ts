@@ -2,7 +2,7 @@ import { Location } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import { min } from "lodash-es";
+import min from "lodash-es/min";
 import first from "lodash-es/first";
 import range from "lodash-es/range";
 import { FileUploader } from "ng2-file-upload";

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
 import { faMeetup } from "@fortawesome/free-brands-svg-icons";
-import { range } from "lodash-es";
 import first from "lodash-es/first";
+import range from "lodash-es/range";
 import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";

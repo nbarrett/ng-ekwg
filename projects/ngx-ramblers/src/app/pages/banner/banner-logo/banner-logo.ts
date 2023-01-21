@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { LogoFileData, Organisation } from "../../../models/system.model";
+import { Image, Organisation } from "../../../models/system.model";
 import { UrlService } from "../../../services/url.service";
 
 @Component({
-  selector: "app-letterhead-logo",
-  templateUrl: "./letterhead-logo.html",
+  selector: "app-banner-image",
+  templateUrl: "./banner-logo.html",
 })
-export class LetterheadLogoComponent implements OnInit {
+export class BannerHeadLogoComponent implements OnInit {
 
   public group: Organisation;
 
@@ -15,7 +15,7 @@ export class LetterheadLogoComponent implements OnInit {
   }
 
   @Input()
-  logo: LogoFileData;
+  image: Image;
 
   ngOnInit(): void {
   }

@@ -1,5 +1,4 @@
 import { Injectable } from "@angular/core";
-import clone from "lodash-es/clone";
 import cloneDeep from "lodash-es/cloneDeep";
 import last from "lodash-es/last";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
@@ -50,7 +49,7 @@ export class CommitteeDisplayService {
   }
 
   defaultCommitteeFile(): CommitteeFile {
-    return clone({
+    return cloneDeep({
       createdDate: this.dateUtils.momentNow().valueOf(),
       eventDate: this.dateUtils.momentNowNoTime().valueOf(),
       fileType: this.fileTypes()[0]?.description

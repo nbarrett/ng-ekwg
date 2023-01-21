@@ -5,7 +5,7 @@ import first from "lodash-es/first";
 import last from "lodash-es/last";
 import tail from "lodash-es/tail";
 import { NgxLoggerLevel } from "ngx-logger";
-import { BASE64_PREFIX, S3_BASE_URL } from "../models/content-metadata.model";
+import { BASE64_PREFIX_JPEG, BASE64_PREFIX_PNG, S3_BASE_URL } from "../models/content-metadata.model";
 import { AWSLinkConfig, LinkConfig } from "../models/link.model";
 import { SiteEditService } from "../site-edit/site-edit.service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -41,9 +41,9 @@ export class UrlService {
 
   navigateUnconditionallyTo(...pathSegments: string[]): Promise<boolean> {
     const url = `${this.pageUrl(pathSegments.filter(item => item).join("/"))}`;
-    this.logger.info("navigating to pathSegments:", pathSegments, "->", url);
+    this.logger.debug("navigating to pathSegments:", pathSegments, "->", url);
     return this.router.navigate([url], {relativeTo: this.route, queryParamsHandling: "merge"}).then((activated: boolean) => {
-      this.logger.info("activated:", activated, "area is now:", this.area());
+      this.logger.debug("activated:", activated, "area is now:", this.area());
       return activated;
     });
   }
@@ -51,7 +51,7 @@ export class UrlService {
   navigateToUrl(url: string, $event: MouseEvent) {
     if (!this.siteEdit.active()) {
       const controlOrMetaKey: boolean = $event.ctrlKey || $event.metaKey;
-      this.logger.info("navigateToUrl:", url, "controlOrMetaKey:", controlOrMetaKey, "$event:", $event);
+      this.logger.debug("navigateToUrl:", url, "controlOrMetaKey:", controlOrMetaKey, "$event:", $event);
       if (controlOrMetaKey) {
         window.open(url, "_blank");
       } else {
@@ -92,7 +92,7 @@ export class UrlService {
 
   pathSegments(): string[] {
     const pathSegments = this.router.parseUrl(this.router.url)?.root?.children?.primary?.segments?.map(item => item.path) || [];
-    this.logger.info("pathSegments:", pathSegments);
+    this.logger.debug("pathSegments:", pathSegments);
     return pathSegments;
   }
 
@@ -122,7 +122,7 @@ export class UrlService {
 
   routerLinkUrl(url: string): string {
     const routerLinkUrl = this.isRemoteUrl(url) ? null : "/" + url;
-    this.logger.info("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
+    this.logger.debug("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
     return routerLinkUrl;
   }
 
@@ -178,6 +178,6 @@ export class UrlService {
   }
 
   private isBase64Image(url: string): boolean {
-    return url?.startsWith(BASE64_PREFIX);
+    return url?.startsWith(BASE64_PREFIX_JPEG) || url?.startsWith(BASE64_PREFIX_PNG);
   }
 }

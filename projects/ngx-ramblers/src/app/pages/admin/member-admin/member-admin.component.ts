@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { cloneDeep } from "lodash-es";
+import cloneDeep from "lodash-es/cloneDeep";
 import extend from "lodash-es/extend";
 import groupBy from "lodash-es/groupBy";
 import map from "lodash-es/map";

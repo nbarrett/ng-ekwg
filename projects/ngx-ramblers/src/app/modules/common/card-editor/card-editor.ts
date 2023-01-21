@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { uniq } from "lodash-es";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AwsFileData } from "../../../models/aws-object.model";
 import { ImageType, PageContent, PageContentColumn, PageContentEditEvent, PageContentRow } from "../../../models/content-text.model";

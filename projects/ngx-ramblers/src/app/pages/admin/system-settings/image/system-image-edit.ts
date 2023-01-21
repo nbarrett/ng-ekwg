@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { faAdd } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { faRemove } from "@fortawesome/free-solid-svg-icons/faRemove";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { remove } from "lodash-es";
@@ -7,7 +7,7 @@ import { FileUploader } from "ng2-file-upload";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../../models/alert-target.model";
 import { AwsFileData } from "../../../../models/aws-object.model";
-import { LogoFileData } from "../../../../models/system.model";
+import { Image, Images, BannerImageType } from "../../../../models/system.model";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { FileUploadService } from "../../../../services/file-upload.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -20,21 +20,22 @@ import { SystemConfigService } from "../../../../services/system/system-config.s
 import { UrlService } from "../../../../services/url.service";
 
 @Component({
-  selector: "app-system-logo-edit",
-  templateUrl: "./system-logo-edit.html",
-  styleUrls: ["./system-logo.sass"]
+  selector: "app-system-image-edit",
+  templateUrl: "./system-image-edit.html",
+  styleUrls: ["./system-image.sass"]
 })
-export class SystemLogoEditComponent implements OnInit {
+export class SystemImageEditComponent implements OnInit {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
   faAdd = faAdd;
   faSave = faSave;
+  faEdit = faEdit;
   faRemove = faRemove;
   public awsFileData: AwsFileData;
   public logoEditActive: boolean;
   public uploader: FileUploader;
-  public droppedFile: File;
+  public logoMode: boolean;
 
   constructor(private systemConfigService: SystemConfigService,
               private notifierService: NotifierService,
@@ -46,19 +47,21 @@ export class SystemLogoEditComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SystemLogoEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SystemImageEditComponent, NgxLoggerLevel.OFF);
   }
 
   @Input() headerLogoDefault: boolean;
-  @Input() rootFolder: string;
-  @Input() image: LogoFileData;
-  @Input() images: LogoFileData[];
+  @Input() imageType: BannerImageType;
+  @Input() images: Images;
+  @Input() image: Image;
   @Output() headerLogoChanged: EventEmitter<string> = new EventEmitter();
+  @Output() imageChanged: EventEmitter<Image> = new EventEmitter();
 
   ngOnInit() {
-    this.logger.info("constructed with:", this.image);
+    this.logger.info("constructed with imageType:", this.imageType, "image:", this.image);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logoEditActive = !this.image.awsFileName;
+    this.logoMode = this.imageType === BannerImageType.logos;
   }
 
   throwOrNotifyError(message: AlertMessage) {
@@ -71,15 +74,16 @@ export class SystemLogoEditComponent implements OnInit {
   }
 
   delete() {
-    remove(this.images, this.image);
+    remove(this.images.images, this.image);
   }
 
-  imageChanged(awsFileData: AwsFileData) {
+  imageChange(awsFileData: AwsFileData) {
     this.logger.info("imageChanged:", awsFileData);
     this.awsFileData = awsFileData;
     if (!this.image.originalFileName) {
       this.image.originalFileName = awsFileData.file.name;
     }
+    this.imageChanged.next(this.image);
   }
 
   exitImageEdit() {
@@ -91,6 +95,7 @@ export class SystemLogoEditComponent implements OnInit {
     const logoImageSource = awsFileData.awsFileName;
     this.logger.info("imagedSaved:", awsFileData, "setting logoImageSource to", logoImageSource);
     this.image.awsFileName = logoImageSource;
+    this.imageChanged.next(this.image);
   }
 
   uniqueIdFor(prefix: string) {
@@ -108,7 +113,11 @@ export class SystemLogoEditComponent implements OnInit {
   }
 
   logoTitle() {
-    return `${this.images.indexOf(this.image) + 1} of ${this.images.length} — ${this.image.originalFileName || "New Logo"} ${this.headerLogoDefault? " (header logo default)" :"" }`;
+    return this?.images?.images ? `${this?.images.images.indexOf(this.image) + 1} of ${this.images.images.length} — ${this.image.originalFileName || "New Logo"} ${this.headerLogoDefault ? " (header logo default)" : ""}` : "";
   }
 
+  imageValid(image: Image) {
+    this.logger.debug("imageValid:", image?.awsFileName,"this?.images?.rootFolder:", this?.images?.rootFolder);
+    return image?.awsFileName?.startsWith(this?.images?.rootFolder);
+  }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import clone from "lodash-es/clone";
+import cloneDeep from "lodash-es/clone";
 import find from "lodash-es/find";
 import isEmpty from "lodash-es/isEmpty";
 import last from "lodash-es/last";
@@ -111,7 +111,7 @@ export class ExpenseDisplayService {
   }
 
   public defaultExpenseItem(): ExpenseItem {
-    return clone({
+    return cloneDeep({
       expenseType: this.expenseTypes[0],
       expenseDate: this.dateUtils.asValueNoTime(),
       cost: 0,

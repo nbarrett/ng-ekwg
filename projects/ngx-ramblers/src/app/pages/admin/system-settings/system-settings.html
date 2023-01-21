@@ -46,26 +46,20 @@
             </div>
           </div>
         </tab>
-        <tab heading="Logos">
-          <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="row img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">Logos ({{config.system?.logos?.images?.length || 0}})</div>
-              <div class="col-sm-12">
-                <div class="badge-button mb-2" (click)="createNewLogo()"
-                     delay=500 tooltip="Add new link">
-                  <fa-icon [icon]="faAdd"></fa-icon>
-                  <span>add logo</span>
-                </div>
-              </div>
-              <div class="col-sm-12" *ngFor="let image of config.system?.logos?.images">
-                <app-system-logo-edit [rootFolder]="config.system.logos.rootFolder"
-                                      [headerLogoDefault]="headerLogoDefault(image)"
-                                      [images]="config.system?.logos?.images"
-                                      [image]="image"
-                (headerLogoChanged)="headerLogoChanged($event)"></app-system-logo-edit>
-              </div>
-            </div>
-          </div>
+        <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(backgrounds)"
+             [imageType]="backgrounds"
+             [config]="config"
+             [images]="config.system.backgrounds">
+        </tab>
+        <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(icons)"
+             [imageType]="icons"
+             [config]="config"
+             [images]="config.system.icons">
+        </tab>
+        <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(logos)"
+             [imageType]="logos"
+             [config]="config"
+             [images]="config.system.logos">
         </tab>
         <tab heading="Website Header">
           <div class="img-thumbnail thumbnail-admin-edit">

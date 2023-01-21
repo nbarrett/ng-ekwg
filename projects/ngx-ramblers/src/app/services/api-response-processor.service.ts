@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { cloneDeep } from "lodash-es";
+import cloneDeep from "lodash-es/cloneDeep";
 import isArray from "lodash-es/isArray";
 import { ApiAction, ApiResponse, Identifiable } from "../models/api-response.model";
 import { Logger } from "./logger-factory.service";
