@@ -38,14 +38,15 @@ import { UrlService } from "../../services/url.service";
           <button [attr.aria-expanded]="!isCollapsed" (click)="isCollapsed = !isCollapsed" class="btn btn-primary"
                   type="button">{{isCollapsed ? 'Edit' : 'Close Edit'}}</button>
           <ng-container *ngIf="allowContentEdits">
+            <button *ngIf="!bannerPhotoEditActive" class="btn btn-primary ml-2" type="button" (click)="editPhoto()">Edit Photo</button>
             <button (click)="duplicate()" class="btn btn-primary ml-2"
                     type="button">Duplicate
             </button>
             <button (click)="delete()" class="btn btn-primary ml-2"
                     type="button">Delete
             </button>
+            <button class="btn btn-primary ml-2" type="button" (click)="cancel()">Undo Changes</button>
             <div class="float-right">
-              <button class="btn btn-primary mr-2" type="button" (click)="cancel()">Undo All Changes</button>
               <button class="btn btn-primary" type="button" (click)="save()">Save All Changes</button>
             </div>
           </ng-container>
@@ -119,15 +120,12 @@ import { UrlService } from "../../services/url.service";
                   <div class="col-sm-6">
                     <app-colour-selector [itemWithClass]="editableBanner.banner?.text">
                     </app-colour-selector>
-                    <div class="float-right" *ngIf="!bannerPhotoEditActive">
-                      <button class="btn btn-primary mt-2" type="button" (click)="editPhoto()">Edit Photo</button>
-                    </div>
                   </div>
-                  <div class="col-sm-12">
+                  <div class="col-sm-12 mt-4">
                     <app-image-cropper
                       *ngIf="bannerPhotoEditActive"
                       [rootFolder]="bannerPhotos"
-                      [preloadImage]="bannerPhotoAwsFileData?.image"
+                      [preloadImage]="preLoadImage()"
                       (imageChange)="imageChange($event)"
                       (quit)="exitImageEdit()"
                       (save)="imagedSaved($event)">
@@ -140,8 +138,6 @@ import { UrlService } from "../../services/url.service";
         </div>
         <div class="col-sm-12 mt-3">
           <app-papercut-output *ngIf="isPapercutBanner()" [banner]="editableBanner.banner" [tempImage]="bannerPhotoAwsFileData?.image"></app-papercut-output>
-        </div>
-        <div class="col-sm-12 mt-3">
           <app-banner-logo-and-text-lines-output *ngIf="isLogoAndTextLines()" [banner]="editableBanner.banner"></app-banner-logo-and-text-lines-output>
         </div>
       </div>
@@ -180,6 +176,18 @@ export class BannerComponent implements OnInit {
     this.logger = loggerFactory.createLogger(BannerComponent, NgxLoggerLevel.OFF);
   }
 
+  ngOnInit() {
+    this.logger.debug("ngOnInit");
+    this.refreshCachedData();
+    this.refreshData();
+    this.authService.authResponse().subscribe(() => this.refreshCachedData());
+    this.systemConfigService.events()
+      .subscribe((config: SystemConfigResponse) => {
+        this.config = config;
+        this.logger.info("retrieved config", config);
+      });
+  }
+
   async refreshCachedData() {
     this.allowContentEdits = this.memberLoginService.allowContentEdits();
     if (this.memberLoginService.memberLoggedIn()) {
@@ -200,11 +208,8 @@ export class BannerComponent implements OnInit {
     this.bannerPhotoAwsFileData = awsFileData;
     const background: PapercutBackgroundBanner = this.editablePapercutBackgroundBanner();
     this.logger.info("imageChanged:", awsFileData, "background:", background);
-    if (!background?.photo?.image?.originalFileName) {
+    if (!background?.photo?.image?.originalFileName && awsFileData?.file?.name) {
       background.photo.image.originalFileName = awsFileData?.file?.name;
-    }
-    if (awsFileData?.awsFileName) {
-      background.photo.image.awsFileName = awsFileData.awsFileName;
     }
   }
 
@@ -219,18 +224,6 @@ export class BannerComponent implements OnInit {
   exitImageEdit() {
     this.bannerPhotoAwsFileData = null;
     this.bannerPhotoEditActive = false;
-  }
-
-  ngOnInit() {
-    this.logger.debug("ngOnInit");
-    this.refreshCachedData();
-    this.refreshData();
-    this.authService.authResponse().subscribe(() => this.refreshCachedData());
-    this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
-        this.config = config;
-        this.logger.info("retrieved config", config);
-      });
   }
 
   private refreshData() {
@@ -370,6 +363,12 @@ export class BannerComponent implements OnInit {
   }
 
   editPhoto() {
+    this.isCollapsed = false;
     this.bannerPhotoEditActive = true;
+  }
+
+  preLoadImage() {
+    const banner: PapercutBackgroundBanner = this?.editableBanner?.banner as PapercutBackgroundBanner;
+    return this.bannerPhotoAwsFileData?.image || (this.bannerPhotoEditActive ? banner?.photo?.image?.awsFileName : null);
   }
 }

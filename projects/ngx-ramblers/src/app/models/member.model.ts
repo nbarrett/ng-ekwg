@@ -128,7 +128,8 @@ export interface StatusMessage {
 }
 
 export interface RamblersMember {
-  membershipExpiryDate: string;
+  groupMember?: boolean;
+  membershipExpiryDate?: string | number;
   membershipNumber: string;
   mobileNumber: string;
   email: string;

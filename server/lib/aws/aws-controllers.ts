@@ -4,7 +4,7 @@ import * as crypto from "crypto";
 import * as debug from "debug";
 import * as fs from "fs";
 import * as https from "https";
-import first from "lodash/first";
+import { first, omit } from "lodash";
 import * as moment from "moment-timezone";
 import * as path from "path";
 import { AwsInfo, UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
@@ -203,7 +203,7 @@ function putObject(req, res) {
     });
 }
 
-function putObjectDirect(rootFolder, fileName, localFileName): Promise<AwsInfo> {
+function putObjectDirect(rootFolder: string, fileName: string, localFileName: string): Promise<AwsInfo> {
   debugLog("configured with", s3Config);
   const bucket = envConfig.aws.bucket;
   const objectKey = `${rootFolder}/${path.basename(fileName)}`;
@@ -215,7 +215,7 @@ function putObjectDirect(rootFolder, fileName, localFileName): Promise<AwsInfo> 
     ACL: "public-read",
     ContentType: contentTypeFrom(objectKey)
   };
-  debugLog(`Saving file to ${bucket}/${objectKey} using params`, JSON.stringify(params));
+  debugLog(`Saving file to ${bucket}/${objectKey} using params:`, JSON.stringify(omit(params, "Body")));
   return s3.putObject(params)
     .then(data => {
       const information = `Successfully uploaded file to ${bucket}/${objectKey}`;
@@ -242,7 +242,7 @@ function sendObject(rootFolder, fileName, localFileName): Promise<AwsInfo> {
     ACL: "public-read",
     ContentType: contentTypeFrom(objectKey)
   };
-  debugLog(`Saving file to ${bucket}/${objectKey} using params`, JSON.stringify(params));
+  debugLog(`Saving file to ${bucket}/${objectKey} using params`, JSON.stringify(omit(params, "Body")));
   const region = envConfig.aws.region;
   const accessKeyId = envConfig.aws.accessKeyId;
   const secretAccessKey = envConfig.aws.secretAccessKey;

@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import each from "lodash-es/each";
+import isEmpty from "lodash-es/isEmpty";
 import omit from "lodash-es/omit";
 import { NgxLoggerLevel } from "ngx-logger";
-import { AuditField, Member, MemberAction, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit } from "../../models/member.model";
+import { AuditField, Member, MemberAction, MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, MemberUpdateAudit, RamblersMember } from "../../models/member.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -99,32 +100,33 @@ export class MemberBulkLoadService {
         });
     };
 
-    const convertMembershipExpiryDate = (ramblersMember): number => {
-      const dataValue = ramblersMember.membershipExpiryDate ? this.dateUtils.asValueNoTime(ramblersMember.membershipExpiryDate, "DD/MM/YYYY") : ramblersMember.membershipExpiryDate;
+    const convertMembershipExpiryDate = (ramblersMember: RamblersMember): number | string => {
+      const dataValue = !isEmpty(ramblersMember?.membershipExpiryDate) ? this.dateUtils.asValueNoTime(ramblersMember.membershipExpiryDate, "DD/MM/YYYY") : ramblersMember.membershipExpiryDate;
       this.logger.debug("ramblersMember", ramblersMember, "membershipExpiryDate", ramblersMember.membershipExpiryDate, "->", this.dateUtils.displayDate(dataValue));
       return dataValue;
     };
 
-    const createOrUpdateMember = (uploadSessionId, recordIndex, ramblersMember, promises) => {
-
+    const createOrUpdateMember = (uploadSessionId, recordIndex, ramblersMember: RamblersMember, promises) => {
       let memberAction: string;
+      let memberMatchType: string;
       ramblersMember.membershipExpiryDate = convertMembershipExpiryDate(ramblersMember);
       ramblersMember.groupMember = !ramblersMember.membershipExpiryDate || ramblersMember.membershipExpiryDate >= today;
       let member: Member = members.find(member => {
-        const existingUserName = this.memberNamingService.createUserName(ramblersMember);
-        let match: boolean = member.membershipNumber && member.membershipNumber.toString() === ramblersMember.membershipNumber.toString();
-        if (!match && member.userName) {
-          match = member.userName === existingUserName;
+        const membershipNumberMatch = member?.membershipNumber === ramblersMember?.membershipNumber;
+        if (membershipNumberMatch) {
+          memberMatchType = "membership number";
+          return true;
+        } else if (!isEmpty(ramblersMember.email) && !isEmpty(member.email) && ramblersMember.email === member.email && ramblersMember.lastName === member.lastName) {
+          memberMatchType = "email and last name";
+          return true;
+        } else {
+          return false;
         }
-        this.logger.debug("match", !!(match),
-          "ramblersMember.membershipNumber", ramblersMember.membershipNumber,
-          "ramblersMember.userName", existingUserName,
-          "member.membershipNumber", member.membershipNumber,
-          "member.userName", member.userName);
-        return match;
       });
-
       if (member) {
+        this.logger.debug("matched members based on:", memberMatchType,
+          "ramblersMember:", ramblersMember,
+          "member:", member);
         this.mailchimpListService.resetUpdateStatusForMember(member);
       } else {
         memberAction = "created";

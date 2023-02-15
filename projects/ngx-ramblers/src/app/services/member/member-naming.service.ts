@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Member, RamblersMember } from "../../models/member.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { StringUtilsService } from "../string-utils.service";
 
@@ -13,7 +14,7 @@ export class MemberNamingService {
     this.logger = loggerFactory.createLogger(MemberNamingService, NgxLoggerLevel.OFF);
   }
 
-  createUserName(member) {
+  createUserName(member: RamblersMember | Member) {
     return member.firstName && member.lastName ? this.stringUtils.replaceAll(" ", "", (member.firstName + "." + member.lastName).toLowerCase()) : "";
   }
 
@@ -21,7 +22,7 @@ export class MemberNamingService {
     return ((member.firstName || "").trim() + " " + (member.lastName || "").trim().substring(0, 1).toUpperCase()).trim();
   }
 
-  createUniqueUserName(member, members) {
+  createUniqueUserName(member: RamblersMember | Member, members: Member[]) {
     return this.createUniqueValueFrom(this.createUserName(member), "userName", members);
   }
 
