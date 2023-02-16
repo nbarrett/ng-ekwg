@@ -1,5 +1,6 @@
 export enum ConfirmType {
   BULK_ACTION = "bulkAction",
+  BULK_DELETE = "bulkDelete",
   CREATE_NEW = "createNew",
   DELETE = "delete",
   APPROVE = "approve",
@@ -59,6 +60,10 @@ export class Confirm {
 
   noneOutstanding() {
     return this.type === ConfirmType.NONE;
+  }
+
+  bulkDeleteOutstanding() {
+    return this.type === ConfirmType.BULK_DELETE;
   }
 
   bulkActionOutstanding() {

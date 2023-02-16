@@ -1,4 +1,5 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
+import { BannerConfig } from "./banner-configuration.model";
 import { MailchimpSubscription } from "./mailchimp.model";
 
 export enum ProfileUpdateType {
@@ -224,4 +225,16 @@ export interface DuplicateMember {
   fieldName: string;
   fieldValue: string;
   duplicates: Member[];
+}
+
+export interface DeletedMember {
+  deletedAt: number;
+  deletedBy: string;
+  memberId: string;
+  membershipNumber: string;
+}
+
+export interface DeletedMemberApiResponse extends ApiResponse {
+  request: any;
+  response?: DeletedMember | DeletedMember[];
 }

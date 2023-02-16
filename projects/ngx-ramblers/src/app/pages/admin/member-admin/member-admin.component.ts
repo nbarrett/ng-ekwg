@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faUserXmark } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import extend from "lodash-es/extend";
 import groupBy from "lodash-es/groupBy";
@@ -11,8 +11,8 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { DuplicateMember, Member } from "../../../models/member.model";
-import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, SELECT_ALL } from "../../../models/table-filtering.model";
+import { DeletedMember, DuplicateMember, Member } from "../../../models/member.model";
+import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD, SELECT_ALL } from "../../../models/table-filtering.model";
 import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ApiResponseProcessor } from "../../../services/api-response-processor.service";
@@ -22,6 +22,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
 import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
+import { DeletedMemberService } from "../../../services/member/deleted-member.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -44,6 +45,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private memberAdminBaseUrl: string;
   private today: number;
   public members: Member[] = [];
+  public bulkDeleteMarkedMemberIds: string[] = [];
   public quickSearch = "";
   private searchChangeObservable: Subject<string>;
   public memberFilter: MemberTableFilter;
@@ -54,13 +56,14 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   private logoutSubscription: Subscription;
   public confirm = new Confirm();
   faSearch = faSearch;
-
+  faUserXmark = faUserXmark;
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
               private apiResponseProcessor: ApiResponseProcessor,
               private searchFilterPipe: SearchFilterPipe,
               private modalService: BsModalService,
               private notifierService: NotifierService,
+              private deletedMemberService: DeletedMemberService,
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               private mailchimpListService: MailchimpListService,
@@ -112,7 +115,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
           title: "Membership Date Expired", group: "From Ramblers Supplied Data", filter: member => member.membershipExpiryDate < this.today
         },
         {
-          title: "Not received in last Ramblers Bulk Load",
+          title: NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD,
           group: "From Ramblers Supplied Data",
           filter: member => !member.receivedInLastBulkLoad
         },
@@ -306,11 +309,23 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     this.mailchimpListUpdaterService.updateMailchimpLists(this.notify, this.members);
   }
 
+  beginBulkMemberDelete() {
+    this.confirm.as(ConfirmType.BULK_DELETE);
+    this.notifyDeletionInstructions();
+  }
+
+  private notifyDeletionInstructions() {
+    this.notify.warning({
+      title: "Member Bulk Delete Started",
+      message: "Select individual members to include/exclude in bulk delete by clicking rightmost column on a member. Or click Select All button to mark all " + this.memberFilter.results.length + " members for deletion. When you have completed your selection, click Confirm Deletion of " + this.bulkDeleteMarkedMemberIds.length + " members to physically delete them, or Cancel to exit the process without making any changes."
+    });
+  }
+
   bulkUnsubscribe() {
     this.confirm.as(ConfirmType.BULK_ACTION);
   }
 
-  bulkUnsubscribeCancel() {
+  clearOutstandingAction() {
     this.confirm.clear();
   }
 
@@ -319,4 +334,60 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       .then(() => this.confirm.clear());
   }
 
+  cancelBulkDelete() {
+    this.confirm.clear();
+    this.markNoneForBulkDelete();
+    this.notify.hide();
+  }
+
+  confirmBulkDelete() {
+    const deletedAt: number = this.dateUtils.momentNowNoTime().valueOf();
+    const deletedBy: string = this.memberLoginService.loggedInMember().memberId;
+    const deletedMembers: DeletedMember[] = this.bulkDeleteMarkedMemberIds.map(memberId => ({
+      deletedAt,
+      deletedBy,
+      memberId,
+      membershipNumber: this.members.find(member => member.id === memberId)?.membershipNumber
+    }));
+    this.logger.info("confirmBulkDelete:deletedMembers:", deletedMembers);
+    Promise.all(deletedMembers.map(deletedMember => {
+      const memberToDelete: Member = this.members.find(member => member.id === deletedMember.memberId);
+      if (memberToDelete) {
+        this.logger.info("deleting:deletedMember:", deletedMember, "memberToDelete:", memberToDelete);
+        return this.memberService.delete(memberToDelete).then(() => this.deletedMemberService.create(deletedMember));
+      } else {
+        this.logger.warn("cant delete:deletedMember:", deletedMember, "as member cant be found");
+        return false;
+      }
+    })).then(() => this.cancelBulkDelete());
+  }
+
+  markAllForBulkDelete() {
+    this.logger.info("markAllForBulkDelete");
+    this.bulkDeleteMarkedMemberIds = this.memberFilter.results.map(item => item.id);
+    this.notifyDeletionInstructions();
+  }
+
+  markNoneForBulkDelete() {
+    this.logger.info("markNoneForBulkDelete");
+    this.bulkDeleteMarkedMemberIds = [];
+    this.notifyDeletionInstructions();
+  }
+
+  notReceivedInLastBulkLoadSelected(): boolean {
+    return this.memberFilter.selectedFilter.title === NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD;
+  }
+
+  markedForDelete(memberId: string): boolean {
+    return this.bulkDeleteMarkedMemberIds.includes(memberId);
+  }
+
+  toggleDeletionMarker(memberId: string): void {
+    if (this.markedForDelete(memberId)) {
+      this.bulkDeleteMarkedMemberIds = this.bulkDeleteMarkedMemberIds.filter(item => item !== memberId);
+    } else {
+      this.bulkDeleteMarkedMemberIds.push(memberId);
+    }
+    this.notifyDeletionInstructions();
+  }
 }
