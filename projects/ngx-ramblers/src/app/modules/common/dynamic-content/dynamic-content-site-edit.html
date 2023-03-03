@@ -1,0 +1,93 @@
+<ng-container *ngIf="siteEditService.active()">
+  <ng-container *ngIf="pageContent">
+    <div class="card mb-2">
+      <div class="card-body">
+        <h4 class="card-title">Page content for {{pageContent.path}} (<small
+          class="text-muted">{{stringUtils.pluraliseWithCount(pageContent?.rows.length, 'row')}}</small>)</h4>
+        <ng-template #saveButtonsAndPath>
+          <div class="form-inline">
+            <div (click)="savePageContent()"
+                 delay=500 [tooltip]="'Save page changes'" class="badge-button mb-2">
+              <fa-icon [icon]="faSave"></fa-icon>
+              Save page changes
+            </div>
+            <div (click)="revertPageContent()"
+                 delay=500 [tooltip]="'Revert page changes'" class="badge-button mb-2">
+              <fa-icon [icon]="faUndo"></fa-icon>
+              Revert page changes
+            </div>
+          </div>
+        </ng-template>
+        <ng-container *ngTemplateOutlet="saveButtonsAndPath"></ng-container>
+        <div class="mt-2 mb-3">
+          <label class="mr-2" for="path">Content Path:</label>
+          <input id="path" [(ngModel)]="pageContent.path"
+                 type="text" class="form-control">
+        </div>
+        <div class="img-thumbnail thumbnail-walk-edit mt-2"
+             *ngFor="let row of pageContent?.rows; let rowIndex = index;">
+          <div class="thumbnail-heading">Row {{rowIndex + 1}}
+            ({{stringUtils.pluraliseWithCount(row?.columns.length, 'column')}})
+          </div>
+          <div class="row align-items-end mb-3">
+            <div class="col-sm-3">
+              <label [for]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">Row Type:</label>
+              <select class="form-control input-sm"
+                      [(ngModel)]="row.type"
+                      (ngModelChange)="changeType($event)"
+                      [id]="actions.rowColumnIdentifierFor(rowIndex, 0, this.contentPath + '-type')">
+                <option *ngFor="let type of enumKeyValuesForPageContentType"
+                        [ngValue]="type.value">{{stringUtils.asTitle(type.value)}}</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label [for]="actions.rowIdentifierFor(rowIndex, 'margins-top' + contentPath)">Margin Top:</label>
+              <select [compareWith]="actions.marginComparer" class="form-control input-sm"
+                      [id]="actions.rowIdentifierFor(rowIndex, 'margins-top' + contentPath)"
+                      [(ngModel)]="row.marginTop">
+                <option *ngFor="let margin of actions.margins"
+                        [ngValue]="margin">{{margin || 'none'}}</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label [for]="actions.rowIdentifierFor(rowIndex, 'margins-bottom' + contentPath)">Margin Bottom:</label>
+              <select class="form-control input-sm"
+                      [id]="actions.rowIdentifierFor(rowIndex, 'margins-bottom' + contentPath)"
+                      [(ngModel)]="row.marginBottom">
+                <option *ngFor="let margin of actions.margins"
+                        [ngValue]="margin">{{margin || 'none'}}</option>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <app-actions-dropdown [rowIndex]="rowIndex"
+                                    [pageContent]="pageContent"
+                                    [row]="row">
+              </app-actions-dropdown>
+            </div>
+          </div>
+          <app-action-buttons *ngIf="actions.isActionButtons(row)"
+                              [pageContent]="pageContent"
+                              [rowIndex]="rowIndex">
+          </app-action-buttons>
+          <app-dynamic-content-site-edit-text-row
+            [row]="row"
+            [rowIndex]="rowIndex"
+            [contentDescription]="contentDescription"
+            [contentPath]="contentPath"
+            [pageContent]="pageContent">
+          </app-dynamic-content-site-edit-text-row>
+        </div>
+        <ng-container *ngTemplateOutlet="saveButtonsAndPath"></ng-container>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!actions.pageContentFound(pageContent, queryCompleted)">
+    <div class="col-12 alert {{notify.alertTarget.alertClass}} mt-3">
+      <fa-icon [icon]="notify.alertTarget.alert.icon"></fa-icon>
+      <strong class="ml-2">{{notify.alertTarget.alertTitle}}</strong>
+      <span class="p-2">{{notify.alertTarget.alertMessage}}. <a (click)="createContent()"
+                                                                class="rams-text-decoration-pink"
+                                                                type="button">Create content</a></span>
+    </div>
+  </ng-container>
+</ng-container>

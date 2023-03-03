@@ -13,10 +13,10 @@ import { StringUtilsService } from "../../services/string-utils.service";
   selector: "app-tag-editor",
   styleUrls: ["./tag-editor.component.sass"],
   template: `
-    <label [for]="stringUtils.kebabCase('image-tags', text)">Image Tags</label>
-    <tagify [(ngModel)]="editableTags"
+    <label [for]="id">Image Tags</label>
+    <tagify [ngModel]="editableTags"
             inputClass="round"
-            [id]="stringUtils.kebabCase('image-tags', text)"
+            [id]="id"
             [settings]="settings"
             [whitelist]="tagLookups"
             [readonly]="readonly"
@@ -50,11 +50,12 @@ export class TagEditorComponent implements OnInit {
   tagLookups: ReplaySubject<TagData[]> = new ReplaySubject<TagData[]>();
   readonly = false;
   private logger: Logger;
+  public id: string;
 
   constructor(public stringUtils: StringUtilsService,
               private imageTagDataService: ImageTagDataService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(TagEditorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(TagEditorComponent, NgxLoggerLevel.INFO);
   }
 
 
@@ -62,7 +63,8 @@ export class TagEditorComponent implements OnInit {
     if (!this.tags) {
       this.tags = [];
     }
-    this.logger.debug("ngOnInit:tags for:", this.text, "->", this.tags);
+    this.id = this.stringUtils.kebabCase("image-tags", this.text);
+    this.logger.info("ngOnInit:tags for:", this.text, "->", this.tags,"id ->", this.id);
     this.imageTagDataService.imageTags().subscribe(data => this.populateData(data));
   }
 
@@ -74,6 +76,7 @@ export class TagEditorComponent implements OnInit {
   }
 
   onAdd(data) {
+    this.logger.info("onAdd:data:", data);
     const tagData: TagData = data.added;
     const preAddTags: number[] = cloneDeep(this.tags);
     if (!tagData.key) {

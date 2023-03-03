@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
+import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
-import { NgxLoggerLevel } from "ngx-logger";
 
 @Injectable({
   providedIn: "root"
@@ -12,11 +12,16 @@ export class SiteEditService {
   private subject: Subject<NamedEvent<boolean>>;
   private logger: Logger;
   public events: Observable<NamedEvent<boolean>>;
+  public editNameEnabled = false;
 
   constructor(private loggerFactory: LoggerFactory) {
     this.subject = new Subject();
     this.events = this.subject.asObservable();
     this.logger = loggerFactory.createLogger(SiteEditService, NgxLoggerLevel.OFF);
+  }
+
+  allowNameEdits(enabled: boolean) {
+    this.editNameEnabled = enabled;
   }
 
   active() {

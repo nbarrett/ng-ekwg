@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from "@angular/core";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { faCircleCheck, faEraser, faMagnifyingGlass, faPencil, faRemove, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
@@ -7,56 +7,60 @@ import isEqual from "lodash-es/isEqual";
 import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEvent, NamedEventType } from "../models/broadcast.model";
-import { ContentText } from "../models/content-text.model";
+import { ContentText, DataAction, EditorState, View } from "../models/content-text.model";
 import { BroadcastService } from "../services/broadcast-service";
 import { ContentTextService } from "../services/content-text.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
+import { MarkdownEditorFocusService } from "../services/markdown-editor-focus-service";
 import { MemberLoginService } from "../services/member/member-login.service";
 import { SiteEditService } from "../site-edit/site-edit.service";
-
-export enum View {
-  EDIT = "edit",
-  VIEW = "view"
-}
-
-export interface EditorState {
-  view: View;
-  dataAction: DataAction;
-}
-
-export enum DataAction {
-  QUERY = "query",
-  SAVE = "save",
-  REVERT = "revert",
-  NONE = "none"
-}
 
 @Component({
   selector: "app-markdown-editor",
   templateUrl: "./markdown-editor.component.html",
   styleUrls: ["./markdown-editor.component.sass"]
 })
-export class MarkdownEditorComponent implements OnInit, OnChanges {
+export class MarkdownEditorComponent implements OnInit {
   private logger: Logger;
   private originalContent: ContentText;
   public editorState: EditorState;
   public content: ContentText = {};
   private saveEnabled = false;
+  public name: string;
+  public text: string;
+  public category: string;
 
-  @Input("editNameEnabled") set acceptChangesFrom(editNameEnabled: boolean) {
+  @Input("editNameEnabled") set acceptEditNameEnabledChangesFrom(editNameEnabled: boolean) {
     this.logger.debug("editNameEnabled:", editNameEnabled);
     this.editNameEnabled = editNameEnabled;
   }
 
+  @Input("text") set acceptTextChangesFrom(text: string) {
+    this.logger.debug("text:", text);
+    this.text = text;
+    this.syncContent();
+  }
+
+  @Input("name") set acceptNameChangesFrom(name: string) {
+    this.logger.info("acceptNameChangesFrom:name:", name);
+    this.name = name;
+    this.syncContent();
+  }
+
+  @Input("category") set acceptCategoryChangesFrom(category: string) {
+    this.logger.info("category:", category);
+    this.category = category;
+    this.syncContent();
+  }
+
   @Input() data: ContentText;
-  @Input() name: string;
   @Input() id: string;
-  @Input() category: string;
-  @Input() text: string;
   @Input() rows: number;
   @Input() actionCaptionSuffix: string;
+  @Input() buttonsAvailableOnlyOnFocus: boolean;
   @Input() deleteEnabled: boolean;
   @Input() clearEnabled: boolean;
+  @Input() queryOnlyById: boolean;
   @Input() initialView: View;
   @Input() description: string;
   @Output() saved: EventEmitter<ContentText> = new EventEmitter();
@@ -71,24 +75,12 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   constructor(private memberLoginService: MemberLoginService,
               private broadcastService: BroadcastService<ContentText>,
               private contentTextService: ContentTextService,
-              private changeDetectorRef: ChangeDetectorRef,
+              private markdownEditorFocusService: MarkdownEditorFocusService,
               public siteEditService: SiteEditService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MarkdownEditorComponent, NgxLoggerLevel.INFO);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (this.initialised) {
-      this.logger.debug("changes were", changes);
-      const textChange = changes?.text?.currentValue;
-      if (textChange) {
-        this.content.text = textChange;
-        this.text = textChange;
-        this.logger.debug("text is now", this.text);
-        this.changeDetectorRef.detectChanges();
-      }
-    }
-  }
 
   ngOnInit() {
     this.logger.info("ngOnInit:name", this.name, "data:", this.data, "description:", this.description);
@@ -110,7 +102,6 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     } else {
       this.queryContent().then(() => {
         this.setDescription();
-        this.changeDetectorRef.detectChanges();
       });
     }
     this.siteEditService.events.subscribe((item: NamedEvent<boolean>) => {
@@ -138,6 +129,9 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
           this.logger.error(response);
           return this.apply({});
         });
+    } else if (this.queryOnlyById) {
+      this.logger.info("queryOnlyById:true content:name", this.name, "and category:", this.category, "editorState:", this.editorState, "id:", this.id);
+      return Promise.resolve(this.apply({}));
     } else if (this.name) {
       this.logger.info("querying content:name", this.name, "and category:", this.category, "editorState:", this.editorState, "id:", this.id);
       return this.contentTextService.findByNameAndCategory(this.name, this.category).then((content) => {
@@ -148,7 +142,7 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
 
   private apply(content: ContentText): ContentText {
     if (isEmpty(content)) {
-      this.content = {category: this.category, text: this.text, name: this.name};
+      this.syncContent();
     } else {
       this.content = content;
     }
@@ -158,19 +152,25 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     if (!this.rows) {
       this.rows = this.calculateRowsFrom(this.content);
     }
-    this.logger.info(this.name, "retrieved content:", this.content, "editor state:", this.editorState);
+    this.logger.info("retrieved content:", this.content, "editor state:", this.editorState);
     return this.content;
+  }
+
+  private syncContent() {
+    this.content = {category: this.category, text: this.text, name: this.name};
+    this.publishUnsavedChanges();
   }
 
   revert(): void {
     this.logger.debug("reverting " + this.name, "content");
     this.content = cloneDeep(this.originalContent);
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_SYNCED, this));
   }
 
   dirty(): boolean {
     const fields = ["name", "category", "text"];
     const isDirty = !isEqual(pick(this.content, fields), pick(this.originalContent, fields));
-    this.logger.debug("data", this.content, "originalContent", this.originalContent, "isDirty ->", isDirty);
+    this.logger.debug("dirty:content", this.content, "originalContent", this.originalContent, "isDirty ->", isDirty);
     return isDirty;
   }
 
@@ -184,9 +184,8 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
           this.logger.debug(this.name, "content retrieved:", this.content);
           this.editorState.dataAction = DataAction.NONE;
           this.logger.debug("saved", this.content, "content", "this.editorState", this.editorState);
-          this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_SAVED, data));
+          this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_SYNCED, this));
           this.saved.emit(data);
-          this.changeDetectorRef.detectChanges();
           return this.content;
         }
       );
@@ -209,11 +208,33 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
     if (this.siteEditService.active() && this.editorState.dataAction !== DataAction.QUERY) {
       const priorState: View = this.editorState.view;
       if (priorState === View.VIEW) {
-        this.editorState.view = View.EDIT;
+        this.toggleToEdit();
       } else if (this.editorState.view === View.EDIT) {
-        this.editorState.view = View.VIEW;
+        this.toggleToView();
       }
       this.logger.info("toggleEdit: changing state from ", priorState, "to", this.editorState.view);
+    }
+  }
+
+  toggleToView() {
+    this.editorState.view = View.VIEW;
+    this.clearFocus();
+  }
+
+  toggleToEdit() {
+    this.editorState.view = View.EDIT;
+    this.setFocus();
+  }
+
+  private setFocus() {
+    if (this.buttonsAvailableOnlyOnFocus) {
+      this.markdownEditorFocusService.setFocusTo(this);
+    }
+  }
+
+  private clearFocus() {
+    if (this.buttonsAvailableOnlyOnFocus) {
+      this.markdownEditorFocusService.clearFocus(this);
     }
   }
 
@@ -253,7 +274,6 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   delete() {
     this.contentTextService.delete(this.content).then((removed) => {
       this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_DELETED, removed));
-      this.changeDetectorRef.detectChanges();
     });
   }
 
@@ -270,8 +290,33 @@ export class MarkdownEditorComponent implements OnInit, OnChanges {
   }
 
   changeText($event: any) {
-    this.logger.debug(this.name, "changeText:", $event);
+    this.logger.info("name:", this.name, "content name:", this.content.name, "changeText:", $event);
+    this.renameIfRequired();
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_CHANGED, this.content));
+    this.publishUnsavedChanges();
   }
 
+  private publishUnsavedChanges() {
+    const conditionsForSave = this.content.text && this.dirty() && this.siteEditService.active();
+    if (conditionsForSave) {
+      this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_UNSAVED, this));
+    } else {
+      this.logger.info("publishUnsavedChanges:conditionsForSave not met:content:", this.content);
+    }
+  }
+
+  componentHasFocus(): boolean {
+    return this.markdownEditorFocusService.hasFocus(this);
+  }
+
+  private renameIfRequired() {
+    if (this.name !== this.content.name) {
+      this.logger.info("changing name from ", this.content.name, "->", this.name);
+      this.content.name = this.name;
+    }
+    if (this.category !== this.content.category) {
+      this.logger.info("changing category from ", this.content.category, "->", this.category);
+      this.content.category = this.category;
+    }
+  }
 }

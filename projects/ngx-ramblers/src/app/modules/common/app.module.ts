@@ -9,7 +9,6 @@ import { FooterComponent } from "../../footer/footer";
 import { FooterIconsComponent } from "../../footer/icons/footer-icons";
 import { HeaderBarComponent } from "../../header-bar/header-bar";
 import { HeaderButtonsComponent } from "../../header-buttons/header-buttons";
-import { NewBrandHomeComponent } from "../../home-page/new-brand-home";
 import { LoginPanelComponent } from "../../login-panel/login-panel.component";
 import { ForgotPasswordComponent } from "../../login/forgot-password.component";
 import { LoginComponent } from "../../login/login.component";
@@ -79,7 +78,6 @@ import { NavbarComponent } from "./navbar/navbar";
     MeetupDescriptionComponent,
     NavbarComponent,
     NavbarContentComponent,
-    NewBrandHomeComponent,
     PageNavigatorComponent,
     PrivacyPolicyComponent,
     SetPasswordComponent,

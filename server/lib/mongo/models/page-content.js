@@ -8,13 +8,16 @@ const PageContentColumn = mongoose.Schema({
   columns: {type: Number},
   contentTextId: {type: String},
   accessLevel: {type: String},
+  rows: {type: Object, required: false},
 }, { _id : false });
 
 const PageContentRow = mongoose.Schema({
   type: {type: String, required: true},
   maxColumns: {type: Number},
   showSwiper: {type: Boolean},
-  columns: [PageContentColumn]
+  columns: [PageContentColumn],
+  marginTop: {type: Number},
+  marginBottom: {type: Number},
 }, { _id : false });
 
 const pageContentSchema = mongoose.Schema({

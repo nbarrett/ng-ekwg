@@ -121,9 +121,14 @@ export class UrlService {
   }
 
   routerLinkUrl(url: string): string {
-    const routerLinkUrl = this.isRemoteUrl(url) ? null : "/" + url;
-    this.logger.debug("routerLinkUrl:imageLink", url, "routerLinkUrl:", routerLinkUrl);
-    return routerLinkUrl;
+    if (!url) {
+      this.logger.info("routerLinkUrl:url:", url, "not returning routerLinkUrl as url not present");
+      return null;
+    } else {
+      const routerLinkUrl = this.isRemoteUrl(url) ? null : "/" + url;
+      this.logger.info("routerLinkUrl:url:", url, "routerLinkUrl:", routerLinkUrl);
+      return routerLinkUrl;
+    }
   }
 
   public isRemoteUrl(url: string): boolean {

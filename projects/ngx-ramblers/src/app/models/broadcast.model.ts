@@ -1,10 +1,10 @@
 export enum NamedEventType {
     APPLY_FILTER = "apply-filter",
     EDIT_SITE = "editSite",
-    IMAGE_CROP = "image-crop",
     MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
+    MARKDOWN_CONTENT_UNSAVED = "markdownContentUnsaved",
     MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
-    MARKDOWN_CONTENT_SAVED = "markdownContentSaved",
+    MARKDOWN_CONTENT_SYNCED = "markdownContentSynced",
     MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
     MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
     MEMBER_LOGOUT_COMPLETE = "memberLogoutComplete",

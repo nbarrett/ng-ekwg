@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import flatten from "lodash-es/flatten";
+import { range } from "lodash-es";
 import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
-import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType } from "../models/content-text.model";
+import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
 import { AccessLevel } from "../models/member-resource.model";
 import { BroadcastService } from "./broadcast-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
@@ -15,21 +15,39 @@ import { StringUtilsService } from "./string-utils.service";
 })
 export class PageContentActionsService {
   private logger: Logger;
+  public margins: number[] = [null].concat(range(1, 6));
 
   constructor(private stringUtils: StringUtilsService,
               private broadcastService: BroadcastService<PageContent>,
               private numberUtils: NumberUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.INFO);
+  }
+
+  public marginComparer(item1: number, item2: number): boolean {
+    return (!item1 && !item2) || item1 === item2;
+  }
+
+  public initialView(column: PageContentColumn): View {
+    return column?.contentTextId ? View.VIEW : View.EDIT;
+  }
+
+  public view(): View {
+    return View.VIEW;
+  }
+
+  public edit(): View {
+    return View.EDIT;
   }
 
   saveContentTextId(contentText: ContentText, rowIndex: number, column: PageContentColumn, pageContent: PageContent) {
     if (column.contentTextId !== contentText?.id) {
       column.contentTextId = contentText?.id;
-      if (!this.unsavedMarkdownElements(pageContent)) {
-        // this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SAVE_PAGE_CONTENT, pageContent));
-      }
     }
+  }
+
+  rowClasses(row: PageContentRow): string {
+    return "row" + (row.marginTop ? (" mt-" + row.marginTop) : "") + (row.marginBottom ? (" mb-" + row.marginBottom) : "");
   }
 
   defaultRowFor(type: PageContentType | string): PageContentRow {
@@ -45,9 +63,22 @@ export class PageContentActionsService {
     return type === PageContentType.TEXT ? {columns: 12, accessLevel: AccessLevel.public} : {accessLevel: AccessLevel.public};
   }
 
-  addRow(rowIndex, pageContentType: PageContentType | string, pageContent: PageContent) {
-    pageContent.rows.splice(rowIndex, 0, this.defaultRowFor(pageContentType));
-    this.logger.info("pageContent:", pageContent);
+  addNestedRows(column: PageContentColumn) {
+    if (!column.rows) {
+      column.rows = [];
+      this.addRow(0, PageContentType.TEXT, column.rows);
+    }
+  }
+
+  removeNestedRows(column: PageContentColumn) {
+    if (column.rows) {
+      delete column.rows;
+    }
+  }
+
+  addRow(rowIndex, pageContentType: PageContentType | string, rows: PageContentRow[]) {
+    rows.splice(rowIndex, 0, this.defaultRowFor(pageContentType));
+    this.logger.info("rows:", rows);
   }
 
   deleteRow(rowIndex, pageContent: PageContent) {
@@ -88,15 +119,16 @@ export class PageContentActionsService {
     this.logger.info("changeColumnsFor:", column, columnWidth,);
   }
 
-  public unsavedMarkdownElements(pageContent: PageContent): boolean {
-    const columnsWithNewlyCreatedMarkdown = flatten(pageContent?.rows?.map(item => item?.columns?.map(col => col?.contentTextId)))
-      .filter(item => item === null);
-    this.logger.debug("unsavedMarkdownElements:", columnsWithNewlyCreatedMarkdown);
-    return columnsWithNewlyCreatedMarkdown.length > 0;
+  rowColFor(rowIndex: number, columnIndex: number): string {
+    return [this.rowPrefixFor(rowIndex), this.columnPrefixFor(columnIndex)].join("-");
   }
 
-  rowColFor(rowIndex: number, columnIndex: number): string {
-    return `${(this.rowPrefixFor(rowIndex))}${this.columnPrefixFor(columnIndex)}`;
+  parentRowColFor(parentRowIndex: number, rowIndex: number, columnIndex: number): string {
+    if (isNaN(parentRowIndex)) {
+      return [this.rowPrefixFor(rowIndex), this.columnPrefixFor(columnIndex)].join("-");
+    } else {
+      return [this.rowPrefixFor(parentRowIndex), this.nestedRowPrefixFor(rowIndex), this.nestedColumnPrefixFor(columnIndex)].join("-");
+    }
   }
 
   private columnPrefixFor(columnIndex: number) {
@@ -104,10 +136,27 @@ export class PageContentActionsService {
   }
 
   private rowPrefixFor(rowIndex: number) {
-    return rowIndex !== null ? `row-${rowIndex + 1}-` : "";
+    return rowIndex !== null ? `row-${rowIndex + 1}` : "";
+  }
+
+  private parentRowPrefixFor(parentRowIndex: number) {
+    return parentRowIndex !== null ? `parent-row-${parentRowIndex + 1}` : "";
+  }
+
+  private nestedRowPrefixFor(rowIndex: number) {
+    return rowIndex !== null ? `nested-row-${rowIndex + 1}` : "";
+  }
+
+  private nestedColumnPrefixFor(nestedColumnIndex: number) {
+    return nestedColumnIndex !== null ? `nested-column-${nestedColumnIndex + 1}` : "";
+  }
+
+  parentRowColumnIdentifierFor(parentRowIndex: number, rowIndex: number, columnIndex: number, identifier: string): string {
+    return kebabCase(`${identifier}-parent-${parentRowIndex}-${this.rowColFor(rowIndex, columnIndex)}`);
   }
 
   rowColumnIdentifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
+
     return kebabCase(`${identifier}-${this.rowColFor(rowIndex, columnIndex)}`);
   }
 
@@ -140,7 +189,9 @@ export class PageContentActionsService {
   }
 
   pageContentFound(pageContent: PageContent, queryCompleted: boolean) {
-    return (pageContent?.rows?.length > 0) && queryCompleted;
+    const hasRows = pageContent?.rows?.length > 0;
+    this.logger.debug("pageContentFound:hasRows:", hasRows, "queryCompleted:", queryCompleted);
+    return hasRows && queryCompleted;
   }
 
 }
