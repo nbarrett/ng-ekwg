@@ -4,6 +4,7 @@ import first from "lodash-es/first";
 import range from "lodash-es/range";
 import { TabsetComponent } from "ngx-bootstrap/tabs";
 import { NgxLoggerLevel } from "ngx-logger";
+import { MarkdownEditorComponent } from "../../../markdown-editor/markdown-editor.component";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { ContentText } from "../../../models/content-text.model";
@@ -56,7 +57,7 @@ export class WalkMeetupSettingsComponent implements OnInit {
       this.onChange(first(this.contentTextItems));
       this.changeDetectorRef.detectChanges();
     });
-    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_SAVED, (event: NamedEvent<ContentText>) => this.replaceContent(event.data));
+    this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_SYNCED, (event: NamedEvent<MarkdownEditorComponent>) => this.replaceContent(event.data.content));
     this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (event: NamedEvent<ContentText>) => this.removeContent(event.data));
   }
 

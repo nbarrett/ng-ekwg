@@ -8,7 +8,7 @@
     </div>
     <div class="card">
       <div class="card-body">
-        <div class="row mb-3">
+        <div class="row">
           <div class="col-sm-3">
             <h6>Edit images from</h6>
             <select [(ngModel)]="imageSource" id="imageSource" class="form-control rounded"
@@ -18,9 +18,9 @@
             </select>
           </div>
           <div class="col-sm-9 mt-auto">
-            <input type="submit" value="Save changes and exit" (click)="saveChangeAndExit()"
-                   title="Save changes and exit"
-                   class="button-form"/>
+            <input [disabled]="this.changedItems.length > 0" type="submit" value="Save changes and exit"
+                   (click)="saveChangeAndExit()"
+                   [ngClass]="changedItems.length > 0 ? 'disabled-button-form': 'button-form'"/>
             <input type="submit" value="Exit without saving" (click)="exitBackToPreviousWindow()"
                    title="Exit without saving" class="button-form"/>
             <input type="submit" value="Sort by latest date" (click)="sortByDate()" title="Sort by latest date"
@@ -28,6 +28,13 @@
             <input type="submit" value="Reverse sort order" (click)="reverseSortOrder()"
                    title="Reverse sort order"
                    class="button-form"/>
+          </div>
+          <div class="col-sm-12 mt-4">
+            <div *ngIf="warningTarget.showAlert" class="flex-grow-1 alert {{warningTarget.alertClass}}">
+              <fa-icon [icon]="warningTarget.alert.icon"></fa-icon>
+              <strong *ngIf="warningTarget.alertTitle">
+                {{warningTarget.alertTitle}}: </strong> {{warningTarget.alertMessage}}
+            </div>
           </div>
         </div>
         <h6>Image Filtering</h6>
@@ -112,7 +119,9 @@
                           [filteredFiles]="currentPageImages"
                           [item]="imageMetaDataItem"
                           (imageInsert)="imageInsert($event)"
+                          (imageEdit)="imageEdit($event)"
                           (imageChange)="imageChange($event)"
+                          (imagedSavedOrReverted)="imagedSavedOrReverted($event)"
                           (delete)="delete($event)"
                           (moveUp)="moveUp($event)"
                           (moveDown)="moveDown($event)">

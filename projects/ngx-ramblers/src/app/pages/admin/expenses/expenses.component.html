@@ -95,7 +95,7 @@
                         [ngClass]="expenseItem === this.selected.expenseItem? 'active selected':'default'">
                       <td [textContent]="expenseItem.expenseDate | displayDate" class="nowrap"></td>
                       <td [ngClass]="{'inactive': isInactive(expenseClaim)}">
-                        <a [routerLink]="" queryParamsHandling="preserve" *ngIf="!notifyTarget.busy"
+                        <a [routerLink]="" queryParamsHandling="merge" *ngIf="!notifyTarget.busy"
                            [textContent]="display.prefixedExpenseItemDescription(expenseItem)"
                            (click)="editExpenseItem(expenseItem)" href=""></a>
                         <span *ngIf="notifyTarget.busy"

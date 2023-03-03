@@ -2,8 +2,8 @@ import { Location } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
-import min from "lodash-es/min";
 import first from "lodash-es/first";
+import min from "lodash-es/min";
 import range from "lodash-es/range";
 import { FileUploader } from "ng2-file-upload";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
@@ -39,7 +39,9 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
 export class ImageListComponent implements OnInit {
   private logger: Logger;
   public notify: AlertInstance;
+  public warnings: AlertInstance;
   public notifyTarget: AlertTarget = {};
+  public warningTarget: AlertTarget = {};
   public confirm = new Confirm();
   public destinationType: string;
   public imageSource: string;
@@ -49,6 +51,7 @@ export class ImageListComponent implements OnInit {
   public contentMetadata: ContentMetadata;
   public s3Metadata: S3Metadata[] = [];
   public filteredFiles: ContentMetadataItem[] = [];
+  public changedItems: ContentMetadataItem[] = [];
   public currentPageImages: ContentMetadataItem[] = [];
   public allow: MemberResourcesPermissions = {};
   public showDuplicates = false;
@@ -87,6 +90,7 @@ export class ImageListComponent implements OnInit {
     this.logger.info("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
+    this.warnings = this.notifierService.createAlertInstance(this.warningTarget);
     this.destinationType = "";
     this.filterType = ImageFilterType.RECENT;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
@@ -218,11 +222,16 @@ export class ImageListComponent implements OnInit {
 
   applyFilter() {
     this.logger.debug("applyFilters start:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files", "tag:", this.imageTagDataService.activeTag, "showDuplicates:", this.showDuplicates, "filterText:", this.filterText);
-    this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.filterType, this.imageTagDataService.activeTag, this.showDuplicates, this.filterText) || [];
+    this.filterFiles();
     this.pageCount = this.calculatePageCount();
     this.applyPagination();
     this.imageDuplicatesService.populateFrom(this.contentMetadata, this.filteredFiles);
     this.logger.debug("applyFilters finished:", this.filteredFiles?.length, "of", this.contentMetadata?.files?.length, "files", "tag:", this.imageTagDataService.activeTag, "showDuplicates:", this.showDuplicates, "filterText:", this.filterText);
+    this.alertWarnings();
+  }
+
+  private filterFiles() {
+    this.filteredFiles = this.contentMetadataService.filterSlides(this.contentMetadata?.files, this.filterType, this.imageTagDataService.activeTag, this.showDuplicates, this.filterText) || [];
   }
 
   refreshImageMetaData(imageSource: string) {
@@ -231,9 +240,9 @@ export class ImageListComponent implements OnInit {
     this.urlService.navigateUnconditionallyTo("image-editor", imageSource);
 
     Promise.all([
-        this.contentMetadataService.items(imageSource)
-          .then((contentMetaData: ContentMetadata) => {
-            this.logger.info("contentMetaData:", contentMetaData);
+      this.contentMetadataService.items(imageSource)
+        .then((contentMetaData: ContentMetadata) => {
+          this.logger.info("contentMetaData:", contentMetaData);
             this.contentMetadata = contentMetaData;
             this.imageTagDataService.populateFrom(contentMetaData.imageTags);
           }),
@@ -326,6 +335,15 @@ export class ImageListComponent implements OnInit {
     }
   }
 
+  imagedSavedOrReverted(item: ContentMetadataItem) {
+    this.logger.info("imagedSavedOrReverted:item.image", item.image);
+    this.removeFromChangedItems(item);
+    if (!item.image) {
+      this.contentMetadata.files = this.contentMetadata.files.filter(changedItem => changedItem !== item);
+      this.applyFilter();
+    }
+  }
+
   imageChange(item: ContentMetadataItem) {
     if (!item) {
       this.logger.debug("change:no item");
@@ -335,12 +353,13 @@ export class ImageListComponent implements OnInit {
         this.logger.debug("change:existing item", item, "at index", this.currentImageIndex);
         this.contentMetadata.files[this.currentImageIndex] = item;
       } else {
-        this.logger.debug("change:appears to be a new item", item, "at index", this.currentImageIndex);
+        this.logger.warn("change:appears to be a new item", item, "at index", this.currentImageIndex);
       }
     }
   }
 
   delete(item: ContentMetadataItem): number {
+    this.removeFromChangedItems(item);
     this.logger.debug("delete:before count", this.contentMetadata.files.length, "item:", item);
     const index = this.contentMetadataService.findIndex(this.contentMetadata.files, item);
     if (index >= 0) {
@@ -353,15 +372,22 @@ export class ImageListComponent implements OnInit {
     return this.contentMetadataService.findIndex(this.contentMetadata.files, item);
   }
 
+  imageEdit(item: ContentMetadataItem) {
+    this.addToChangedItems(item);
+  }
+
   imageInsert(item: ContentMetadataItem) {
-    const existingIndex = this.contentMetadataService.findIndex(this.contentMetadata.files, item);
-    if (existingIndex >= 0) {
-      this.logger.debug("attempt to insert:existing item", item, "in index position:", existingIndex);
+    this.logger.info("insert:new item", item, "before:", this.contentMetadata.files);
+    this.contentMetadata.files.splice(0, 0, item);
+    this.logger.info("insert:new item", item, "after:", this.contentMetadata.files);
+    this.addToChangedItems(item);
+  }
+
+  alertWarnings() {
+    if (this.changedItems.length > 0) {
+      this.warnings.warning({title: "Unsaved Changes", message: this.alertText()});
     } else {
-      const index = 0;
-      this.logger.debug("insert:new item", item, "in index position:", index, "item:", item);
-      this.contentMetadata.files.splice(index, 0, item);
-      this.applyFilter();
+      this.warnings.hide();
     }
   }
 
@@ -388,6 +414,26 @@ export class ImageListComponent implements OnInit {
 
   private calculatePageCount(): number {
     return Math.ceil(this.filteredFiles?.length / this.pageSize);
+  }
+
+  private addToChangedItems(item: ContentMetadataItem) {
+    if (!this.changedItems.includes(item)) {
+      this.logger.info("addToChangedItems:", item);
+      this.changedItems.push(item);
+    }
+    this.applyFilter();
+  }
+
+  private removeFromChangedItems(item: ContentMetadataItem) {
+    if (this.changedItems.includes(item)) {
+      this.logger.info("removeFromChangedItems:", item);
+      this.changedItems = this.changedItems.filter(changedItem => changedItem !== item);
+    }
+    this.alertWarnings();
+  }
+
+  alertText() {
+    return `Save or quit ${this.stringUtils.pluraliseWithCount(this.changedItems.length, "image")} before saving`;
   }
 
 }

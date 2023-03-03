@@ -4,7 +4,7 @@
        [src]="urlService.imageSource(imageSource)" [routerLink]="urlService.routerLinkUrl(imageLink)">
   <img *ngIf="!unconstrainedHeight" class="card-img-top" [height]="200" (load)="imageLoaded($event)"
        (error)="imageError($event)"
-       [src]="urlService.imageSource(imageSource)" [routerLink]="urlService.routerLinkUrl(imageLink)">
+       [src]="urlService.imageSource(imageSource)"[routerLink]="urlService.routerLinkUrl(imageLink)">
 </ng-container>
 <div *ngIf="cardMissingImage() || cardShouldHaveIcon()" class="row no-image"
      [ngClass]="{'small-icon-container': smallIconContainer}">

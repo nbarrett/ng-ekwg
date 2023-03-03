@@ -27,8 +27,6 @@ export class ActionButtonsComponent implements OnInit {
   public pageContent: PageContent;
   @Input()
   public rowIndex: number;
-  @Input()
-  public editNameEnabled: boolean;
 
   private logger: Logger;
   public contentPath: string;
@@ -59,7 +57,6 @@ export class ActionButtonsComponent implements OnInit {
 
   ngOnInit() {
     this.row = this.pageContent.rows[this.rowIndex];
-    this.logger.debug("ngOnInit:editNameEnabled", this.editNameEnabled);
     this.contentPath = this.pageContent.path;
     this.logger.debug("initialised with contentPath:", this.contentPath);
     this.determineViewableSlideCount();

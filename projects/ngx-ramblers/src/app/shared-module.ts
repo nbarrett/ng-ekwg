@@ -38,6 +38,10 @@ import { CardImageComponent } from "./modules/common/card/image/card-image";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
 import { DynamicContentComponent } from "./modules/common/dynamic-content/dynamic-content";
+import { DynamicContentSiteEditComponent } from "./modules/common/dynamic-content/dynamic-content-site-edit";
+import { DynamicContentSiteEditTextRowComponent } from "./modules/common/dynamic-content/dynamic-content-site-edit-text-row";
+import { DynamicContentViewComponent } from "./modules/common/dynamic-content/dynamic-content-view";
+import { DynamicContentViewTextRowComponent } from "./modules/common/dynamic-content/dynamic-content-view-text-row";
 import { IconExamplesComponent } from "./modules/common/icon-examples/icon-examples";
 import { LoginRequiredComponent } from "./modules/common/login-required/login-required";
 import { SvgComponent } from "./modules/common/svg/svg";
@@ -84,6 +88,7 @@ import { ImageDuplicatesService } from "./services/image-duplicates-service";
 import { ImageTagDataService } from "./services/image-tag-data-service";
 import { MailchimpConfigService } from "./services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "./services/mailchimp/mailchimp-list-subscription.service";
+import { MarkdownEditorFocusService } from "./services/markdown-editor-focus-service";
 import { MemberResourcesReferenceDataService } from "./services/member/member-resources-reference-data.service";
 import { NotifierService } from "./services/notifier.service";
 import { PageContentService } from "./services/page-content.service";
@@ -132,6 +137,10 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatesPipe,
     DisplayDayPipe,
     DynamicContentComponent,
+    DynamicContentSiteEditComponent,
+    DynamicContentSiteEditTextRowComponent,
+    DynamicContentViewComponent,
+    DynamicContentViewTextRowComponent,
     DynamicContentPageComponent,
     EventNotePipe,
     FormatAuditPipe,
@@ -240,8 +249,6 @@ export class SharedModule {
       providers: [
         AuditDeltaChangedItemsPipePipe,
         AuditDeltaValuePipe,
-        ImageTagDataService,
-        ImageDuplicatesService,
         BroadcastService,
         ChangedItemsPipe,
         ClipboardService,
@@ -253,26 +260,29 @@ export class SharedModule {
         DisplayDayPipe,
         EventNotePipe,
         FullNamePipe,
-        IconService,
         FullNameWithAliasOrMePipe,
         FullNameWithAliasPipe,
         HumanisePipe,
+        IconService,
+        ImageDuplicatesService,
+        ImageTagDataService,
+        KebabCasePipe,
         LastConfirmedDateDisplayed,
         LineFeedsToBreaksPipe,
         LoggedInGuard,
         MailchimpConfigService,
         MailchimpListSubscriptionService,
+        MarkdownEditorFocusService,
         MeetupEventSummaryPipe,
-        MemberIdsToFullNamesPipe,
         MemberIdToFullNamePipe,
+        MemberIdsToFullNamesPipe,
         MemberResourcesReferenceDataService,
         NotifierService,
-        RouterHistoryService,
         PageContentService,
+        RouterHistoryService,
         SearchFilterPipe,
         SiteEditService,
         SnakeCasePipe,
-        KebabCasePipe,
         UpdatedAuditPipe,
         ValueOrDefaultPipe,
         {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

@@ -51,11 +51,13 @@ export class ImageEditComponent implements OnInit {
   }
 
   @Input() rootFolder: string;
+  @Output() imagedSavedOrReverted: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() imageChange: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() moveUp: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() moveDown: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() delete: EventEmitter<ContentMetadataItem> = new EventEmitter();
   @Output() imageInsert: EventEmitter<ContentMetadataItem> = new EventEmitter();
+  @Output() imageEdit: EventEmitter<ContentMetadataItem> = new EventEmitter();
   public editActive: boolean;
   private awsFileData: AwsFileData;
   public aspectRatio: string;
@@ -108,29 +110,25 @@ export class ImageEditComponent implements OnInit {
   }
 
   callMoveUp() {
-    this.moveUp.emit(this.emitValue());
+    this.moveUp.emit(this.item);
   }
 
   callImageChange() {
-    this.imageChange.emit(this.emitValue());
+    this.imageChange.emit(this.item);
   }
 
   callMoveDown() {
-    this.moveDown.emit(this.emitValue());
+    this.moveDown.emit(this.item);
   }
 
   callDelete() {
-    this.delete.emit(this.emitValue());
-  }
-
-  private emitValue(): ContentMetadataItem {
-    return this.item;
+    this.delete.emit(this.item);
   }
 
   callInsert() {
-    this.logger.debug("callInsert");
-    this.item = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: this.item?.tags || []};
-    this.imageInsert.emit(this.emitValue());
+    this.logger.info("inserting image  with filteredFiles:", this.filteredFiles);
+    const newItem: ContentMetadataItem = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: this.item?.tags || []};
+    this.imageInsert.emit(newItem);
   }
 
   checkDuplicates(item: ContentMetadataItem) {
@@ -180,7 +178,7 @@ export class ImageEditComponent implements OnInit {
     } else {
       this.logger.debug("onChange:not event found from", this.item);
     }
-    this.imageChange.emit(this.emitValue());
+    this.imageChange.emit(this.item);
   }
 
   refreshGroupEventsIfRequired() {
@@ -200,6 +198,7 @@ export class ImageEditComponent implements OnInit {
   imageChanged(awsFileData: AwsFileData) {
     this.logger.info("imageChanged:", awsFileData);
     this.awsFileData = awsFileData;
+    this.callImageChange();
   }
 
   imageCroppingError(errorEvent: ErrorEvent) {
@@ -214,6 +213,7 @@ export class ImageEditComponent implements OnInit {
   exitImageEdit() {
     this.editActive = false;
     this.awsFileData = null;
+    this.imagedSavedOrReverted.next(this.item);
   }
 
   imagedSaved(awsFileData: AwsFileData) {
@@ -229,5 +229,6 @@ export class ImageEditComponent implements OnInit {
 
   editImage() {
     this.editActive = true;
+    this.imageEdit.emit(this.item)
   }
 }

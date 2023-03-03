@@ -32,8 +32,6 @@ export class CardEditorComponent implements OnInit {
   @Input()
   relativePath: string;
   @Input()
-  editNameEnabled: boolean;
-  @Input()
   public smallIconContainer: boolean;
   public pageContentEdit: PageContentEditEvent;
   public row: PageContentRow;
