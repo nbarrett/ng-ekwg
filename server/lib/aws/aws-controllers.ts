@@ -8,6 +8,7 @@ import { first, omit } from "lodash";
 import * as moment from "moment-timezone";
 import * as path from "path";
 import { AwsInfo, UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
+import { S3Metadata } from "../../../projects/ngx-ramblers/src/app/models/content-metadata.model";
 import { envConfig } from "../env-config/env-config";
 
 const logObject = false;
@@ -41,7 +42,7 @@ function listObjects(req, res) {
     if (err) {
       return res.status(500).send(err);
     } else {
-      const response = data.Contents.map(item => ({
+      const response: S3Metadata = data.Contents.map(item => ({
         key: item.Key,
         lastModified: moment(item.LastModified).tz("Europe/London").valueOf(),
         size: item.Size
@@ -76,7 +77,7 @@ async function getObjectInChunks(req, res) {
 }
 
 function extensionFrom(key: string): string {
-  const extension = path.extname(key);
+  const extension = path.extname(key).toLowerCase();
   return extension.length <= 5 ? extension : ".jpeg";
 }
 
@@ -90,6 +91,8 @@ function contentTypeFrom(fileName: string): string {
     return "application/pdf";
   } else if ([".doc", ".docx", ".dot"].includes(extension)) {
     return "application/msword";
+  } else {
+    return "image/jpeg";
   }
 }
 
