@@ -105,7 +105,7 @@ export class MarkdownEditorComponent implements OnInit {
       });
     }
     this.siteEditService.events.subscribe((item: NamedEvent<boolean>) => {
-      this.logger.info(this.name, "this.editorState.view", this.editorState.view, "siteEditService:event", item);
+      this.logger.info("siteEditService.events.subscribe:", this.name, "this.editorState.view", this.editorState.view, "siteEditService:event", item);
       this.editorState.view = item.data ? View.EDIT : View.VIEW;
     });
     this.initialised = true;
@@ -204,7 +204,7 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   toggleEdit(): void {
-    this.logger.info("toggleEdit called");
+    this.logger.debug("toggleEdit called");
     if (this.siteEditService.active() && this.editorState.dataAction !== DataAction.QUERY) {
       const priorState: View = this.editorState.view;
       if (priorState === View.VIEW) {
@@ -212,7 +212,7 @@ export class MarkdownEditorComponent implements OnInit {
       } else if (this.editorState.view === View.EDIT) {
         this.toggleToView();
       }
-      this.logger.info("toggleEdit: changing state from ", priorState, "to", this.editorState.view);
+      this.logger.debug("toggleEdit: changing state from ", priorState, "to", this.editorState.view);
     }
   }
 
@@ -290,7 +290,7 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   changeText($event: any) {
-    this.logger.info("name:", this.name, "content name:", this.content.name, "changeText:", $event);
+    this.logger.debug("name:", this.name, "content name:", this.content.name, "changeText:", $event);
     this.renameIfRequired();
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_CHANGED, this.content));
     this.publishUnsavedChanges();
@@ -301,7 +301,7 @@ export class MarkdownEditorComponent implements OnInit {
     if (conditionsForSave) {
       this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.MARKDOWN_CONTENT_UNSAVED, this));
     } else {
-      this.logger.info("publishUnsavedChanges:conditionsForSave not met:content:", this.content);
+      this.logger.debug("publishUnsavedChanges:conditionsForSave not met:content:", this.content);
     }
   }
 
@@ -311,11 +311,11 @@ export class MarkdownEditorComponent implements OnInit {
 
   private renameIfRequired() {
     if (this.name !== this.content.name) {
-      this.logger.info("changing name from ", this.content.name, "->", this.name);
+      this.logger.debug("changing name from ", this.content.name, "->", this.name);
       this.content.name = this.name;
     }
     if (this.category !== this.content.category) {
-      this.logger.info("changing category from ", this.content.category, "->", this.category);
+      this.logger.debug("changing category from ", this.content.category, "->", this.category);
       this.content.category = this.category;
     }
   }

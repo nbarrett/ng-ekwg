@@ -25,7 +25,7 @@ exports.create = (model, debugEnabled) => {
     update: (req, res) => {
       const {criteria, document} = transforms.criteriaAndDocument(req);
       debug("pre-update:body:", req.body, "criteria:", criteria, "document:", document);
-      model.findOneAndUpdate(criteria, document, {new: true, useFindAndModify: false})
+      model.findOneAndUpdate(criteria, document, {new: true})
         .then(result => {
           debug("post-update:document:", document, "result:", result);
           res.status(200).json({

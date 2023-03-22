@@ -6,8 +6,29 @@
   </button>
   <ul *dropdownMenu class="dropdown-menu"
       id="dropdown-animated" role="menu">
-    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover"
-        [ngClass]="{'d-none': columnIndex===null}">
+    <li *ngIf="allowMoveRowUp()" role="menuitem"><a (click)="actions.moveRowUp(pageContent, rowIndex, rowIsNested, column)"
+                           class="dropdown-item">
+      Move this row up
+    </a>
+    </li>
+    <li *ngIf="allowMoveRowDown()" role="menuitem"><a (click)="actions.moveRowDown(pageContent, rowIndex, rowIsNested, column)"
+                           class="dropdown-item">
+      Move this row down
+    </a>
+    </li>
+    <li *ngIf="allowDeleteRow()" role="menuitem"><a (click)="actions.deleteRow(pageContent, rowIndex, rowIsNested, column)"
+                           class="dropdown-item">Delete This Row</a>
+    </li>
+    <li *ngIf="allowInsertNestedRows()"  role="menuitem"><a (click)="actions.addNestedRows(column)"
+                                                  class="dropdown-item">
+      Insert nested rows</a>
+
+    </li>
+    <li *ngIf="allowDeleteNestedRows()" role="menuitem"><a (click)="actions.removeNestedRows(column)"
+                                                  class="dropdown-item">
+      Delete nested rows</a>
+    </li>
+    <li *ngIf="allowColumnActions()" container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
       <a class="dropdown-item dropdown-toggle"
          dropdownToggle>Column<span class="caret"></span></a>
       <ul *dropdownMenu class="dropdown-menu" role="menu">
@@ -17,25 +38,12 @@
         <li role="menuitem"><a (click)="actions.addColumn(row, columnIndex+1, pageContent)"
                                class="dropdown-item">Insert to right</a>
         </li>
-        <li role="menuitem"><a (click)="actions.deleteColumn(row, columnIndex, pageContent)"
-                               class="dropdown-item">Remove</a>
+        <li *ngIf="allowColumnDelete()" role="menuitem"><a (click)="actions.deleteColumn(row, columnIndex, pageContent)"
+                               class="dropdown-item">Delete</a>
         </li>
       </ul>
     </li>
-    <li role="menuitem"><a (click)="actions.deleteRow(rowIndex, pageContent)"
-                           class="dropdown-item" [ngClass]="{'d-none': rowIndex===null}">Delete Row</a>
-    </li>
-    <li role="menuitem"><a (click)="actions.addNestedRows(column)"
-                           class="dropdown-item" [ngClass]="{'d-none': !column || column?.rows?.length>0}">
-      Insert Nested Rows</a>
-
-    </li>
-    <li role="menuitem"><a (click)="actions.removeNestedRows(column)"
-                           class="dropdown-item" [ngClass]="{'d-none': !column || column?.rows?.length===0}">
-      Remove Nested Rows</a>
-    </li>
-    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover"
-        [ngClass]="{'d-none': rowIndex===null}">
+    <li *ngIf="allowTextRowActions()"  container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
       <a class="dropdown-item dropdown-toggle"
          dropdownToggle>Text Row<span class="caret"></span></a>
       <ul *dropdownMenu class="dropdown-menu" role="menu">
@@ -45,8 +53,7 @@
                                class="dropdown-item">Add below</a></li>
       </ul>
     </li>
-    <li container="body" dropdown placement="right" role="menuitem" triggers="mouseover"
-        [ngClass]="{'d-none': rowIndex===null}">
+    <li *ngIf="allowActionButtonActions()" container="body" dropdown placement="right" role="menuitem" triggers="mouseover">
       <a class="dropdown-item dropdown-toggle"
          dropdownToggle>Action Buttons <span class="caret"></span></a>
       <ul *dropdownMenu class="dropdown-menu" role="menu">

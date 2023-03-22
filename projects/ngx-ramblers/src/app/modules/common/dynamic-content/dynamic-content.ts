@@ -109,6 +109,7 @@ export class DynamicContentComponent implements OnInit {
     this.queryCompleted = true;
     if (pageContent) {
       this.logger.info("Page content found for", this.contentPath, "as:", pageContent);
+      this.notify.hide();
     } else {
       this.logger.info("Page content not found for", this.contentPath, "pageContent:", this.pageContent);
       this.notify.warning({

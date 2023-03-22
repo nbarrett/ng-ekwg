@@ -1,10 +1,12 @@
 import { Injectable } from "@angular/core";
 import { range } from "lodash-es";
+import first from "lodash-es/first";
 import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
-import { ContentText, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
+import { ContentText, HasPageContentRows, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
 import { AccessLevel } from "../models/member-resource.model";
+import { move } from "./arrays";
 import { BroadcastService } from "./broadcast-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { NumberUtilsService } from "./number-utils.service";
@@ -15,7 +17,6 @@ import { StringUtilsService } from "./string-utils.service";
 })
 export class PageContentActionsService {
   private logger: Logger;
-  public margins: number[] = [null].concat(range(1, 6));
 
   constructor(private stringUtils: StringUtilsService,
               private broadcastService: BroadcastService<PageContent>,
@@ -24,8 +25,8 @@ export class PageContentActionsService {
     this.logger = loggerFactory.createLogger(PageContentActionsService, NgxLoggerLevel.OFF);
   }
 
-  public marginComparer(item1: number, item2: number): boolean {
-    return (!item1 && !item2) || item1 === item2;
+  public nestedRowsExistFor(column: PageContentColumn): boolean {
+    return column?.rows?.length > 0;
   }
 
   public initialView(column: PageContentColumn): View {
@@ -38,6 +39,10 @@ export class PageContentActionsService {
 
   public edit(): View {
     return View.EDIT;
+  }
+
+  allPageHrefs(pageContent: PageContent): any[] {
+    return (pageContent.rows.map(row => row.columns.map(col => first(col?.href?.split("?"))).filter(item => item))).flat(2);
   }
 
   saveContentTextId(contentText: ContentText, rowIndex: number, column: PageContentColumn, pageContent: PageContent) {
@@ -81,8 +86,8 @@ export class PageContentActionsService {
     this.logger.debug("rows:", rows);
   }
 
-  deleteRow(rowIndex, pageContent: PageContent) {
-    pageContent.rows = pageContent.rows.filter((item, index) => index !== rowIndex);
+  deleteRow(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
+    this.rowContainer(pageContent, rowIsNested, column).rows = this.rowContainer(pageContent, rowIsNested, column).rows.filter((item, index) => index !== rowIndex);
     this.logger.debug("pageContent:", pageContent);
   }
 
@@ -156,7 +161,6 @@ export class PageContentActionsService {
   }
 
   rowColumnIdentifierFor(rowIndex: number, columnIndex: number, identifier: string): string {
-
     return kebabCase(`${identifier}-${this.rowColFor(rowIndex, columnIndex)}`);
   }
 
@@ -194,4 +198,15 @@ export class PageContentActionsService {
     return hasRows && queryCompleted;
   }
 
+  rowContainer(pageContent: PageContent, rowIsNested: boolean, column: PageContentColumn): HasPageContentRows {
+    return rowIsNested && column?.rows ? column : pageContent;
+  }
+
+  moveRowUp(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
+    move(this.rowContainer(pageContent, rowIsNested, column).rows, rowIndex, rowIndex - 1);
+  }
+
+  moveRowDown(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
+    move(this.rowContainer(pageContent, rowIsNested, column).rows, rowIndex, rowIndex + 1);
+  }
 }

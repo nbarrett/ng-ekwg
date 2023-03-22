@@ -30,7 +30,6 @@ import { FacebookComponent } from "../../pages/facebook/facebook.component";
 import { HomeComponent } from "../../pages/home/home.component";
 import { PrivacyPolicyComponent } from "../../pages/home/privacy-policy.component";
 import { HowToModalComponent } from "../../pages/how-to/how-to-modal.component";
-import { HowToComponent } from "../../pages/how-to/how-to.component";
 import { HowToSubjectListingComponent } from "../../pages/how-to/subject-listing/subject-listing";
 import { InstagramComponent } from "../../pages/instagram/instagram.component";
 import { JoinUsComponent } from "../../pages/join-us/join-us.component";
@@ -66,7 +65,6 @@ import { NavbarComponent } from "./navbar/navbar";
     HeaderBarComponent,
     HeaderButtonsComponent,
     HomeComponent,
-    HowToComponent,
     HowToModalComponent,
     HowToSubjectListingComponent,
     InstagramComponent,

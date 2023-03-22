@@ -14,10 +14,13 @@ export interface ContentTextApiResponse extends ApiResponse {
   response?: ContentText | ContentText[];
 }
 
-export interface PageContent {
+export interface HasPageContentRows {
+  rows?: PageContentRow[];
+}
+
+export interface PageContent extends HasPageContentRows {
   id?: string;
   path?: string;
-  rows: PageContentRow[]
 }
 
 export interface PageContentRow {
@@ -29,13 +32,13 @@ export interface PageContentRow {
   marginBottom?: number;
 }
 
-export interface PageContentColumn extends Link {
+export interface PageContentColumn extends Link, HasPageContentRows {
   columns?: number;
   contentTextId?: string;
   imageSource?: string;
+  imageBorderRadius?: number;
   icon?: string;
   accessLevel?: AccessLevel;
-  rows?: PageContentRow[]
 }
 
 export interface PageContentEditEvent {
@@ -44,11 +47,6 @@ export interface PageContentEditEvent {
   path: string;
   image?: string;
   editActive?: boolean;
-}
-
-export interface PageContentApiResponse extends ApiResponse {
-  request: any;
-  response?: PageContent | PageContent[];
 }
 
 export enum PageContentType {
@@ -78,4 +76,24 @@ export enum DataAction {
   SAVE = "save",
   REVERT = "revert",
   NONE = "none"
+}
+
+export interface Margin {
+  value: number;
+  description: string;
+}
+
+export interface InsertionRow {
+  index: number;
+  description: string;
+}
+
+export enum Action {
+  MOVE = "Move",
+  COPY = "Copy"
+}
+
+export enum InsertionPosition {
+  BEFORE = "Before",
+  AFTER = "After"
 }

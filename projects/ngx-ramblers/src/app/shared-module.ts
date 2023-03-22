@@ -37,11 +37,14 @@ import { CardEditorComponent } from "./modules/common/card-editor/card-editor";
 import { CardImageComponent } from "./modules/common/card/image/card-image";
 import { CopyIconComponent } from "./modules/common/copy-icon/copy-icon";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
+import { ActionButtonsSettingsComponent } from "./modules/common/dynamic-content/action-buttons-settings";
+import { BulkActionSelectorComponent } from "./modules/common/dynamic-content/bulk-action-selector";
 import { DynamicContentComponent } from "./modules/common/dynamic-content/dynamic-content";
 import { DynamicContentSiteEditComponent } from "./modules/common/dynamic-content/dynamic-content-site-edit";
 import { DynamicContentSiteEditTextRowComponent } from "./modules/common/dynamic-content/dynamic-content-site-edit-text-row";
 import { DynamicContentViewComponent } from "./modules/common/dynamic-content/dynamic-content-view";
 import { DynamicContentViewTextRowComponent } from "./modules/common/dynamic-content/dynamic-content-view-text-row";
+import { MarginSelectComponent } from "./modules/common/dynamic-content/margin-select";
 import { IconExamplesComponent } from "./modules/common/icon-examples/icon-examples";
 import { LoginRequiredComponent } from "./modules/common/login-required/login-required";
 import { SvgComponent } from "./modules/common/svg/svg";
@@ -137,11 +140,11 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     DisplayDatesPipe,
     DisplayDayPipe,
     DynamicContentComponent,
+    DynamicContentPageComponent,
     DynamicContentSiteEditComponent,
     DynamicContentSiteEditTextRowComponent,
     DynamicContentViewComponent,
     DynamicContentViewTextRowComponent,
-    DynamicContentPageComponent,
     EventNotePipe,
     FormatAuditPipe,
     FullNamePipe,
@@ -155,16 +158,19 @@ import { SiteEditService } from "./site-edit/site-edit.service";
     KebabCasePipe,
     LastConfirmedDateDisplayed,
     LineFeedsToBreaksPipe,
+    LinkComponent,
     LinkEditComponent,
     LinksEditComponent,
     LoginRequiredComponent,
+    ActionButtonsSettingsComponent,
+    BulkActionSelectorComponent,
+    MarginSelectComponent,
     MarkdownEditorComponent,
     MeetupEventSummaryPipe,
-    MemberIdsToFullNamesPipe,
     MemberIdToFirstNamePipe,
     MemberIdToFullNamePipe,
+    MemberIdsToFullNamesPipe,
     MoneyPipe,
-    LinkComponent,
     PageComponent,
     PanelExpanderComponent,
     RelatedLinkComponent,

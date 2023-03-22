@@ -2,7 +2,9 @@
   <div [class]="actions.rowClasses(row)">
     <ng-container *ngFor="let column of row?.columns; let columnIndex = index;">
       <div [class]="'col-sm-' + column.columns">
-        <ng-container *ngIf="!column.rows">
+        <!-- beginning of row content editing-->
+        <div *ngIf="!column.rows" class="img-thumbnail thumbnail-walk-edit">
+          <div class="thumbnail-heading">Col {{columnIndex + 1}}</div>
           <app-markdown-editor (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
                                [buttonsAvailableOnlyOnFocus]="true"
                                [category]="contentPath"
@@ -13,7 +15,6 @@
                                [initialView]="actions.view()"
                                [name]="actions.parentRowColFor(parentRowIndex, rowIndex, columnIndex)">
             <ng-container prepend>
-
               <div class="form-group">
                 <label
                   [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level-' + contentPath)">Access:</label>
@@ -58,18 +59,39 @@
               (save)="imagedSaved(rowIndex, columnIndex, column, $event)">
             </app-image-cropper>
             <app-card-image
+              [borderRadius]="column?.imageBorderRadius"
               [unconstrainedHeight]="true"
               [imageSource]="imageSource(rowIndex, columnIndex, column?.imageSource)">
             </app-card-image>
-            <label [for]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')">
-              Image Source:</label>
-            <input [(ngModel)]="column.imageSource"
-                   [id]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')"
-                   type="text" class="form-control">
+            <div class="row mt-2">
+              <div [class]="imagePropertyColumnClasses(column)">
+                <label [for]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')">
+                  Image Source:</label>
+                <input [(ngModel)]="column.imageSource"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-source')"
+                       type="text" class="form-control">
+              </div>
+              <div [class]="imagePropertyColumnClasses(column)">
+                <label [for]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-border-radius')">
+                  Border Radius:</label>
+                <input [(ngModel)]="column.imageBorderRadius"
+                       [id]="actions.rowColumnIdentifierFor(rowIndex,columnIndex,'image-border-radius')"
+                       type="number" class="form-control">
+              </div>
+            </div>
           </div>
-        </ng-container>
-        <ng-container *ngIf="column.rows">
-          <div class="img-thumbnail thumbnail-walk-edit mt-2"
+        </div>
+        <!-- end of row content editing-->
+        <!-- start of column nested rows-->
+        <div *ngIf="column.rows" class="img-thumbnail thumbnail-walk-edit">
+          <div class="thumbnail-heading">Row {{rowIndex + 1}} column {{columnIndex + 1}}
+            ({{stringUtils.pluraliseWithCount(column.rows?.length, 'nested row')}})
+          </div>
+          <app-actions-dropdown [pageContent]="pageContent"
+                                [columnIndex]="columnIndex"
+                                [column]="column">
+          </app-actions-dropdown>
+          <div class="img-thumbnail thumbnail-walk-edit mt-3"
                *ngFor="let row of column.rows; let nestedRowIndex = index;">
             <div class="thumbnail-heading">Row {{rowIndex + 1}} (nested row {{nestedRowIndex + 1}}
               column {{columnIndex + 1}}
@@ -77,28 +99,21 @@
             </div>
             <div class="row align-items-end mb-3">
               <div class="col-sm-4">
-                <label [for]="actions.parentRowColumnIdentifierFor(parentRowIndex, nestedRowIndex, column, 'nested-margins-top' + contentPath)">Margin
-                  Top:</label>
-                <select [compareWith]="actions.marginComparer" class="form-control input-sm"
-                        [id]="actions.parentRowColumnIdentifierFor(parentRowIndex, nestedRowIndex, column, 'nested-margins-top' + contentPath)"
-                        [(ngModel)]="row.marginTop">
-                  <option *ngFor="let margin of actions.margins"
-                          [ngValue]="margin">{{margin || 'none'}}</option>
-                </select>
+                <app-margin-select label="Margin Top"
+                                   [data]="row"
+                                   field="marginTop">
+                </app-margin-select>
               </div>
               <div class="col-sm-4">
-                <label [for]="actions.parentRowColumnIdentifierFor(parentRowIndex, nestedRowIndex, column, 'nested-margins-bottom' + contentPath)">Margin
-                  Bottom:</label>
-                <select class="form-control input-sm"
-                        [id]="actions.parentRowColumnIdentifierFor(parentRowIndex, nestedRowIndex, column,'nested-margins-bottom' + contentPath)"
-                        [(ngModel)]="row.marginBottom">
-                  <option *ngFor="let margin of actions.margins"
-                          [ngValue]="margin">{{margin || 'none'}}</option>
-                </select>
+                <app-margin-select label="Margin Bottom"
+                                   [data]="row"
+                                   field="marginBottom">
+                </app-margin-select>
               </div>
               <div class="col-sm-4">
                 <app-actions-dropdown [rowIndex]="nestedRowIndex"
                                       [pageContent]="pageContent"
+                                      [rowIsNested]="true"
                                       [column]="column"
                                       [row]="row">
                 </app-actions-dropdown>
@@ -113,7 +128,8 @@
               [pageContent]="pageContent">
             </app-dynamic-content-site-edit-text-row>
           </div>
-        </ng-container>
+        </div>
+        <!-- end of column nested rows-->
       </div>
     </ng-container>
   </div>

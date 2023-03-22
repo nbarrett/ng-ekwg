@@ -19,6 +19,7 @@ export function configuredMailchimp(): Promise<MailchimpConfigData> {
     })
     .catch(error => {
       debugLog(`config error`, transforms.parseError(error));
+      return null;
     });
 }
 

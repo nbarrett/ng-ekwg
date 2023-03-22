@@ -4,6 +4,7 @@ const PageContentColumn = mongoose.Schema({
   href: {type: String},
   title: {type: String},
   imageSource: {type: String},
+  imageBorderRadius: {type: Number},
   icon: {type: String},
   columns: {type: Number},
   contentTextId: {type: String},

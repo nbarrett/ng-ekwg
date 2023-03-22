@@ -21,6 +21,8 @@ export class DynamicContentViewTextRowComponent implements OnInit {
   public contentPath: string;
   @Input()
   public contentDescription: string;
+  @Input()
+  public bordered: boolean;
 
   private logger: Logger;
 

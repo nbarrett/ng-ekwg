@@ -27,7 +27,15 @@ export class PageContentService {
   }
 
   async all(): Promise<PageContent[]> {
-    const apiResponse = await this.http.get<{ response: PageContent[] }>(this.BASE_URL + "/all").toPromise();
+    const apiResponse = await this.http.get<{ response: PageContent[] }>(`${this.BASE_URL}/all`).toPromise();
+    this.logger.debug("all - received", apiResponse);
+    return apiResponse.response;
+  }
+
+  async allReferringPages(path: string): Promise<PageContent[]> {
+    const dataQueryOptions: DataQueryOptions = {criteria: {"rows.columns.href": {$regex: path, $options: "i"}}};
+    const params = this.commonDataService.toHttpParams(dataQueryOptions);
+    const apiResponse = await this.http.get<{ response: PageContent[] }>(`${this.BASE_URL}/all`, {params}).toPromise();
     this.logger.debug("all - received", apiResponse);
     return apiResponse.response;
   }
@@ -49,7 +57,7 @@ export class PageContentService {
 
   async update(pageContent: PageContent): Promise<PageContent> {
     this.logger.debug("updating", pageContent);
-    const apiResponse = await this.http.put<{ response: PageContent }>(this.BASE_URL + "/" + pageContent.id, pageContent).toPromise();
+    const apiResponse = await this.http.put<{ response: PageContent }>(`${this.BASE_URL}/${pageContent.id}`, pageContent).toPromise();
     this.logger.debug("updated", pageContent, "- received", apiResponse);
     return apiResponse.response;
   }
@@ -63,7 +71,7 @@ export class PageContentService {
   }
 
   async delete(pageContent: PageContent): Promise<PageContent> {
-    const apiResponse = await this.http.delete<{ response: PageContent }>(this.BASE_URL + "/" + pageContent.id).toPromise();
+    const apiResponse = await this.http.delete<{ response: PageContent }>(`${this.BASE_URL}/${pageContent.id}`).toPromise();
     this.logger.debug("delete", pageContent, "- received", apiResponse);
     return apiResponse.response;
   }

@@ -20,65 +20,65 @@
     <ng-container *ngIf="siteEditService.active()">
       <div class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title-' + contentPath)">Title</label>
+               [for]="idFor('title')">Title</label>
         <input [(ngModel)]="column.title"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'title-' + contentPath)"
+               [id]="idFor('title')"
                class="form-control input-sm" placeholder="Enter slide title"
                type="text">
       </div>
       <div class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)">Link</label>
+               [for]="idFor('href')">Link</label>
         <input [(ngModel)]="column.href"
                [typeahead]="pageContentService.siteLinks"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'href-' + contentPath)"
+               [id]="idFor('href')"
                class="form-control input-sm" placeholder="Enter href value">
       </div>
       <div class="form-group">
         <div class="custom-control custom-radio custom-control-inline">
-          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image-' + contentPath)"
+          <input [id]="idFor('use-image')"
                  type="radio"
                  class="custom-control-input"
-                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type-' + contentPath)"
+                 [name]="idFor('image-type')"
                  [ngModel]="imageType"
                  (change)="changeToImageType()"
                  value="image"/>
           <label class="custom-control-label"
-                 [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-image-' + contentPath)">
+                 [for]="idFor('use-image')">
             Use Image</label>
         </div>
         <div class="custom-control custom-radio custom-control-inline">
-          <input [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon-' + contentPath)"
+          <input [id]="idFor('use-icon')"
                  type="radio"
-                 [name]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'image-type-' + contentPath)"
+                 [name]="idFor('image-type')"
                  class="custom-control-input"
                  [ngModel]="imageType"
                  (change)="changeToIconType()"
                  value="icon"/>
           <label class="custom-control-label"
-                 [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'use-icon-' + contentPath)">
+                 [for]="idFor('use-icon')">
             Use Icon</label>
         </div>
       </div>
       <div *ngIf="imageType==='icon'" class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon-' + contentPath)">Icon</label>
+               [for]="idFor('icon')">Icon</label>
         <input [(ngModel)]="column.icon"
                [typeahead]="iconService.iconKeys"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'icon-' + contentPath)"
+               [id]="idFor('icon')"
                class="form-control input-sm" placeholder="Enter icon value">
       </div>
       <div *ngIf="imageType==='image'" class="form-group">
         <label class="form-label"
-               [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource-' + contentPath)">Image Source</label>
+               [for]="idFor('imageSource')">Image Source</label>
         <input [(ngModel)]="column.imageSource"
-               [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'imageSource-' + contentPath)"
+               [id]="idFor('imageSource')"
                class="form-control input-sm" placeholder="Enter image source value"
                type="text">
       </div>
       <div class="form-group">
-        <label [for]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level-' + contentPath)">Access</label>
-        <select [(ngModel)]="column.accessLevel" [id]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, 'access-level-' + contentPath)"
+        <label [for]="idFor('access-level')">Access</label>
+        <select [(ngModel)]="column.accessLevel" [id]="idFor('access-level')"
                 class="form-control input-sm">
           <option *ngFor="let accessLevel of memberResourcesReferenceData.accessLevels()"
                   [textContent]="accessLevel.description"
@@ -90,8 +90,8 @@
                          (saved)="actions.saveContentTextId($event, rowIndex, column, pageContent)"
                          [actionCaptionSuffix]="'text'"
                          [clearEnabled]="true"
-                         [category]="contentPath"
-                         [description]="actions.rowColumnIdentifierFor(rowIndex, columnIndex, relativePath)"
+                         [category]="pageContent.path"
+                         [description]="idFor(pageContent.path)"
                          [id]="column?.contentTextId"
                          [name]="actions.rowColFor(rowIndex, columnIndex)">
 

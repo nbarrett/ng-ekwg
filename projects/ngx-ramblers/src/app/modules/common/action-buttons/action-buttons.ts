@@ -10,6 +10,7 @@ import { DeviceSize } from "../../../models/page.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { CARD_MARGIN_BOTTOM, cardClasses } from "../../../services/card-utils";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
 import { PageContentEditService } from "../../../services/page-content-edit.service";
 import { PageService } from "../../../services/page.service";
@@ -29,16 +30,16 @@ export class ActionButtonsComponent implements OnInit {
   public rowIndex: number;
 
   private logger: Logger;
-  public contentPath: string;
   public slideIndex = 0;
   public maxViewableSlideCount: number;
   public actualViewableSlideCount: number;
-  public relativePath: string;
   public row: PageContentRow;
   public activeEditColumnIndex: number;
   public faPencil = faPencil;
   public pageContentEditEvents: PageContentEditEvent[] = [];
+  private id: string;
   constructor(
+    private numberUtils: NumberUtilsService,
     public siteEditService: SiteEditService,
     public pageContentEditService: PageContentEditService,
     private urlService: UrlService,
@@ -56,9 +57,9 @@ export class ActionButtonsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.id = this.numberUtils.generateUid();
     this.row = this.pageContent.rows[this.rowIndex];
-    this.contentPath = this.pageContent.path;
-    this.logger.debug("initialised with contentPath:", this.contentPath);
+    this.logger.info("initialised with contentPath:", this.pageContent.path);
     this.determineViewableSlideCount();
     this.pageColumnsChanged();
     this.broadcastService.on(NamedEventType.PAGE_CONTENT_CHANGED, () => {

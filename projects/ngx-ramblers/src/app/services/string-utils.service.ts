@@ -107,8 +107,8 @@ export class StringUtilsService {
     return startCase(toLower(str));
   }
 
-  pluraliseWithCount(count: number, text: string) {
-    return `${count} ${count === 1 ? text : text + "s"}`;
+  pluraliseWithCount(count: number, singular: string, plural?: string) {
+    return `${count} ${count === 1 ? singular : plural || (singular + "s")}`;
   }
 
   kebabCase(...strings: any[]): string {

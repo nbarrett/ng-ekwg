@@ -55,9 +55,7 @@ exports.findByConditions = (model, data) => {
 };
 exports.connect = () => {
   return mongoose.connect(envConfig.mongo.uri, {
-    keepAlive: 1,
-    useCreateIndex: true,
-    useFindAndModify: false,
+    keepAlive: true,
     useNewUrlParser: true,
   })
     .then((response) => {

@@ -7,7 +7,6 @@ import { LogoutComponent } from "./logout/logout.component";
 import { DynamicContentPageComponent } from "./modules/common/dynamic-content-page/dynamic-content-page";
 import { HomeComponent } from "./pages/home/home.component";
 import { PrivacyPolicyComponent } from "./pages/home/privacy-policy.component";
-import { HowToComponent } from "./pages/how-to/how-to.component";
 import { HowToSubjectListingComponent } from "./pages/how-to/subject-listing/subject-listing";
 import { ImageListComponent } from "./pages/image-editor/image-list/image-list.component";
 import { JoinUsComponent } from "./pages/join-us/join-us.component";
@@ -22,7 +21,6 @@ const routes: Routes = [
   {path: "walks", loadChildren: () => import("./modules/walks/walks-routing.module").then(module => module.WalksRoutingModule)},
   {path: "forgot-password", component: ForgotPasswordComponent},
   {path: "home", component: HomeComponent},
-  {path: "how-to", component: HowToComponent},
   {path: "how-to/committee/email-archives/:subject", component: HowToSubjectListingComponent},
   {path: "image-editor/:image-source", component: ImageListComponent},
   {path: "join-us", component: JoinUsComponent},
@@ -30,7 +28,6 @@ const routes: Routes = [
   {path: "logout", component: LogoutComponent},
   {path: "privacy-policy", component: PrivacyPolicyComponent},
   {matcher: hasDynamicPath, component: DynamicContentPageComponent},
-  {matcher: hasMongoId, component: HowToComponent},
   {path: "**", redirectTo: "/"},
 ];
 

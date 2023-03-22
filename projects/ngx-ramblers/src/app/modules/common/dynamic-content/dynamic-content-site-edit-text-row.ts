@@ -1,11 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faAdd, faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
-import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
-import { range } from "lodash-es";
+import { faAdd, faPencil } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AwsFileData } from "../../../models/aws-object.model";
-import { PageContent, PageContentColumn, PageContentEditEvent, PageContentRow, PageContentType } from "../../../models/content-text.model";
-import { enumKeyValues, KeyValue } from "../../../services/enums";
+import { PageContent, PageContentColumn, PageContentEditEvent, PageContentRow } from "../../../models/content-text.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberResourcesReferenceDataService } from "../../../services/member/member-resources-reference-data.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
@@ -33,13 +30,7 @@ export class DynamicContentSiteEditTextRowComponent implements OnInit {
   private logger: Logger;
   faPencil = faPencil;
   faAdd = faAdd;
-  faPlusCircle = faPlusCircle;
-  faMinusCircle = faMinusCircle;
-  faSave = faSave;
-  faUndo = faUndo;
-  faTableCells = faTableCells;
   public pageContentEditEvents: PageContentEditEvent[] = [];
-  enumKeyValuesForPageContentType: KeyValue[] = enumKeyValues(PageContentType);
 
   constructor(
     public pageContentEditService: PageContentEditService,
@@ -89,4 +80,7 @@ export class DynamicContentSiteEditTextRowComponent implements OnInit {
     this.pageContentEditEvents = this.pageContentEditService.handleEvent({path: this.pageContent.path, rowIndex, columnIndex, editActive: false}, this.pageContentEditEvents);
   }
 
+  imagePropertyColumnClasses(column: PageContentColumn) {
+    return column.columns <= 6 ? "col-sm-12" : "col-sm-12 col-xl-6";
+  }
 }

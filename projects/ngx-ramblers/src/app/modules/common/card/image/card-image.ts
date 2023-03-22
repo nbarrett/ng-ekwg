@@ -44,6 +44,8 @@ export class CardImageComponent implements OnInit {
   public unconstrainedHeight: boolean;
   @Input()
   public smallIconContainer: boolean;
+  @Input()
+  public borderRadius: number;
 
   faSearch = faSearch;
 

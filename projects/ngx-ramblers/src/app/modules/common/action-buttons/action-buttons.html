@@ -19,30 +19,6 @@
     </div>
   </div>
 </div>
-<div *ngIf="siteEditService.active()" class="row mb-3">
-  <div class="col">
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <div class="input-group-text input-sm">Max Columns:</div>
-      </div>
-      <input [(ngModel)]="row.maxColumns"
-             autocomplete="columns"
-             class="form-control input-sm column-input" placeholder="Enter number of viewable columns (1-4)"
-             type="number">
-    </div>
-  </div>
-  <div class="col">
-    <div class="custom-control custom-checkbox">
-      <input name="showSwiper" [(ngModel)]="row.showSwiper"
-             [checked]="row.showSwiper"
-             type="checkbox" class="custom-control-input"
-             [id]="actions.rowIdentifierFor(rowIndex , pageContent.path + '-show-slider')">
-      <label class="custom-control-label"
-             [for]="actions.rowIdentifierFor(rowIndex , pageContent.path + '-show-slider')">Show Swiper
-      </label>
-    </div>
-  </div>
-</div>
 <div class="row">
   <ng-container *ngFor="let column of viewableColumns(); let columnIndex = index;">
     <div [class]="slideClasses(column)"
@@ -52,8 +28,6 @@
         [rowIndex]="rowIndex"
         [column]="column"
         [pageContent]="pageContent"
-        [contentPath]="contentPath"
-        [relativePath]="relativePath"
         (pageContentEditEvents)="pageContentEditEvents = pageContentEditService.handleEvent($event, pageContentEditEvents)">
       </app-card-editor>
     </div>

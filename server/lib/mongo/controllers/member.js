@@ -28,7 +28,7 @@ exports.update = (req, res) => {
 exports.updateEmailSubscription = (req, res) => {
   const {criteria, document} = transforms.criteriaAndDocument(req);
   debug("updateEmailSubscription:", req.body, "conditions:", criteria, "request document:", document);
-  member.findOneAndUpdate(criteria, document, {new: true, useFindAndModify: false})
+  member.findOneAndUpdate(criteria, document, {new: true})
     .then(result => {
       debug("update result:", result, "request document:", document);
       res.status(200).json({

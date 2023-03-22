@@ -1,7 +1,7 @@
 <ng-container *ngIf="actions.isTextRow(row)">
   <div [class]="actions.rowClasses(row)">
     <div *ngFor="let column of row?.columns; let columnIndex = index;"
-         [class]="'col-sm-' + column.columns">
+         [class]="'col-sm-' + column.columns" >
       <ng-container *ngFor="let row of column.rows; let rowIndex = index;">
         <app-dynamic-content-view-text-row *ngIf="actions.isTextRow(row)"
                                            [row]="row"
@@ -15,6 +15,7 @@
                              [queryOnlyById]="true">
         </app-markdown-editor>
         <app-card-image *ngIf="column?.imageSource"
+                        [borderRadius]="column?.imageBorderRadius"
                         [unconstrainedHeight]="true"
                         [imageSource]="column?.imageSource">
         </app-card-image>

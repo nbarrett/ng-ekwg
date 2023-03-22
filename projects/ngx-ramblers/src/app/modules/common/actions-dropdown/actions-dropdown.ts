@@ -21,6 +21,8 @@ export class ActionsDropdownComponent implements OnInit {
   public columnIndex: number;
   @Input()
   public rowIndex: number;
+  @Input()
+  public rowIsNested: boolean;
 
   private logger: Logger;
   faTableCells = faTableCells;
@@ -34,11 +36,43 @@ export class ActionsDropdownComponent implements OnInit {
   ngOnInit() {
   }
 
-  nestedRowsExistFor(column: PageContentColumn): boolean {
-    return column && column?.rows?.length > 0;
+  rows(): PageContentRow[] {
+    return this.actions.rowContainer(this.pageContent, this.rowIsNested, this?.column)?.rows;
   }
 
-  rows(): PageContentRow[] {
-    return this.column ? this.column.rows : this.pageContent.rows;
+  allowMoveRowUp() {
+    return this.rows().length > 0 && this.rowIndex > 0;
+  }
+
+  allowMoveRowDown() {
+    return this.rows().length > 0 && this.rowIndex < this.rows().length - 1;
+  }
+
+  allowDeleteRow() {
+    return this.rows().length > 0 && this.rowIndex >= 0;
+  }
+
+  allowInsertNestedRows(): boolean {
+    return !this.rowIsNested && !this.actions.nestedRowsExistFor(this?.column);
+  }
+
+  allowDeleteNestedRows(): boolean {
+    return !this.rowIsNested && this.actions.nestedRowsExistFor(this?.column);
+  }
+
+  allowColumnActions() {
+    return this.columnIndex >= 0;
+  }
+
+  allowTextRowActions() {
+    return this.rowIndex >= 0;
+  }
+
+  allowActionButtonActions() {
+    return this.rowIndex >= 0 && !this.rowIsNested;
+  }
+
+  allowColumnDelete() {
+    return this.columnIndex >= 0;
   }
 }

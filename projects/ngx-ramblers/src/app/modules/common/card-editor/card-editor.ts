@@ -28,10 +28,6 @@ export class CardEditorComponent implements OnInit {
   @Input()
   public rowIndex: number;
   @Input()
-  contentPath: string;
-  @Input()
-  relativePath: string;
-  @Input()
   public smallIconContainer: boolean;
   public pageContentEdit: PageContentEditEvent;
   public row: PageContentRow;
@@ -60,7 +56,11 @@ export class CardEditorComponent implements OnInit {
     this.columnIndex = this.row.columns.indexOf(this.column);
     this.imageType = this.column.imageSource ? ImageType.IMAGE : ImageType.ICON;
     this.pageContentEdit = {path: this.pageContent.path, columnIndex: this.columnIndex, rowIndex: this.rowIndex, editActive: false};
-    this.logger.debug("ngOnInit:column", this.column, "this.row:", this.row, "this.imageType:", this.imageType, "pageContentEdit:", this.pageContentEdit);
+    this.logger.debug("ngOnInit:column", this.column, "this.row:", this.row, "this.imageType:", this.imageType, "pageContentEdit:", this.pageContentEdit, "content path:", this.pageContent.path);
+  }
+
+  idFor(name?: string) {
+    return this.actions.columnIdentifierFor(this.columnIndex, this.pageContent.path + (name ? ("-" + name) : ""));
   }
 
   imageSourceOrPreview(): string {
