@@ -51,10 +51,15 @@
         <ng-container *ngTemplateOutlet="saveButtonsAndPath"></ng-container>
         <div class="row mt-2 align-items-end mb-3">
           <div [ngClass]="pageContentRowService.rowsSelected()? 'col-md-10' : 'col'">
-            <label class="mr-2" for="path">Content Path:</label>
-            <input autocomplete="columns" [typeahead]="pageContentService.siteLinks" [typeaheadMinLength]="0" id="path"
-                   [(ngModel)]="pageContent.path"
-                   type="text" class="form-control">
+            <form>
+              <label class="mr-2" for="path">Content Path:</label>
+              <input autocomplete="nope" [typeahead]="pageContentService.siteLinks"
+                     [typeaheadMinLength]="0" id="path"
+                     [(ngModel)]="pageContent.path"
+                     name="path"
+                     [ngModelOptions]="{standalone: true}"
+                     type="text" class="form-control">
+            </form>
           </div>
           <ng-container *ngIf="pageContentRowService.rowsSelected()">
             <div class="col-sm-4  col-md-2">
@@ -67,16 +72,20 @@
               </select>
             </div>
             <div class="col-md-10 mt-3">
-              <label class="mr-2" for="move-or-copy-to-path">
-                {{action}}
-                {{stringUtils.pluraliseWithCount(pageContentRowService.selectedRowCount(), "row")}} to:</label>
-              <input autocomplete="columns" id="move-or-copy-to-path"
-                     [typeahead]="pageContentService.siteLinks"
-                     [typeaheadMinLength]="0"
-                     [disabled]="!pageContentRowService.rowsSelected()"
-                     (ngModelChange)="destinationPathLookupChange($event)"
-                     [ngModel]="destinationPath"
-                     type="text" class="form-control">
+              <form>
+                <label class="mr-2" for="move-or-copy-to-path">
+                  {{action}}
+                  {{stringUtils.pluraliseWithCount(pageContentRowService.selectedRowCount(), "row")}} to:</label>
+                <input id="move-or-copy-to-path"
+                       [typeahead]="pageContentService.siteLinks"
+                       name="destinationPath"
+                       autocomplete="nope"
+                       [typeaheadMinLength]="0"
+                       [disabled]="!pageContentRowService.rowsSelected()"
+                       (ngModelChange)="destinationPathLookupChange($event)"
+                       [ngModel]="destinationPath"
+                       type="text" class="form-control">
+              </form>
             </div>
             <div class="col-sm-4 col-md-2 mt-3">
               <label for="before-after">Position:</label>

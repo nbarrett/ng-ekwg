@@ -26,14 +26,16 @@
                class="form-control input-sm" placeholder="Enter slide title"
                type="text">
       </div>
-      <div class="form-group">
+      <form class="form-group">
         <label class="form-label"
                [for]="idFor('href')">Link</label>
         <input [(ngModel)]="column.href"
+               name="href"
+               autocomplete="nope"
                [typeahead]="pageContentService.siteLinks"
                [id]="idFor('href')"
                class="form-control input-sm" placeholder="Enter href value">
-      </div>
+      </form>
       <div class="form-group">
         <div class="custom-control custom-radio custom-control-inline">
           <input [id]="idFor('use-image')"
