@@ -9,6 +9,8 @@ const ramblersUploadAudit = require("../../lib/mongo/models/ramblers-upload-audi
 const json2csv = require("json2csv");
 const mongooseClient = require("../mongo/mongoose-client");
 const path = "/tmp/ramblers/";
+const os = require("os");
+
 exports.uploadWalks = (req, res) => {
 
   debug("request made with body:", req.body);
@@ -45,6 +47,7 @@ exports.uploadWalks = (req, res) => {
     });
   };
 
+  process.env["CHROMEDRIVER_PATH"] = os.platform() === "darwin" ? "/usr/local/bin/chromedriver" : "/app/.chromedriver/bin/chromedriver";
   process.env["RAMBLERS_USER"] = req.body.ramblersUser;
   process.env["RAMBLERS_DELETE_WALKS"] = req.body.walkIdDeletionList.join(",");
   process.env["RAMBLERS_FILENAME"] = filePath;
