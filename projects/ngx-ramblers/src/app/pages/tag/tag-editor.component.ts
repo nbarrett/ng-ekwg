@@ -3,7 +3,7 @@ import cloneDeep from "lodash-es/cloneDeep";
 import isEqual from "lodash-es/isEqual";
 import { NgxLoggerLevel } from "ngx-logger";
 import { TagData, TagifySettings } from "ngx-tagify";
-import { ReplaySubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { ImageTag } from "../../models/content-metadata.model";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -47,7 +47,7 @@ export class TagEditorComponent implements OnInit {
       }
     }
   };
-  tagLookups: ReplaySubject<TagData[]> = new ReplaySubject<TagData[]>();
+  tagLookups: BehaviorSubject<TagData[]> = new BehaviorSubject<TagData[]>([]);
   readonly = false;
   private logger: Logger;
   public id: string;

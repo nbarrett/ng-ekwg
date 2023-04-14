@@ -18,13 +18,14 @@ export class FooterComponent implements OnInit {
   constructor(private dateUtils: DateUtilsService,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FooterComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("FooterComponent", NgxLoggerLevel.INFO);
     this.logger.debug("constructed");
   }
 
   ngOnInit() {
-    this.year = this.dateUtils.asString(this.dateUtils.momentNow().valueOf(), undefined, "YYYY");
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.footer = item.system.footer);
+    this.year = this.dateUtils.asString(this.dateUtils.momentNow().valueOf(), undefined, "YYYY");
   }
 
 }

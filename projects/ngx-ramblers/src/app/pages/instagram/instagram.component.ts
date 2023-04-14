@@ -24,11 +24,12 @@ export class InstagramComponent implements OnInit {
               private systemConfigService: SystemConfigService,
               public dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(InstagramComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("InstagramComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
     this.instagramService.recentMedia()
       .then((recentMedia: InstagramRecentMediaData) => {

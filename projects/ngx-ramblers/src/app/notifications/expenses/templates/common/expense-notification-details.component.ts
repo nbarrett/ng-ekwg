@@ -24,12 +24,13 @@ export class ExpenseNotificationDetailsComponent implements OnInit, AfterViewIni
     private systemConfigService: SystemConfigService,
 
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ExpenseNotificationDetailsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("ExpenseNotificationDetailsComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit:data ->", this.expenseClaim);
     this.members = this.display.members;
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
   }
 

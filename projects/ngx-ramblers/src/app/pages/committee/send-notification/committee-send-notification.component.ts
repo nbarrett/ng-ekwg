@@ -86,7 +86,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     private urlService: UrlService,
     protected dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeSendNotificationComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("CommitteeSendNotificationComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -94,6 +94,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};

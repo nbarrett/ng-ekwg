@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit {
     private broadcastService: BroadcastService<boolean>,
     public urlService: UrlService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(NavbarComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("NavbarComponent", NgxLoggerLevel.INFO);
   }
 
   @HostListener("window:resize", ["$event"])
@@ -43,8 +43,10 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => {
       this.system = item.system;
+      this.logger.info("received:", item);
       this.logo = this.system?.logos?.images?.find(logo => logo.originalFileName === this.system?.header?.selectedLogo);
     });
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {

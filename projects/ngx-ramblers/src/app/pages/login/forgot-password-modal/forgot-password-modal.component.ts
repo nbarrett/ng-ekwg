@@ -51,7 +51,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
               public bsModalRef: BsModalRef,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ForgotPasswordModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("ForgotPasswordModalComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnDestroy(): void {
@@ -61,7 +61,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.logger.debug("constructed");
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:forgot password", loginResponse);

@@ -62,12 +62,13 @@ export class SendEmailsModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SendEmailsModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("SendEmailsModalComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.logger.debug("constructed with members", this.members.length, "members");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.memberFilterDate = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf());
     this.mailchimpConfig.getConfig()

@@ -36,7 +36,7 @@ export class SystemSettingsComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SystemSettingsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SystemSettingsComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {

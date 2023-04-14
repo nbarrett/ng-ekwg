@@ -16,11 +16,15 @@ export class HeaderButtonsComponent implements OnInit {
   public systemConfigResponse: SystemConfigResponse;
 
   constructor(private systemConfigService: SystemConfigService, loggerFactory: LoggerFactory, public urlService: UrlService) {
-    this.logger = loggerFactory.createLogger(HeaderButtonsComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("HeaderButtonsComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
-    this.systemConfigService.events().subscribe(item => this.systemConfigResponse = item);
+    this.logger.info("subscribing to systemConfigService events");
+    this.systemConfigService.events().subscribe(item => {
+      this.logger.info("received:", item);
+      this.systemConfigResponse = item;
+    });
   }
 
 }

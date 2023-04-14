@@ -20,6 +20,7 @@ export class FooterIconsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
   }
 }

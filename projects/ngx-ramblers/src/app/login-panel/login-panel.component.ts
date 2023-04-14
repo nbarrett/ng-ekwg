@@ -30,12 +30,16 @@ export class LoginPanelComponent implements OnInit {
               private systemConfigService: SystemConfigService,
               private urlService: UrlService,
               private routerHistoryService: RouterHistoryService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginPanelComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("LoginPanelComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit(): void {
     this.authService.authResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
+    this.logger.info("subscribing to systemConfigService events");
+    this.systemConfigService.events().subscribe(item => {
+      this.group = item.system.group;
+      this.logger.info("received:", item);
+    });
   }
 
   memberLoginStatus() {

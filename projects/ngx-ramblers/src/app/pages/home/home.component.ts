@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(HomeComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("HomeComponent", NgxLoggerLevel.INFO);
     this.feeds = {facebook: {}};
   }
 
@@ -64,6 +64,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.pageService.setTitle("Home");
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigServiceSubscription = this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
     this.imageTagDataServiceSubscription = this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
       this.initialiseSlidesForTag(tag, "selectedTag().subscribe");

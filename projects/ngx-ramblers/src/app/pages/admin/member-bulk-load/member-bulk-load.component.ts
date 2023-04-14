@@ -95,7 +95,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberBulkLoadComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("MemberBulkLoadComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -103,6 +103,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
       this.logger.debug("loginResponse", loginResponse);
       this.urlService.navigateTo("admin");
     });
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");

@@ -18,7 +18,7 @@ export class ConfigService {
   constructor(private http: HttpClient,
               private commonDataService: CommonDataService,
               private stringUtilsService: StringUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ConfigService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("ConfigService", NgxLoggerLevel.INFO);
   }
 
   async create(config: any): Promise<any> {
@@ -43,33 +43,33 @@ export class ConfigService {
     }
   }
 
-  async query(criteria?: DataQueryOptions): Promise<any[]> {
-    this.logger.debug("query:criteria", JSON.stringify(criteria));
+  async query<T>(criteria?: DataQueryOptions): Promise<T> {
+    this.logger.info("query:criteria", JSON.stringify(criteria));
     const params = this.commonDataService.toHttpParams(criteria);
-    this.logger.debug("query:params", params);
+    this.logger.info("query:params", params);
     const apiResponse = await this.http.get<ApiResponse>(this.BASE_URL, {params}).toPromise();
-    this.logger.debug("query - received", apiResponse);
+    this.logger.info("query - received", apiResponse);
     return apiResponse.response;
   }
 
   getConfig<T>(key: string, defaultOnEmpty?: object): Promise<T> {
     const criteria: any = {};
     criteria[key] = {$exists: true};
-    return this.query({criteria})
+    return this.query<T>({criteria})
       .then((result) => {
         if (result) {
-          this.logger.debug("getConfig:", key, "existing result", result);
+          this.logger.info("getConfig:", key, "existing result", result);
           return result;
         } else {
           criteria[key] = {};
           const result = defaultOnEmpty || criteria;
-          this.logger.debug("getConfig:", key, "defaultOnEmpty:", defaultOnEmpty, "new result", result);
+          this.logger.info("getConfig:", key, "defaultOnEmpty:", defaultOnEmpty, "new result", result);
           return result;
         }
-      }, (response) => {
-        return Promise.reject("Query of " + key + " config failed: " + response);
+      }).catch(error => {
+        this.logger.error(`Query of ${key} config failed:`, error);
+        return Promise.reject(`Query of ${key} config failed: ${error}`);
       });
-
   }
 
   saveConfig<T>(key, config: T) {

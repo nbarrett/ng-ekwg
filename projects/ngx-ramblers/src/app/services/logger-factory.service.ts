@@ -44,11 +44,10 @@ export class LoggerFactory {
   constructor(private customLogger: CustomNGXLoggerService) {
   }
 
-  createLogger<T extends InstanceType<any>>(classRef: T, loggerConfig: NgxLoggerLevel | LoggerConfig): Logger {
+  createLogger<T extends InstanceType<any>>(classRef: T | string, loggerConfig: NgxLoggerLevel | LoggerConfig): Logger {
     const config: LoggerConfig = isLoggerConfig(loggerConfig) ? {...loggerConfig, ...{serverLoggingUrl: "api/logs"}} : {level: loggerConfig};
-    return new Logger(this.customLogger.create(config), classRef["name"]);
+    return new Logger(this.customLogger.create(config), typeof classRef === "string" ? classRef : classRef["name"]);
   }
-
 
 }
 

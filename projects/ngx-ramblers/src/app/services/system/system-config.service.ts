@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, ReplaySubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
+import { shareReplay } from "rxjs/operators";
 import { Images, BannerImageType, Organisation, SystemConfigResponse } from "../../models/system.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -12,7 +13,7 @@ import { StringUtilsService } from "../string-utils.service";
 })
 export class SystemConfigService {
 
-  private subject = new ReplaySubject<SystemConfigResponse>();
+  private subject = new BehaviorSubject<SystemConfigResponse>(this.default());
   private logger: Logger;
   private state: { [key: string]: boolean } = {};
 
@@ -20,7 +21,7 @@ export class SystemConfigService {
               private memberLoginService: MemberLoginService,
               public stringUtils: StringUtilsService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SystemConfigService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("SystemConfigService", NgxLoggerLevel.DEBUG);
     this.refresh();
   }
 
@@ -44,7 +45,7 @@ export class SystemConfigService {
   }
 
   public events(): Observable<SystemConfigResponse> {
-    return this.subject.asObservable();
+    return this.subject.pipe(shareReplay());
   }
 
   private emptyOrganisation(): Organisation {

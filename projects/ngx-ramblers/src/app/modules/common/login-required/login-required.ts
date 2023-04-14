@@ -24,11 +24,12 @@ export class LoginRequiredComponent implements OnInit {
               private authService: AuthService,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(LoginRequiredComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("LoginRequiredComponent", NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
+    this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
     this.subscription = this.authService.authResponse()
       .subscribe((loginResponse: LoginResponse) => this.loggedIn = this.memberLoginService.memberLoggedIn());

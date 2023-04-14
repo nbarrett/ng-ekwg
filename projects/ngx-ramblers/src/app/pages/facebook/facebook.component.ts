@@ -34,7 +34,7 @@ export class FacebookComponent implements OnInit, OnDestroy {
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(FacebookComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("FacebookComponent", NgxLoggerLevel.INFO);
   }
 
   private calculateWidth(): number {
@@ -57,6 +57,7 @@ export class FacebookComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.debug("ngOnInit window.innerWidth:", window.innerWidth);
+    this.logger.info("subscribing to systemConfigService events");
     this.configSubscription = this.systemConfigService.events().subscribe(item => {
       this.facebook = item.system.externalUrls.facebook;
       this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://www.facebook.com/plugins/page.php?${this.parameters()}`);

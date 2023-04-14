@@ -88,7 +88,7 @@ export class DynamicContentSiteEditComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentSiteEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(DynamicContentSiteEditComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -103,7 +103,7 @@ export class DynamicContentSiteEditComponent implements OnInit {
   }
 
   private runInitCode() {
-    this.logger.info("ngOnInit");
+    this.logger.info("ngOnInit:subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => {
       const pageHrefs: string[] = item.system.group.pages.map(link => link.href).filter(item => item);
       this.logger.info("pageHrefs received as:", pageHrefs);
