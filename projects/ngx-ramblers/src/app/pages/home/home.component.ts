@@ -29,8 +29,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   activeSlideIndex = 0;
   public showIndicators: boolean;
   faPencil = faPencil;
-  private systemConfigServiceSubscription: Subscription;
-  private imageTagDataServiceSubscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public externalUrls: ExternalUrls;
 
   @HostListener("window:resize", ["$event"])
@@ -46,7 +45,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     private contentMetadataService: ContentMetadataService,
     private siteEditService: SiteEditService,
     private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("HomeComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("HomeComponent", NgxLoggerLevel.OFF);
     this.feeds = {facebook: {}};
   }
 
@@ -55,20 +54,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.showIndicators = width > 768 && this.viewableSlides.length <= 20;
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("ngOnDestroy fired");
-    this.systemConfigServiceSubscription.unsubscribe();
-    this.imageTagDataServiceSubscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.pageService.setTitle("Home");
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigServiceSubscription = this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
-    this.imageTagDataServiceSubscription = this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
+    this.subscriptions.push(this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
       this.initialiseSlidesForTag(tag, "selectedTag().subscribe");
-    });
+    }));
     this.contentMetadataService.items(IMAGES_HOME)
       .then(contentMetaData => {
         this.allSlides = contentMetaData.files;
@@ -78,6 +71,10 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.initialiseSlidesForTag(null, "no tag supplied");
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private initialiseSlidesForTag(tag: ImageTag, reason: string) {

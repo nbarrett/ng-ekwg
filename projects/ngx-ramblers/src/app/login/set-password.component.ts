@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../auth/auth.service";
 import { AlertTarget } from "../models/alert-target.model";
 import { ResetPasswordModalComponent } from "../pages/login/reset-password-modal/reset-password-modal.component";
@@ -14,10 +15,11 @@ import { AlertInstance, NotifierService } from "../services/notifier.service";
   template: ""
 })
 
-export class SetPasswordComponent implements OnInit {
+export class SetPasswordComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
+  private subscriptions: Subscription[] = [];
 
   constructor(private modalService: BsModalService,
               private notifierService: NotifierService,
@@ -31,7 +33,7 @@ export class SetPasswordComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
     this.authService.logout();
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const passwordResetId = paramMap.get("password-reset-id");
       this.memberService.getMemberByPasswordResetId(passwordResetId)
         .then(member => {
@@ -50,6 +52,11 @@ export class SetPasswordComponent implements OnInit {
         });
     }, (error) => {
       this.logger.debug("error", error);
-    });
+    }));
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
 }

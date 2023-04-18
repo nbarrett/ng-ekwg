@@ -1,10 +1,11 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import map from "lodash-es/map";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
 import { SaveSegmentResponse } from "../../../models/mailchimp.model";
@@ -29,7 +30,7 @@ import { SystemConfigService } from "../../../services/system/system-config.serv
   styleUrls: ["./send-emails-modal.component.sass"]
 })
 
-export class SendEmailsModalComponent implements OnInit {
+export class SendEmailsModalComponent implements OnInit, OnDestroy {
   tooltips: TooltipDirective[] = [];
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
@@ -46,6 +47,7 @@ export class SendEmailsModalComponent implements OnInit {
   public helpInfo: { monthsInPast: number; showHelp: boolean };
   faQuestion = faQuestion;
   private group: Organisation;
+  private subscriptions: Subscription[] = [];
 
   constructor(private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
@@ -62,14 +64,14 @@ export class SendEmailsModalComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               public bsModalRef: BsModalRef,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("SendEmailsModalComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("SendEmailsModalComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.logger.debug("constructed with members", this.members.length, "members");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
     this.memberFilterDate = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf());
     this.mailchimpConfig.getConfig()
       .then(config => {
@@ -122,6 +124,10 @@ export class SendEmailsModalComponent implements OnInit {
           monthsInPast: 1,
         };
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   selectClick(select: NgSelectComponent) {

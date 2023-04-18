@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { FileUtilsService } from "../../file-utils.service";
 import { TitleLine } from "../../models/banner-configuration.model";
 import { Image, Images, SystemConfigResponse } from "../../models/system.model";
@@ -17,7 +18,7 @@ import { UrlService } from "../../services/url.service";
                [closeOnSelect]="true"
                (change)="onChange($event)"
                [ngModel]="titleLine.image">
-      <ng-option *ngFor="let image of icons?.images" [value]="image" >
+      <ng-option *ngFor="let image of icons?.images" [value]="image">
         <img [alt]="friendlyFileName(image?.originalFileName)" width="25" [src]="urlService.imageSource(image?.awsFileName)"/>
         <span class="ml-2">{{friendlyFileName(image?.originalFileName)}}</span>
       </ng-option>
@@ -25,9 +26,10 @@ import { UrlService } from "../../services/url.service";
   `
 })
 
-export class IconSelectorComponent implements OnInit {
+export class IconSelectorComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public icons: Images;
+  private subscriptions: Subscription[] = [];
 
   constructor(public stringUtils: StringUtilsService,
               public urlService: UrlService,
@@ -45,11 +47,15 @@ export class IconSelectorComponent implements OnInit {
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
-    this.systemConfigService.events()
+    this.subscriptions.push(this.systemConfigService.events()
       .subscribe((config: SystemConfigResponse) => {
         this.icons = config.system.icons;
         this.logger.info("retrieved icons", this.icons);
-      });
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   imageComparer(item1: Image, item2: Image): boolean {

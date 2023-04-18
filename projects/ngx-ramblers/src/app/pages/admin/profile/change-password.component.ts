@@ -31,12 +31,12 @@ const pleaseTryAgain = " - please try again";
 })
 export class ChangePasswordComponent implements OnInit, OnDestroy {
   public member: Member;
-  private subscription: Subscription;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
   public enteredMemberCredentials: EnteredMemberCredentials = {};
   faUnlockAlt = faUnlockAlt;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
@@ -59,8 +59,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   ngOnInit() {
@@ -72,7 +71,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
       this.enteredMemberCredentials.userName = this.member.userName;
       this.notify.clearBusy();
     });
-    this.subscription = this.profileService.subscribeToLogout(this.logger);
+    this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
   }
 
   private processResetPasswordResponse(loginResponse: LoginResponse) {

@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DisplayedWalk, RiskAssessmentRecord, Walk } from "../../../models/walk.model";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
@@ -17,13 +18,14 @@ import { WalkDisplayService } from "../walk-display.service";
   templateUrl: "./walk-risk-assessment.component.html",
   styleUrls: ["./walk-risk-assessment.component.sass"]
 })
-export class WalkRiskAssessmentComponent implements OnInit {
+export class WalkRiskAssessmentComponent implements OnInit, OnDestroy {
 
   @Input()
   public displayedWalk: DisplayedWalk;
   public notifyTarget: AlertTarget = {};
   public notify: AlertInstance;
   private logger: Logger;
+  private subscriptions: Subscription[] = [];
 
   constructor(private memberLoginService: MemberLoginService,
               public display: WalkDisplayService,
@@ -39,8 +41,12 @@ export class WalkRiskAssessmentComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.walkChangesService.notifications().subscribe(walk => this.updateCompletionStatus(walk));
+    this.subscriptions.push(this.walkChangesService.notifications().subscribe(walk => this.updateCompletionStatus(walk)));
     this.updateCompletionStatus(this.displayedWalk.walk);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private updateCompletionStatus(walk: Walk) {

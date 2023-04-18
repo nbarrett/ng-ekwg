@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { SystemConfigResponse } from "../models/system.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SystemConfigService } from "../services/system/system-config.service";
@@ -11,20 +12,25 @@ import { UrlService } from "../services/url.service";
   styleUrls: ["./header-buttons.sass"]
 
 })
-export class HeaderButtonsComponent implements OnInit {
+export class HeaderButtonsComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public systemConfigResponse: SystemConfigResponse;
+  private subscriptions: Subscription[] = [];
 
   constructor(private systemConfigService: SystemConfigService, loggerFactory: LoggerFactory, public urlService: UrlService) {
-    this.logger = loggerFactory.createLogger("HeaderButtonsComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("HeaderButtonsComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
       this.logger.info("received:", item);
       this.systemConfigResponse = item;
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

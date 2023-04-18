@@ -1,6 +1,6 @@
 import { Location } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap, Router } from "@angular/router";
 import first from "lodash-es/first";
 import min from "lodash-es/min";
@@ -36,7 +36,7 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
   styleUrls: ["./image-list.component.sass"],
   templateUrl: "./image-list.component.html"
 })
-export class ImageListComponent implements OnInit {
+export class ImageListComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public notify: AlertInstance;
   public warnings: AlertInstance;
@@ -64,7 +64,7 @@ export class ImageListComponent implements OnInit {
   private pageCount: number;
   private pageSize = 10;
   private pages: number[];
-  private imageTagDataServiceSubscription: Subscription;
+  private subscriptions: Subscription[] = [];
 
   constructor(private stringUtils: StringUtilsService,
               public imageTagDataService: ImageTagDataService,
@@ -124,7 +124,7 @@ export class ImageListComponent implements OnInit {
         );
       }
     });
-    this.imageTagDataServiceSubscription = this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
+    this.subscriptions.push(this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
       this.logger.info(tag, "selectedTag().subscribe");
       if (tag) {
         if (tag === RECENT_PHOTOS) {
@@ -136,15 +136,15 @@ export class ImageListComponent implements OnInit {
         }
       }
       this.applyFilter();
-    });
+    }));
     this.applyFilter();
-    this.imageTagDataService.imageTags()
+    this.subscriptions.push(this.imageTagDataService.imageTags()
       .subscribe((imageTags: ImageTag[]) => {
         if (this.contentMetadata) {
           this.contentMetadata.imageTags = imageTags.filter(tag => tag.key > 0);
           this.logger.info("received imageTags:", imageTags, "contentMetadata imageTags:", this.contentMetadata.imageTags);
         }
-      });
+      }));
     this.applyAllowEdits();
     this.searchChangeObservable.pipe(debounceTime(500))
       .pipe(distinctUntilChanged())
@@ -154,6 +154,10 @@ export class ImageListComponent implements OnInit {
   pageChanged(event: PageChangedEvent): void {
     this.logger.debug("event:", event);
     this.goToPage(event.page);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   previousPage() {

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
@@ -16,7 +16,7 @@ import { WalksReferenceService } from "../../../services/walks/walks-reference-d
   selector: "app-walks-search",
   templateUrl: "./walk-search.component.html"
 })
-export class WalkSearchComponent implements OnInit {
+export class WalkSearchComponent implements OnInit, OnDestroy {
   @Input()
   notifyTarget: AlertTarget;
 
@@ -27,6 +27,7 @@ export class WalkSearchComponent implements OnInit {
   public showPagination = false;
   private logger: Logger;
   private searchChangeObservable: Subject<string>;
+  private subscriptions: Subscription[] = [];
 
   constructor(private route: ActivatedRoute,
               private walksReferenceService: WalksReferenceService,
@@ -38,17 +39,21 @@ export class WalkSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.currentWalkId = paramMap.get("walk-id");
       this.logger.debug("walk-id from route params:", this.currentWalkId);
-    });
+    }));
     this.broadcastService.on(NamedEventType.SHOW_PAGINATION, (show: NamedEvent<boolean>) => {
       this.logger.info("showPagination:", show);
       return this.showPagination = show.data;
     });
-    this.searchChangeObservable.pipe(debounceTime(1000))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.APPLY_FILTER, searchTerm)));
+      .subscribe(searchTerm => this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.APPLY_FILTER, searchTerm))));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   onSearchChange(searchEntry: string) {

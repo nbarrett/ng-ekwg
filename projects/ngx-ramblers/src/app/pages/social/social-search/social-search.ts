@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { faCopy, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
@@ -18,7 +18,7 @@ import { SocialDisplayService } from "../social-display.service";
   templateUrl: "./social-search.html",
   styleUrls: ["./social-search.sass"]
 })
-export class SocialSearchComponent implements OnInit {
+export class SocialSearchComponent implements OnInit, OnDestroy {
 
   @Input()
   public notifyTarget: AlertTarget;
@@ -27,7 +27,7 @@ export class SocialSearchComponent implements OnInit {
   filterParameters: FilterParameters;
   faSearch = faSearch;
   faCopy = faCopy;
-
+  private subscriptions: Subscription[] = [];
   public showPagination = false;
   private logger: Logger;
   private searchChangeObservable: Subject<string>;
@@ -47,9 +47,13 @@ export class SocialSearchComponent implements OnInit {
       this.logger.info("showPagination:", show);
       return this.showPagination = show.data;
     });
-    this.searchChangeObservable.pipe(debounceTime(1000))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.APPLY_FILTER, searchTerm)));
+      .subscribe(searchTerm => this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.APPLY_FILTER, searchTerm))));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   onSearchChange(searchEntry: string) {

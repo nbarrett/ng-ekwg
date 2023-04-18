@@ -18,7 +18,7 @@ import { UrlService } from "../../../services/url.service";
 export class WalkAdminComponent implements OnInit, OnDestroy {
   allowAdminEdits: boolean;
   private logger: Logger;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   faCalendarPlus = faCalendarPlus;
   faFileExport = faFileExport;
   faMeetup = faMeetup;
@@ -30,15 +30,14 @@ export class WalkAdminComponent implements OnInit, OnDestroy {
     this.logger = loggerFactory.createLogger(WalkAdminComponent, NgxLoggerLevel.OFF);
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.setPrivileges();
-    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse)));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {

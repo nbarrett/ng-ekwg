@@ -30,7 +30,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public credentialTwo;
   public credentialOne;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   private campaignSendInitiated = false;
   private FORGOTTEN_PASSWORD_SEGMENT = "Forgotten Password";
   public readonly credentialOneLabel = "User name or email address";
@@ -51,19 +51,14 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
               public bsModalRef: BsModalRef,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("ForgotPasswordModalComponent", NgxLoggerLevel.INFO);
-  }
-
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
+    this.logger = loggerFactory.createLogger("ForgotPasswordModalComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => this.group = item.system.group);
-    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:forgot password", loginResponse);
       if (loginResponse.member) {
         this.forgottenPasswordMember = loginResponse.member as Member;
@@ -77,7 +72,11 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
           message: loginResponse.alertMessage
         });
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   submit() {

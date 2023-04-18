@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { TitleLine } from "../../models/banner-configuration.model";
 import { Images, SystemConfigResponse } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -42,13 +43,14 @@ import { SystemConfigService } from "../../services/system/system-config.service
   `
 })
 
-export class BannerTitleConfigComponent implements OnInit {
+export class BannerTitleConfigComponent implements OnInit, OnDestroy {
   private logger: Logger;
   @Input()
   public titleLine: TitleLine;
   @Input()
   public id: string;
   private icons: Images;
+  private subscriptions: Subscription[] = [];
 
   constructor(loggerFactory: LoggerFactory,
               private systemConfigService: SystemConfigService) {
@@ -66,6 +68,10 @@ export class BannerTitleConfigComponent implements OnInit {
           this.titleLine.image = first(this.icons.images);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

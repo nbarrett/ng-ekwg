@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DisplayedWalk, EventType, Walk } from "../../../models/walk.model";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -16,12 +17,13 @@ import { WalkDisplayService } from "../walk-display.service";
   templateUrl: "./walk-edit-full-page.component.html"
 })
 
-export class WalkEditFullPageComponent implements OnInit {
+export class WalkEditFullPageComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public displayedWalk: DisplayedWalk;
   public notifyTarget: AlertTarget = {};
   private notify: AlertInstance;
   pageTitle: string;
+  private subscriptions: Subscription[] = [];
 
   constructor(private walksService: WalksService,
               private route: ActivatedRoute,
@@ -36,7 +38,7 @@ export class WalkEditFullPageComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("add")) {
         this.displayedWalk = {
           walkAccessMode: WalksReferenceService.walkAccessModes.add,
@@ -61,7 +63,11 @@ export class WalkEditFullPageComponent implements OnInit {
             this.setPageTitle();
           });
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private setPageTitle() {

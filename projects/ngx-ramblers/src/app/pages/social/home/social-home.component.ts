@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
@@ -30,8 +30,8 @@ import { SocialDisplayService } from "../social-display.service";
   templateUrl: "./social-home.component.html",
   styleUrls: ["./social-home.component.sass"]
 })
-export class SocialHomeComponent implements OnInit {
-  private subscription: Subscription;
+export class SocialHomeComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
   private logger: Logger;
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
@@ -69,20 +69,20 @@ export class SocialHomeComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshSocialEvents());
     this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToSocialEvents(searchTerm));
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const socialEventId = paramMap.get("relativePath");
       this.logger.debug("socialEventId from route params:", paramMap, socialEventId);
       if (socialEventId) {
         this.socialEventId = socialEventId;
       }
       this.pageService.setTitle("Home");
-    });
+    }));
     this.notify.success({
       title: "Finding social events",
       message: "please wait..."
     });
     this.refreshSocialEvents();
-    this.subscription = this.socialEventsService.notifications().subscribe((apiResponse: SocialEventApiResponse) => {
+    this.subscriptions.push(this.socialEventsService.notifications().subscribe((apiResponse: SocialEventApiResponse) => {
       this.logger.info("received apiResponse:", apiResponse);
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
@@ -105,7 +105,11 @@ export class SocialHomeComponent implements OnInit {
         this.logger.info("received socialEvents:", socialEvents);
         this.applyFilterToSocialEvents();
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   public refreshSocialEvents() {

@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from "@angular/core";
 import cloneDeep from "lodash-es/cloneDeep";
 import isEqual from "lodash-es/isEqual";
 import { NgxLoggerLevel } from "ngx-logger";
 import { TagData, TagifySettings } from "ngx-tagify";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ImageTag } from "../../models/content-metadata.model";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -26,7 +26,7 @@ import { StringUtilsService } from "../../services/string-utils.service";
   `
 })
 
-export class TagEditorComponent implements OnInit {
+export class TagEditorComponent implements OnInit, OnDestroy {
   @Input() text: string;
   @Input() tags: number[];
   @Output() tagsChange: EventEmitter<ImageTag[]> = new EventEmitter();
@@ -51,6 +51,7 @@ export class TagEditorComponent implements OnInit {
   readonly = false;
   private logger: Logger;
   public id: string;
+  private subscriptions: Subscription[] = [];
 
   constructor(public stringUtils: StringUtilsService,
               private imageTagDataService: ImageTagDataService,
@@ -58,14 +59,17 @@ export class TagEditorComponent implements OnInit {
     this.logger = loggerFactory.createLogger(TagEditorComponent, NgxLoggerLevel.OFF);
   }
 
-
   ngOnInit() {
     if (!this.tags) {
       this.tags = [];
     }
     this.id = this.stringUtils.kebabCase("image-tags", this.text);
-    this.logger.info("ngOnInit:tags for:", this.text, "->", this.tags,"id ->", this.id);
-    this.imageTagDataService.imageTags().subscribe(data => this.populateData(data));
+    this.logger.info("ngOnInit:tags for:", this.text, "->", this.tags, "id ->", this.id);
+    this.subscriptions.push(this.imageTagDataService.imageTags().subscribe(data => this.populateData(data)));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private populateData(imageTags: ImageTag[]) {

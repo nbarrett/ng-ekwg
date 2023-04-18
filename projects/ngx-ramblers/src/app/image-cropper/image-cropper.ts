@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from "@angular/core";
+import { AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from "@angular/core";
 import {
   faArrowRightArrowLeft,
   faClose,
@@ -21,6 +21,7 @@ import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage, OutputFormat } from "ngx-image-cropper";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { FileUtilsService } from "../file-utils.service";
 import { AlertMessage, AlertTarget } from "../models/alert-target.model";
 import { AwsFileData, AwsFileUploadResponse, DescribedDimensions, FileNameData, ImageData } from "../models/aws-object.model";
@@ -38,7 +39,8 @@ import { UrlService } from "../services/url.service";
   styleUrls: ["./image-cropper.sass"]
 })
 
-export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
+export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
 
   constructor(private broadcastService: BroadcastService<any>, private numberUtils: NumberUtilsService,
               private fileUploadService: FileUploadService,
@@ -117,7 +119,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     const rootFolder = this.rootFolder || "site-content";
     this.uploader = this.fileUploadService.createUploaderFor(rootFolder, false);
-    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
       this.logger.debug("response", response, "type", typeof response);
       this.notify.clearBusy();
       if (response instanceof HttpErrorResponse) {
@@ -134,7 +136,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
         this.notify.clearBusy();
         this.notify.success({title: "File uploaded", message: this.fileNameData.title});
       }
-    });
+    }));
     if (this.preloadImage) {
       this.notify.success({title: "Image Cropper", message: "loading file into editor"});
       this.fileUploadService.urlToFile(this.preloadImage, this.preloadImage)
@@ -147,6 +149,10 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
       this.dimension = this.dimensions[0];
     }
     this.changeAspectRatioSettings();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   format(): OutputFormat {
@@ -311,7 +317,7 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit {
     this.logger.debug("processSingleFile:file:", file, "queue:", this.uploader.queue, "original file size:", this.numberUtils.humanFileSize(file.size));
     if (this?.croppedFile?.awsFileName) {
       this.logger.debug("processSingleFile:retaining existing loaded filename:", this.croppedFile.awsFileName, "file being processed:", file.name, " will be ignored");
-      const myRenamedFile = this.fileUploadService.createImageFileFrom(file, this.croppedFile.awsFileName)
+      const myRenamedFile = this.fileUploadService.createImageFileFrom(file, this.croppedFile.awsFileName);
       this.logger.debug("processSingleFile:renamed file:", myRenamedFile);
       this.originalFile = myRenamedFile;
     } else {

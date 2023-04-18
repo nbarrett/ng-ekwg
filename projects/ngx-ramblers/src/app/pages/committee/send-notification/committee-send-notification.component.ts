@@ -1,7 +1,8 @@
-import { Component, ComponentFactoryResolver, OnInit, ViewChild } from "@angular/core";
+import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, CommitteeMember, GroupEvent, Notification } from "../../../models/committee.model";
@@ -47,7 +48,7 @@ const SORT_BY_NAME = sortBy("order", "member.lastName", "member.firstName");
   templateUrl: "./committee-send-notification.component.html",
   styleUrls: ["./committee-send-notification.component.sass"]
 })
-export class CommitteeSendNotificationComponent implements OnInit {
+export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   @ViewChild(CommitteeNotificationDirective) notificationDirective: CommitteeNotificationDirective;
   public committeeFile: CommitteeFile;
   public members: Member[] = [];
@@ -55,7 +56,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
   private logger: Logger;
-
+  private subscriptions: Subscription[] = [];
   public roles: { replyTo: any[]; signoff: CommitteeMember[] };
   public selectableRecipients: MemberFilterSelection[];
   private config: MailchimpConfigResponse;
@@ -86,7 +87,7 @@ export class CommitteeSendNotificationComponent implements OnInit {
     private urlService: UrlService,
     protected dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("CommitteeSendNotificationComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("CommitteeSendNotificationComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -95,27 +96,30 @@ export class CommitteeSendNotificationComponent implements OnInit {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
-    this.display.configEvents().subscribe(() => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
       this.generateNotification();
       this.logger.debug("initialised on open: committeeFile", this.committeeFile, ", roles", this.roles);
       this.logger.debug("initialised on open: notification ->", this.notification);
-      this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
         this.committeeEventId = paramMap.get("committee-event-id");
         this.logger.info("initialised with committee-event-id:", this.committeeEventId);
-        this.committeeQueryService.queryFiles(this.committeeEventId)
-          .then(() => {
-            this.logger.info("this.committeeQueryService.committeeFiles:", this.committeeQueryService.committeeFiles);
-            if (this.committeeQueryService.committeeFiles?.length > 0) {
-              const committeeFile = this.committeeQueryService.committeeFiles[0];
-              this.committeeFile = committeeFile;
-              this.pageService.setTitle(committeeFile.fileType);
-              this.pageTitle = committeeFile.fileType;
-              this.generateNotification();
-            }
-          });
-      });
+        if (this.committeeEventId) {
+          this.committeeQueryService.queryFiles(this.committeeEventId)
+            .then(() => {
+              this.logger.info("this.committeeQueryService.committeeFiles:", this.committeeQueryService.committeeFiles);
+              if (this.committeeQueryService.committeeFiles?.length > 0) {
+                const committeeFile = this.committeeQueryService.committeeFiles[0];
+                this.committeeFile = committeeFile;
+                this.logger.info("committeeFile:", committeeFile);
+                this.pageService.setTitle(committeeFile.fileType);
+                this.pageTitle = committeeFile.fileType;
+                this.generateNotification();
+              }
+            });
+        }
+      }));
 
       const promises: any[] = [
         this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
@@ -148,7 +152,11 @@ export class CommitteeSendNotificationComponent implements OnInit {
         this.logger.debug("performed total of", promises.length);
         this.notify.clearBusy();
       });
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private generateNotification() {

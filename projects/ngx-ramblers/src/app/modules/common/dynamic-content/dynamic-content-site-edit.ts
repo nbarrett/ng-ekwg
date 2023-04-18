@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { faPencil, faRemove, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
@@ -6,7 +6,7 @@ import first from "lodash-es/first";
 import isEmpty from "lodash-es/isEmpty";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { MarkdownEditorComponent } from "../../../markdown-editor/markdown-editor.component";
@@ -34,7 +34,7 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
   templateUrl: "./dynamic-content-site-edit.html",
   styleUrls: ["./dynamic-content.sass"],
 })
-export class DynamicContentSiteEditComponent implements OnInit {
+export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
   @Input()
   public pageContent: PageContent;
   @Input()
@@ -69,12 +69,12 @@ export class DynamicContentSiteEditComponent implements OnInit {
   private error: any = null;
   private pageHrefs: string[];
   private copyOrMoveActionComplete: boolean;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private systemConfigService: SystemConfigService,
     public pageContentRowService: PageContentRowService,
     public siteEditService: SiteEditService,
-    public pageContentEditService: PageContentEditService,
     public memberResourcesReferenceData: MemberResourcesReferenceDataService,
     private route: ActivatedRoute,
     private notifierService: NotifierService,
@@ -88,18 +88,22 @@ export class DynamicContentSiteEditComponent implements OnInit {
     public actions: PageContentActionsService,
     private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentSiteEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(DynamicContentSiteEditComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     if (this.siteEditService.active()) {
       this.runInitCode();
     }
-    this.siteEditService.events.subscribe(event => {
+    this.subscriptions.push(this.siteEditService.events.subscribe(event => {
       if (event.data) {
         this.runInitCode();
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private runInitCode() {

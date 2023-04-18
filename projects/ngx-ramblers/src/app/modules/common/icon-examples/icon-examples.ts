@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import range from "lodash-es/range";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { KeyValue } from "../../../services/enums";
 import { IconService } from "../../../services/icon-service/icon-service";
@@ -13,7 +13,7 @@ import { Logger, LoggerFactory } from "../../../services/logger-factory.service"
   styleUrls: ["./icon-examples.sass"],
 })
 
-export class IconExamplesComponent implements OnInit {
+export class IconExamplesComponent implements OnInit, OnDestroy {
 
   private logger: Logger;
   public filteredIcons: KeyValue[] = [];
@@ -21,6 +21,7 @@ export class IconExamplesComponent implements OnInit {
   sizes = range(1, 6).map(size => `fa-${size}x`);
   size = "fa-3x";
   private searchChangeObservable: Subject<string>;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public iconService: IconService,
@@ -31,10 +32,14 @@ export class IconExamplesComponent implements OnInit {
   ngOnInit() {
     this.filteredIcons = [];
     this.searchChangeObservable = new Subject<string>();
-    this.searchChangeObservable.pipe(debounceTime(1000))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
-      .subscribe(data => this.refreshFilter(data));
+      .subscribe(data => this.refreshFilter(data)));
 
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   modelChanged(data: string) {

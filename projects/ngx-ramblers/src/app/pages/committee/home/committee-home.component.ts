@@ -28,7 +28,7 @@ import { UrlService } from "../../../services/url.service";
 })
 export class CommitteeHomeComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public allowAdminEdits: boolean;
@@ -56,26 +56,25 @@ export class CommitteeHomeComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.pageService.setTitle();
-    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse)));
     this.destinationType = "";
     this.selected = {
       committeeFiles: []
     };
     this.refreshAll();
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.committeeFileId = paramMap.get("relativePath");
       this.logger.info("committeeFileId from route params:", paramMap, this.committeeFileId);
       this.notify.setReady();
       this.refreshCommitteeFiles();
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private refreshCommitteeFiles() {

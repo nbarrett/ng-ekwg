@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { range } from "lodash-es";
 import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { BannerImageItem } from "../../models/banner-configuration.model";
 import { Image, Images, SystemConfigResponse } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -60,13 +61,14 @@ import { SystemConfigService } from "../../services/system/system-config.service
   `
 })
 
-export class BannerImageSelectorComponent implements OnInit {
+export class BannerImageSelectorComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public images: Images;
   public widths: number[] = range(1, 13);
   public imageTypeDescription: string;
   public propertyClass: string;
   public propertyConfigureCount = 0;
+  private subscriptions: Subscription[] = [];
 
   constructor(private stringUtils: StringUtilsService,
               private systemConfigService: SystemConfigService,
@@ -95,7 +97,7 @@ export class BannerImageSelectorComponent implements OnInit {
       this.propertyConfigureCount++;
     }
     this.propertyClass = this.configurePropertyClass();
-    this.systemConfigService.events()
+    this.subscriptions.push(this.systemConfigService.events()
       .subscribe((config: SystemConfigResponse) => {
         this.logger.info("this.bannerImageItem.bannerImageType", this.bannerImageItem?.bannerImageType, "config.system:", config.system);
         if (this.bannerImageItem?.bannerImageType) {
@@ -106,7 +108,11 @@ export class BannerImageSelectorComponent implements OnInit {
           this.bannerImageItem.image = first(this.images?.images);
         }
         this.logger.info("retrieved images", this.images, "bannerImageItem:", this.bannerImageItem);
-      });
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   imageComparer(item1: Image, item2: Image): boolean {

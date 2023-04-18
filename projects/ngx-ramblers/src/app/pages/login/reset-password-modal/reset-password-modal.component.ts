@@ -19,7 +19,7 @@ import { ForgotPasswordModalComponent } from "../forgot-password-modal/forgot-pa
 export class ResetPasswordModalComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private notify: AlertInstance;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public newPassword: string;
   public newPasswordConfirm: string;
   public notifyTarget: AlertTarget = {};
@@ -34,11 +34,6 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
               private urlService: UrlService,
               private notifierService: NotifierService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ResetPasswordModalComponent, NgxLoggerLevel.OFF);
-  }
-
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
   }
 
   ngOnInit() {
@@ -57,7 +52,7 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
         message: this.message
       });
     }
-    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:reset password", loginResponse);
       if (loginResponse?.memberLoggedIn) {
         if (!this.memberLoginService.loggedInMember().profileSettingsConfirmed) {
@@ -83,7 +78,11 @@ export class ResetPasswordModalComponent implements OnInit, OnDestroy {
           message: loginResponse?.alertMessage
         });
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   fieldPopulated(object) {

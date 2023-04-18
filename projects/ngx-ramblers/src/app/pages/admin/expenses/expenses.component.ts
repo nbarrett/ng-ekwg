@@ -76,9 +76,8 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   public notifyConfirmTarget: AlertTarget = {};
   private uploadedFile: string;
   public confirm = new Confirm();
-  private authSubscription: Subscription;
-  private expenseClaimSubscription: Subscription;
   public filters: ExpenseFilter[];
+  private subscriptions: Subscription[] = [];
   @ViewChild(ExpenseNotificationDirective) notificationDirective: ExpenseNotificationDirective;
   expandable: boolean;
   showOrHide = "hide";
@@ -114,16 +113,16 @@ export class ExpensesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.notify.setBusy();
-    this.authSubscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.urlService.navigateTo("admin");
-    });
-    this.expenseClaimSubscription = this.expenseClaimService.notifications().subscribe(apiResponse => {
+    }));
+    this.subscriptions.push(this.expenseClaimService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
         this.notifyError(apiResponse);
       } else {
         this.applyExpensesToView(apiResponse);
       }
-    });
+    }));
     this.dataError = false;
     this.members = [];
     this.expenseClaims = [];
@@ -220,8 +219,7 @@ export class ExpensesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.authSubscription.unsubscribe();
-    this.expenseClaimSubscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   defaultExpenseClaim(): ExpenseClaim {

@@ -192,15 +192,15 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   changeSubscribed(listType: string) {
-    const subscription: MailchimpSubscription = this.member.mailchimpLists[listType];
-    this.logger.info("listType", listType, "subscribed:", subscription.subscribed);
-    if (!subscription.subscribed) {
-      subscription.leid = null;
-      subscription.unique_email_id = null;
-      subscription.email = null;
-      subscription.web_id = null;
-      subscription.updated = false;
-      this.logger.info("listType", listType, "subscription now:", subscription);
+    const mailchimpSubscription: MailchimpSubscription = this.member.mailchimpLists[listType];
+    this.logger.info("listType", listType, "subscribed:", mailchimpSubscription.subscribed);
+    if (!mailchimpSubscription.subscribed) {
+      mailchimpSubscription.leid = null;
+      mailchimpSubscription.unique_email_id = null;
+      mailchimpSubscription.email = null;
+      mailchimpSubscription.web_id = null;
+      mailchimpSubscription.updated = false;
+      this.logger.info("listType", listType, "mailchimpSubscription now:", mailchimpSubscription);
     }
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, BehaviorSubject } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { CommitteeConfig } from "../../models/committee.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
@@ -12,7 +12,7 @@ import { CommitteeReferenceData } from "./committee-reference-data";
 })
 export class CommitteeConfigService {
 
-  private subject = new BehaviorSubject<CommitteeReferenceData>(null);
+  private subject = new ReplaySubject<CommitteeReferenceData>();
   private logger: Logger;
 
   constructor(private config: ConfigService,

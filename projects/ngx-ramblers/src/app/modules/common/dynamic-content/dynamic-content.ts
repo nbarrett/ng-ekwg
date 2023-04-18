@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { faAdd, faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
 import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { PageContent, PageContentEditEvent } from "../../../models/content-text.model";
@@ -25,7 +26,7 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
   templateUrl: "./dynamic-content.html",
   styleUrls: ["./dynamic-content.sass"],
 })
-export class DynamicContentComponent implements OnInit {
+export class DynamicContentComponent implements OnInit, OnDestroy {
   @Input()
   public anchor: string;
   private logger: Logger;
@@ -46,6 +47,8 @@ export class DynamicContentComponent implements OnInit {
   public contentDescription: string;
   public queryCompleted = false;
   public pageContentEditEvents: PageContentEditEvent[] = [];
+  private subscriptions: Subscription[] = [];
+
   constructor(
     public siteEditService: SiteEditService,
     public pageContentEditService: PageContentEditService,
@@ -66,7 +69,7 @@ export class DynamicContentComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.relativePath = paramMap.get("relativePath");
       this.contentPath = this.pageService.contentPath(this.anchor);
       this.contentDescription = this.pageService.contentDescription(this.anchor);
@@ -75,7 +78,11 @@ export class DynamicContentComponent implements OnInit {
       this.logger.debug("Finding page content for " + this.contentPath);
       this.refreshPageContent();
       this.authService.authResponse().subscribe(() => this.refreshPageContent());
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private refreshPageContent() {

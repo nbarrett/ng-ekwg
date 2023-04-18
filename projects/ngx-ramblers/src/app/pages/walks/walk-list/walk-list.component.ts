@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
@@ -39,7 +40,7 @@ import { WalkDisplayService } from "../walk-display.service";
   styleUrls: ["./walk-list.component.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class WalkListComponent implements OnInit {
+export class WalkListComponent implements OnInit, OnDestroy {
   public currentWalkId: string;
   private logger: Logger;
   private todayValue: number;
@@ -57,6 +58,7 @@ export class WalkListComponent implements OnInit {
     animated: false,
     initialState: {}
   };
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private modalService: BsModalService,
@@ -93,18 +95,22 @@ export class WalkListComponent implements OnInit {
     this.pageSize = 10;
     this.pageNumber = 1;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.currentWalkId = paramMap.get("walk-id");
       this.logger.debug("walk-id from route params:", this.currentWalkId);
-    });
+    }));
     this.display.refreshCachedData();
     this.refreshWalks("ngOnInit");
     this.pageService.setTitle("Home");
-    this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse));
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse)));
     this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
     this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshWalks(NamedEventType.REFRESH));
     this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToWalks(searchTerm));
     this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   walkTracker(index: number, walk: DisplayedWalk) {

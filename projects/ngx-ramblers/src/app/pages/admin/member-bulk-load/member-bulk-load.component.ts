@@ -71,7 +71,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   public memberTabHeading: string;
   public auditTabHeading: string;
   public group: Organisation;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   faEnvelopesBulk = faEnvelopesBulk;
   faSpinner = faSpinner;
   faSearch = faSearch;
@@ -95,28 +95,28 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
               private memberLoginService: MemberLoginService,
               private route: ActivatedRoute,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("MemberBulkLoadComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("MemberBulkLoadComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
-    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("loginResponse", loginResponse);
       this.urlService.navigateTo("admin");
-    });
+    }));
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");
       this.logger.debug("tab is", tab);
-    });
+    }));
 
     this.searchChangeObservable = new Subject<string>();
-    this.searchChangeObservable.pipe(debounceTime(250))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(250))
       .pipe(distinctUntilChanged())
-      .subscribe(() => this.filterLists());
+      .subscribe(() => this.filterLists()));
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.memberAdminBaseUrl = this.contentMetadata.baseUrl("memberAdmin");
-    this.fileUploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.fileUploader.response.subscribe((response: string | HttpErrorResponse) => {
       this.logger.debug("response", response, "type", typeof response);
       if (response instanceof HttpErrorResponse) {
         this.notify.error({title: "Upload failed", message: response.error});
@@ -132,7 +132,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
           .catch((error) => this.resetSendFlagsAndNotifyError(error));
 
       }
-    });
+    }));
 
     this.uploadSessionStatuses = [
       {title: "All"},
@@ -178,7 +178,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private filterLists(searchTerm?: string) {

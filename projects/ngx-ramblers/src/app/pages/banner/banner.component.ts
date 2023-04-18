@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import range from "lodash-es/range";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../auth/auth.service";
 import { AwsFileData } from "../../models/aws-object.model";
 import { BannerConfig, BannerType, LogoAndTextLinesBanner, PapercutBackgroundBanner, TitleLine } from "../../models/banner-configuration.model";
@@ -144,7 +145,7 @@ import { UrlService } from "../../services/url.service";
     </app-page>`
 })
 
-export class BannerComponent implements OnInit {
+export class BannerComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public bannerPhotos: BannerImageType = BannerImageType.bannerPhotos;
   public allowContentEdits: boolean;
@@ -161,6 +162,7 @@ export class BannerComponent implements OnInit {
   public members: Member[] = [];
   public bannerPhotoAwsFileData: AwsFileData;
   public bannerPhotoEditActive: boolean;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
@@ -180,12 +182,16 @@ export class BannerComponent implements OnInit {
     this.logger.debug("ngOnInit");
     this.refreshCachedData();
     this.refreshData();
-    this.authService.authResponse().subscribe(() => this.refreshCachedData());
-    this.systemConfigService.events()
+    this.subscriptions.push(this.authService.authResponse().subscribe(() => this.refreshCachedData()));
+    this.subscriptions.push(this.systemConfigService.events()
       .subscribe((config: SystemConfigResponse) => {
         this.config = config;
         this.logger.info("retrieved config", config);
-      });
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   async refreshCachedData() {

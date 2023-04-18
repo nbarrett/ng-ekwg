@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../auth/auth.service";
 import { Organisation } from "../models/system.model";
 import { ForgotPasswordModalComponent } from "../pages/login/forgot-password-modal/forgot-password-modal.component";
@@ -16,9 +17,10 @@ import { UrlService } from "../services/url.service";
   templateUrl: "./login-panel.component.html",
   styleUrls: ["./login-panel.component.sass"]
 })
-export class LoginPanelComponent implements OnInit {
+export class LoginPanelComponent implements OnInit, OnDestroy {
   private logger: Logger;
   private group: Organisation;
+  private subscriptions: Subscription[] = [];
   config: ModalOptions = {
     animated: false,
     initialState: {}
@@ -30,16 +32,20 @@ export class LoginPanelComponent implements OnInit {
               private systemConfigService: SystemConfigService,
               private urlService: UrlService,
               private routerHistoryService: RouterHistoryService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("LoginPanelComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("LoginPanelComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit(): void {
-    this.authService.authResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage());
+    this.subscriptions.push(this.authService.authResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage()));
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
       this.group = item.system.group;
       this.logger.info("received:", item);
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   memberLoginStatus() {

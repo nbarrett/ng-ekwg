@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../auth/auth.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 
@@ -8,8 +9,9 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
   selector: "app-logout",
   templateUrl: "./logout.component.html"
 })
-export class LogoutComponent implements OnInit {
+export class LogoutComponent implements OnInit, OnDestroy {
   private logger: Logger;
+  private subscriptions: Subscription[] = [];
 
   constructor(private route: ActivatedRoute,
               private authService: AuthService,
@@ -18,9 +20,14 @@ export class LogoutComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
         this.authService.logout();
       }
-    );
+    ));
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
 }

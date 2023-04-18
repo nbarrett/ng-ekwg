@@ -21,7 +21,7 @@ export class SystemConfigService {
               private memberLoginService: MemberLoginService,
               public stringUtils: StringUtilsService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("SystemConfigService", NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger("SystemConfigService", NgxLoggerLevel.OFF);
     this.refresh();
   }
 

@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { FileUtilsService } from "../../file-utils.service";
 import { AlertTarget } from "../../models/alert-target.model";
 import { DateValue } from "../../models/date.model";
@@ -31,7 +32,7 @@ import { UrlService } from "../../services/url.service";
   selector: "app-how-to-modal",
   templateUrl: "how-to-modal.component.html",
 })
-export class HowToModalComponent implements OnInit {
+export class HowToModalComponent implements OnInit, OnDestroy {
   public memberResource: MemberResource;
   public confirm: Confirm;
   public notify: AlertInstance;
@@ -46,6 +47,7 @@ export class HowToModalComponent implements OnInit {
   public selectedMemberIds: string[] = [];
   public editMode: string;
   public campaigns: MailchimpCampaign[] = [];
+  private subscriptions: Subscription[] = [];
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -75,7 +77,7 @@ export class HowToModalComponent implements OnInit {
     this.notify.setBusy();
     this.notify.hide();
     this.uploader = this.fileUploadService.createUploaderFor("memberResources");
-    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
         if (response instanceof HttpErrorResponse) {
@@ -91,9 +93,13 @@ export class HowToModalComponent implements OnInit {
           this.notify.success({title: "New file added", message: this.memberResource.data.fileNameData.title});
         }
       }
-    );
+    ));
     this.editMode = this.memberResource.id ? "Edit existing" : "Create new";
     this.resourceDate = this.dateUtils.asDateValue(this.memberResource.resourceDate);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   campaignTracker(index: number, item: MailchimpCampaign) {

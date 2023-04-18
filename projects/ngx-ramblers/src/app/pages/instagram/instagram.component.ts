@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
 import { ExternalUrls } from "../../models/system.model";
 import { DateUtilsService } from "../../services/date-utils.service";
@@ -14,28 +15,33 @@ import { UrlService } from "../../services/url.service";
   templateUrl: "./instagram.component.html",
   styleUrls: ["./instagram.component.sass"]
 })
-export class InstagramComponent implements OnInit {
+export class InstagramComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public recentMedia: InstagramMediaPost[];
   public externalUrls: ExternalUrls;
+  private subscriptions: Subscription[] = [];
 
   constructor(private urlService: UrlService,
               private instagramService: InstagramService,
               private systemConfigService: SystemConfigService,
               public dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("InstagramComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("InstagramComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
     this.instagramService.recentMedia()
       .then((recentMedia: InstagramRecentMediaData) => {
         this.recentMedia = take(recentMedia.data, 14);
         this.logger.debug("Refreshed instagram recent media", this.recentMedia, "count =", this.recentMedia.length);
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   imageWidth(media: InstagramMediaPost): string {
@@ -47,6 +53,6 @@ export class InstagramComponent implements OnInit {
   }
 
   instagramPath() {
-    return this.urlService.urlPath(this.externalUrls?.instagram?.groupUrl)
+    return this.urlService.urlPath(this.externalUrls?.instagram?.groupUrl);
   }
 }

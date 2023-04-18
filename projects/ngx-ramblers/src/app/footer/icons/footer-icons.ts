@@ -1,5 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { ExternalUrls } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SystemConfigService } from "../../services/system/system-config.service";
@@ -9,10 +10,11 @@ import { SystemConfigService } from "../../services/system/system-config.service
   templateUrl: "./footer-icons.html",
   styleUrls: ["./footer-icons.sass"]
 })
-export class FooterIconsComponent implements OnInit {
+export class FooterIconsComponent implements OnInit, OnDestroy {
 
   public externalUrls: ExternalUrls;
   private logger: Logger;
+  private subscriptions: Subscription[] = [];
 
   constructor(private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
@@ -21,6 +23,11 @@ export class FooterIconsComponent implements OnInit {
 
   ngOnInit(): void {
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls);
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
 }

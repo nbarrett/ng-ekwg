@@ -1,10 +1,11 @@
 import { DOCUMENT } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import first from "lodash-es/first";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../../../auth/auth.service";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { DateValue } from "../../../../models/date.model";
@@ -24,7 +25,7 @@ import { StringUtilsService } from "../../../../services/string-utils.service";
   templateUrl: "./expense-detail-modal.component.html",
   styleUrls: ["./expense-detail-modal.component.sass"]
 })
-export class ExpenseDetailModalComponent implements OnInit {
+export class ExpenseDetailModalComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public expenseItem: ExpenseItem;
@@ -40,17 +41,12 @@ export class ExpenseDetailModalComponent implements OnInit {
   public hasFileOver = false;
   public uploader;
   faCalendar = faCalendar;
+
   public fileOver(e: any): void {
     this.hasFileOver = e;
   }
 
-  expenseTypeComparer(item1: ExpenseType, item2: ExpenseType): boolean {
-    return item1 && item2 ? item1.value === item2.value : item1 === item2;
-  }
-
-  expenseTypeTracker(expenseType: ExpenseType) {
-    return expenseType.value;
-  }
+  private subscriptions: Subscription[] = [];
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private fileUploadService: FileUploadService,
@@ -76,7 +72,7 @@ export class ExpenseDetailModalComponent implements OnInit {
     this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
     this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
         if (response instanceof HttpErrorResponse) {
@@ -92,7 +88,19 @@ export class ExpenseDetailModalComponent implements OnInit {
           this.notify.success({title: "New receipt added", message: this.expenseItem.receipt.title});
         }
       }
-    );
+    ));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  expenseTypeComparer(item1: ExpenseType, item2: ExpenseType): boolean {
+    return item1 && item2 ? item1.value === item2.value : item1 === item2;
+  }
+
+  expenseTypeTracker(expenseType: ExpenseType) {
+    return expenseType.value;
   }
 
   browseToReceipt(expenseFileUpload: HTMLInputElement) {

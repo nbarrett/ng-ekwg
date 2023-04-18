@@ -52,11 +52,11 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   private memberFilterUploaded: any;
   filters: any;
-  private subscription: Subscription;
-  private logoutSubscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public confirm = new Confirm();
   faSearch = faSearch;
   faUserXmark = faUserXmark;
+
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
               private apiResponseProcessor: ApiResponseProcessor,
@@ -80,15 +80,15 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logoutSubscription = this.profileService.subscribeToLogout(this.logger);
+    this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
     this.logger.off("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.memberAdminBaseUrl = this.contentMetadata.baseUrl("memberAdmin");
     this.today = this.dateUtils.momentNowNoTime().valueOf();
-    this.searchChangeObservable.pipe(debounceTime(250))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(250))
       .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.applyFilterToMembers(searchTerm));
+      .subscribe(searchTerm => this.applyFilterToMembers(searchTerm)));
     this.memberLoginService.showLoginPromptWithRouteParameter("expenseId");
     this.memberFilter = {
       sortField: "memberName",
@@ -173,21 +173,19 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
     };
     this.memberFilter.selectedFilter = this.memberFilter.availableFilters[0];
     this.logger.off("this.memberFilter:", this.memberFilter);
-    this.subscription = this.memberService.notifications().subscribe(apiResponse => {
+    this.subscriptions.push(this.memberService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
         this.members = this.apiResponseProcessor.processResponse(this.apiResponseProcessorlogger, this.members, apiResponse);
         this.applyFilterToMembers();
       }
-    });
+    }));
     this.refreshMembers();
   }
 
   ngOnDestroy(): void {
-    this.logger.off("unsubscribing");
-    this.subscription.unsubscribe();
-    this.logoutSubscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   onSearchChange(searchEntry: string) {

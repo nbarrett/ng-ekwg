@@ -21,7 +21,7 @@ import { UrlService } from "../../../services/url.service";
   styleUrls: ["./admin.component.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class AdminComponent implements OnInit, OnDestroy {
+export class AdminComponent implements OnInit, OnDestroy, OnDestroy {
   faIdCard = faIdCard;
   faUnlockAlt = faUnlockAlt;
   faEnvelopeOpenText = faEnvelopeOpenText;
@@ -29,14 +29,12 @@ export class AdminComponent implements OnInit, OnDestroy {
   faUsersCog = faUsersCog;
   faMailBulk = faMailBulk;
   faBook = faBook;
-  faUser = faUser;
   private logger: Logger;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public loggedIn: boolean;
   public allowAdminEdits: boolean;
-  itemCols: number;
 
   constructor(private pageService: PageService,
               private memberLoginService: MemberLoginService,
@@ -50,8 +48,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   ngOnInit() {
@@ -59,7 +56,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.generateActionButtons();
     this.setPrivileges();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse));
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.setPrivileges(loginResponse)));
   }
 
   private setPrivileges(loginResponse?: LoginResponse) {

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
 import { faCalendar, faCopy, faMagnifyingGlass, faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -6,6 +6,7 @@ import cloneDeep from "lodash-es/cloneDeep";
 import isEmpty from "lodash-es/isEmpty";
 import pick from "lodash-es/pick";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
@@ -58,7 +59,7 @@ interface DisplayMember {
   styleUrls: ["./walk-edit.component.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class WalkEditComponent implements OnInit {
+export class WalkEditComponent implements OnInit, OnDestroy {
 
   @Input("displayedWalk")
   set initialiseWalk(displayedWalk: DisplayedWalk) {
@@ -84,6 +85,7 @@ export class WalkEditComponent implements OnInit {
   faPencil = faPencil;
   faMagnifyingGlass = faMagnifyingGlass;
   faCalendar = faCalendar;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     public googleMapsService: GoogleMapsService,
@@ -122,13 +124,17 @@ export class WalkEditComponent implements OnInit {
 
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData);
+    this.subscriptions.push(this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData));
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig<MeetupConfig>("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
     this.logger.debug("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();
-    this.siteEditService.events.subscribe(item => this.logDetectChanges());
+    this.subscriptions.push(this.siteEditService.events.subscribe(item => this.logDetectChanges()));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   notificationRequired() {

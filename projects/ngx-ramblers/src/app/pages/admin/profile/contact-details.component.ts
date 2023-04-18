@@ -28,9 +28,10 @@ import { ProfileService } from "./profile.service";
 })
 export class ContactDetailsComponent implements OnInit, OnDestroy {
   public member: Member;
-  private subscription: Subscription;
   faUnlockAlt = faUnlockAlt;
-  faIdCard=faIdCard;
+  faIdCard = faIdCard;
+  private subscriptions: Subscription[] = [];
+
   constructor(private authService: AuthService,
               private contentMetadata: ContentMetadataService,
               private dateUtils: DateUtilsService,
@@ -57,7 +58,7 @@ export class ContactDetailsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.subscription = this.profileService.subscribeToLogout(this.logger);
+    this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
     this.notify.setBusy();
     this.profileService.queryMember(this.notify, ProfileUpdateType.PERSONAL_DETAILS).then(member => {
       this.member = member;
@@ -77,7 +78,7 @@ export class ContactDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

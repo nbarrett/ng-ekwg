@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { CommitteeFile, Notification } from "../../../models/committee.model";
@@ -32,7 +33,7 @@ import { CommitteeDisplayService } from "../committee-display.service";
   styleUrls: ["committee-edit-file-modal.component.sass"],
   templateUrl: "./committee-edit-file-modal.component.html",
 })
-export class CommitteeEditFileModalComponent implements OnInit {
+export class CommitteeEditFileModalComponent implements OnInit, OnDestroy {
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
@@ -43,6 +44,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
   public eventDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
+  private subscriptions: Subscription[] = [];
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -76,7 +78,7 @@ export class CommitteeEditFileModalComponent implements OnInit {
     this.campaignSearchTerm = "Master";
     this.notify.hide();
     this.uploader = this.fileUploadService.createUploaderFor("committeeFiles");
-    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
         if (response instanceof HttpErrorResponse) {
@@ -92,7 +94,11 @@ export class CommitteeEditFileModalComponent implements OnInit {
           this.notify.success({title: "New file added", message: this.committeeFile.fileNameData.title});
         }
       }
-    );
+    ));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   public fileOver(e: any): void {

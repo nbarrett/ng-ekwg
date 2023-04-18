@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import cloneDeep from "lodash-es/cloneDeep";
 import last from "lodash/last";
@@ -35,7 +35,7 @@ import { HowToModalComponent } from "../how-to-modal.component";
   styleUrls: ["./subject-listing.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
-export class HowToSubjectListingComponent implements OnInit {
+export class HowToSubjectListingComponent implements OnInit, OnDestroy {
 
   private logger: Logger;
   public notifyTarget: AlertTarget = {};
@@ -46,7 +46,7 @@ export class HowToSubjectListingComponent implements OnInit {
   public destinationType: string;
   private memberResourceId: string;
   public memberResource: MemberResource;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   private searchChangeObservable: Subject<string>;
   public filterParameters: FilterParameters = {quickSearch: ""};
   public allow: MemberResourcesPermissions = {};
@@ -78,19 +78,20 @@ export class HowToSubjectListingComponent implements OnInit {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.authService.authResponse().subscribe(() => this.authChanges());
-    this.siteEditService.events.subscribe(() => this.authChanges());
+    this.subscriptions.push(this.authService.authResponse().subscribe(() => this.authChanges()));
+    this.subscriptions.push(this.siteEditService.events.subscribe(() => this.authChanges()));
     this.notify.setBusy();
     this.destinationType = "";
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.subject = paramMap.get("subject");
       if (this.subject) {
         this.logger.debug("subject:", this.subject);
         this.resourceSubject = this.memberResourcesReferenceData.resourceSubjectForSubject(this.subject);
         this.pageService.setTitle(this.resourceSubject?.description);
-        this.memberResourcesService.all({criteria: {subject: {$eq: this.subject}}, sort: {createdDate: -1}})
+        this.memberResourcesService.all({criteria: {subject: {$eq: this.subject}}, sort: {createdDate: -1}});
       }
-    })
+    }));
+
     if (this.urlService.pathContainsMongoId()) {
       this.logger.debug("memberResourceId from route params:", this.urlService.lastPathSegment());
       this.memberResourceId = this.urlService.lastPathSegment();
@@ -106,11 +107,11 @@ export class HowToSubjectListingComponent implements OnInit {
       this.memberResourcesService.getById(this.memberResourceId);
     }
     this.searchChangeObservable = new Subject<string>();
-    this.searchChangeObservable.pipe(debounceTime(1000))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(1000))
       .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.applyFilterToMemberResources(searchTerm));
+      .subscribe(searchTerm => this.applyFilterToMemberResources(searchTerm)));
 
-    this.subscription = this.memberResourcesService.notifications().subscribe((apiResponse: MemberResourceApiResponse) => {
+    this.subscriptions.push(this.memberResourcesService.notifications().subscribe((apiResponse: MemberResourceApiResponse) => {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
         this.notify.error({
@@ -130,8 +131,12 @@ export class HowToSubjectListingComponent implements OnInit {
         this.memberResources = this.apiResponseProcessor.processResponse(this.logger, this.memberResources, apiResponse);
         this.applyFilterToMemberResources();
       }
-    });
+    }));
     this.authChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   onSearchChange(searchEntry: string) {

@@ -28,8 +28,9 @@ import { faEnvelopeOpenText, faCaretUp, faCashRegister } from "@fortawesome/free
 })
 export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
   public member: Member;
-  private subscription: Subscription;
-  faEnvelopeOpenText=faEnvelopeOpenText;
+  private subscriptions: Subscription[] = [];
+  faEnvelopeOpenText = faEnvelopeOpenText;
+
   constructor(private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
               private searchFilterPipe: SearchFilterPipe,
@@ -57,7 +58,7 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
-    this.subscription = this.profileService.subscribeToLogout(this.logger);
+    this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
     this.profileService.queryMember(this.notify, ProfileUpdateType.CONTACT_PREFERENCES).then(member => {
       this.member = member;
       this.notify.clearBusy();
@@ -76,7 +77,7 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

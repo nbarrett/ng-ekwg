@@ -1,11 +1,12 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { faCopy, faEye, faPencil } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { AwsFileData } from "../../../models/aws-object.model";
 import { DateValue } from "../../../models/date.model";
@@ -38,7 +39,7 @@ import { SocialDisplayService } from "../social-display.service";
   templateUrl: "social-edit.component.html",
   styleUrls: ["social-edit.component.sass"]
 })
-export class SocialEditComponent implements OnInit {
+export class SocialEditComponent implements OnInit, OnDestroy {
   @Input()
   public actions: Actions;
   public socialEvent: SocialEvent;
@@ -59,6 +60,7 @@ export class SocialEditComponent implements OnInit {
   faPencil = faPencil;
   editActive: boolean;
   public awsFileData: AwsFileData;
+  private subscriptions: Subscription[] = [];
 
   constructor(private contentMetadataService: ContentMetadataService,
               private fileUploadService: FileUploadService,
@@ -107,7 +109,7 @@ export class SocialEditComponent implements OnInit {
       this.notify.error({title: "Cannot edit social event", message: "path does not contain social event id"});
     }
     this.uploader = this.fileUploadService.createUploaderFor("socialEvents");
-    this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
+    this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);
         this.notify.clearBusy();
         if (response instanceof HttpErrorResponse) {
@@ -123,7 +125,11 @@ export class SocialEditComponent implements OnInit {
           this.notify.success({title: "New file added", message: this.socialEvent.attachment.title});
         }
       }
-    );
+    ));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   onChange() {
@@ -266,7 +272,6 @@ export class SocialEditComponent implements OnInit {
   removeAttachment() {
     this.socialEvent.attachment = {};
   }
-
 
   onFileSelect($file: File[]) {
     this.notify.setBusy();

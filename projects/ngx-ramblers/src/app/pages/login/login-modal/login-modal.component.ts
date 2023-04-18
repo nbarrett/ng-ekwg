@@ -24,7 +24,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   private logger: Logger;
   userName: string;
   password: string;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
 
   constructor(public bsModalRef: BsModalRef,
               private modalService: BsModalService,
@@ -36,15 +36,10 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     this.logger = loggerFactory.createLogger(LoginModalComponent, NgxLoggerLevel.OFF);
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.debug("constructed");
-    this.subscription = this.authService.authResponse().subscribe((loginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:loginResponse", loginResponse);
       if (!loginResponse) {
         this.notify.error({
@@ -83,7 +78,11 @@ export class LoginModalComponent implements OnInit, OnDestroy {
           message: loginResponse.alertMessage
         });
       }
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   fieldPopulated(object) {

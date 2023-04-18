@@ -38,11 +38,10 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
   private searchChangeObservable: Subject<string>;
   public auditFilter: MemberAuthAuditTableFilter;
   private memberFilterUploaded: any;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   private memberAudits: MemberAuthAudit[] = [];
   public confirm = new Confirm();
   filterDateValue: DateValue;
-  private logoutSubscription: Subscription;
   faSearch = faSearch;
 
   constructor(private memberService: MemberService,
@@ -67,9 +66,9 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.filterDateValue = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().subtract(2, "weeks"));
-    this.searchChangeObservable.pipe(debounceTime(250))
+    this.subscriptions.push(this.searchChangeObservable.pipe(debounceTime(250))
       .pipe(distinctUntilChanged())
-      .subscribe(searchTerm => this.applyFilterToAudits(searchTerm));
+      .subscribe(searchTerm => this.applyFilterToAudits(searchTerm)));
     this.auditFilter = {
       sortField: "loginTime",
       sortFunction: MEMBER_SORT,
@@ -78,22 +77,20 @@ export class MemberLoginAuditComponent implements OnInit, OnDestroy {
       results: []
     };
     this.logger.debug("this.memberFilter:", this.auditFilter);
-    this.logoutSubscription = this.profileService.subscribeToLogout(this.logger);
-    this.subscription = this.memberAuthAuditService.notifications().subscribe(apiResponse => {
+    this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
+    this.subscriptions.push(this.memberAuthAuditService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
         this.addAuditItemsToView(apiResponse);
       }
-    });
+    }));
     this.refreshMembers();
     this.refreshMemberAudit();
   }
 
   ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.logoutSubscription.unsubscribe();
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   deleteSelectedMemberAuditConfirm() {

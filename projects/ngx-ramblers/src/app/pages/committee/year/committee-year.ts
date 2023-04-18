@@ -42,7 +42,7 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
 
   public committeeYear: CommitteeYear;
   private logger: Logger;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   public committeeFile: CommitteeFile;
   public committeeYearTitle = "";
   public imageSource: string;
@@ -66,25 +66,20 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
     this.logger = loggerFactory.createLogger(CommitteeYearComponent, NgxLoggerLevel.OFF);
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.logger.debug("ngOnInit:committeeYear", this.committeeYear);
     this.committeeQueryService.queryAllFiles().then(() => this.setupDataForYear());
-    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.committeeQueryService.queryAllFiles();
-    });
-    this.subscription = this.committeeFileService.notifications().subscribe(apiResponse => {
+    }));
+    this.subscriptions.push(this.committeeFileService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
         this.logger.warn("received error:", apiResponse.error);
       } else {
         this.filesForYear = this.apiResponseProcessor.processResponse(this.logger, this.filesForYear, apiResponse);
       }
-    });
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    }));
+    this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const year = paramMap.get("year");
       this.logger.debug("year from route params:", paramMap, year);
       if (year) {
@@ -93,7 +88,11 @@ export class CommitteeYearComponent implements OnInit, OnDestroy {
         this.committeeYear = committeeYear;
       }
       this.setupDataForYear();
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private async setupDataForYear(): Promise<void> {

@@ -25,7 +25,7 @@ export class PageService {
               private location: Location,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("PageService", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("PageService", NgxLoggerLevel.OFF);
     this.logger.info("subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => {
       this.group = item.system.group;

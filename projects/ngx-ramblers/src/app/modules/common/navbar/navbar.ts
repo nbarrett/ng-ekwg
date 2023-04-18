@@ -1,5 +1,6 @@
-import { Component, HostListener, OnInit } from "@angular/core";
+import { Component, HostListener, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { Image, SystemConfig } from "../../../models/system.model";
 import { BroadcastService } from "../../../services/broadcast-service";
@@ -12,19 +13,20 @@ import { UrlService } from "../../../services/url.service";
   templateUrl: "./navbar.html",
   styleUrls: ["./navbar.sass"]
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public navbarContentWithinCollapse: boolean;
   public logo: Image;
   public navbarExpanded = false;
   public system: SystemConfig;
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private systemConfigService: SystemConfigService,
     private broadcastService: BroadcastService<boolean>,
     public urlService: UrlService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("NavbarComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("NavbarComponent", NgxLoggerLevel.OFF);
   }
 
   @HostListener("window:resize", ["$event"])
@@ -44,16 +46,20 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
       this.system = item.system;
       this.logger.info("received:", item);
       this.logo = this.system?.logos?.images?.find(logo => logo.originalFileName === this.system?.header?.selectedLogo);
-    });
+    }));
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {
       this.logger.info("menu toggled with event:", event);
       this.navbarExpanded = event.data;
     });
     this.detectWidth(window.innerWidth);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   icon() {

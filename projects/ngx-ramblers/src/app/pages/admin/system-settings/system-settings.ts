@@ -1,7 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { faAdd } from "@fortawesome/free-solid-svg-icons";
 import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { ExternalUrls, BannerImageType, Image, SystemConfigResponse } from "../../../models/system.model";
 import { DateUtilsService } from "../../../services/date-utils.service";
@@ -17,7 +18,7 @@ import { UrlService } from "../../../services/url.service";
   selector: "app-system-settings",
   templateUrl: "./system-settings.html",
 })
-export class SystemSettingsComponent implements OnInit {
+export class SystemSettingsComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
@@ -27,6 +28,7 @@ export class SystemSettingsComponent implements OnInit {
   public backgrounds: BannerImageType = BannerImageType.backgrounds;
   faAdd = faAdd;
   faSave = faSave;
+  private subscriptions: Subscription[] = [];
 
   constructor(public systemConfigService: SystemConfigService,
               private notifierService: NotifierService,
@@ -36,19 +38,23 @@ export class SystemSettingsComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SystemSettingsComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(SystemSettingsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
     this.logger.debug("constructed");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
-    this.systemConfigService.events()
+    this.subscriptions.push(this.systemConfigService.events()
       .subscribe((config: SystemConfigResponse) => {
         this.config = config;
         this.prepareMigrationIfRequired(config);
         this.migrateDataIfRequired(config);
         this.logger.info("retrieved config", config);
-      });
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private prepareMigrationIfRequired(config: SystemConfigResponse) {

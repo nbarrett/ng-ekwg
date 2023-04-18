@@ -23,7 +23,7 @@ export class FacebookComponent implements OnInit, OnDestroy {
   pluginUrl: SafeResourceUrl;
   scriptSrcUrl: SafeResourceUrl;
   initialised: boolean;
-  private configSubscription: Subscription;
+  private subscriptions: Subscription[] = [];
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
@@ -34,7 +34,7 @@ export class FacebookComponent implements OnInit, OnDestroy {
               public dateUtils: DateUtilsService,
               private sanitiser: DomSanitizer,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("FacebookComponent", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("FacebookComponent", NgxLoggerLevel.OFF);
   }
 
   private calculateWidth(): number {
@@ -58,18 +58,17 @@ export class FacebookComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit window.innerWidth:", window.innerWidth);
     this.logger.info("subscribing to systemConfigService events");
-    this.configSubscription = this.systemConfigService.events().subscribe(item => {
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
       this.facebook = item.system.externalUrls.facebook;
       this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://www.facebook.com/plugins/page.php?${this.parameters()}`);
       this.scriptSrcUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=${this.version}&appId=${this.facebook.appId}`);
       this.logger.debug("facebook:", this.facebook, "pluginUrl:", this.pluginUrl, "scriptSrcUrl:", this.scriptSrcUrl);
       this.systemConfigService.setAppState("facebook-initialised", true);
-    });
+    }));
   }
 
   ngOnDestroy(): void {
-    this.configSubscription.unsubscribe();
-    this.logger.debug("ngOnDestroy");
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
 }

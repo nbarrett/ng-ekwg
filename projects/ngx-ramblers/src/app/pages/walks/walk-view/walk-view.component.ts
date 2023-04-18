@@ -47,7 +47,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   public allowWalkAdminEdits: boolean;
   public googleMapsUrl: SafeResourceUrl;
   public loggedIn: boolean;
-  private subscription: Subscription;
+  private subscriptions: Subscription[] = [];
   faCopy = faCopy;
   faEnvelope = faEnvelope;
   faPhone = faPhone;
@@ -77,11 +77,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.logger = loggerFactory.createLogger(WalkViewComponent, NgxLoggerLevel.OFF);
   }
 
-  ngOnDestroy(): void {
-    this.logger.debug("unsubscribing");
-    this.subscription.unsubscribe();
-  }
-
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.loggedIn = this.memberLoginService.memberLoggedIn();
@@ -91,17 +86,21 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.walkIdOrPath = this.urlService.lastPathSegment();
     this.logger.debug("initialised with walk", this.displayedWalk, "pathContainsMongoId:", this.pathContainsMongoId, "walkIdOrPath:", this.walkIdOrPath);
     this.queryIfRequired();
-    this.subscription = this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
+    this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => {
       this.logger.debug("loginResponseObservable:", loginResponse);
       this.display.refreshCachedData();
       this.loggedIn = loginResponse.memberLoggedIn;
       this.allowWalkAdminEdits = this.memberLoginService.allowWalkAdminEdits();
       this.refreshHomePostcode();
-    });
+    }));
     this.notify.success({
       title: "Single walk showing",
       message: " - "
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   queryIfRequired(): void {
@@ -117,7 +116,8 @@ export class WalkViewComponent implements OnInit, OnDestroy {
             });
           }
         });
-    } else {}
+    } else {
+    }
   }
 
   private applyWalk(displayedWalk: DisplayedWalk) {
