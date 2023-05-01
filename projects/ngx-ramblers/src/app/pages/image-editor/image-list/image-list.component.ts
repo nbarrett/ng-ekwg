@@ -65,6 +65,8 @@ export class ImageListComponent implements OnInit, OnDestroy {
   private pageSize = 10;
   private pages: number[];
   private subscriptions: Subscription[] = [];
+  public tags: number[];
+  public manageTags: false;
 
   constructor(private stringUtils: StringUtilsService,
               public imageTagDataService: ImageTagDataService,
@@ -160,18 +162,6 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  previousPage() {
-    if (this.pageNumber > 1) {
-      this.goToPage(this.pageNumber - 1);
-    }
-  }
-
-  nextPage() {
-    if (this.pageNumber < this.pageCount) {
-      this.goToPage(this.pageNumber + 1);
-    }
-  }
-
   goToPage(pageNumber) {
     this.logger.info("goToPage", pageNumber);
     this.pageNumber = pageNumber;
@@ -244,9 +234,9 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.urlService.navigateUnconditionallyTo("image-editor", imageSource);
 
     Promise.all([
-      this.contentMetadataService.items(imageSource)
-        .then((contentMetaData: ContentMetadata) => {
-          this.logger.info("contentMetaData:", contentMetaData);
+        this.contentMetadataService.items(imageSource)
+          .then((contentMetaData: ContentMetadata) => {
+            this.logger.info("contentMetaData:", contentMetaData);
             this.contentMetadata = contentMetaData;
             this.imageTagDataService.populateFrom(contentMetaData.imageTags);
           }),
@@ -299,10 +289,15 @@ export class ImageListComponent implements OnInit, OnDestroy {
   }
 
   saveChangeAndExit() {
-    this.contentMetadataService.createOrUpdate(this.contentMetadata)
+    this.saveChanges()
       .then(() => {
         this.exitBackToPreviousWindow();
       }).catch(response => this.notify.error({title: "Failed to save images", message: response}));
+  }
+
+  saveChanges() {
+    return this.contentMetadataService.createOrUpdate(this.contentMetadata)
+      .catch(response => this.notify.error({title: "Failed to save images", message: response}));
   }
 
   public exitBackToPreviousWindow() {

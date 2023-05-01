@@ -21,6 +21,9 @@
             <input [disabled]="this.changedItems.length > 0" type="submit" value="Save changes and exit"
                    (click)="saveChangeAndExit()"
                    [ngClass]="changedItems.length > 0 ? 'disabled-button-form': 'button-form'"/>
+            <input [disabled]="this.changedItems.length > 0" type="submit" value="Save changes"
+                   (click)="saveChanges()"
+                   [ngClass]="changedItems.length > 0 ? 'disabled-button-form': 'button-form'"/>
             <input type="submit" value="Exit without saving" (click)="exitBackToPreviousWindow()"
                    title="Exit without saving" class="button-form"/>
             <input type="submit" value="Sort by latest date" (click)="sortByDate()" title="Sort by latest date"
@@ -35,6 +38,18 @@
               <strong *ngIf="warningTarget.alertTitle">
                 {{warningTarget.alertTitle}}: </strong> {{warningTarget.alertMessage}}
             </div>
+          </div>
+        </div>
+        <div class="custom-control custom-checkbox">
+          <input [(ngModel)]="manageTags"
+                 type="checkbox" class="custom-control-input"
+                 id="configure-tags">
+          <label class="custom-control-label" for="configure-tags">Manage Tags</label>
+        </div>
+        <div class="row mb-2" *ngIf="manageTags">
+          <div class="col-sm-12">
+            <h6>Tag Management - {{imageSource}}</h6>
+            <app-tag-manager [contentMetadata]="contentMetadata"></app-tag-manager>
           </div>
         </div>
         <h6>Image Filtering</h6>
