@@ -29,12 +29,12 @@ export class DatePickerComponent implements OnInit, OnChanges {
 
   constructor(
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DatePickerComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("DatePickerComponent", NgxLoggerLevel.DEBUG);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.logger.debug("changes were", changes);
-    this.setValue(changes.value.currentValue);
+    this.setValue(changes?.value?.currentValue);
   }
 
   ngOnInit() {
@@ -54,6 +54,8 @@ export class DatePickerComponent implements OnInit, OnChanges {
   }
 
   onModelChange(date: Date) {
-    this.dateChange.next(this.dateUtils.asDateValue(date));
+    const asDateValue = this.dateUtils.asDateValue(date);
+    this.logger.debug("onModelChange asDateValue:", asDateValue);
+    this.dateChange.next(asDateValue);
   }
 }

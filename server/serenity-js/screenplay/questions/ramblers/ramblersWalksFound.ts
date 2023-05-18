@@ -1,19 +1,17 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core";
 import { promiseOf } from "@serenity-js/protractor/lib/promiseOf";
 import { TargetElement } from "@serenity-js/protractor/lib/screenplay/questions/targets";
-import { by } from "protractor";
+import { ElementFinder } from "protractor";
 import { WalksTargets } from "../../ui/ramblers/walksTargets";
 import { CheckedValue } from "./checkedValue";
 
 export class RamblersWalkSummary {
 
   constructor(public rowIndex: number,
-              public walkId: number,
+              public walkId: string,
               public walkDate: string,
               public title: string,
               public start: string,
-              public distanceMiles: string,
-              public distanceKm: string,
               public status: string,
               public checkboxTarget: TargetElement,
               public currentlySelected: boolean) {
@@ -27,24 +25,21 @@ export class RamblersWalkSummaries implements Question<Promise<RamblersWalkSumma
 
   answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<RamblersWalkSummary[]> {
 
-    const extractSummaryRow = (result, rowIndex) => {
-      return result.all(by.css("[class^='col-']"))
-        .map(element => element.getText())
-        .then(columns => ({
+    const extractSummaryRow = (tableRow: ElementFinder, rowIndex: number) => {
+      return WalksTargets.columnsForRow(tableRow)
+        .map((element: ElementFinder) => element.getText())
+        .then((columns: string[]) => ({
           rowIndex,
-          walkDate: columns[0],
+          checkboxTarget: WalksTargets.checkboxSelector(rowIndex, columns[2]),
           title: columns[1],
-          start: columns[2],
-          distanceMiles: columns[3],
-          distanceKm: columns[4],
-          status: columns[5],
-          checkboxTarget: WalksTargets.checkboxSelector(rowIndex, columns[0]),
+          walkDate: columns[2],
+          status: columns[3],
         }));
     };
 
     const addWalkId = result => {
-      return summaryObject => result.all(by.css("div[style='display: none']")).getAttribute("innerText")
-        .then(walkIds => ({...summaryObject, walkId: parseInt(walkIds[0], 10)}));
+      return summaryObject => WalksTargets.hrefForRow(result).getAttribute("href")
+        .then(walkId => ({...summaryObject, walkId}));
     };
 
     const addCheckedStatus = summaryObject => {
@@ -52,8 +47,8 @@ export class RamblersWalkSummaries implements Question<Promise<RamblersWalkSumma
         .then(selected => ({...summaryObject, currentlySelected: selected}));
     };
 
-    return promiseOf(WalksTargets.walks.answeredBy(actor)
-      .map((result, rowIndex) => extractSummaryRow(result, rowIndex)
+    return promiseOf(WalksTargets.walkListviewTableRows.answeredBy(actor)
+      .map((result: ElementFinder, rowIndex: number) => extractSummaryRow(result, rowIndex)
         .then(addWalkId(result))
         .then(addCheckedStatus))
       .catch(error => {

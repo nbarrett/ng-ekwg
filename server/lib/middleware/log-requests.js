@@ -13,6 +13,7 @@ exports.requests = (req, res) => {
   const outputDirectory = `../logs`;
   const momentInstance = moment().tz("Europe/London");
   const fileName = `${outputDirectory}/${momentInstance.format("YYYYMMDD-HHmmss-SSS")}-response.json`;
+  debug("Saving logs to", fileName);
   if (!fs.existsSync(outputDirectory)) {
     mkdirpsync(outputDirectory);
   }

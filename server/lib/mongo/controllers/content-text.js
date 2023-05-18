@@ -5,9 +5,9 @@ const debug = require("debug")(envConfig.logNamespace("context-text"));
 const contentText = require("../models/content-text");
 const controller = require("./crud-controller").create(contentText, true);
 debug.enabled = false;
-exports.all = controller.all
-exports.findByConditions = controller.findByConditions
-exports.findById = controller.findById
+exports.all = controller.all;
+exports.findByConditions = controller.findByConditions;
+exports.findById = controller.findById;
 
 exports.create = (req, res) => {
   new contentText({
@@ -55,7 +55,7 @@ exports.update = (req, res) => {
 };
 
 exports.queryBy = function (type, value, res, req) {
-  debug(`filtering - ${type}: ${value}`)
+  debug(`filtering - ${type}: ${value}`);
   const find = {};
   find[type] = value;
   contentText.find(find).sort("name")
@@ -78,7 +78,7 @@ exports.queryBy = function (type, value, res, req) {
 exports.findByName = (req, res) => {
   const type = "name";
   const value = req.params[type];
-  debug(`find one - ${type}: ${value}`)
+  debug(`find one - ${type}: ${value}`);
   const find = {};
   find[type] = value;
   contentText.findOne(find)

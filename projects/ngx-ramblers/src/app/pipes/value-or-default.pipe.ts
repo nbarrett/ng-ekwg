@@ -6,7 +6,7 @@ export class ValueOrDefaultPipe implements PipeTransform {
   constructor(private stringUtils: StringUtilsService) {
   }
 
-  transform(value?: string, defaultValue?: string, bothNullValue?: string) {
+  transform(value?: any, defaultValue?: any, bothNullValue?: any) {
     return this.stringUtils.stringifyObject(value) ?? defaultValue ?? bothNullValue ?? "(none)";
   }
 

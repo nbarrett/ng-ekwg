@@ -1,7 +1,7 @@
-const {envConfig} = require("../env-config/env-config");
-const url = require("url");
+import { envConfig } from "../env-config/env-config";
+import url = require("url");
 
-exports.createApiRequestOptions = function () {
+export function createApiRequestOptions() {
   const ramblersUrl = url.parse(envConfig.ramblers.url);
   return {
     hostname: ramblersUrl.host,
@@ -9,6 +9,5 @@ exports.createApiRequestOptions = function () {
     headers: {
       "Content-Type": "application/json; charset=utf-8"
     }
-};
-
+  };
 }

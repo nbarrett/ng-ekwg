@@ -1,4 +1,4 @@
-const _ = require("lodash")
+const _ = require("lodash");
 const member = require("../models/member");
 const transforms = require("./transforms");
 const authCommon = require("./auth-common");
@@ -44,13 +44,13 @@ exports.forgotPassword = (req, res) => {
             res.status(200).json({loginResponse});
           } else {
             loginResponse.alertMessage = "New password requested from login screen";
-            memberCommon.resetUpdateStatusForMember(member)
-            memberCommon.setPasswordResetId(member)
+            memberCommon.resetUpdateStatusForMember(member);
+            memberCommon.setPasswordResetId(member);
             member.save()
               .then(updatedMember => {
                 const memberPayload = authCommon.toMemberPayload(updatedMember);
-                loginResponse.member = transforms.toObjectWithId(member)
-                authCommon.auditMemberLogin(memberPayload.userName, loginResponse, memberPayload)
+                loginResponse.member = transforms.toObjectWithId(member);
+                authCommon.auditMemberLogin(memberPayload.userName, loginResponse, memberPayload);
                 res.status(200).json({loginResponse});
               });
             loginResponse.alertMessage = userDetails + " search successful";
@@ -69,7 +69,7 @@ exports.forgotPassword = (req, res) => {
   } catch (error) {
     authCommon.returnError({res, error});
   }
-}
+};
 
 exports.update = (req, res) => {
   const memberDocument = new member({

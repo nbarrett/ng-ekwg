@@ -1,6 +1,6 @@
 import express = require("express");
 import multer = require("multer");
-import authConfig = require("../auth/auth-config");
+import * as authConfig from "../auth/auth-config";
 import { envConfig } from "../env-config/env-config";
 import { aws as controller } from "./aws-controllers";
 import { uploadFile } from "./file-upload";

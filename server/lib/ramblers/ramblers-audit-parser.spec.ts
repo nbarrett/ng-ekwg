@@ -1,5 +1,5 @@
-const expect = require("chai").expect;
-const auditParser = require("./ramblers-audit-parser");
+import {expect} from "chai";
+import * as auditParser from "./ramblers-audit-parser";
 const errorIcons = ["⨯", "✗"];
 const successIcons = ["✓", "✓"];
 const successInput = "           ✓ nick executes a synchronous script with arguments: [ the chat window ] (7ms)";

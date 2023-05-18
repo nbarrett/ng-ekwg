@@ -98,7 +98,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       results: [],
       availableFilters: [
         {
-          title: "Active Group Member", group: "Group Settings", filter: member => member.groupMember
+          title: "Active Group Member", group: "Group Settings", filter: this.memberService.filterFor.GROUP_MEMBERS
         },
         {
           title: "All Members", filter: SELECT_ALL

@@ -14,8 +14,10 @@ import { isDateValue } from "./type-guards";
 })
 
 export class DateUtilsService {
+
   private logger: Logger;
   MILLISECONDS_IN_ONE_DAY = 86400000;
+
   constructor(private numberUtils: NumberUtilsService,
               private loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DateUtilsService, NgxLoggerLevel.OFF);
@@ -136,7 +138,7 @@ export class DateUtilsService {
     return {hours, minutes};
   }
 
-  durationForDistance(distance: any): number {
+  durationForDistance(distance: string | number): number {
     return this.numberUtils.asNumber(distance) / 2.5 * 60 * 60 * 1000;
   }
 

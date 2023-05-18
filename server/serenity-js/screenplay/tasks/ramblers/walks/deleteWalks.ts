@@ -18,7 +18,7 @@ export class DeleteWalks {
     return new DeleteUnpublishedOrWalksWithIds(RequestParameterExtractor.extract().walkDeletions);
   }
 
-  static withIds(...walkIds: number[]) {
+  static withIds(...walkIds: string[]) {
     return new DeleteUnpublishedOrWalksWithIds(walkIds);
   }
 
@@ -45,13 +45,13 @@ export class DeleteUnpublishedOrWalksWithIds implements Task {
 
   private suffix: string;
 
-  constructor(private walkIds: number[]) {
+  constructor(private walkIds: string[]) {
     this.suffix = walkIds.length > 0 ? `and those with ids ${this.walkIds}` : ``;
   }
 
   performAs(actor: PerformsActivities): Promise<void> {
     return actor.attemptsTo(
-      Check.whether(WalksTargets.selectAll, isVisible())
+      Check.whether(WalksTargets.walkListviewTable, isVisible())
         .andIfSo(SelectWalks.notPublishedOrWithIds(this.walkIds),
           Unpublish.selectedWalks(),
           Delete.selectedWalks())

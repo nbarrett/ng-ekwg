@@ -6,11 +6,10 @@ import isEmpty from "lodash-es/isEmpty";
 import without from "lodash-es/without";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
-import { chain } from "../../functions/chain";
 import { DataQueryOptions } from "../../models/api-request.model";
 import { ApiResponse } from "../../models/api-response.model";
 import { Member } from "../../models/member.model";
-import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeadings, WalkUploadRow } from "../../models/ramblers-gwem";
+import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeading, WalkUploadRow } from "../../models/ramblers-gwem";
 import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-audit.model";
 import { Walk, WalkExport } from "../../models/walk.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
@@ -18,23 +17,29 @@ import { CommitteeConfigService } from "../committee/commitee-config.service";
 import { CommitteeReferenceData } from "../committee/committee-reference-data";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
+import { enumValues } from "../enums";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { UrlService } from "../url.service";
 import { WalksService } from "./walks.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class RamblersWalksAndEventsService {
+  GWEM_DATE_FORMAT = "DD-MM-YYYY";
+  WALKS_MANAGER_DATE_FORMAT = "DD/MM/YYYY";
 
   private BASE_URL = "/api/ramblers/gwem";
   private logger: Logger;
   private auditNotifications = new Subject<RamblersUploadAuditApiResponse>();
   private walkNotifications = new Subject<RamblersWalksApiResponse>();
   private committeeReferenceData: CommitteeReferenceData;
+  public ramblersWalkBaseUrl: string;
 
   constructor(private http: HttpClient,
               private walksService: WalksService,
+              private urlService: UrlService,
               private dateUtils: DateUtilsService,
               private displayDate: DisplayDatePipe,
               private memberLoginService: MemberLoginService,
@@ -43,6 +48,13 @@ export class RamblersWalksAndEventsService {
               loggerFactory: LoggerFactory) {
     committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
     this.logger = loggerFactory.createLogger(RamblersWalksAndEventsService, NgxLoggerLevel.OFF);
+    this.refreshRamblersConfig();
+  }
+
+  refreshRamblersConfig() {
+    this.walkBaseUrl().then((walkBaseUrl) => {
+      this.ramblersWalkBaseUrl = walkBaseUrl.response.toString();
+    });
   }
 
   notifications(): Observable<RamblersUploadAuditApiResponse> {
@@ -73,13 +85,13 @@ export class RamblersWalksAndEventsService {
     return "walks-export-" + this.dateUtils.asMoment().format("DD-MMMM-YYYY-HH-mm") + (omitExtension ? "" : ".csv");
   }
 
-  exportableWalks(walkExports: WalkExport[]): WalkExport[] {
+  selectedExportableWalks(walkExports: WalkExport[]): WalkExport[] {
     return walkExports.filter(walkExport => walkExport.selected)
       .sort(walkExport => walkExport.walk.walkDate);
   }
 
-  walkUploadRows(walkExports, members: Member[]): WalkUploadRow[] {
-    return this.exportableWalks(walkExports).map(walkEport => walkEport.walk).map(walk => this.walkToCsvRecord(walk, members));
+  walkUploadRows(walkExports: WalkExport[], members: Member[]): WalkUploadRow[] {
+    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk).map(walk => this.walkToUploadRow(walk, members));
   }
 
   createWalksForExportPrompt(walks): Promise<WalkExport[]> {
@@ -135,15 +147,15 @@ export class RamblersWalksAndEventsService {
       .map(walk => this.validateWalk(walk));
   }
 
-  uploadToRamblers(walkExports, members: Member[], notify): Promise<string> {
+  uploadToRamblers(walkExports: WalkExport[], members: Member[], notify): Promise<string> {
     notify.setBusy();
     this.logger.debug("sourceData", walkExports);
-    const walkIdDeletionList: string[] = this.exportableWalks(walkExports).map(walkExport => walkExport.walk)
+    const walkIdDeletionList: string[] = this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk)
       .filter(walk => walk.ramblersWalkId).map(walk => walk.ramblersWalkId);
     const rows = this.walkUploadRows(walkExports, members);
     const fileName = this.exportWalksFileName();
     const walksUploadRequest: RamblersWalksUploadRequest = {
-      headings: WalkUploadColumnHeadings,
+      headings: this.walkUploadHeadings(),
       rows,
       fileName,
       walkIdDeletionList,
@@ -171,6 +183,10 @@ export class RamblersWalksAndEventsService {
           message: response
         });
       });
+  }
+
+  private walkUploadHeadings() {
+    return enumValues(WalkUploadColumnHeading);
   }
 
   validateWalk(walk: Walk): WalkExport {
@@ -226,7 +242,7 @@ export class RamblersWalksAndEventsService {
     if (walk.briefDescriptionAndStartPoint) {
       walkDescription.push(walk.briefDescriptionAndStartPoint);
     }
-    return chain(walkDescription).map(this.replaceSpecialCharacters).value().join(". ");
+    return walkDescription.map(this.replaceSpecialCharacters).join(". ");
   }
 
   walkDescription(walk: Walk) {
@@ -256,6 +272,10 @@ export class RamblersWalksAndEventsService {
     }
   }
 
+  contactIdLookupAssemble(walk: Walk, members: Member[]) {
+    return "Nick Barrett";
+  }
+
   replaceSpecialCharacters(value) {
     return value ? value
       .replace("’", "")
@@ -272,8 +292,12 @@ export class RamblersWalksAndEventsService {
     return walk.distance ? String(parseFloat(walk.distance).toFixed(1)) : "";
   }
 
-  walkStartTime(walk) {
-    return walk.startTime ? this.dateUtils.asString(walk.startTime, "HH mm", "HH:mm") : "";
+  walkStartTime(walk: Walk): string {
+    return walk.startTime ? this.dateUtils.asString(this.dateUtils.startTime(walk), null, "HH:mm") : "";
+  }
+
+  walkFinishTime(walk) {
+    return walk.startTime ? this.dateUtils.asString(this.dateUtils.startTime(walk) + this.dateUtils.durationForDistance(walk.distance), null, "HH:mm") : "";
   }
 
   walkGridReference(walk) {
@@ -284,30 +308,63 @@ export class RamblersWalksAndEventsService {
     return walk.gridReference ? "" : walk.postcode ? walk.postcode : "";
   }
 
-  walkDate(walk) {
-    return this.dateUtils.asString(walk.walkDate, undefined, "DD-MM-YYYY");
+  walkDate(walk: Walk, format: string) {
+    return this.dateUtils.asString(walk.walkDate, null, format);
   }
 
-  walkToCsvRecord(walk, members: Member[]): WalkUploadRow {
-    return {
-      Date: this.walkDate(walk),
-      Title: this.walkTitle(walk),
-      Description: this.walkDescription(walk),
-      "Linear or Circular": this.walkType(walk),
-      "Starting postcode": this.walkPostcode(walk),
-      "Starting gridref": this.walkGridReference(walk),
-      "Starting location details": this.nearestTown(walk),
-      "Show exact starting point": "Yes",
-      "Start time": this.walkStartTime(walk),
-      "Show exact meeting point?": "Yes",
-      "Meeting time": this.walkStartTime(walk),
-      Restriction: "Public",
-      Difficulty: this.asString(walk.grade),
-      "Local walk grade": this.asString(walk.grade),
-      "Distance miles": this.walkDistanceMiles(walk),
-      "Contact id": this.contactIdLookup(walk, members),
-      "Contact display name": this.contactDisplayName(walk)
-    };
+  walkLink(walk: Walk): string {
+    return walk?.id ? this.urlService.linkUrl({area: "walks", id: walk.id}) : null;
+  }
+
+  ramblersLink(walk: Walk): string {
+    return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
+  }
+
+  walkToUploadRow(walk, members: Member[]): WalkUploadRow {
+    return this.walkToWalkUploadRow(walk, members);
+  }
+
+  walkToWalkUploadRow(walk, members: Member[]): WalkUploadRow {
+    const csvRecord: WalkUploadRow = {};
+    csvRecord[WalkUploadColumnHeading.DATE] = this.walkDate(walk, this.WALKS_MANAGER_DATE_FORMAT);
+    csvRecord[WalkUploadColumnHeading.TITLE] = this.walkTitle(walk);
+    csvRecord[WalkUploadColumnHeading.DESCRIPTION] = this.walkDescription(walk);
+    csvRecord[WalkUploadColumnHeading.ADDITIONAL_DETAILS] = "";
+    csvRecord[WalkUploadColumnHeading.WEBSITE_LINK] = this.walkLink(walk);
+    csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.contactIdLookupAssemble(walk, members);
+    csvRecord[WalkUploadColumnHeading.LINEAR_OR_CIRCULAR] = this.walkType(walk);
+    csvRecord[WalkUploadColumnHeading.START_TIME] = this.walkStartTime(walk);
+    csvRecord[WalkUploadColumnHeading.STARTING_LOCATION] = "";
+    csvRecord[WalkUploadColumnHeading.STARTING_POSTCODE] = this.walkPostcode(walk);
+    csvRecord[WalkUploadColumnHeading.STARTING_GRIDREF] = this.walkGridReference(walk);
+    csvRecord[WalkUploadColumnHeading.STARTING_LOCATION_DETAILS] = this.nearestTown(walk);
+    csvRecord[WalkUploadColumnHeading.MEETING_TIME] = "";
+    csvRecord[WalkUploadColumnHeading.MEETING_LOCATION] = "";
+    csvRecord[WalkUploadColumnHeading.MEETING_POSTCODE] = "";
+    csvRecord[WalkUploadColumnHeading.MEETING_GRIDREF] = "";
+    csvRecord[WalkUploadColumnHeading.MEETING_LOCATION_DETAILS] = "";
+    csvRecord[WalkUploadColumnHeading.EST_FINISH_TIME] = this.walkFinishTime(walk);
+    csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION] = "";
+    csvRecord[WalkUploadColumnHeading.FINISHING_POSTCODE] = "";
+    csvRecord[WalkUploadColumnHeading.FINISHING_GRIDREF] = "";
+    csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION_DETAILS] = "";
+    csvRecord[WalkUploadColumnHeading.DIFFICULTY] = this.asString(walk.grade);
+    csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = "";
+    csvRecord[WalkUploadColumnHeading.DISTANCE_MILES] = this.walkDistanceMiles(walk);
+    csvRecord[WalkUploadColumnHeading.ASCENT_METRES] = "";
+    csvRecord[WalkUploadColumnHeading.ASCENT_FEET] = "";
+    csvRecord[WalkUploadColumnHeading.DOG_FRIENDLY] = "";
+    csvRecord[WalkUploadColumnHeading.INTRODUCTORY_WALK] = "";
+    csvRecord[WalkUploadColumnHeading.NO_STILES] = "";
+    csvRecord[WalkUploadColumnHeading.FAMILY_FRIENDLY] = "";
+    csvRecord[WalkUploadColumnHeading.WHEELCHAIR_ACCESSIBLE] = "";
+    csvRecord[WalkUploadColumnHeading.ACCESSIBLE_BY_PUBLIC_TRANSPORT] = "";
+    csvRecord[WalkUploadColumnHeading.CAR_PARKING_AVAILABLE] = "";
+    csvRecord[WalkUploadColumnHeading.CAR_SHARING_AVAILABLE] = "";
+    csvRecord[WalkUploadColumnHeading.COACH_TRIP] = "";
+    csvRecord[WalkUploadColumnHeading.REFRESHMENTS_AVAILABLE_PUB_CAFE] = "";
+    csvRecord[WalkUploadColumnHeading.TOILETS_AVAILABLE] = "";
+    return csvRecord;
   }
 
 }

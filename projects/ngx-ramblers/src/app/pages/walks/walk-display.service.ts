@@ -58,7 +58,6 @@ export class WalkDisplayService {
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
     this.refreshGoogleMapsService();
-    this.refreshRamblersConfig();
     this.refreshCachedData();
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
     this.loggedIn = memberLoginService.memberLoggedIn();
@@ -106,15 +105,13 @@ export class WalkDisplayService {
     return this.memberLoginService.memberLoggedIn() && walk && walk.walkLeaderMemberId === this.memberLoginService.loggedInMember().memberId;
   }
 
-  refreshRamblersConfig() {
-    this.ramblersWalksAndEventsService.walkBaseUrl().then((walkBaseUrl) => {
-      this.ramblersWalkBaseUrl = walkBaseUrl.response.toString();
-    });
-  }
-
   async refreshCachedData() {
     if (this.memberLoginService.memberLoggedIn() && this.members.length === 0) {
-      this.members = await this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS);
+      if (this.memberLoginService.allowWalkAdminEdits()) {
+        this.members = await this.memberService.all().then(members => members.filter(this.memberService.filterFor.GROUP_MEMBERS));
+      } else {
+        this.members = await this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS);
+      }
       this.previousWalkLeaderIds = (await this.queryPreviousWalkLeaderIds() || []);
       this.logger.debug("previousWalkLeaderIds:", this.previousWalkLeaderIds);
     }
@@ -183,14 +180,6 @@ export class WalkDisplayService {
     return eventType;
   }
 
-  walkLink(walk: Walk): string {
-    return walk?.id ? this.urlService.linkUrl({area: "walks", id: walk.id}) : null;
-  }
-
-  ramblersLink(walk: Walk): string {
-    return walk.ramblersWalkId && (this.ramblersWalkBaseUrl + walk.ramblersWalkId);
-  }
-
   gridReferenceLink(walk: Walk): string {
     return `https://gridreferencefinder.com/?gr=${walk.gridReference}`;
   }
@@ -214,8 +203,8 @@ export class WalkDisplayService {
       walkAccessMode: this.toWalkAccessMode(walk),
       status: this.statusFor(walk),
       latestEventType: this.latestEventTypeFor(walk),
-      walkLink: this.walkLink(walk),
-      ramblersLink: this.ramblersLink(walk),
+      walkLink: this.ramblersWalksAndEventsService.walkLink(walk),
+      ramblersLink: this.ramblersWalksAndEventsService.ramblersLink(walk),
     };
   }
 
@@ -223,8 +212,8 @@ export class WalkDisplayService {
     displayedWalk.walkAccessMode = this.toWalkAccessMode(displayedWalk.walk);
     displayedWalk.status = this.statusFor(displayedWalk.walk);
     displayedWalk.latestEventType = this.latestEventTypeFor(displayedWalk.walk);
-    displayedWalk.walkLink = this.walkLink(displayedWalk.walk);
-    displayedWalk.ramblersLink = this.ramblersLink(displayedWalk.walk);
+    displayedWalk.walkLink = this.ramblersWalksAndEventsService.walkLink(displayedWalk.walk);
+    displayedWalk.ramblersLink = this.ramblersWalksAndEventsService.ramblersLink(displayedWalk.walk);
   }
 
   isNextWalk(walk: Walk): boolean {

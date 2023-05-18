@@ -34,8 +34,8 @@ function createRequestAudit(options: MessageHandlerOptions) {
 
 export function httpRequest(options: MessageHandlerOptions) {
   return new Promise((resolve, reject) => {
-    const requestAudit = createRequestAudit(options);
     options.debug("sending request using API request options", options.apiRequest);
+    const requestAudit = createRequestAudit(options);
     const request = https.request(options.apiRequest, (response: http.IncomingMessage) => {
       const data = [];
       options.res.httpVersion = response.httpVersion;

@@ -10,21 +10,18 @@
           </div>
         </div>
               <div class="row mb-2">
-                <div class="col-sm-12">
+                <div class="col-sm-12 form-inline">
                   <input *ngIf="walksDownloadFileContents().length > 0" type="submit"
                          value="Upload {{walksDownloadFileContents().length}} walk(s) directly to Ramblers"
                          (click)="uploadToRamblers()"
-                         title="Upload {{walksDownloadFileContents().length}} selected walk(s) directly to Ramblers Walks and Events Manager"
                          [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-                  <input #fileElement *ngIf="walksDownloadFileContents().length > 0" type="submit"
-                         (click)="exportCSV(fileElement)"
-                         value="Export {{walksDownloadFileContents().length}} walk(s) file as CSV format"
-                         title="Export {{walksDownloadFileContents().length}} selected walk(s) in Ramblers Walks and Events Manager upload format"
-                         [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
-                  <angular2csv id="angular-2-csv" hidden [data]="walksDownloadFileContents()"
+                  <angular2csv hidden #csvComponent [data]="walksDownloadFileContents()"
                                [filename]="walksDownloadFileName()"
-                               [options]="csvOptions"></angular2csv>
-
+                               [options]="options()"></angular2csv>
+                  <input  *ngIf="walksDownloadFileContents().length > 0" type="submit"
+                         (click)="csvComponent.generateCsv();"
+                         value="Export {{walksDownloadFileContents().length}} walk(s) file as CSV format"
+                         [ngClass]="exportInProgress ? 'disabled-button-form button-form-left': 'button-form button-form-left'">
                   <input type="submit" value="Back to walks" (click)="navigateBackToWalks()"
                          title="Back to walks"
                          class="button-form button-form-left">

@@ -20,77 +20,67 @@ export interface RamblersWalksApiResponse extends ApiResponse {
   response?: RamblersWalkResponse[];
 }
 
-export const WalkUploadColumnHeadings: string[] = [
-  "Date",
-  "Title",
-  "Description",
-  "Linear or Circular",
-  "Starting postcode",
-  "Starting gridref",
-  "Starting location details",
-  "Show exact starting point",
-  "Start time",
-  "Show exact meeting point?",
-  "Meeting time",
-  "Restriction",
-  "Difficulty",
-  "Local walk grade",
-  "Distance miles",
-  "Contact id",
-  "Contact display name"
-];
+export enum GWEMUploadColumnHeading {
+  DATE = "Date",
+  TITLE = "Title",
+  DESCRIPTION = "Description",
+  LINEAR_OR_CIRCULAR = "Linear or Circular",
+  STARTING_POSTCODE = "Starting postcode",
+  STARTING_GRIDREF = "Starting gridref",
+  STARTING_LOCATION_DETAILS = "Starting location details",
+  SHOW_EXACT_STARTING_POINT = "Show exact starting point",
+  START_TIME = "Start time",
+  SHOW_EXACT_MEETING_POINT = "Show exact meeting point?",
+  MEETING_TIME = "Meeting time",
+  RESTRICTION = "Restriction",
+  DIFFICULTY = "Difficulty",
+  LOCAL_WALK_GRADE = "Local walk grade",
+  DISTANCE_MILES = "Distance miles",
+  CONTACT_ID = "Contact id",
+  CONTACT_DISPLAY_NAME = "Contact display name"
+}
 
-export const NewWalkUploadColumnHeadings: string[] = [
-  "Date",
-  "Title",
-  "Description",
-  "Walk leaders",
-  "Linear or Circular",
-  "Start time",
-  "Starting location",
-  "Starting postcode",
-  "Starting gridref",
-  "Starting location details",
-  "Meeting location",
-  "Meeting postcode",
-  "Meeting gridref",
-  "Meeting location details",
-  "Est finish time",
-  "Finishing location",
-  "Finishing postcode",
-  "Finishing gridref",
-  "Finishing location details",
-  "Difficulty",
-  "Distance km",
-  "Distance miles",
-  "Ascent metres",
-  "Ascent feet",
-  "Family friendly",
-  "Dog friendly",
-  "Assistance dog only",
-  "No stiles",
-  "Refreshments available",
-  "Toilets available",
-  "Fast pace",
-  "Slow pace"
-];
+export enum WalkUploadColumnHeading {
+  DATE = "Date",
+  TITLE = "Title",
+  DESCRIPTION = "Description",
+  ADDITIONAL_DETAILS = "Additional details",
+  WEBSITE_LINK = "Website Link",
+  WALK_LEADERS = "Walk leaders",
+  LINEAR_OR_CIRCULAR = "Linear or Circular",
+  START_TIME = "Start time",
+  STARTING_LOCATION = "Starting location",
+  STARTING_POSTCODE = "Starting postcode",
+  STARTING_GRIDREF = "Starting gridref",
+  STARTING_LOCATION_DETAILS = "Starting location details",
+  MEETING_TIME = "Meeting time",
+  MEETING_LOCATION = "Meeting location",
+  MEETING_POSTCODE = "Meeting postcode",
+  MEETING_GRIDREF = "Meeting gridref",
+  MEETING_LOCATION_DETAILS = "Meeting location details",
+  EST_FINISH_TIME = "Est finish time",
+  FINISHING_LOCATION = "Finishing location",
+  FINISHING_POSTCODE = "Finishing postcode",
+  FINISHING_GRIDREF = "Finishing gridref",
+  FINISHING_LOCATION_DETAILS = "Finishing location details",
+  DIFFICULTY = "Difficulty",
+  DISTANCE_KM = "Distance km",
+  DISTANCE_MILES = "Distance miles",
+  ASCENT_METRES = "Ascent metres",
+  ASCENT_FEET = "Ascent feet",
+  DOG_FRIENDLY = "Dog friendly",
+  INTRODUCTORY_WALK = "Introductory walk",
+  NO_STILES = "No stiles",
+  FAMILY_FRIENDLY = "Family-friendly",
+  WHEELCHAIR_ACCESSIBLE = "Wheelchair accessible",
+  ACCESSIBLE_BY_PUBLIC_TRANSPORT = "Accessible by public transport",
+  CAR_PARKING_AVAILABLE = "Car parking available",
+  CAR_SHARING_AVAILABLE = "Car sharing available",
+  COACH_TRIP = "Coach trip",
+  REFRESHMENTS_AVAILABLE_PUB_CAFE = "Refreshments available (Pub/cafe)",
+  TOILETS_AVAILABLE = "Toilets available"
+}
 
-export interface WalkUploadRow {
-  "Date": string;
-  "Title": string;
-  "Description": string;
-  "Linear or Circular": string;
-  "Starting postcode": string;
-  "Starting gridref": string;
-  "Starting location details": string;
-  "Show exact starting point": string;
-  "Start time": string;
-  "Show exact meeting point?": string;
-  "Meeting time": string;
-  "Restriction": string;
-  "Difficulty": string;
-  "Local walk grade": string;
-  "Distance miles": string;
-  "Contact id": string;
-  "Contact display name": string;
+export type WalkUploadRow = {
+  [column in keyof WalkUploadColumnHeading]?: string;
 }

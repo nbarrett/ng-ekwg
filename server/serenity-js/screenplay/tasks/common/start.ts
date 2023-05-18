@@ -24,7 +24,7 @@ export class Start {
 
   static onWalksAndEventsManager(): Task {
     return Task.where("#actor starts on the walks and events manager",
-      StartWithNavigation.to("http://www.ramblers.org.uk/group-walks-and-events-manager.aspx"),
+      StartWithNavigation.to("https://walks-manager.ramblers.org.uk/walks-manager"),
     );
   }
 

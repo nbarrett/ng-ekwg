@@ -1,19 +1,20 @@
-import { ChangeDetectorRef, Component, Inject, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import has from "lodash-es/has";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { ContentText } from "../../../models/content-text.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { WalkNotification } from "../../../models/walk-notification.model";
 import { DisplayedWalk } from "../../../models/walk.model";
-import { BroadcastService} from "../../../services/broadcast-service";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
-import { MemberLoginService } from "../../../services/member/member-login.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { meetupDescriptionPrefix, MeetupService } from "../../../services/meetup.service";
+import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
+import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
 import { WalkDisplayService } from "../walk-display.service";
@@ -41,6 +42,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   public CONTENT_CATEGORY = meetupDescriptionPrefix;
 
   constructor(private memberLoginService: MemberLoginService,
+              private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
               private broadcastService: BroadcastService<ContentText>,
               private changeDetectorRef: ChangeDetectorRef,
               private contentTextService: ContentTextService,
@@ -109,7 +111,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   }
 
   private createMeetupDescription(data: ContentText) {
-    this.displayedWalk.walk.meetupEventDescription = `${data.text} [here](${this.display.walkLink(this.displayedWalk.walk)}).\n\n${this.displayedWalk.walk.longerDescription}`;
+    this.displayedWalk.walk.meetupEventDescription = `${data.text} [here](${this.ramblersWalksAndEventsService.walkLink(this.displayedWalk.walk)}).\n\n${this.displayedWalk.walk.longerDescription}`;
     this.meetupEventDescription = this.displayedWalk.walk.meetupEventDescription;
     this.logger.debug("meetupEventDescription:", this.meetupEventDescription);
     this.changeDetectorRef.detectChanges();

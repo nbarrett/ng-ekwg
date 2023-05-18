@@ -33,6 +33,7 @@ export class NumberUtilsService {
   }
 
   asNumber(numberString?: any, decimalPlaces?: number): number {
+    this.logger.info("asNumber:", numberString, "decimalPlaces:", decimalPlaces);
     if (!numberString) {
       return 0;
     }

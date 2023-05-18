@@ -1,7 +1,7 @@
 import * as AWS from "@aws-sdk/client-s3";
 import { GetObjectCommand, GetObjectRequest, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import * as crypto from "crypto";
-import * as debug from "debug";
+import debug = require("debug");
 import * as fs from "fs";
 import * as https from "https";
 import { first, omit } from "lodash";

@@ -25,7 +25,7 @@ export class WalkSummaries implements Question<Promise<WalkSummary[]>> {
   static displayed = () => new WalkSummaries();
 
   answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<WalkSummary[]> {
-    return promiseOf(WalksTargets.walks.answeredBy(actor)
+    return promiseOf(WalksTargets.walkListviewTableRows.answeredBy(actor)
       .all(by.tagName("td")).getText()
       .then(columns => {
         console.log("columns", columns);

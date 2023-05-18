@@ -1,8 +1,8 @@
-let {envConfig} = require("../env-config/env-config");
-let debug = require("debug")(envConfig.logNamespace("instagram"));
-let ig = require("instagram-node").instagram();
-let port = envConfig.server.listenPort;
-let redirectUri = "http://localhost:" + port + "/instagram/handleAuth";
+import { envConfig } from "../env-config/env-config";
+const debug = require("debug")(envConfig.logNamespace("instagram"));
+const ig = require("instagram-node").instagram();
+const port = envConfig.server.listenPort;
+const redirectUri = `http://localhost:${port}/instagram/handleAuth`;
 module.exports = instagramAuthentication => {
 
   instagramAuthentication.result = {

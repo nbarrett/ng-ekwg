@@ -4,7 +4,7 @@ import { envConfig } from "../env-config/env-config";
 import debug = require("debug");
 import querystring = require("querystring");
 import url = require("url");
-import messageHandlers = require("../shared/message-handlers");
+import * as messageHandlers from "../shared/message-handlers";
 
 const debugLog = debug(envConfig.logNamespace("postcodes"));
 

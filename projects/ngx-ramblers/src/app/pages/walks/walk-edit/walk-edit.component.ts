@@ -51,6 +51,11 @@ import { WalkDisplayService } from "../walk-display.service";
 interface DisplayMember {
   memberId: string;
   name: string;
+  displayName: string;
+  contactId: string;
+  firstName: string;
+  lastName: string;
+  membershipNumber: string;
 }
 
 @Component({
@@ -91,7 +96,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private addressQueryService: AddressQueryService,
-    private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
+    public ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private memberLoginService: MemberLoginService,
     public route: ActivatedRoute,
     private walksQueryService: WalksQueryService,
@@ -115,7 +120,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -322,20 +327,23 @@ export class WalkEditComponent implements OnInit, OnDestroy {
 
   membersWithAliasOrMe(): DisplayMember[] {
     return this.display.members.map(member => {
-      return {memberId: member.id, name: this.fullNameWithAliasOrMePipe.transform(member)};
+      return {
+        memberId: member.id,
+        name: this.fullNameWithAliasOrMePipe.transform(member),
+        contactId: member.contactId,
+        displayName: member.displayName,
+        firstName: member.firstName,
+        lastName: member.lastName,
+        membershipNumber: member.membershipNumber
+      };
     });
   }
 
   previousWalkLeadersWithAliasOrMe(): DisplayMember[] {
-    return this.membersWithAliasOrMe().filter(member => {
-      return this.display.previousWalkLeaderIds?.includes(member.memberId);
-    });
-  }
-
-  membersWithAlias(): DisplayMember[] {
-    return this.display.members.map(member => {
-      return {memberId: member.id, name: this.fullNamePipe.transform(member)};
-    });
+    const displayMembers = this.membersWithAliasOrMe()
+      .filter(member => this.display.previousWalkLeaderIds?.includes(member.memberId));
+    this.logger.info("this.membersWithAliasOrMe:", "\n" + displayMembers.map(item => item.membershipNumber + "," + item.contactId + "," + item.displayName).join("\n"));
+    return displayMembers;
   }
 
   populateCurrentWalkFromTemplate() {
@@ -350,6 +358,10 @@ export class WalkEditComponent implements OnInit, OnDestroy {
       delete walkTemplate.displayName;
       delete walkTemplate.contactPhone;
       delete walkTemplate.contactEmail;
+      delete walkTemplate.meetupEventDescription;
+      delete walkTemplate.meetupEventUrl;
+      delete walkTemplate.meetupPublish;
+      delete walkTemplate.meetupEventTitle;
       Object.assign(this.displayedWalk.walk, walkTemplate);
       const event = this.walkEventService.createEventIfRequired(this.displayedWalk.walk,
         EventType.WALK_DETAILS_COPIED, "Copied from previous walk on " + templateDate);
@@ -528,7 +540,8 @@ export class WalkEditComponent implements OnInit, OnDestroy {
       this.saveInProgress = true;
       const walkNotification: WalkNotification = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
       return this.walkNotificationService.generateNotificationHTML(walkNotification, this.notificationDirective, MeetupDescriptionComponent);
-    }).then((meetupDescription: string) => this.meetupService.synchroniseWalkWithEvent(this.notify, this.displayedWalk, meetupDescription))
+    })
+      // .then((meetupDescription: string) => this.meetupService.synchroniseWalkWithEvent(this.notify, this.displayedWalk, meetupDescription))
       .then(() => this.sendNotificationsSaveAndCloseIfNotSent())
       .catch(error => this.notifyError(error));
   }
@@ -688,8 +701,8 @@ export class WalkEditComponent implements OnInit, OnDestroy {
 
   onDateChange(date: DateValue) {
     if (date) {
-      this.logger.debug("onDateChange:date", date);
-      // this.displayedWalk.walk.walkDate = this.dateUtils.asValueNoTime(this.walkDate);
+      this.logger.info("onDateChange:date", date);
+      this.displayedWalk.walk.walkDate = date.value;
     }
   }
 

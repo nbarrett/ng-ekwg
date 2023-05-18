@@ -1,3 +1,4 @@
+import debug = require("debug");
 import * as configData from "config";
 
 function validatedEnvironmentVariable(variableName: string): string {
@@ -10,10 +11,12 @@ function validatedEnvironmentVariable(variableName: string): string {
 
 const env = validatedEnvironmentVariable("NODE_ENV");
 
-function logNamespace(moduleName) {
+function logNamespace(moduleName: string) {
   return `ekwg:${env}:${moduleName || ""}`;
 }
 
+const debugLog = debug(logNamespace("env-config"));
+debugLog("configData:", JSON.stringify(configData));
 export const envConfig = {
   auth: {
     secret: validatedEnvironmentVariable("AUTH_SECRET"),
@@ -69,7 +72,6 @@ export const envConfig = {
     url: configData.ramblers.url,
   },
   server: {
-    cookieSecret: configData.server.cookieSecret,
     listenPort: process.env.PORT || configData.server.listenPort,
     staticUrl: configData.server.staticUrl,
     uploadDir: configData.server.uploadDir,

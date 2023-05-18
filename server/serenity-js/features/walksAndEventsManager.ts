@@ -20,7 +20,7 @@ describe("Walks and Events Manager", function () {
     FilterWalks.toShowAll(),
     DeleteWalks.all(),
     UploadWalks.fileWithNameAndCount(fileName, expectedWalks),
-    Publish.walksAwaitingApproval(),
+    Publish.walksInDraftState(),
   ));
 
   it("allows a file to be uploaded, replacing supplied walk ids", () => actor.attemptsTo(
@@ -28,9 +28,9 @@ describe("Walks and Events Manager", function () {
     Start.onWalksAndEventsManager(),
     Login.toRamblers(),
     FilterWalks.toShowAll(),
-    DeleteWalks.withIds(3953611, 3953609),
+    DeleteWalks.withIds("3953611", "3953609"),
     UploadWalks.fileWithNameAndCount(fileName, expectedWalks),
-    Publish.walksAwaitingApproval(),
+    Publish.walksInDraftState(),
   ));
 
   it("test question", () => actor.attemptsTo(
@@ -38,8 +38,8 @@ describe("Walks and Events Manager", function () {
     Start.onWalksAndEventsManager(),
     Login.toRamblers(),
     SelectWalks.withStatus("Published"),
-    SelectWalks.withIds(3955387),
-    DeleteWalks.withIds(3955389),
+    SelectWalks.withIds("3955387"),
+    DeleteWalks.withIds("3955389"),
   ));
 
 });

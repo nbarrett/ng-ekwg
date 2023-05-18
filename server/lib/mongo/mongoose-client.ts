@@ -1,10 +1,16 @@
-const {envConfig} = require("../env-config/env-config");
-const debug = require("debug")(envConfig.logNamespace("mongoose-client"));
-const mongoose = require("mongoose");
-const transforms = require("../mongo/controllers/transforms");
+import { envConfig } from "../env-config/env-config";
+import debug = require("debug");
+import mongoose = require("mongoose");
+import transforms = require("../mongo/controllers/transforms");
+
 let connected = false;
-exports.create = (model, data) => {
-  const debugCreate = require("debug")(envConfig.logNamespace(`local-database:${model.modelName}`));
+
+function createDebugFor(model: any): any {
+  return debug(envConfig.logNamespace(`local-database:${model.modelName}`));
+}
+
+export function create(model: any, data: any) {
+  const debugCreate = createDebugFor(model);
   debugCreate.enabled = true;
   const performCreate = () => {
     const document = transforms.createDocumentRequest({body: data});
@@ -23,13 +29,14 @@ exports.create = (model, data) => {
   };
   if (!connected) {
     debugCreate("establishing database connection");
-    return exports.connect().then(() => performCreate());
+    return connect().then(() => performCreate());
   } else {
     return performCreate();
   }
-};
-exports.findByConditions = (model, data) => {
-  const debugCreate = require("debug")(config.logNamespace(`local-database:${model.modelName}`));
+}
+
+export function findByConditions(model, data) {
+  const debugCreate = createDebugFor(model);
   debugCreate.enabled = true;
   const performFindByConditions = () => {
     const document = transforms.createDocumentRequest({body: data});
@@ -48,23 +55,22 @@ exports.findByConditions = (model, data) => {
   };
   if (!connected) {
     debugCreate("establishing database connection");
-    return exports.connect().then(() => performFindByConditions());
+    return connect().then(() => performFindByConditions());
   } else {
     return performFindByConditions();
   }
-};
-exports.connect = () => {
+}
+
+export function connect() {
   return mongoose.connect(envConfig.mongo.uri, {
     keepAlive: true,
     useNewUrlParser: true,
-  })
-    .then((response) => {
-      debug("Connected to database:", envConfig.mongo.uri, "configured models:", response.models);
-      connected = true;
-      return true;
-    })
-    .catch((error) => {
-      debug("Connection failed:", envConfig.mongo.uri, "error:", error);
-      throw error;
-    });
-};
+  }).then(response => {
+    debug("Connected to database:", envConfig.mongo.uri, "configured models:", response.models);
+    connected = true;
+    return true;
+  }).catch(error => {
+    debug("Connection failed:", envConfig.mongo.uri, "error:", error);
+    throw error;
+  });
+}

@@ -1,15 +1,17 @@
 import { DOCUMENT } from "@angular/common";
 import { Component, Inject, OnDestroy, OnInit } from "@angular/core";
 import { faCircleInfo, faEye, faRemove } from "@fortawesome/free-solid-svg-icons";
+import { Options } from "angular2-csv";
 import find from "lodash-es/find";
 import get from "lodash-es/get";
+import map from "lodash-es/map";
 import { NgxLoggerLevel } from "ngx-logger";
 import { interval, Observable, Subscription } from "rxjs";
 import { switchMap } from "rxjs/operators";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { WalkUploadColumnHeadings, WalkUploadRow } from "../../../models/ramblers-gwem";
+import { WalkUploadRow } from "../../../models/ramblers-gwem";
 import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
 import { Walk, WalkExport } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -44,10 +46,6 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   private walkExportNotifier: AlertInstance;
   public auditTarget: AlertTarget = {};
   private auditNotifier: AlertInstance;
-  public csvOptions: {
-    headers: string[]; keys: string[]; fieldSeparator?: string; useBom?: boolean;
-    showTitle?: boolean; quoteStrings?: string; title?: string; removeNewLines?: boolean
-  };
   private intervalJob: Observable<any>;
   private subscription: Subscription;
   public finalStatusError: any;
@@ -68,7 +66,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {
@@ -78,19 +76,27 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     this.auditNotifier = this.notifierService.createAlertInstance(this.auditTarget);
     this.showAvailableWalkExports();
     this.showAllAudits();
-    this.csvOptions = {
-      fieldSeparator: ",",
-      quoteStrings: "\"",
-      headers: WalkUploadColumnHeadings,
-      keys: WalkUploadColumnHeadings,
-      showTitle: false,
-      useBom: false,
-      removeNewLines: true
-    };
   }
 
   ngOnDestroy(): void {
     this.stopPolling();
+  }
+
+  public options(): Options {
+    return {
+      decimalseparator: "",
+      filename: "",
+      showLabels: false,
+      title: "",
+      fieldSeparator: ",",
+      quoteStrings: "\"",
+      headers: this.headers(),
+      keys: this.headers(),
+      showTitle: false,
+      useBom: false,
+      removeNewLines: true
+    };
+
   }
 
   private stopPolling() {
@@ -135,8 +141,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       });
   }
 
-  exportableWalks() {
-    return this.ramblersWalksAndEventsService.exportableWalks(this.walksForExport);
+  exportableWalks(): WalkExport[] {
+    return this.ramblersWalksAndEventsService.selectedExportableWalks(this.walksForExport);
   }
 
   navigateBackToWalks() {
@@ -153,7 +159,15 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   walksDownloadFileContents(): WalkUploadRow[] {
-    return this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks(), this.members);
+    const walkUploadRows = this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks(), this.members);
+    this.logger.info("walksDownloadFileContents:", walkUploadRows);
+    return walkUploadRows;
+  }
+
+  private headers(): string[] {
+    const headers = map(this.walksDownloadFileContents()[0], (column, row) => row);
+    this.logger.info("headers:", headers);
+    return headers;
   }
 
   showAllAudits() {
@@ -219,11 +233,6 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   walksDownloadFileName() {
     return this.ramblersWalksAndEventsService.exportWalksFileName(true);
-  }
-
-  exportCSV() {
-    this.document.getElementById("angular-2-csv")
-      .getElementsByTagName("button")[0].click();
   }
 
 }

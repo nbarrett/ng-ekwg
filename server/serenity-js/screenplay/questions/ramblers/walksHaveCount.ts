@@ -14,7 +14,7 @@ export class WalksHaveCount implements Question<Promise<boolean>> {
     return RamblersWalkSummaries.displayed().answeredBy(actor)
       .then(walks => {
         const result = walks.length === this.count;
-        // console.log(`calling WalksHaveCount: ${this.count} actual: ${walks.length} -> ${result}`);
+        // console.log(`WalksHaveCount:RamblersWalkSummaries.displayed():`, walks, ` ${this.count} actual: ${walks.length} -> ${result}`);
         return result;
       });
   }

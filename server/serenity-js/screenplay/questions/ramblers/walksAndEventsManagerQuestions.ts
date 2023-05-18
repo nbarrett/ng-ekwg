@@ -3,5 +3,6 @@ import { Text } from "@serenity-js/protractor";
 import { WalksTargets } from "../../ui/ramblers/walksTargets";
 
 export class WalksAndEventsManagerQuestions {
-  public static LoginStatus: Question<Promise<string>> = Text.of(WalksTargets.loginStatus);
+  public static CreateButton: Question<Promise<string>> = Text.of(WalksTargets.createDropdown);
+  public static AlertMessage: Question<Promise<string>> = Text.of(WalksTargets.alertMessage);
 }

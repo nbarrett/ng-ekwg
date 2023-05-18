@@ -1,6 +1,8 @@
-import { PerformsActivities, Task } from "@serenity-js/core";
-import { Enter } from "@serenity-js/protractor";
+import { Check } from "@serenity-js/assertions";
+import { Duration, PerformsActivities, Task } from "@serenity-js/core";
+import { Enter, isVisible, Wait } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { pluralise, pluraliseWithCount } from "../../../util/util";
 import { ClickWhenReady } from "../../common/clickWhenReady";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
 import { WaitFor } from "../common/waitFor";
@@ -25,17 +27,21 @@ export class UploadWalksSpecifiedWalks implements Task {
   }
 
   performAs(actor: PerformsActivities): Promise<void> {
-    console.log(`Uploading file ${this.fileName} containing ${this.expectedWalks} walk(s)`);
+    console.log(`Uploading file ${this.fileName} containing ${pluraliseWithCount(this.expectedWalks, "walk")}`);
     return actor.attemptsTo(
-      ClickWhenReady.on(WalksTargets.accordionUpload),
+      ClickWhenReady.on(WalksTargets.createDropdown),
+      ClickWhenReady.on(WalksTargets.uploadAWalksCSV),
       Enter.theValue(this.fileName).into(WalksTargets.chooseFilesButton),
       ClickWhenReady.on(WalksTargets.uploadWalksButton),
-      WaitFor.errorOrCountOfWalksToBe(this.expectedWalks),
-      ReportOn.uploadErrors());
+      Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.progressIndicator, isVisible()),
+      Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.alertMessage, isVisible()),
+      Check.whether(WalksTargets.errorAlert, isVisible())
+        .andIfSo(ReportOn.uploadErrors())
+        .otherwise(WaitFor.successAlertToContainMessage(`${pluraliseWithCount(this.expectedWalks, "walk")} ${pluralise(this.expectedWalks, "has", "have")} been created`)));
   }
 
   toString() {
-    return `#actor uploads file ${this.fileName} containing ${this.expectedWalks} walks`;
+    return `#actor uploads file ${this.fileName} containing ${pluraliseWithCount(this.expectedWalks, "walk")}`;
   }
 
 }
