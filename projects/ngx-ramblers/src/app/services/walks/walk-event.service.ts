@@ -21,8 +21,8 @@ import { WalksReferenceService } from "./walks-reference-data.service";
 
 const auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription",
   "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "meetupEventDescription", "osMapsRoute", "osMapsTitle", "postcode",
-  "walkLeaderMemberId", "contactPhone", "contactEmail", "contactId", "displayName",
-  "ramblersWalkId", "ramblersPublish", "meetupPublish", "venue", "config", "riskAssessment"];
+  "walkLeaderMemberId", "contactPhone", "contactEmail", "displayName",
+  "ramblersWalkId", "ramblersWalkUrl", "ramblersPublish", "meetupPublish", "venue", "config", "riskAssessment"];
 
 @Injectable({
   providedIn: "root"
