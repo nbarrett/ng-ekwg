@@ -1,4 +1,4 @@
-import { RamblersWalkSummary } from "../../../questions/ramblers/ramblersWalksFound";
+import { RamblersWalkSummary } from "../../../../models/ramblersWalkSummary";
 import { DeselectAllWalks } from "./deselectAllWalks";
 import { SelectAllWalks } from "./selectAllWalks";
 import { SelectWalksNotPublishedCancelledOrWithIds } from "./selectWalksNotPublishedCancelledOrWithIds";

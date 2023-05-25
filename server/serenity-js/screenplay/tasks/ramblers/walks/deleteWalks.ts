@@ -4,9 +4,9 @@ import { isVisible } from "@serenity-js/protractor";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { Log } from "../../common/log";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
+import { DeleteAllWalks } from "./deleteAllWalks";
 import { Delete } from "./deleteSelectedWalks";
 import { SelectWalks } from "./selectWalks";
-import { Unpublish } from "./unpublish";
 
 export class DeleteWalks {
 
@@ -24,23 +24,6 @@ export class DeleteWalks {
 
 }
 
-export class DeleteAllWalks implements Task {
-
-  performAs(actor: PerformsActivities): Promise<void> {
-    return actor.attemptsTo(
-      Check.whether(WalksTargets.selectAll, isVisible())
-        .andIfSo(SelectWalks.all(),
-          Unpublish.selectedWalks(),
-          Delete.selectedWalks())
-        .otherwise(Log.message("there are no walks to unpublish or delete")));
-  }
-
-  toString() {
-    return "#actor deletes all walks";
-  }
-
-}
-
 export class DeleteUnpublishedOrWalksWithIds implements Task {
 
   private suffix: string;
@@ -53,7 +36,6 @@ export class DeleteUnpublishedOrWalksWithIds implements Task {
     return actor.attemptsTo(
       Check.whether(WalksTargets.walkListviewTable, isVisible())
         .andIfSo(SelectWalks.notPublishedOrWithIds(this.walkIds),
-          Unpublish.selectedWalks(),
           Delete.selectedWalks())
         .otherwise(Log.message(`it's not possible to delete walks ${this.walkIds}`)));
   }

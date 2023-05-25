@@ -22,8 +22,8 @@ describe("Walks and Events Manager", () => {
       UseAngular.disableSynchronisation(),
       Start.onWalksAndEventsManager(),
       Login.toRamblers(),
-      Navigate.to("https://walks-manager.ramblers.org.uk/walks-manager/all-walks-events?search=&items_per_page=All&d[min]=" + today + "&d[max]=&rauid=all"),
-      // DeleteWalks.requested(),
+      Navigate.to(`https://walks-manager.ramblers.org.uk/walks-manager/all-walks-events?search=&items_per_page=All&d[min]=${today}&d[max]=&rauid=all`),
+      DeleteWalks.requested(),
       UploadWalks.requested(),
       Publish.walksInDraftState());
   });

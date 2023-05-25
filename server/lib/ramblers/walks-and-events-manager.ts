@@ -1,13 +1,13 @@
+import { RamblersWalkResponse, RamblersWalksRawApiResponse } from "../../../projects/ngx-ramblers/src/app/models/ramblers-walks-manager";
 import { envConfig } from "../env-config/env-config";
-import moment = require("moment-timezone");
 import { httpRequest } from "../shared/message-handlers";
 import * as requestDefaults from "./request-defaults";
 import debug = require("debug");
+import moment = require("moment-timezone");
 
-const debugLog = debug(envConfig.logNamespace("ramblers:gwem"));
+const debugLog = debug(envConfig.logNamespace("ramblers:walks-manager"));
 debugLog.enabled = true;
 const ramblersConfig = envConfig.ramblers;
-debugLog("thus us a testy");
 
 export function listWalks(req, res) {
   const defaultOptions = requestDefaults.createApiRequestOptions();
@@ -18,7 +18,7 @@ export function listWalks(req, res) {
       protocol: defaultOptions.protocol,
       headers: defaultOptions.headers,
       method: "get",
-      path: ramblersConfig.listWalksPath + "?groups=" + ramblersConfig.groupCode
+      path: `/api/volunteers/walksevents?types=group-walk&limit=100&groups=${ramblersConfig.groupCode}&api-key=${ramblersConfig.apiKey}`
     },
     debug: debugLog,
     res,
@@ -28,21 +28,20 @@ export function listWalks(req, res) {
     .catch(error => res.json(error));
 }
 
-function transformListWalksResponse(jsonData) {
-  debugLog("transformListWalksResponse:", jsonData);
-  return jsonData.map(walk => {
-    const walkMoment = moment(walk.date, moment.ISO_8601).tz("Europe/London");
+function transformListWalksResponse(response: RamblersWalksRawApiResponse): RamblersWalkResponse[] {
+  debugLog("transformListWalksResponse:", response);
+  return response.data.map(walk => {
+    debugLog("transformListWalksResponse:walk:", response);
+    const walkMoment = moment(walk.start_date_time, moment.ISO_8601).tz("Europe/London");
     return {
-      ramblersWalkId: walk.id.toString(),
-      ramblersWalkTitle: walk.title,
-      ramblersWalkDate: walkMoment.format("dddd, Do MMMM YYYY"),
-      ramblersWalkDateValue: walkMoment.valueOf(),
+      id: walk.id,
+      url: walk.url,
+      walksManagerUrl: walk.url.replace("https://beta.ramblers.org.uk", ramblersConfig.url),
+      title: walk.title,
+      startDate: walkMoment.format("dddd, Do MMMM YYYY"),
+      startDateValue: walkMoment.valueOf(),
+      startLocationW3w: walk.start_location.w3w
     };
   });
 }
 
-export function walkBaseUrl(req, res) {
-  const response = ramblersConfig.url + "/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=";
-  debugLog("walkBaseUrl:", response);
-  return res.send({response});
-}

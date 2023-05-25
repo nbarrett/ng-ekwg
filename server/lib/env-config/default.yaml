@@ -1,7 +1,6 @@
 ramblers:
-  url:  https://www.ramblers.org.uk
+  url:  https://walks-manager.ramblers.org.uk
   groupCode: KT50
-  listWalksPath: /api/lbs/walks
 meetup:
   url: https://www.meetup.com
   apiUrl: https://api.meetup.com

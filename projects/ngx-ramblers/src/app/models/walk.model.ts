@@ -35,12 +35,14 @@ export interface Walk extends Identifiable {
   osMapsTitle?: string;
   postcode?: string;
   ramblersWalkId?: string;
+  ramblersWalkUrl?: string;
+  startLocationW3w?: string;
   ramblersPublish?: boolean;
   startTime?: string;
   walkDate?: number;
   walkLeaderMemberId?: string;
   venue?: WalkVenue;
-  riskAssessment?: RiskAssessmentRecord[]
+  riskAssessment?: RiskAssessmentRecord[];
 }
 
 export interface RiskAssessmentRecord {

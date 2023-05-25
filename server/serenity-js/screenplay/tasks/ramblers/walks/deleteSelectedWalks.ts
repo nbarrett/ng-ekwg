@@ -1,5 +1,5 @@
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksFound";
+import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";
 import { WaitFor } from "../common/waitFor";

@@ -1,7 +1,7 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
 import { every } from "lodash";
 import { WalkFilters } from "../../tasks/ramblers/walks/selectWalks";
-import { RamblersWalkSummaries } from "./ramblersWalksFound";
+import { RamblersWalkSummaries } from "./ramblersWalksSummaries";
 
 export class WalksWithStatus {
 

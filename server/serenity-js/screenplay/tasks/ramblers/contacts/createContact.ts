@@ -1,6 +1,6 @@
 import { Duration, PerformsActivities, Task } from "@serenity-js/core";
 import { Click, Enter, isVisible, Wait } from "@serenity-js/protractor";
-import { Contact } from "../../../questions/ramblers/contactsFound";
+import { Contact } from "../../../questions/ramblers/contactListing";
 import { ContactsTargets } from "../../../ui/ramblers/contactsTargets";
 import { SaveBrowserSource } from "../../common/saveBrowserSource";
 

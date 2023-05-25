@@ -11,7 +11,7 @@ import { switchMap } from "rxjs/operators";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { WalkUploadRow } from "../../../models/ramblers-gwem";
+import { WalkUploadRow } from "../../../models/ramblers-walks-manager";
 import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
 import { Walk, WalkExport } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -66,7 +66,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
               private dateUtils: DateUtilsService,
               private urlService: UrlService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(WalkExportComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -160,13 +160,13 @@ export class WalkExportComponent implements OnInit, OnDestroy {
 
   walksDownloadFileContents(): WalkUploadRow[] {
     const walkUploadRows = this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks(), this.members);
-    this.logger.info("walksDownloadFileContents:", walkUploadRows);
+    this.logger.debug("walksDownloadFileContents:", walkUploadRows);
     return walkUploadRows;
   }
 
   private headers(): string[] {
     const headers = map(this.walksDownloadFileContents()[0], (column, row) => row);
-    this.logger.info("headers:", headers);
+    this.logger.debug("headers:", headers);
     return headers;
   }
 

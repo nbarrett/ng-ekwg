@@ -1,5 +1,5 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
-import { ErrorAlert } from "./errorAlertDisplayed";
+import { ErrorAlert } from "./errorAlert";
 import { WalksHaveCount } from "./walksHaveCount";
 
 export class WalksHaveCountOrErrorDisplayed implements Question<Promise<boolean>> {

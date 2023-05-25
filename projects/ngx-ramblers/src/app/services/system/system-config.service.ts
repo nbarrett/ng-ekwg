@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, BehaviorSubject } from "rxjs";
 import { shareReplay } from "rxjs/operators";
-import { Images, BannerImageType, Organisation, SystemConfigResponse } from "../../models/system.model";
+import { Images, BannerImageType, Organisation, SystemConfigResponse, AuthenticationDetailsWithLink, Ramblers } from "../../models/system.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -78,10 +78,25 @@ export class SystemConfigService {
           instagram: null,
           linkedIn: null
         },
-        area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.emptyOrganisation(),
+        area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.defaultRamblersConfig(),
         header: {selectedLogo: null, navigationButtons: []},
         footer: {appDownloads: {apple: undefined, google: undefined}, legals: [], pages: [], quickLinks: []}
       }
     };
   };
+
+  public defaultRamblersConfig(): Ramblers {
+    return {
+      mainSite: {
+        href: "https://ramblers.org.uk",
+        title: "Ramblers"
+      }, walksManager: {
+        href: "https://walks-manager.ramblers.org.uk/walks-manager",
+        title: "Walks Manager",
+        apiKey: null,
+        password: null,
+        userName: null
+      }
+    };
+  }
 }

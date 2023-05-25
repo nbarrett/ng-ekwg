@@ -1,5 +1,7 @@
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksFound";
+import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
+import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { Log } from "../../common/log";
 import { SelectCheckbox } from "../../common/selectCheckbox";
 import { WaitFor } from "../common/waitFor";
 import { SelectWalks, WalkFilters } from "./selectWalks";
@@ -14,9 +16,9 @@ export class SelectWalksWithIds implements Task {
       .then(walks => actor.attemptsTo(
         SelectWalks.none(),
         ...walks
-          .filter(walk => WalkFilters.withIds(walk, ...this.walkIds))
-          .map(walk => SelectCheckbox.checked().from(walk.checkboxTarget)),
-        WaitFor.ramblersToFinishProcessing()));
+          .map((walk, index) => WalkFilters.withIds(walk, ...this.walkIds) ?
+            SelectCheckbox.checked().from(WalksTargets.checkboxSelector(index, walk.walkDate))
+            : Log.message(`Not Selecting walk ${walk.walkDate}`))));
   }
 
   toString() {

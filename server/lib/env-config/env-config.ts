@@ -64,9 +64,10 @@ export const envConfig = {
   production: env === "production",
   ramblers: {
     groupCode: configData.ramblers.groupCode,
-    gwem: {
-      password: validatedEnvironmentVariable("RAMBLERS_GWEM_PASSWORD"),
-      userName: validatedEnvironmentVariable("RAMBLERS_GWEM_USER"),
+    apiKey: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_API_KEY"),
+    walksManager: {
+      password: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_PASSWORD"),
+      userName: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_USER"),
     },
     listWalksPath: configData.ramblers.listWalksPath,
     url: configData.ramblers.url,

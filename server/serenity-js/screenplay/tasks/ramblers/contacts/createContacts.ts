@@ -1,5 +1,5 @@
 import { PerformsActivities, Task } from "@serenity-js/core";
-import { Contact } from "../../../questions/ramblers/contactsFound";
+import { Contact } from "../../../questions/ramblers/contactListing";
 import { CreateContact } from "./createContact";
 
 export class CreateContacts implements Task {

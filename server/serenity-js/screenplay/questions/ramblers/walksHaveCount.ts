@@ -1,5 +1,5 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
-import { RamblersWalkSummaries } from "./ramblersWalksFound";
+import { RamblersWalkSummaries } from "./ramblersWalksSummaries";
 
 export class WalksHaveCount implements Question<Promise<boolean>> {
 

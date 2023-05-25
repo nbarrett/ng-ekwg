@@ -1,7 +1,7 @@
 import { Ensure, equals } from "@serenity-js/assertions";
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core/lib/screenplay";
 import { CountOfErrors } from "../../../questions/ramblers/countOfErrors";
-import { UploadErrors } from "../../../questions/ramblers/reportSummaries";
+import { UploadErrors } from "../../../questions/ramblers/uploadError";
 import { SaveAuditRecord } from "./saveAuditRecord";
 
 export class ReportOn implements Task {

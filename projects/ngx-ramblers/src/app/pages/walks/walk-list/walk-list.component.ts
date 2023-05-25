@@ -119,7 +119,7 @@ export class WalkListComponent implements OnInit, OnDestroy {
 
   maxSize(): number {
     const maxSize = window.innerWidth <= DeviceSize.SMALL ? 3 : 5;
-    this.logger.info("window.innerWidth:", window.innerWidth, "->", maxSize);
+    this.logger.debug("window.innerWidth:", window.innerWidth, "->", maxSize);
     return maxSize;
   }
 
@@ -239,7 +239,7 @@ export class WalkListComponent implements OnInit, OnDestroy {
     return this.query()
       .then(walks => {
         this.display.setNextWalkId(walks);
-        this.logger.debug("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
+        this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
         this.walks = this.currentWalkId || this.filterParameters.selectType === 6 ? walks : this.walksQueryService.activeWalks(walks);
         this.applyFilterToWalks();
         this.notify.clearBusy();

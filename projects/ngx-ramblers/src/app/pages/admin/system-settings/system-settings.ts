@@ -49,6 +49,9 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
         this.config = config;
         this.prepareMigrationIfRequired(config);
         this.migrateDataIfRequired(config);
+        if (!this.config.system?.national?.mainSite) {
+          this.config.system.national = this.systemConfigService.defaultRamblersConfig();
+        }
         this.logger.info("retrieved config", config);
       }));
   }

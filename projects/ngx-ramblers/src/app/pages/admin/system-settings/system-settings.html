@@ -2,6 +2,84 @@
   <div class="row">
     <div class="col-sm-12">
       <tabset class="custom-tabset" *ngIf="config">
+        <tab heading="Ramblers Details">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div class="row" *ngIf="config?.system?.national?.mainSite">
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>Main Site Web Url</label>
+                  <input [(ngModel)]="config.system.national.mainSite.href"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter main site link">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Main Site Name</label>
+                  <input [(ngModel)]="config.system.national.mainSite.title"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter main site title">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Link Preview</label>
+                </div>
+                <div class="form-group">
+                  <a [href]="config.system.national.mainSite.href">{{config.system.national.mainSite.title || config.system.national.mainSite.href}}</a>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>Walks Manager Web Url</label>
+                  <input [(ngModel)]="config.system.national.walksManager.href"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter Walks Manager site link">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Walks Manager Name</label>
+                  <input [(ngModel)]="config.system.national.walksManager.title"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter Walks Manager site title">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Link Preview</label>
+                </div>
+                <div class="form-group">
+                  <a [href]="config.system.national.walksManager.href">{{config.system.national.walksManager.title || config.system.national.walksManager.href}}</a>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="form-group">
+                  <label>Walks Manager User Name</label>
+                  <input [(ngModel)]="config.system.national.walksManager.userName"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter Walks Manager userName">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label>Walks Manager password</label>
+                  <input [(ngModel)]="config.system.national.walksManager.password"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter Walks Manager password">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Walks Manager API Key</label>
+                  <input [(ngModel)]="config.system.national.walksManager.apiKey"
+                         type="text" value="" class="form-control input-sm"
+                         placeholder="Enter Walks Manager API key">
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
         <tab heading="Group Details">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">

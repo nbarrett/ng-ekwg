@@ -8,6 +8,7 @@ import { EventType, Walk } from "../../../../models/walk.model";
 import { WalkDisplayService } from "../../../../pages/walks/walk-display.service";
 import { GoogleMapsService } from "../../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
+import { RamblersWalksAndEventsService } from "../../../../services/walks/ramblers-walks-and-events.service";
 
 @Component({
   selector: "app-walk-notification-details",
@@ -26,11 +27,11 @@ export class WalkNotificationDetailsComponent implements OnInit, AfterViewInit {
 
   protected logger: Logger;
   public members: Member[];
-  public ramblersWalkBaseUrl: string;
 
   constructor(
     public googleMapsService: GoogleMapsService,
     public display: WalkDisplayService,
+    public ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkNotificationDetailsComponent, NgxLoggerLevel.OFF);
   }
@@ -46,7 +47,6 @@ export class WalkNotificationDetailsComponent implements OnInit, AfterViewInit {
       this.reason = this.data.reason;
     }
     this.members = this.display.members;
-    this.ramblersWalkBaseUrl = this.display.ramblersWalkBaseUrl;
   }
 
   ngAfterViewInit(): void {

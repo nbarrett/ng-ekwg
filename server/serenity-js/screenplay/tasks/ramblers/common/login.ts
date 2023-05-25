@@ -13,8 +13,8 @@ export class Login implements Task {
   }
 
   performAs(actor: PerformsActivities & AnswersQuestions): Promise<void> {
-    const username = envConfig.ramblers.gwem.userName;
-    const password = envConfig.ramblers.gwem.password;
+    const username = envConfig.ramblers.walksManager.userName;
+    const password = envConfig.ramblers.walksManager.password;
     return actor.attemptsTo(
       Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.authHeader, isVisible()),
       Wait.upTo(Duration.ofSeconds(10)).until(WalksTargets.userName, isClickable()),

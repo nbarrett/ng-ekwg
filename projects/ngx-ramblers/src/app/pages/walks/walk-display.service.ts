@@ -2,7 +2,6 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
-import { TooltipDirective } from "ngx-bootstrap/tooltip";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
@@ -10,7 +9,6 @@ import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
 import { DisplayedWalk, EventType, GoogleMapsConfig, Walk, WalkViewMode } from "../../models/walk.model";
 import { uniq } from "../../services/arrays";
-import { ClipboardService } from "../../services/clipboard.service";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { GoogleMapsService } from "../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -35,7 +33,6 @@ export class WalkDisplayService {
   public walkTypes = ["Circular", "Linear"];
   private nextWalkId: string;
   public members: Member[] = [];
-  public ramblersWalkBaseUrl: string;
   public googleMapsConfig: GoogleMapsConfig;
   loggedIn: boolean;
   public previousWalkLeaderIds: string[];
@@ -46,7 +43,6 @@ export class WalkDisplayService {
     private walksService: WalksService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
-    public clipboardService: ClipboardService,
     private router: Router,
     private urlService: UrlService,
     private route: ActivatedRoute,
@@ -158,10 +154,6 @@ export class WalkDisplayService {
       this.logger.debug("display.toggleViewFor", toggleTo, "added", newWalk);
     }
     return existingWalk;
-  }
-
-  copyWalkToClipboard(walk: Walk, pop: TooltipDirective) {
-    // this.clipboardService.copyToClipboardWithTooltip(this.walkLink(walk), pop);
   }
 
   latestEventTypeFor(walk: Walk): WalkEventType {

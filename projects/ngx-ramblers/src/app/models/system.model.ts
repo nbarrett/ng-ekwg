@@ -9,8 +9,22 @@ export interface Organisation {
   pages: Link[];
 }
 
+export interface Ramblers {
+  mainSite: Link;
+  walksManager: AuthenticationDetailsWithLink;
+}
+
+export interface AuthenticationDetailsWithLink extends Link, AuthenticationDetails {
+}
+
+export interface AuthenticationDetails {
+  userName: string;
+  password: string;
+  apiKey: string;
+}
+
 export interface SystemConfigResponse {
-  system: SystemConfig
+  system: SystemConfig;
 }
 
 export interface Footer {
@@ -20,7 +34,7 @@ export interface Footer {
   appDownloads: {
     google: Link;
     apple: Link
-  }
+  };
 }
 
 export interface Instagram {
@@ -65,7 +79,7 @@ export enum BannerImageType {
 
 export interface Images {
   rootFolder: BannerImageType;
-  images: Image[]
+  images: Image[];
 }
 
 export interface SystemConfig extends Identifiable {
@@ -76,14 +90,14 @@ export interface SystemConfig extends Identifiable {
   footer: Footer
   group: Organisation;
   area: Organisation;
-  national: Organisation;
+  national: Ramblers;
   externalUrls: ExternalUrls
 }
 
 export interface ColourSelector {
   class: string;
   badgeClass?: string;
-  name: string
+  name: string;
 }
 
 export const colourSelectors: ColourSelector[] = [

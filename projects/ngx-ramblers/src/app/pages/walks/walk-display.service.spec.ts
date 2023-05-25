@@ -29,11 +29,6 @@ const meetupService = {
   eventsForStatus: () => Promise.resolve([] as MeetupEventResponse[])
 };
 
-const ramblersWalksAndEventsService = {
-  walkBaseUrl: () => {
-  }
-};
-
 const memberLoginService = {
   memberLoggedIn: () => false,
   loggedInMember: () => {
@@ -67,7 +62,6 @@ describe("WalkDisplayService", () => {
         GoogleMapsService,
         {provide: MemberLoginService, useValue: memberLoginService},
         {provide: "MemberAuditService", useValue: {}},
-        {provide: "RamblersWalksAndEventsService", useValue: ramblersWalksAndEventsService},
         {provide: "WalkNotificationService", useValue: {}},
         {provide: "MailchimpSegmentService", useValue: {}},
         {provide: "MailchimpConfig", useValue: {}},
@@ -79,7 +73,6 @@ describe("WalkDisplayService", () => {
     });
     const emptyPromise = Promise.resolve({}) as any;
     spy = spyOn(googleConfig, "getConfig").and.returnValue(emptyPromise);
-    spy = spyOn(ramblersWalksAndEventsService, "walkBaseUrl").and.returnValue(emptyPromise);
   });
 
   describe("toWalkAccessMode", () => {

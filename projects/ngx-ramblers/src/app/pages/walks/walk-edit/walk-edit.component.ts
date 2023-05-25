@@ -120,7 +120,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";

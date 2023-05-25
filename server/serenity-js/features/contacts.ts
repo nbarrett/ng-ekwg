@@ -1,6 +1,6 @@
 import { actorCalled } from "@serenity-js/core";
 import { Click, UseAngular } from "@serenity-js/protractor";
-import { Contact } from "../screenplay/questions/ramblers/contactsFound";
+import { Contact } from "../screenplay/questions/ramblers/contactListing";
 import { Start } from "../screenplay/tasks/common/start";
 import { Login } from "../screenplay/tasks/ramblers/common/login";
 import { WaitFor } from "../screenplay/tasks/ramblers/common/waitFor";

@@ -1,4 +1,4 @@
-import { RamblersWalksUploadRequest } from "../../../projects/ngx-ramblers/src/app/models/ramblers-gwem";
+import { RamblersWalksUploadRequest } from "../../../projects/ngx-ramblers/src/app/models/ramblers-walks-manager";
 import { envConfig } from "../env-config/env-config";
 import * as parser from "./ramblers-audit-parser";
 import debug = require("debug");

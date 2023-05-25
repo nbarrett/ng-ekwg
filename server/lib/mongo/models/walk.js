@@ -7,7 +7,7 @@ const riskAssessmentRecord = {
   confirmed: {type: Boolean},
   confirmationDate: {type: Number},
   riskAssessmentKey: {type: String},
-}
+};
 
 const walkEvent = {
   data: {type: Object},
@@ -17,7 +17,7 @@ const walkEvent = {
   notes: {type: String},
   description: {type: String},
   reason: {type: String}
-}
+};
 
 const walkVenue = {
   venuePublish: {type: Boolean},
@@ -29,7 +29,7 @@ const walkVenue = {
   lat: {type: Number},
   lon: {type: Number},
   url: {type: String}
-}
+};
 
 const walkSchema = mongoose.Schema({
   contactName: {type: String},
@@ -62,6 +62,8 @@ const walkSchema = mongoose.Schema({
   osMapsTitle: {type: String},
   postcode: {type: String},
   ramblersWalkId: {type: String},
+  ramblersWalkUrl: {type: String},
+  startLocationW3w: {type: String},
   ramblersPublish: {type: Boolean},
   startTime: {type: String},
   walkDate: {type: Number},

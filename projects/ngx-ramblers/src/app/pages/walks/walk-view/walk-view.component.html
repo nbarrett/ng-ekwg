@@ -61,6 +61,16 @@
                   View map on OS Maps
                 </a>
               </app-related-link>
+              <app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.startLocationW3w">
+                <img title class="w3w-image"
+                     src="/assets/images/local/w3w.png"
+                     alt="View start location in what3words"/>
+                <a content tooltip="Click to view the start location in what3words"
+                   target="_blank"
+                   [href]="'https://what3words.com/'+displayedWalk.walk.startLocationW3w">
+                  View start location in what3words
+                </a>
+              </app-related-link>
               <app-related-link [mediaWidth]="relatedLinksMediaWidth"
                                 *ngIf="displayedWalk?.walk?.venue?.venuePublish && (displayedWalk?.walk?.venue?.url||displayedWalk?.walk?.venue?.postcode)">
                 <fa-icon title [icon]="displayedWalk.walk.venue.type | toVenueIcon" class="fa-icon"></fa-icon>
@@ -71,7 +81,7 @@
                 </a>
               </app-related-link>
               <app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walkLink">
-                <app-copy-icon title [value]="displayedWalk.walkLink"
+                <app-copy-icon  title [value]="displayedWalk.walkLink"
                                [elementName]="'This Walk'"></app-copy-icon>
                 <div content>
                   <a [href]="displayedWalk.walkLink " target="_blank">This Walk</a>

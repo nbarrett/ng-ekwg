@@ -1,23 +1,19 @@
 import { AnswersQuestions, Question, UsesAbilities } from "@serenity-js/core/lib/screenplay";
+import { every } from "lodash";
 import { WalkFilters } from "../../tasks/ramblers/walks/selectWalks";
 import { RamblersWalkSummaries } from "./ramblersWalksSummaries";
 
-export class SelectedWalksHaveCount implements Question<Promise<boolean>> {
+export class SelectedWalksWithStatusNotMatching implements Question<Promise<boolean>> {
 
-  static matching = (walkCount: number) => new SelectedWalksHaveCount(walkCount);
-
-  constructor(private walkCount: number) {
+  constructor(private status: string[]) {
   }
 
-  toString = () => `selected walk count to be ${this.walkCount}`;
+  toString = () => `no selected walks to have status of "${this.status}"`;
 
   answeredBy(actor: UsesAbilities & AnswersQuestions): Promise<boolean> {
     return RamblersWalkSummaries.displayed().answeredBy(actor)
       .then(walks => walks.filter(walk => WalkFilters.currentlySelected(walk)))
-      .then(walks => {
-        // console.log(`waiting for ${this} - current count ${walks.length}`);
-        return walks.length === this.walkCount;
-      });
+      .then(walks => every(walks, walk => !WalkFilters.withStatus(walk, ...this.status)));
   }
 
 }

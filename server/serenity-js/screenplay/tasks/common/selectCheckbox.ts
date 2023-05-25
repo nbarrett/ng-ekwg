@@ -1,7 +1,7 @@
 import { Activity, AnswersQuestions, PerformsActivities, Question, UsesAbilities } from "@serenity-js/core";
 import { Click } from "@serenity-js/protractor";
 import { ElementFinder } from "protractor";
-import { CheckedValue } from "../../questions/ramblers/checkedValue";
+import { CheckedValue } from "../../questions/common/checkedValue";
 
 export class SelectCheckbox {
   static checkedValue(value: boolean) {

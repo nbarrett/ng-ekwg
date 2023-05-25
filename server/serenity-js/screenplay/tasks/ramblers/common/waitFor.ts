@@ -2,7 +2,7 @@ import { Ensure, equals, includes, not } from "@serenity-js/assertions";
 import { Duration, Task } from "@serenity-js/core";
 import { isVisible, Wait } from "@serenity-js/protractor";
 import { SelectedWalksHaveCount } from "../../../questions/ramblers/selectedWalksHaveCount";
-import { SelectedWalksWithStatus } from "../../../questions/ramblers/selectedWalksHaveStatus";
+import { SelectedWalksWithStatus } from "../../../questions/ramblers/selectedWalksWithStatus";
 import { WalksAndEventsManagerQuestions } from "../../../questions/ramblers/walksAndEventsManagerQuestions";
 import { WalksHaveCount } from "../../../questions/ramblers/walksHaveCount";
 import { WalksHaveCountOrErrorDisplayed } from "../../../questions/ramblers/walksHaveCountOrErrorDisplayed";

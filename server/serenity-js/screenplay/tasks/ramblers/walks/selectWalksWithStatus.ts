@@ -1,5 +1,7 @@
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksFound";
+import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
+import { WalksTargets } from "../../../ui/ramblers/walksTargets";
+import { Log } from "../../common/log";
 import { SelectCheckbox } from "../../common/selectCheckbox";
 import { SelectWalks, WalkFilters } from "./selectWalks";
 
@@ -14,8 +16,9 @@ export class SelectWalksWithStatus implements Task {
       .then(walks => actor.attemptsTo(
         SelectWalks.none(),
         ...walks
-          .filter(walk => WalkFilters.withStatus(walk, ...this.statuses))
-          .map(walk => SelectCheckbox.checked().from(walk.checkboxTarget))));
+          .map((walk, index) => WalkFilters.withStatus(walk, ...this.statuses) ?
+            SelectCheckbox.checked().from(WalksTargets.checkboxSelector(index, walk.walkDate))
+            : Log.message(`Not Selecting walk ${walk.status}`))));
   }
 
   toString() {

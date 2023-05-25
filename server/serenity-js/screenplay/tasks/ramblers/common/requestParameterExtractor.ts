@@ -1,5 +1,6 @@
 import { PerformsActivities, Task } from "@serenity-js/core";
 import { Log } from "../../common/log";
+import { WalkRequestParameters } from "../../../../models/walkRequestParameters";
 
 const ramblersDeleteWalks = "RAMBLERS_DELETE_WALKS";
 const ramblersWalkCount = "RAMBLERS_WALKCOUNT";
@@ -15,12 +16,6 @@ export class ExtractTask implements Task {
     );
   }
 
-}
-
-export interface WalkRequestParameters {
-  fileName: string;
-  walkDeletions: string[];
-  walkCount: number;
 }
 
 export class RequestParameterExtractor {

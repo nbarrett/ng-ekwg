@@ -1,7 +1,7 @@
 import { PerformsActivities, Task, UsesAbilities } from "@serenity-js/core/lib/screenplay";
 import * as moment from "moment-timezone";
 import * as path from "path";
-import { UploadError } from "../../../questions/ramblers/reportSummaries";
+import { UploadError } from "../../../questions/ramblers/uploadError";
 import { Log } from "../../common/log";
 import { RequestParameterExtractor } from "../common/requestParameterExtractor";
 
