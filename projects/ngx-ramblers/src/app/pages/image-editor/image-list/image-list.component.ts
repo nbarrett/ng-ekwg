@@ -85,7 +85,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
               public dateUtils: DateUtilsService,
               private routerHistoryService: RouterHistoryService,
               private urlService: UrlService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ImageListComponent, NgxLoggerLevel.INFO);
   }
 
   ngOnInit() {
@@ -96,6 +96,8 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.destinationType = "";
     this.filterType = ImageFilterType.RECENT;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.subscriptions.push(this.contentMetadataService.s3Notifications().subscribe(data => this.logger.info("contentMetadataService.notifications.s3:", data)));
+    this.subscriptions.push(this.contentMetadataService.contentMetadataNotifications().subscribe(data => this.logger.info("contentMetadataService.notifications.contentMetadataNotifications:", data)));
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const imageSource = paramMap.get("image-source");
       if (imageSource) {
@@ -160,6 +162,12 @@ export class ImageListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  insertToEmptyList() {
+    this.logger.info("inserting image  with filteredFiles:", this.filteredFiles);
+    const newItem: ContentMetadataItem = {date: this.dateUtils.momentNow().valueOf(), dateSource: "upload", tags: []};
+    this.imageInsert(newItem);
   }
 
   goToPage(pageNumber) {
@@ -232,21 +240,26 @@ export class ImageListComponent implements OnInit, OnDestroy {
     this.notify.setBusy();
     this.imageSource = imageSource;
     this.urlService.navigateUnconditionallyTo("image-editor", imageSource);
-
-    Promise.all([
+    this.logger.info("promise all started for imageSource:", imageSource);
+    return Promise.all([
         this.contentMetadataService.items(imageSource)
           .then((contentMetaData: ContentMetadata) => {
             this.logger.info("contentMetaData:", contentMetaData);
             this.contentMetadata = contentMetaData;
             this.imageTagDataService.populateFrom(contentMetaData.imageTags);
+            this.logger.info("this.contentMetadataService.items:return true:");
+            return true;
           }),
         this.contentMetadataService.listMetaData(imageSource)
           .then((s3Metadata: S3Metadata[]) => {
             this.s3Metadata = s3Metadata;
+            this.logger.info("this.contentMetadataService.listMetaData:return true:");
+            return true;
           })
       ]
     )
-      .then(() => {
+      .then((response) => {
+        this.logger.info("promise all for:", imageSource, "resolved to:", response);
         this.contentMetadata.files = this.contentMetadata.files.map(file => {
           return {
             ...file,
@@ -255,7 +268,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
           };
         });
         this.applyFilter();
-        this.logger.debug("refreshImageMetaData:imageSource", imageSource, "returning", this.contentMetadata.files.length, "ContentMetadataItem items");
+        this.logger.info("refreshImageMetaData:imageSource", imageSource, "returning", this.contentMetadata.files.length, "ContentMetadataItem items");
         this.notify.clearBusy();
       })
       .catch(response => this.notify.error({title: "Failed to refresh images", message: response}));
@@ -435,4 +448,7 @@ export class ImageListComponent implements OnInit, OnDestroy {
     return `Save or quit ${this.stringUtils.pluraliseWithCount(this.changedItems.length, "image")} before saving`;
   }
 
+  newImageCaption() {
+    return `No images exist for ${this.imageSource} - initialise images`;
+  }
 }

@@ -1,5 +1,5 @@
 import { envConfig } from "../env-config/env-config";
-import debug = require("debug");
+import debug from "debug";
 import { some, isEmpty, isUndefined, includes } from "lodash";
 
 const errorIcons = ["⨯", "✗"];

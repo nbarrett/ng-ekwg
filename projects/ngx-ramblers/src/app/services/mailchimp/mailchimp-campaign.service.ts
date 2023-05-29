@@ -1,3 +1,4 @@
+
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -137,7 +138,7 @@ export class MailchimpCampaignService {
 
   replicateAndSendWithOptions(campaignRequest: MailchimpCampaignSendRequest): Promise<MailchimpCampaignReplicateIdentifiersResponse> {
     return this.replicateCampaign(campaignRequest.campaignId)
-      .then((replicateCampaignResponse) => {
+      .then((replicateCampaignResponse: MailchimpCampaignReplicateResponse) => {
         return this.setCampaignOptions(replicateCampaignResponse.id, campaignRequest.campaignName, campaignRequest.otherSegmentOptions)
           .then(() => this.setContent(replicateCampaignResponse.id, campaignRequest.contentSections)
             .then(() => this.setOrClearSegment(replicateCampaignResponse.id, campaignRequest.segmentId)

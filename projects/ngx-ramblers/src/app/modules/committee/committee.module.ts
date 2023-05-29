@@ -4,7 +4,7 @@ import { CommitteeNotificationDetailsComponent } from "../../notifications/commi
 import { CommitteeEditFileModalComponent } from "../../pages/committee/edit/committee-edit-file-modal.component";
 import { CommitteeYearComponent } from "../../pages/committee/year/committee-year";
 import { CommitteeHomeComponent } from "../../pages/committee/home/committee-home.component";
-import { CommitteeNotificationSettingsComponent } from "../../pages/committee/notification-settings/committee-notification-settings.component";
+import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
 import { CommitteeSendNotificationComponent } from "../../pages/committee/send-notification/committee-send-notification.component";
 import { SharedModule } from "../../shared-module";
 
@@ -13,7 +13,7 @@ import { SharedModule } from "../../shared-module";
     CommitteeSendNotificationComponent,
     CommitteeNotificationDetailsComponent,
     CommitteeYearComponent,
-    CommitteeNotificationSettingsComponent,
+    MailchimpSettingsComponent,
     CommitteeEditFileModalComponent,
     CommitteeHomeComponent,
     CommitteeNotificationDirective,

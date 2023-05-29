@@ -77,6 +77,74 @@ export interface MailchimpListResponse {
   members: MailchimpListMember[];
 }
 
+export interface MailchimpListingResponse {
+  lists: MailchimpList[],
+  total_items: number;
+  constraints: {
+    may_create: true,
+    max_instances: number;
+    current_total_instances: 0
+  },
+  _links: Link[]
+}
+
+export interface MailchimpList {
+  id: string;
+  web_id: number;
+  name: string;
+  contact: {
+    company: string;
+    address1: string;
+    address2: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+    phone: string;
+  },
+  permission_reminder: string;
+  use_archive_bar: false,
+  campaign_defaults: {
+    from_name: string;
+    from_email: string;
+    subject: string;
+    language: string;
+  },
+  notify_on_subscribe: false,
+  notify_on_unsubscribe: false,
+  date_created: string;
+  list_rating: number;
+  email_type_option: true,
+  subscribe_url_short: string;
+  subscribe_url_long: string;
+  beamer_address: string;
+  visibility: string;
+  double_optin: false,
+  has_welcome: false,
+  marketing_permissions: false,
+  modules: string[];
+  stats: {
+    member_count: number;
+    total_contacts: number;
+    unsubscribe_count: number;
+    cleaned_count: number;
+    member_count_since_send: number;
+    unsubscribe_count_since_send: number;
+    cleaned_count_since_send: number;
+    campaign_count: number;
+    campaign_last_sent: string;
+    merge_field_count: number;
+    avg_sub_rate: number;
+    avg_unsub_rate: number;
+    target_sub_rate: number;
+    open_rate: number;
+    click_rate: number;
+    last_sub_date: string;
+    last_unsub_date: string;
+  },
+  _links: Link[]
+}
+
 export interface MailchimpSubscription {
   subscribed?: boolean;
   updated?: boolean;
@@ -201,60 +269,149 @@ export interface MailchimpGenericOtherContent {
 export interface MailchimpCampaignReplicateResponse {
   id: string;
   web_id: number;
-  list_id: string;
-  folder_id: number;
-  template_id: number;
-  content_type: string;
-  content_edited_by: string;
-  title: string;
+  parent_campaign_id: string;
   type: string;
   create_time: string;
-  send_time: string;
-  content_updated_time: string;
-  status: string;
-  from_name: string;
-  from_email: string;
-  subject: string;
-  to_name: string;
   archive_url: string;
-  archive_url_long: string;
+  long_archive_url: string;
+  status: string;
   emails_sent: number;
-  inline_css: boolean;
-  analytics: string;
-  analytics_tag: string;
-  authenticate: boolean;
-  ecomm360: boolean;
-  auto_tweet: boolean;
-  auto_fb_post: boolean;
-  auto_footer: boolean;
-  timewarp: boolean;
-  timewarp_schedule: string;
-  tracking: {
-    html_clicks: boolean;
-    text_clicks: boolean;
-    opens: true
+  send_time: string;
+  content_type: string;
+  needs_block_refresh: boolean;
+  resendable: boolean;
+  recipients: {
+    list_id: string;
+    list_name: string;
+    segment_text: string;
+    recipient_count: number;
+    segment_opts: {
+      saved_segment_id: number;
+      prebuilt_segment_id: string;
+      match: string;
+      conditions: string[];
+    }
   };
-  parent_id: string;
-  is_child: boolean;
-  tests_sent: number;
-  tests_remain: number;
-  segment_text: string;
-  segment_opts: {
-    match: string;
-    conditions: [
+  settings: {
+    subject_line: string;
+    preview_text: string;
+    title: string;
+    from_name: string;
+    reply_to: string;
+    use_conversation: boolean;
+    to_name: string;
+    folder_id: string;
+    authenticate: boolean;
+    auto_footer: boolean;
+    inline_css: boolean;
+    auto_tweet: boolean;
+    auto_fb_post: string[];
+    fb_comments: boolean;
+    timewarp: boolean;
+    template_id: number;
+    drag_and_drop: boolean
+  };
+  variate_settings: {
+    winning_combination_id: string;
+    winning_campaign_id: string;
+    winner_criteria: string;
+    wait_time: number;
+    test_size: number;
+    subject_lines: string[];
+    send_times: string[];
+    from_names: string[];
+    reply_to_addresses: string[];
+    contents: string[];
+    combinations: [
       {
-        field: string;
-        op: string;
-        value: number;
+        id: string;
+        subject_line: number;
+        send_time: number;
+        from_name: number;
+        reply_to: number;
+        content_description: number;
+        recipients: number
       }
     ]
   };
-  saved_segment: {
-    id: number;
-    type: string;
-    name: string;
+  tracking: {
+    opens: boolean;
+    html_clicks: boolean;
+    text_clicks: boolean;
+    goal_tracking: boolean;
+    ecomm360: boolean;
+    google_analytics: string;
+    clicktale: string;
+    salesforce: {
+      campaign: boolean;
+      notes: boolean
+    };
+    capsule: {
+      notes: boolean
+    }
   };
-  type_opts: [];
+  rss_opts: {
+    feed_url: string[];
+    frequency: string[];
+    schedule: {
+      hour: number;
+      daily_send: {
+        sunday: boolean;
+        monday: boolean;
+        tuesday: boolean;
+        wednesday: boolean;
+        thursday: boolean;
+        friday: boolean;
+        saturday: boolean
+      };
+      weekly_send_day: string[];
+      monthly_send_date: number
+    };
+    last_sent: string[];
+    constrain_rss_img: boolean
+  };
+  ab_split_opts: {
+    split_test: string[];
+    pick_winner: string[];
+    wait_units: string[];
+    wait_time: number;
+    split_size: number;
+    from_name_a: string;
+    from_name_b: string;
+    reply_email_a: string;
+    reply_email_b: string;
+    subject_a: string;
+    subject_b: string;
+    send_time_a: string[];
+    send_time_b: string[];
+    send_time_winner: string[];
+  };
+  social_card: {
+    image_url: string[];
+    description: string[];
+    title: string[];
+  };
+  report_summary: {
+    opens: number;
+    unique_opens: number;
+    open_rate: number;
+    clicks: number;
+    subscriber_clicks: number;
+    click_rate: number;
+    ecommerce: {
+      total_orders: number;
+      total_spent: number;
+      total_revenue: number
+    }
+  };
+  delivery_status: {
+    enabled: boolean;
+    can_cancel: boolean;
+    status: string[];
+    emails_sent: number;
+    emails_canceled: number
+  };
+  _links: Link[];
 }
 
 export interface MailchimpCampaignUpdateResponse {

@@ -1,4 +1,4 @@
-import debug = require("debug");
+import debug from "debug";
 import * as configData from "config";
 
 function validatedEnvironmentVariable(variableName: string): string {

@@ -2,7 +2,7 @@ import express = require("express");
 import campaigns = require("./campaigns");
 import reports = require("./reports");
 import segments = require("./segments");
-import { lists } from "./mailchimp-lists";
+import * as lists from "./mailchimp-lists";
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.put("/lists/:listType/segmentReset", segments.segmentReset);
 
 router.get("/campaigns/:campaignId/content", campaigns.content);
 router.post("/campaigns/:campaignId/create/:listType", campaigns.create);
-router.delete("/campaigns/:campaignId/delete", campaigns.delete);
+router.delete("/campaigns/:campaignId/delete", campaigns.deleteCampaign);
 router.get("/campaigns/list", campaigns.list);
 router.post("/campaigns/:campaignId/replicate", campaigns.replicate);
 router.post("/campaigns/:campaignId/schedule", campaigns.schedule);

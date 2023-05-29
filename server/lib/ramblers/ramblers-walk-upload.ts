@@ -1,8 +1,8 @@
 import { RamblersWalksUploadRequest } from "../../../projects/ngx-ramblers/src/app/models/ramblers-walks-manager";
 import { envConfig } from "../env-config/env-config";
 import * as parser from "./ramblers-audit-parser";
-import debug = require("debug");
-import moment = require("moment-timezone");
+import debug from "debug";
+import moment from "moment-timezone";
 import fs = require("fs");
 import stringDecoder = require("string_decoder");
 import { ramblersUploadAudit } from "../mongo/models/ramblers-upload-audit";

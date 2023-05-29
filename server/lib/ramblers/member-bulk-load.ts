@@ -1,14 +1,14 @@
 import * as childProcess from "child_process";
 import parse from "csv-parse/sync";
-import debug = require("debug");
+import debug from "debug";
 import * as fs from "fs";
 import { find, first, isObject, isEmpty, trim } from "lodash";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import * as path from "path";
 import * as xlsx from "xlsx";
 import { UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
 import { MemberBulkLoadAudit, MemberBulkLoadAuditApiResponse, RamblersMember } from "../../../projects/ngx-ramblers/src/app/models/member.model";
-import { aws } from "../aws/aws-controllers";
+import * as aws from "../aws/aws-controllers";
 import { envConfig } from "../env-config/env-config";
 
 const BULK_LOAD_SUFFIX = "MemberList.csv";

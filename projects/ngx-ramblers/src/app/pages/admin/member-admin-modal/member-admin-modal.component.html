@@ -263,12 +263,12 @@
       </tab>
       <tab [heading]="'Preferences'">
         <div class="img-thumbnail thumbnail-admin-edit">
-          <div class="custom-control custom-checkbox">
-            <div class="row">
-              <div class="col-sm-12">
-                <p>Please deselect the checkbox below to prompt {{member |
-                  fullNameWithAlias}} to
-                  confirm their profile settings on next login:</p>
+          <div class="row">
+            <div class="col-sm-12">
+              <p>Please deselect the checkbox below to prompt {{member |
+                fullNameWithAlias}} to
+                confirm their profile settings on next login:</p>
+              <div class="custom-control custom-checkbox">
                 <input (ngModelChange)="profileSettingsConfirmedChecked($event)"
                        [(ngModel)]="member.profileSettingsConfirmed" type="checkbox" class="custom-control-input"
                        id="profile-settings-confirmed">
@@ -278,32 +278,36 @@
                 </label>
               </div>
             </div>
-            <div class="row" *ngIf="member.mailchimpLists">
-              <div class="col-sm-12">
-                <p>Please select how {{member | fullNameWithAlias}} wants to be <b>emailed</b>
-                  by using the subscription checkboxes below. To see the member entry in a
-                  mailchimp list, click the corresponding mailchimp icon!</p>
+          </div>
+          <div class="row" *ngIf="member.mailchimpLists">
+            <div class="col-sm-12">
+              <p>Please select how {{member | fullNameWithAlias}} wants to be <b>emailed</b>
+                by using the subscription checkboxes below. To see the member entry in a
+                mailchimp list, click the corresponding mailchimp icon!</p>
 
-                <div class="row">
-                  <div class="col-sm-5">
+              <div class="row">
+                <div class="col-sm-5">
+                  <div class="custom-control custom-checkbox">
                     <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
                            type="checkbox" class="custom-control-input" id="subscribe-walks-emails">
                     <label class="custom-control-label"
                            for="subscribe-walks-emails">Walks emails
                     </label>
                   </div>
-                  <div class="col-sm-7">
-                    <button [disabled]="!member?.mailchimpLists?.walks?.web_id"
-                            (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.web_id)"
-                            title="View walks list entry In Mailchimp">
-                      <img
-                        [ngClass]="member?.mailchimpLists?.walks?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
-                        src="/assets/images/mailchimp/freddie_wink.svg"
-                        alt="View walks list entry In Mailchimp"></button>
-                  </div>
                 </div>
-                <div class="row">
-                  <div class="col-sm-5">
+                <div class="col-sm-7">
+                  <button [disabled]="!member?.mailchimpLists?.walks?.web_id"
+                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.web_id)"
+                          title="View walks list entry In Mailchimp">
+                    <img
+                      [ngClass]="member?.mailchimpLists?.walks?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                      src="/assets/images/mailchimp/freddie_wink.svg"
+                      alt="View walks list entry In Mailchimp"></button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5">
+                  <div class="custom-control custom-checkbox">
                     <input (change)="changeSubscribed('socialEvents')"
                            [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
                            type="checkbox" class="custom-control-input" id="subscribe-social-events-emails">
@@ -311,18 +315,20 @@
                            for="subscribe-social-events-emails">Social events emails
                     </label>
                   </div>
-                  <div class="col-sm-7">
-                    <button [disabled]="!member?.mailchimpLists?.socialEvents.web_id"
-                            (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.web_id)"
-                            title="View social list entry In Mailchimp">
-                      <img
-                        [ngClass]="member?.mailchimpLists?.socialEvents?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
-                        src="/assets/images/mailchimp/freddie_wink.svg"
-                        alt="View social list entry In Mailchimp"></button>
-                  </div>
                 </div>
-                <div class="row">
-                  <div class="col-sm-5">
+                <div class="col-sm-7">
+                  <button [disabled]="!member?.mailchimpLists?.socialEvents.web_id"
+                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.web_id)"
+                          title="View social list entry In Mailchimp">
+                    <img
+                      [ngClass]="member?.mailchimpLists?.socialEvents?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                      src="/assets/images/mailchimp/freddie_wink.svg"
+                      alt="View social list entry In Mailchimp"></button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-5">
+                  <div class="custom-control custom-checkbox">
                     <input (change)="changeSubscribed('general')"
                            [(ngModel)]="member.mailchimpLists.general.subscribed"
                            type="checkbox" class="custom-control-input" id="subscribe-general-emails">
@@ -330,15 +336,15 @@
                            for="subscribe-general-emails">General emails
                     </label>
                   </div>
-                  <div class="col-sm-7">
-                    <button [disabled]="!member?.mailchimpLists?.general.web_id"
-                            (click)="viewMailchimpListEntry(member?.mailchimpLists?.general.web_id)"
-                            title="View general list entry In Mailchimp">
-                      <img
-                        [ngClass]="member?.mailchimpLists?.general.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
-                        src="/assets/images/mailchimp/freddie_wink.svg"
-                        alt="View general list entry In Mailchimp"></button>
-                  </div>
+                </div>
+                <div class="col-sm-7">
+                  <button [disabled]="!member?.mailchimpLists?.general.web_id"
+                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.general.web_id)"
+                          title="View general list entry In Mailchimp">
+                    <img
+                      [ngClass]="member?.mailchimpLists?.general.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                      src="/assets/images/mailchimp/freddie_wink.svg"
+                      alt="View general list entry In Mailchimp"></button>
                 </div>
               </div>
             </div>
@@ -347,11 +353,13 @@
                 <p>Please select how {{member | fullNameWithAlias}} wishes to limit
                   access to
                   their member data using the checkboxes below:</p>
-                <input [(ngModel)]="member.hideSurname" type="checkbox" class="custom-control-input"
-                       id="hide-surname">
-                <label class="custom-control-label"
-                       for="hide-surname">Hide surname from non-logged-in members
-                </label>
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="member.hideSurname" type="checkbox" class="custom-control-input"
+                         id="hide-surname">
+                  <label class="custom-control-label"
+                         for="hide-surname">Hide surname from non-logged-in members
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -405,7 +413,7 @@
                 </dd>
               </dl>
             </div>
-            <div class="col-sm-4 custom-control custom-control custom-checkbox">
+            <div class="col-sm-4 custom-control custom-checkbox">
               <input disabled [(ngModel)]="member.receivedInLastBulkLoad"
                      type="checkbox" class="custom-control-input" id="received-in-last-bulkload">
               <label class="custom-control-label"

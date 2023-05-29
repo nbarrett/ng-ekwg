@@ -3,16 +3,7 @@ import https = require("https");
 import isEmpty = require("lodash/isEmpty");
 import querystring = require("querystring");
 import { envConfig } from "../env-config/env-config";
-
-export interface MessageHandlerOptions {
-  req: any;
-  body?: any;
-  mapper?: (parsedDataJSON: any) => any;
-  apiRequest: any;
-  successStatusCodes?: number[];
-  res: any;
-  debug: (...args: any) => void;
-}
+import { MessageHandlerOptions } from "./server-models";
 
 function createRequestAudit(options: MessageHandlerOptions) {
   const requestAudit = {

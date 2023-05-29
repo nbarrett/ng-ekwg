@@ -2,7 +2,7 @@ import express = require("express");
 import multer = require("multer");
 import * as authConfig from "../auth/auth-config";
 import { envConfig } from "../env-config/env-config";
-import { aws as controller } from "./aws-controllers";
+import  * as controller from "./aws-controllers";
 import { uploadFile } from "./file-upload";
 
 const router = express.Router();
@@ -13,4 +13,4 @@ router.get("/metadata/list-objects/:prefix", controller.listObjects);
 router.get("/s3/:bucket*", controller.getObject);
 router.get("/url-to-file", controller.urlToFile);
 
-export const aws = router;
+export const awsRoutes = router;

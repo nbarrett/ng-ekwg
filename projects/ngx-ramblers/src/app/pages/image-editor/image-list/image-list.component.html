@@ -127,6 +127,9 @@
             </div>
           </div>
         </div>
+        <input *ngIf="!contentMetadata.files.length>0" type="button" [value]="newImageCaption()"
+               (click)="insertToEmptyList()"
+               [title]="newImageCaption()" class="button-form"/>
         <ng-container
           *ngFor="let imageMetaDataItem of currentPageImages;let index = index; trackBy: metadataItemTracker;">
           <app-edit-image [index]="index"

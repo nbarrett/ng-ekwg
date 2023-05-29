@@ -17,12 +17,13 @@ export class MailchimpListUpdaterService {
               private stringUtils: StringUtilsService,
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.INFO);
   }
 
   updateMailchimpLists(notify: AlertInstance, members: Member[]): Promise<boolean> {
     return new Promise((resolve, reject) => {
       notify.success("Sending updates to Mailchimp lists", true);
+      this.logger.info("updateMailchimpLists:members:", members);
       this.updateWalksList(members, notify)
         .then(() => this.updateSocialEventsList(members, notify))
         .then(() => this.updateGeneralList(members, notify))

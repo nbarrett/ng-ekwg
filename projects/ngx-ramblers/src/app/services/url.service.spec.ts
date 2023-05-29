@@ -16,14 +16,23 @@ describe("UrlService", () => {
     },
     querySelectorAll: () => []
   };
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [LoggerTestingModule],
-    providers: [
-      {provide: Location, useValue: {path: () => "/path-part-1/path-part-2/path-part-3"}},
-      {provide: Router, useValue: {url: "/admin/member-bulk-load/12398719823"}},
-      {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
-      {provide: DOCUMENT, useValue: LOCATION_VALUE}]
-  }).compileComponents());
+  beforeEach(() => {
+    const path = "/path-part-1/path-part-2/path-part-3";
+    return TestBed.configureTestingModule({
+      imports: [LoggerTestingModule],
+      providers: [
+        {provide: Location, useValue: {path: () => path}},
+        {
+          provide: Router, useValue: {
+            parseUrl: (url) => {
+              return {root: {children: {primary: {segments: path.split("/").filter(item => item).map(item => ({path: item}))}}}};
+            }, url: "/admin/member-bulk-load/12398719823"
+          }
+        },
+        {provide: ActivatedRoute, useValue: {snapshot: {url: Array("admin", "member-bulk-load")}}},
+        {provide: DOCUMENT, useValue: LOCATION_VALUE}]
+    }).compileComponents();
+  });
 
   it("should return baseUrl as the path segment before /", () => {
     const service: UrlService = TestBed.inject(UrlService);

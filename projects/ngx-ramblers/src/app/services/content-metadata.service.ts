@@ -35,12 +35,12 @@ export class ContentMetadataService {
   private s3MetadataSubject = new Subject<S3MetadataApiResponse>();
 
   constructor(private http: HttpClient,
-              private  dateUtils: DateUtilsService,
+              private dateUtils: DateUtilsService,
               private searchFilterPipe: SearchFilterPipe,
               public imageTagDataService: ImageTagDataService,
               private imageDuplicatesService: ImageDuplicatesService,
               private commonDataService: CommonDataService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.DEBUG);
   }
 
   contentMetadataNotifications(): Observable<MemberApiResponse> {
@@ -98,9 +98,11 @@ export class ContentMetadataService {
   }
 
   async listMetaData(prefix: string): Promise<S3Metadata[]> {
-    const apiResponse = await this.http.get<S3Metadata[]>(`${S3_METADATA_URL}/${prefix}`).toPromise();
-    this.logger.debug("listMetaData:prefix", prefix, "returning", apiResponse.length, "S3Metadata items");
-    return apiResponse;
+    const url = `${S3_METADATA_URL}/${prefix}`;
+    this.logger.debug("listMetaData:prefix", prefix, "url:", url);
+    const apiResponse: S3MetadataApiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<S3MetadataApiResponse>(url), this.s3MetadataSubject);
+    this.logger.debug("listMetaData:prefix", prefix, "returning", apiResponse, "S3Metadata items");
+    return apiResponse.response;
   }
 
   filterAndSort(showDuplicates: boolean, prefiltered: ContentMetadataItem[], filterText: string): ContentMetadataItem[] {

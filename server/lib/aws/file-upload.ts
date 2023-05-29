@@ -3,8 +3,8 @@ import { AuditStatus } from "../../../projects/ngx-ramblers/src/app/models/audit
 import { AwsFileUploadResponse, AwsFileUploadResponseData, ServerFileNameData, UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
 import { envConfig } from "../env-config/env-config";
 import { generateUid, uidFormat } from "../shared/string-utils";
-import { aws } from "./aws-controllers";
-import debug = require("debug");
+import * as aws from "./aws-controllers";
+import debug from "debug";
 import path = require("path");
 
 const debugLog = debug(envConfig.logNamespace("s3-file-upload"));

@@ -2,8 +2,8 @@ import { RamblersWalkResponse, RamblersWalksRawApiResponse } from "../../../proj
 import { envConfig } from "../env-config/env-config";
 import { httpRequest } from "../shared/message-handlers";
 import * as requestDefaults from "./request-defaults";
-import debug = require("debug");
-import moment = require("moment-timezone");
+import debug from "debug";
+import moment from "moment-timezone";
 
 const debugLog = debug(envConfig.logNamespace("ramblers:walks-manager"));
 debugLog.enabled = true;

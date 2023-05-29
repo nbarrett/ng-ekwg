@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { TestBed } from "@angular/core/testing";
+import { ActivatedRoute } from "@angular/router";
 import { LoggerTestingModule } from "ngx-logger/testing";
 import { ApiAction } from "../models/api-response.model";
 import { ContentMetadata, ContentMetadataApiResponse } from "../models/content-metadata.model";
@@ -7,17 +8,27 @@ import { FullNameWithAliasPipe } from "../pipes/full-name-with-alias.pipe";
 import { FullNamePipe } from "../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../pipes/member-id-to-full-name.pipe";
 import { SearchFilterPipe } from "../pipes/search-filter.pipe";
-
 import { ContentMetadataService } from "./content-metadata.service";
 import { StringUtilsService } from "./string-utils.service";
 
 describe("ContentMetadataService", () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [LoggerTestingModule, HttpClientTestingModule],
-    providers: [StringUtilsService, MemberIdToFullNamePipe, FullNamePipe, FullNameWithAliasPipe, SearchFilterPipe]
-
+    providers: [
+      {
+        provide: ActivatedRoute, useValue: {
+          queryParams: {
+            subscribe: () => {
+            }
+          }, snapshot: {url: Array("admin", "member-bulk-load")}
+        }
+      },
+      StringUtilsService,
+      MemberIdToFullNamePipe,
+      FullNamePipe,
+      FullNameWithAliasPipe,
+      SearchFilterPipe]
   }));
-
   const input: ContentMetadataApiResponse = {
     request: "query",
     action: ApiAction.QUERY,

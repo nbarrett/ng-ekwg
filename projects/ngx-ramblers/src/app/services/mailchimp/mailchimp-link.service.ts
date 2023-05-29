@@ -40,7 +40,7 @@ export class MailchimpLinkService {
   }
 
   public listView(webId: number) {
-    return `${this.mailchimpApiUrl}/lists/members/view?id=${webId}`;
+    return `${this.mailchimpApiUrl}/lists/members/?id=${webId}`;
   }
 
 }

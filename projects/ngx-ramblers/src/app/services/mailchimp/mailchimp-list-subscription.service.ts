@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { cloneDeep } from "lodash-es";
-import each from "lodash-es/each";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AuditStatus } from "../../models/audit";
 import {
@@ -43,7 +42,7 @@ export class MailchimpListSubscriptionService {
     const endState: string = subscribedState ? "subscribe" : "unsubscribe";
     const savePromises = [];
     notify.warning({title: "Bulk " + endState, message: `Bulk setting Mailchimp subscriptions for ${members.length} members to ${subscribedState}`}, false, true);
-    each(members, member => {
+    members.forEach(member => {
       this.mailchimpListService.setMailchimpSubscriptionStateFor(member, subscribedState);
       savePromises.push(this.memberService.update(member));
     });
@@ -76,7 +75,7 @@ export class MailchimpListSubscriptionService {
 
   createBatchSubscriptionForList(listType, members: Member[]): Promise<Member[]> {
     this.logger.debug(`Sending ${listType} member data to Mailchimp`);
-    const batchedMembers = [];
+    const batchedMembers: Member[] = [];
     const subscriptionRequests: MailchimpSubscriptionMember[] = members
       .filter(member => this.mailchimpListService.includeMemberInSubscription(listType, member))
       .map((member: Member) => {
@@ -119,8 +118,8 @@ export class MailchimpListSubscriptionService {
   }
 
   processValidResponses(listType: string, mailchimpMembers: MailchimpMember[], batchedMembers: Member[], savePromises) {
-    each(mailchimpMembers, (mailchimpMemberIdentifiers: MailchimpMember) => {
-      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, mailchimpMemberIdentifiers);
+    mailchimpMembers.forEach((mailchimpMember: MailchimpMember) => {
+      const member = this.mailchimpListService.findMemberAndMarkAsUpdated(listType, batchedMembers, mailchimpMember);
       if (member) {
         member.mailchimpLists[listType].code = null;
         member.mailchimpLists[listType].error = null;

@@ -1,10 +1,10 @@
-// @ts-ignore
-import mailchimp = require("@mailchimp/mailchimp_marketing");
-import debug = require("debug");
-import transforms = require("../mongo/controllers/transforms");
-import config = require("../mongo/models/config");
+import mailchimp from "@mailchimp/mailchimp_marketing";
+import debug from "debug";
 import { MailchimpConfigResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../env-config/env-config";
+import { MailchimpConfigData } from "../shared/server-models";
+import transforms = require("../mongo/controllers/transforms");
+import config = require("../mongo/models/config");
 
 const debugLog = debug(envConfig.logNamespace("mailchimp-config"));
 
@@ -28,7 +28,3 @@ function resolvePrefix(result: MailchimpConfigResponse): string {
   return url.host.split("\.")[0];
 }
 
-export interface MailchimpConfigData {
-  config: MailchimpConfigResponse;
-  mailchimp: any;
-}

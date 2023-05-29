@@ -1,13 +1,16 @@
-import debug = require("debug");
-import messageHandler = require("./messageHandler");
+import { ErrorResponse, lists } from "@mailchimp/mailchimp_marketing";
+import * as messageHandler from "./message-handler";
 import { envConfig } from "../env-config/env-config";
 import { configuredMailchimp } from "./mailchimp-config";
+import debug from "debug";
+import { Request, Response } from "express";
+import BatchListMembersBody = lists.BatchListMembersBody;
+import BatchListMembersResponse = lists.BatchListMembersResponse;
+import BatchListMembersOpts = lists.BatchListMembersOpts;
 
 const debugLog = debug(envConfig.logNamespace("mailchimp-lists"));
 
-export const lists = {mailchimpLists, mailchimpListMembers, batchSubscribe};
-
-async function mailchimpLists(req, res) {
+export async function mailchimpLists(req: Request, res: Response) {
   const mailchimpConfigData = await configuredMailchimp();
   const messageType = "list lists";
   mailchimpConfigData.mailchimp.lists.getAllLists({
@@ -30,7 +33,7 @@ async function mailchimpLists(req, res) {
   });
 }
 
-async function mailchimpListMembers(req, res) {
+export async function mailchimpListMembers(req: Request, res: Response): Promise<void> {
   const messageType = "mailchimp-list-members";
   const listId = messageHandler.mapListTypeToId(req, debugLog);
   try {
@@ -56,21 +59,22 @@ async function mailchimpListMembers(req, res) {
   }
 }
 
-async function batchSubscribe(req, res) {
+export async function batchSubscribe(req: Request, res: Response) {
   const messageType = "batch-subscribe-list";
   const listId = messageHandler.mapListTypeToId(req, debugLog);
   try {
     const mailchimpConfigData = await configuredMailchimp();
-    const options = {
+    const options: BatchListMembersOpts = {
       skipMergeValidation: false,
       skipDuplicateCheck: false
     };
-    mailchimpConfigData.mailchimp.lists.batchListMembers(listId, {members: req.body, update_existing: true}, options).then(responseData => {
+    const body: BatchListMembersBody = {members: req.body, update_existing: true};
+    mailchimpConfigData.mailchimp.lists.batchListMembers(listId, body, options).then((responseData: BatchListMembersResponse) => {
       messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
-    }).catch(error => {
+    }).catch((error: ErrorResponse) => {
       messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
     });
-  } catch (error) {
+  } catch (error: any) {
     messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
   }
 }

@@ -1,5 +1,5 @@
 import { envConfig } from "../env-config/env-config";
-import debug = require("debug");
+import debug from "debug";
 import mongoose = require("mongoose");
 import transforms = require("../mongo/controllers/transforms");
 

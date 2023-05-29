@@ -1,7 +1,7 @@
 import { padStart } from "lodash";
 import { PostcodeLookupResponse, PostcodeLookupServiceResponse } from "../../../projects/ngx-ramblers/src/app/models/address-model";
 import { envConfig } from "../env-config/env-config";
-import debug = require("debug");
+import debug from "debug";
 import querystring = require("querystring");
 import url = require("url");
 import * as messageHandlers from "../shared/message-handlers";

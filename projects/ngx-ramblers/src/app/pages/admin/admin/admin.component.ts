@@ -73,7 +73,7 @@ export class AdminComponent implements OnInit, OnDestroy, OnDestroy {
           const data: PageContent = {
             path: "admin#action-buttons", rows: [
               {
-                maxColumns: 4,
+                maxColumns: 3,
                 showSwiper: false,
                 type: PageContentType.ACTION_BUTTONS,
                 columns: [
@@ -125,6 +125,20 @@ export class AdminComponent implements OnInit, OnDestroy, OnDestroy {
                     icon: "faBook",
                     href: "admin/member-login-audit",
                     contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
+                  },
+                  {
+                    accessLevel: AccessLevel.committee,
+                    title: "System Settings",
+                    icon: "faCogs",
+                    href: "admin/system-settings",
+                    contentTextId: null
+                  },
+                  {
+                    accessLevel: AccessLevel.committee,
+                    title: "Configure Banners",
+                    icon: "faImages",
+                    href: "committee/banners",
+                    contentTextId: null
                   },
                 ]
               }]
