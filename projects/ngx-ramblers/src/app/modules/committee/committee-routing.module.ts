@@ -11,7 +11,6 @@ import { CommitteeModule } from "./committee.module";
 
 @NgModule({
   imports: [CommitteeModule, RouterModule.forChild([
-    {path: "banners", component: BannerComponent},
     {path: "send-notification/:committee-event-id", component: CommitteeSendNotificationComponent},
     {path: "send-notification", component: CommitteeSendNotificationComponent},
     {path: "year/:year", component: CommitteeYearComponent},

@@ -13,6 +13,7 @@ import { ContactDetailsComponent } from "../../pages/admin/profile/contact-detai
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
 import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
 import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
+import { BannerComponent } from "../../pages/banner/banner.component";
 import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
 import { hasDynamicPath } from "../../services/path-matchers";
 import { DynamicContentPageComponent } from "../common/dynamic-content-page/dynamic-content-page";
@@ -33,7 +34,8 @@ import { AdminModule } from "./admin.module";
     {path: "member-bulk-load", component: MemberBulkLoadComponent, canActivate: [AdminAuthGuard]},
     {path: "system-settings", component: SystemSettingsComponent, canActivate: [AdminAuthGuard]},
     {path: "set-password/:password-reset-id", component: SetPasswordComponent},
-    {path: "mailchimp-settings", component: MailchimpSettingsComponent},
+    {path: "mailchimp-settings", component: MailchimpSettingsComponent, canActivate: [AdminAuthGuard]},
+    {path: "banners", component: BannerComponent},
     {matcher: hasDynamicPath, component: DynamicContentPageComponent},
   ])]
 })
