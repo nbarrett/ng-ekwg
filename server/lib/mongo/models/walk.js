@@ -43,6 +43,7 @@ const walkSchema = mongoose.Schema({
   events: [walkEvent],
   grade: {type: String},
   gridReference: {type: String},
+  gridReferenceFinish: {type: String},
   location: {type: String},
   longerDescription: {type: String},
   config: {
@@ -61,6 +62,7 @@ const walkSchema = mongoose.Schema({
   osMapsRoute: {type: String},
   osMapsTitle: {type: String},
   postcode: {type: String},
+  postcodeFinish: {type: String},
   ramblersWalkId: {type: String},
   ramblersWalkUrl: {type: String},
   startLocationW3w: {type: String},

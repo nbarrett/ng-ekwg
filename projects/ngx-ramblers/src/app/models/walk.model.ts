@@ -23,6 +23,7 @@ export interface Walk extends Identifiable {
   events: WalkEvent[];
   grade?: string;
   gridReference?: string;
+  gridReferenceFinish?: string;
   location?: string;
   longerDescription?: string;
   config?: { meetup: MeetupConfigParameters };
@@ -34,6 +35,7 @@ export interface Walk extends Identifiable {
   osMapsRoute?: string;
   osMapsTitle?: string;
   postcode?: string;
+  postcodeFinish?: string;
   ramblersWalkId?: string;
   ramblersWalkUrl?: string;
   startLocationW3w?: string;

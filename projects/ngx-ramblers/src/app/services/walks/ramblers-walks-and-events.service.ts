@@ -312,12 +312,20 @@ export class RamblersWalksAndEventsService {
     return walk.startTime ? this.dateUtils.asString(this.dateUtils.startTime(walk) + this.dateUtils.durationForDistance(walk.distance), null, "HH:mm") : "";
   }
 
-  walkGridReference(walk) {
-    return walk.gridReference ? walk.gridReference : "";
+  walkStartGridReference(walk) {
+    return walk.gridReference || "";
   }
 
-  walkPostcode(walk) {
-    return walk.gridReference ? "" : walk.postcode ? walk.postcode : "";
+  walkStartPostcode(walk) {
+    return walk.gridReference ? "" : walk.postcode || "";
+  }
+
+  walkFinishGridReference(walk) {
+    return walk.gridReferenceFinish || "";
+  }
+
+  walkFinishPostcode(walk) {
+    return walk.gridReferenceFinish ? "" : walk.postcodeFinish || "";
   }
 
   walkDate(walk: Walk, format: string) {
@@ -347,8 +355,8 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.LINEAR_OR_CIRCULAR] = this.walkType(walk);
     csvRecord[WalkUploadColumnHeading.START_TIME] = this.walkStartTime(walk);
     csvRecord[WalkUploadColumnHeading.STARTING_LOCATION] = "";
-    csvRecord[WalkUploadColumnHeading.STARTING_POSTCODE] = this.walkPostcode(walk);
-    csvRecord[WalkUploadColumnHeading.STARTING_GRIDREF] = this.walkGridReference(walk);
+    csvRecord[WalkUploadColumnHeading.STARTING_POSTCODE] = this.walkStartPostcode(walk);
+    csvRecord[WalkUploadColumnHeading.STARTING_GRIDREF] = this.walkStartGridReference(walk);
     csvRecord[WalkUploadColumnHeading.STARTING_LOCATION_DETAILS] = this.nearestTown(walk);
     csvRecord[WalkUploadColumnHeading.MEETING_TIME] = "";
     csvRecord[WalkUploadColumnHeading.MEETING_LOCATION] = "";
@@ -357,8 +365,8 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.MEETING_LOCATION_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.EST_FINISH_TIME] = this.walkFinishTime(walk);
     csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION] = "";
-    csvRecord[WalkUploadColumnHeading.FINISHING_POSTCODE] = "";
-    csvRecord[WalkUploadColumnHeading.FINISHING_GRIDREF] = "";
+    csvRecord[WalkUploadColumnHeading.FINISHING_POSTCODE] = this.walkFinishPostcode(walk);
+    csvRecord[WalkUploadColumnHeading.FINISHING_GRIDREF] = this.walkFinishGridReference(walk);
     csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.DIFFICULTY] = this.asString(walk.grade);
     csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = "";

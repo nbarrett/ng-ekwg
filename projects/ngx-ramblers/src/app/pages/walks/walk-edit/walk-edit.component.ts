@@ -710,12 +710,11 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     return this.display.walkMode(this.displayedWalk.walk) === WalkViewMode.EDIT;
   }
 
-  async postcodeChange($event: any) {
-    this.displayedWalk.walk.postcode = this.displayedWalk.walk.postcode.toUpperCase().trim();
+  private async lookupGridReferenceBasedOn(postcode: string): Promise<string> {
     this.notify.hide();
-    this.logger.debug("postcodeChange:", $event, this.displayedWalk.walk.postcode);
-    if (this.displayedWalk.walk.postcode) {
-      const gridReferenceLookupResponse: GridReferenceLookupResponse = await this.addressQueryService.gridReferenceLookup(this.displayedWalk.walk.postcode);
+    this.logger.debug("postcodeChange:", postcode);
+    if (postcode) {
+      const gridReferenceLookupResponse: GridReferenceLookupResponse = await this.addressQueryService.gridReferenceLookup(postcode);
       if (gridReferenceLookupResponse.error) {
         this.notify.error({
           continue: true,
@@ -723,13 +722,25 @@ export class WalkEditComponent implements OnInit, OnDestroy {
           message: `Lookup of postcode ${gridReferenceLookupResponse.postcode} failed due to '${gridReferenceLookupResponse.error}' error`
         });
       } else {
-        this.displayedWalk.walk.gridReference = gridReferenceLookupResponse.gridReference;
-        this.updateGoogleMapsUrl();
+        return gridReferenceLookupResponse.gridReference;
       }
     }
   }
 
-  viewGridReference() {
-    return window.open(this.display.gridReferenceLink(this.displayedWalk.walk));
+  async postcodeChange() {
+    const postcode = this.displayedWalk.walk.postcode;
+    this.displayedWalk.walk.postcode = postcode.toUpperCase().trim();
+    this.displayedWalk.walk.gridReference = await this.lookupGridReferenceBasedOn(postcode);
+    this.updateGoogleMapsUrl();
+  }
+
+  async postcodeFinishChange() {
+    const postcode = this.displayedWalk.walk.postcodeFinish;
+    this.displayedWalk.walk.postcodeFinish = postcode.toUpperCase().trim();
+    this.displayedWalk.walk.gridReferenceFinish = await this.lookupGridReferenceBasedOn(postcode);
+  }
+
+  viewGridReference(gridReference: string) {
+    return window.open(this.display.gridReferenceLink(gridReference));
   }
 }

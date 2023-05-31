@@ -172,8 +172,8 @@ export class WalkDisplayService {
     return eventType;
   }
 
-  gridReferenceLink(walk: Walk): string {
-    return `https://gridreferencefinder.com/?gr=${walk.gridReference}`;
+  gridReferenceLink(gridReference: string): string {
+    return `https://gridreferencefinder.com/?gr=${gridReference}`;
   }
 
   toWalkAccessMode(walk: Walk): WalkAccessMode {
