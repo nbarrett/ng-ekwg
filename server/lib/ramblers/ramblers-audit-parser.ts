@@ -4,7 +4,7 @@ import { some, isEmpty, isUndefined, includes } from "lodash";
 
 const errorIcons = ["⨯", "✗"];
 const successIcons = ["✓"];
-const ansiTokens = ["\x1B[32m", "\x1B[39m"];
+const ansiTokens = ["\x1B[32m", "\x1B[39m", "[31m", "[39m", "[31m"];
 const npmErrorTokens = ["ERR!", "Error:", "failed"];
 const logNamespace: string = "ramblers:ramblers-audit-parser";
 const debugLog = debug(envConfig.logNamespace(logNamespace));

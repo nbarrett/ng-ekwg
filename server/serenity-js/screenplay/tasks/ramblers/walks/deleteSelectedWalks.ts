@@ -1,5 +1,6 @@
+import { Check, isGreaterThan } from "@serenity-js/assertions";
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
+import { CountOfWalks } from "../../../questions/ramblers/countOfWalks";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { ClickWhenReady } from "../../common/clickWhenReady";
 import { WaitFor } from "../common/waitFor";
@@ -11,19 +12,10 @@ export class Delete implements Task {
   }
 
   performAs(actor: PerformsActivities & UsesAbilities & AnswersQuestions): Promise<void> {
-    let totalWalkCount;
-    let selectedWalkCount;
-    return RamblersWalkSummaries.displayed().answeredBy(actor)
-      .then(walks => {
-        totalWalkCount = walks.length;
-        return walks.filter(walk => walk.currentlySelected);
-      }).then(walks => {
-        selectedWalkCount = walks.length;
-        return actor.attemptsTo(
-          ClickWhenReady.on(WalksTargets.deleteSelected),
+    return actor.attemptsTo(
+      Check.whether(CountOfWalks.selected(), isGreaterThan(0))
+        .andIfSo(ClickWhenReady.on(WalksTargets.deleteSelected),
           ClickWhenReady.on(WalksTargets.executeActionButton),
-          WaitFor.successAlertToContainMessage("been deleted"));
-      });
-
+          WaitFor.successAlertToContainMessage("been deleted")));
   }
 }

@@ -40,14 +40,9 @@ export class RamblersWalkSummaries implements Question<Promise<RamblersWalkSumma
       .map((tableRow: ElementFinder, rowIndex: number) => this.extractPartialRamblersWalkSummary(tableRow, rowIndex)
         .then(ramblersWalkSummary => this.addWalkUrlAsId(ramblersWalkSummary, tableRow))
         .then(ramblersWalkSummary => this.addCurrentlySelected(ramblersWalkSummary, rowIndex, actor))
-        .then(ramblersWalkSummary => {
-          console.log("ramblersWalkSummary:", ramblersWalkSummary);
-          return ramblersWalkSummary;
-        })
         .catch(error => {
-          console.log("not retrying", this.toString(), "due to", error.name);
-          throw error;
-          // return this.answeredBy(actor) as Promise<any>;
+          console.log("retrying", this.toString(), "due to", error.name);
+          return this.answeredBy(actor) as Promise<any>;
         })));
   }
 

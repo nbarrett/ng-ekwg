@@ -1,6 +1,6 @@
 import { actorCalled, engage } from "@serenity-js/core";
 import { Navigate, UseAngular } from "@serenity-js/protractor";
-import * as moment from "moment-timezone";
+import moment from "moment-timezone";
 import { Start } from "../screenplay/tasks/common/start";
 import { Login } from "../screenplay/tasks/ramblers/common/login";
 import { DeleteWalks } from "../screenplay/tasks/ramblers/walks/deleteWalks";

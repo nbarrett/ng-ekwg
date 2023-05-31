@@ -74,7 +74,7 @@ export class WalksTargets {
     .located(by.css(".alert-success"));
 
   public static alertMessage: TargetElement = Target.the("Alert Status Message")
-    .located(by.css(".alert-status"));
+    .located(by.css(".alert-error,.alert-success"));
 
   public static uploadErrorList: TargetElements = Target.all("Upload Error List Parent")
     .located(by.css(".alert-error .item-list ul"));
