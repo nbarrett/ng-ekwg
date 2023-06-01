@@ -205,6 +205,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   changeWalkExportSelection(walkExport: WalkExport) {
     if (walkExport.validationMessages.length === 0) {
       walkExport.selected = !walkExport.selected;
+      this.logWalkSelected(walkExport);
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
@@ -235,4 +236,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
     return this.ramblersWalksAndEventsService.exportWalksFileName(true);
   }
 
+  logWalkSelected(walk: WalkExport) {
+    this.logger.info("logWalkSelected:walkExport:", walk, "walkDeletionList:", this.ramblersWalksAndEventsService.walkDeletionList(this.walksForExport),);
+  }
 }

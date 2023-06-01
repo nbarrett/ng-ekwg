@@ -155,8 +155,7 @@ export class RamblersWalksAndEventsService {
 
   uploadToRamblers(walkExports: WalkExport[], members: Member[], notify): Promise<string> {
     notify.setBusy();
-    const walkIdDeletionList: string[] = this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk)
-      .filter(walk => walk.ramblersWalkUrl).map(walk => this.transformUrl(walk));
+    const walkIdDeletionList = this.walkDeletionList(walkExports);
     this.logger.debug("sourceData", walkExports);
     const rows = this.walkUploadRows(walkExports, members);
     const fileName = this.exportWalksFileName();
@@ -189,6 +188,11 @@ export class RamblersWalksAndEventsService {
           message: response
         });
       });
+  }
+
+  public walkDeletionList(walkExports: WalkExport[]) {
+    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk)
+      .filter(walk => !isEmpty(walk.ramblersWalkUrl)).map(walk => this.transformUrl(walk));
   }
 
   private transformUrl(walk: Walk) {

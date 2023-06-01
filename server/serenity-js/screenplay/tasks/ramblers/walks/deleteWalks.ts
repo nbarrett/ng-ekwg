@@ -14,7 +14,7 @@ export class DeleteWalks {
     return new DeleteAllWalks();
   }
 
-  static requested(): Task {
+  static unpublishedOrWithIdsSupplied(): Task {
     return new DeleteUnpublishedOrWalksWithIds(RequestParameterExtractor.extract().walkDeletions);
   }
 

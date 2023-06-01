@@ -23,7 +23,7 @@ describe("Walks and Events Manager", function () {
       Start.onWalksAndEventsManager(),
       Login.toRamblers(),
       FilterWalks.toShowAll(),
-      DeleteWalks.requested(),
+      DeleteWalks.unpublishedOrWithIdsSupplied(),
       UploadWalks.requested(),
     );
   });

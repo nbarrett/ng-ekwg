@@ -1,10 +1,9 @@
 import { AnswersQuestions, PerformsActivities, Task, UsesAbilities } from "@serenity-js/core";
-import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
 import { RamblersWalkSummary } from "../../../../models/ramblersWalkSummary";
+import { RamblersWalkSummaries } from "../../../questions/ramblers/ramblersWalksSummaries";
 import { WalksTargets } from "../../../ui/ramblers/walksTargets";
 import { Log } from "../../common/log";
 import { SelectCheckbox } from "../../common/selectCheckbox";
-import { WaitFor } from "../common/waitFor";
 import { SelectWalks, WalkFilters } from "./selectWalks";
 
 export class SelectWalksNotPublishedCancelledOrWithIds implements Task {

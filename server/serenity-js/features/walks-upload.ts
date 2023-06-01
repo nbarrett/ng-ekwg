@@ -18,12 +18,12 @@ describe("Walks and Events Manager", () => {
 
   it("walk upload", () => {
     const today = moment().tz("Europe/London").startOf("day").format("YYYY-MM-DD");
-    return actorCalled(process.env["RAMBLERS_USER"] || "Stuart").attemptsTo(
+    return actorCalled(process.env["RAMBLERS_USER"] || "Walks Admin").attemptsTo(
       UseAngular.disableSynchronisation(),
       Start.onWalksAndEventsManager(),
       Login.toRamblers(),
       Navigate.to(`https://walks-manager.ramblers.org.uk/walks-manager/all-walks-events?search=&items_per_page=All&d[min]=${today}&d[max]=&rauid=all`),
-      DeleteWalks.requested(),
+      DeleteWalks.unpublishedOrWithIdsSupplied(),
       UploadWalks.requested(),
       Publish.walksInDraftState());
   });

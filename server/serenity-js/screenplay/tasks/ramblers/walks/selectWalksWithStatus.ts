@@ -18,7 +18,7 @@ export class SelectWalksWithStatus implements Task {
         ...walks
           .map((walk, index) => WalkFilters.withStatus(walk, ...this.statuses) ?
             SelectCheckbox.checked().from(WalksTargets.checkboxSelector(index, walk.walkDate))
-            : Log.message(`Not Selecting walk ${walk.status}`))));
+            : Log.message(`Not Selecting ${walk.status} walk`))));
   }
 
   toString() {
