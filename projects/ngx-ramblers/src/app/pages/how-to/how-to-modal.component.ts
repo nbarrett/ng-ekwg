@@ -9,7 +9,7 @@ import { FileUtilsService } from "../../file-utils.service";
 import { AlertTarget } from "../../models/alert-target.model";
 import { DateValue } from "../../models/date.model";
 import { MailchimpCampaign, MailchimpCampaignListRequest } from "../../models/mailchimp.model";
-import { MemberResource } from "../../models/member-resource.model";
+import { MailchimpCampaignMixedVersion, MemberResource } from "../../models/member-resource.model";
 import { Confirm, ConfirmType } from "../../models/ui-actions";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
@@ -54,7 +54,7 @@ export class HowToModalComponent implements OnInit, OnDestroy {
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfig: MailchimpConfigService,
               private notifierService: NotifierService,
-              private stringUtils: StringUtilsService,
+              public stringUtils: StringUtilsService,
               private memberService: MemberService,
               private displayDate: DisplayDatePipe,
               public memberResourcesReferenceData: MemberResourcesReferenceDataService,
@@ -72,7 +72,8 @@ export class HowToModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.logger.debug("constructed with memberResource", this.memberResource);
+    const resourceUrl = this.memberResourcesReferenceData.resourceTypeDataFor(this.memberResource.resourceType).resourceUrl(this.memberResource);
+    this.logger.info("constructed with memberResource", this.memberResource, "resourceUrl:", resourceUrl);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.notify.hide();
@@ -133,22 +134,33 @@ export class HowToModalComponent implements OnInit, OnDestroy {
     this.bsModalRef.hide();
   }
 
-  cancelMemberResourceDetails() {
-    this.close();
+  campaignDate(campaign: MailchimpCampaignMixedVersion): number {
+    if (MemberResourcesReferenceDataService.isMailchimpCampaign(campaign)) {
+      return this.dateUtils.asValueNoTime(campaign.send_time || campaign.create_time);
+    } else {
+      return this.dateUtils.asValueNoTime(campaign.create_time);
+    }
+
   }
 
-  campaignDate(campaign) {
-    return this.dateUtils.asValueNoTime(campaign.send_time || campaign.create_time);
+  campaignTitle(campaign: MailchimpCampaign) {
+    return campaign.settings.title + " (" + this.displayDate.transform(this.campaignDate(campaign)) + ")";
   }
 
-  campaignTitle(campaign) {
-    return campaign.title + " (" + this.displayDate.transform(this.campaignDate(campaign)) + ")";
+  setMemberResourceTitle(title: string, isCampaign: boolean) {
+    this.logger.info("isMailchimpCampaign:", isCampaign, "setting title to ", title);
+    this.memberResource.title = title;
   }
 
   campaignChange() {
-    this.logger.debug("campaignChange:memberResource.data.campaign", this.memberResource.data.campaign);
+    this.logger.info("campaignChange:memberResource.data.campaign", this.memberResource.data.campaign);
+
     if (this.memberResource.data.campaign) {
-      this.memberResource.title = this.memberResource.data.campaign.title;
+      if (MemberResourcesReferenceDataService.isMailchimpCampaign(this.memberResource.data.campaign)) {
+        this.setMemberResourceTitle(this.memberResource.data.campaign.settings.title, true);
+      } else {
+        this.setMemberResourceTitle(this.memberResource.data.campaign.title, false);
+      }
       this.memberResource.resourceDate = this.campaignDate(this.memberResource.data.campaign);
     }
   }
@@ -162,21 +174,22 @@ export class HowToModalComponent implements OnInit, OnDestroy {
         message: "searching for campaigns matching '" + campaignSearchTerm + "'"
       });
       const options: MailchimpCampaignListRequest = {
-        limit: this.memberResource.data.campaignSearchLimit,
         concise: true,
+        query: campaignSearchTerm,
+        limit: this.memberResource.data.campaignSearchLimit,
+        start: 0,
         status: "sent"
       };
-      options[this.memberResource.data.campaignSearchField] = campaignSearchTerm;
       return this.mailchimpCampaignService.list(options)
         .then((response) => {
-          this.campaigns = response.data;
+          this.campaigns = response.campaigns;
           if (selectFirst) {
             this.memberResource.data.campaign = first(this.campaigns);
             this.campaignChange();
           } else {
             this.logger.debug("this.memberResource.data.campaign", this.memberResource.data.campaign, "first campaign=", first(this.campaigns));
           }
-          this.logger.debug("response.data", response.data);
+          this.logger.debug("response.data", response.campaigns);
           this.notify.success({
             title: "Email search",
             message: "Found " + this.campaigns.length + " campaigns matching '" + campaignSearchTerm + "'"

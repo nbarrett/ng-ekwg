@@ -32,7 +32,7 @@ export class MailchimpSettingsComponent implements OnInit {
   public notification: Notification;
   private logger: Logger;
   members: Member[] = [];
-  public campaigns: MailchimpCampaignListResponse;
+  public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public campaignSearchTerm: string;
   public config: MailchimpConfigResponse;
   public mailchimpListingResponse: MailchimpListingResponse;
@@ -73,16 +73,17 @@ export class MailchimpSettingsComponent implements OnInit {
       });
 
     this.mailchimpCampaignService.list({
-      limit: 1000,
       concise: true,
+      limit: 1000,
+      start: 0,
       status: "save",
-      title: this.campaignSearchTerm
-    }).then(response => {
-      this.campaigns = response;
-      this.logger.debug("mailchimpCampaignService list response data", response.data);
+      query: this.campaignSearchTerm
+    }).then((mailchimpCampaignListResponse: MailchimpCampaignListResponse) => {
+      this.mailchimpCampaignListResponse = mailchimpCampaignListResponse;
+      this.logger.debug("mailchimpCampaignService list mailchimpCampaignListResponse:", mailchimpCampaignListResponse);
       this.notify.success({
         title: "Mailchimp Campaigns",
-        message: "Found " + this.campaigns.data.length + " draft campaigns matching " + this.campaignSearchTerm
+        message: "Found " + this.mailchimpCampaignListResponse.campaigns.length + " draft campaigns matching " + this.campaignSearchTerm
       });
       this.notify.clearBusy();
     });
@@ -93,7 +94,7 @@ export class MailchimpSettingsComponent implements OnInit {
   }
 
   notReady() {
-    return this.campaigns?.data?.length === 0;
+    return this.mailchimpCampaignListResponse?.campaigns?.length === 0;
   }
 
   editCampaign(campaignId) {
@@ -104,7 +105,7 @@ export class MailchimpSettingsComponent implements OnInit {
       });
     } else {
       this.notify.hide();
-      const webId = this.campaigns.data.find(campaign => campaign.id === campaignId).web_id;
+      const webId = this.mailchimpCampaignListResponse.campaigns.find(campaign => campaign.id === campaignId).web_id;
       this.logger.debug("editCampaign:campaignId", campaignId, "web_id", webId);
       return window.open(`${this.mailchimpLinkService.campaignEdit(webId)}`, "_blank");
     }

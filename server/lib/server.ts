@@ -36,7 +36,7 @@ import { install } from "source-map-support";
 import { addresses } from "./addresses/addresses";
 import { awsRoutes } from "./aws/aws-routes";
 import { envConfig } from "./env-config/env-config";
-import { mailchimpRoutes } from "./mailchimp/mailchimp";
+import { mailchimpRoutes } from "./mailchimp/mailchimp-routes";
 import { meetup } from "./meetup/meetup";
 
 install();

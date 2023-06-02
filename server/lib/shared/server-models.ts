@@ -21,3 +21,27 @@ export interface MailchimpConfigData {
   config: MailchimpConfigResponse;
   mailchimp: any;
 }
+
+export interface MailchimpCampaignListRequest {
+  fields?: string[];
+  query?: string;
+  exclude_fields?: string[];
+  count?: number;
+  offset?: number;
+  type?: string;
+  status?: string;
+  before_send_time?: string;
+  since_send_time?: string;
+  before_create_time?: string;
+  since_create_time?: string;
+  list_id?: string;
+  folder_id?: string;
+  member_id?: string;
+  sort_field?: string;
+  sort_dir?: string;
+}
+
+export interface MailchimpCampaignSearchRequestOptions {
+  fields: string[];
+  exclude_fields?: string[];
+}

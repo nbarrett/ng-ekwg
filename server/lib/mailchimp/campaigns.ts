@@ -1,10 +1,7 @@
 import debug from "debug";
 import { Request, Response } from "express";
-import moment from "moment-timezone";
 import { envConfig } from "../env-config/env-config";
-import { configuredMailchimp } from "./mailchimp-config";
 import * as messageHandler from "./message-handler";
-import pick = require("lodash/pick");
 import mcapi = require("mailchimp-api");
 
 const debugLog = debug(envConfig.logNamespace("mailchimp:routes:campaigns"));
@@ -17,7 +14,7 @@ const mc = new mcapi.Mailchimp(envConfig.mailchimp.apiKey);
 
  */
 
-export function content(req, res) {
+export function content(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
     "seg_id": req.body.segmentId,
@@ -38,7 +35,7 @@ export function content(req, res) {
 
  */
 
-export function create(req, res) {
+export function create(req: Request, res: Response) {
 
   const requestData = {
     "type": "regular",
@@ -71,7 +68,7 @@ export function create(req, res) {
 
  */
 
-export function deleteCampaign(req, res) {
+export function deleteCampaign(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
   };
@@ -87,80 +84,12 @@ export function deleteCampaign(req, res) {
 
 /*
 
- campaigns/list (string apikey, struct filters, int start, int limit, string sort_field, string sort_dir)
- Get the list of campaigns and their details matching the specified filters
-
- */
-
-export function list(req, res) {
-  const requestData = {
-    filters: {
-      status: req.query.status || "save",
-      exact: req.query.exact || false,
-    },
-    start: req.query.start || 0,
-    limit: req.query.limit || 25,
-  };
-  const messageType = "list campaigns";
-  debugLog(messageType, "req.query:", req.query);
-
-  addOptionalParameter("subject", requestData.filters);
-  addOptionalParameter("title", requestData.filters);
-  addOptionalParameter("exact", requestData.filters);
-  messageHandler.logRequestData(messageType, requestData, debugLog);
-
-  function addOptionalParameter(key, object) {
-    if (req.query[key]) {
-      object[key] = req.query[key];
-    }
-  }
-
-  mc.campaigns.list(requestData, responseData => {
-
-    function addDateField(campaign, fieldName, campaignResponse) {
-      if (campaign[fieldName]) {
-        campaignResponse[fieldName] = moment(campaign[fieldName], moment.ISO_8601).tz("Europe/London").valueOf();
-      }
-    }
-
-    const filteredResponse = req.query.concise === "true" ? {
-      total: responseData.data.length,
-      errors: responseData.errors,
-      data: responseData.data
-        .map(campaign => {
-          const campaignFields = pick(campaign, ["id", "web_id", "list_id", "template_id", "title", "subject", "saved_segment", "status", "from_name", "archive_url_long"]);
-          addDateField(campaign, "create_time", campaignFields);
-          addDateField(campaign, "send_time", campaignFields);
-          return campaignFields;
-
-        }),
-    } : responseData.data;
-
-    messageHandler.processSuccessfulResponse(req, res, filteredResponse, messageType + " with " + filteredResponse.total + " data items -", debugLog);
-  }, error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
-  });
-}
-
-export async function replicate(req: Request, res: Response): Promise<void> {
-  const messageType = "campaign replicate";
-  (await configuredMailchimp()).mailchimp.campaigns.replicate(req.params.campaignId)
-    .then(responseData => {
-      messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
-    })
-    .catch(error => {
-      messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
-    });
-}
-
-/*
-
  campaigns/schedule-batch (string apikey, string cid, string schedule_time, int num_batches, int stagger_mins)
  Schedule a campaign to be sent in batches sometime in the future. Only valid for "regular" campaigns
 
  */
 
-export function scheduleBatch(req, res) {
+export function scheduleBatch(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
     "seg_id": req.body.segmentId,
@@ -181,7 +110,7 @@ export function scheduleBatch(req, res) {
 
  */
 
-export function schedule(req, res) {
+export function schedule(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
     "get_counts": true,
@@ -202,7 +131,7 @@ export function schedule(req, res) {
 
  */
 
-export function segmentTest(req, res) {
+export function segmentTest(req: Request, res: Response) {
   const requestData = {
     "list_id": messageHandler.mapListTypeToId(req, debugLog),
     "get_counts": true,
@@ -223,7 +152,7 @@ export function segmentTest(req, res) {
 
  */
 
-export function send(req, res) {
+export function send(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
   };
@@ -243,7 +172,7 @@ export function send(req, res) {
 
  */
 
-export function sendTest(req, res) {
+export function sendTest(req: Request, res: Response) {
   const requestData = {
     "id": messageHandler.mapListTypeToId(req, debugLog),
     "get_counts": true,
@@ -257,7 +186,7 @@ export function sendTest(req, res) {
   });
 }
 
-export function templateContent(req, res) {
+export function templateContent(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
   };
@@ -277,7 +206,7 @@ export function templateContent(req, res) {
 
  */
 
-export function unschedule(req, res) {
+export function unschedule(req: Request, res: Response) {
   const requestData = {
     "cid": req.params.campaignId,
     "get_counts": true,
@@ -303,7 +232,7 @@ export function unschedule(req, res) {
 
  */
 
-export function update(req, res) {
+export function update(req: Request, res: Response) {
   //  options, content, segment_opts)
   const requestData = {
     "cid": req.params.campaignId,

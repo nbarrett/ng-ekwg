@@ -66,49 +66,31 @@
                 <option value="500">500</option>
                 <option value="1000">1000</option>
               </select>
-              <label class="ml-2 mr-2">campaign</label>
-              <select
-                [disabled]="notifyTarget.busy"
-                [(ngModel)]="memberResource.data.campaignSearchField"
-                class="form-control input-sm mr-2">
-                <option value="subject">subjects</option>
-                <option value="title">titles</option>
-              </select>
-              <label>For text</label>
+              <label class="ml-2 mr-2">campaigns for text</label>
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-sm-10">
-          <div class="form-group">
-            <input id="campaign-search-term" type="text"
-                   [(ngModel)]="memberResource.data.campaignSearchTerm"
-                   [disabled]="notifyTarget.busy"
-                   name="campaignSearchTerm"
-                   class="form-control input-sm"
-                   placeholder="Enter campaign search term">
-          </div>
-        </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <input type="submit" value="Search"
-                   (click)="performCampaignSearch(true)"
-                   title="Search"
-                   name="search"
-                   [ngClass]="notifyTarget.busy ? 'btn btn-default button-form disabled-button-form': 'btn btn-default button-form blue-confirm'">
+              <input id="campaign-search-term" type="text"
+                     [(ngModel)]="memberResource.data.campaignSearchTerm"
+                     [disabled]="notifyTarget.busy"
+                     name="campaignSearchTerm"
+                     class="form-control input-sm flex-grow-1 mr-2"
+                     placeholder="Enter campaign search term">
+              <input type="submit" value="Search"
+                     (click)="performCampaignSearch(true)"
+                     title="Search"
+                     name="search"
+                     [ngClass]="notifyTarget.busy ? 'btn btn-default button-form disabled-button-form': 'btn btn-default button-form blue-confirm'">
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-12">
           <div class="form-group">
-            <label for="campaign">Campaign matches ({{campaigns.length || 0}})</label>
+            <label for="campaign">{{stringUtils.pluraliseWithCount(campaigns.length, "Campaign match", "Campaign matches")}}</label>
             <select [disabled]="notifyTarget.busy"
-                    (ngModelChange)="campaignChange()"
                     [(ngModel)]="memberResource.data.campaign" id="campaign"
+                    (ngModelChange)="campaignChange()"
                     class="form-control input-sm">
-              <option *ngFor="let campaign of campaigns trackBy campaignTracker"
+              <option *ngFor="let campaign of campaigns"
                       [textContent]="campaignTitle(campaign)"
                       [ngValue]="campaign">
             </select>
@@ -156,7 +138,7 @@
               </div>
               <div class="col-md-6">
                 <label class="form-inline ml-12" for="attachment">Display: <a target="_blank"
-                                                                              [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)"
+                                                                              [href]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).resourceUrl(memberResource)"
                                                                               id="attachment">
                   {{fileUtils.attachmentTitle(memberResource, 'data', 'file')}}</a></label>
               </div>
@@ -183,9 +165,9 @@
       </div>
       <div class="col-sm-12">
         <div class="form-group">
-          <label for="link-preview">Link preview: </label>
+          <label for="link-preview" class="mr-2">Link preview: </label>
           <a target="_blank" id="link-preview"
-             [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)">{{memberResource.title}}</a>
+             [href]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).resourceUrl(memberResource)">{{memberResource.title}}</a>
         </div>
       </div>
     </div>

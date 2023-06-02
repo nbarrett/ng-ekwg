@@ -24,3 +24,7 @@ export function replaceAll(find: string, replace: string, str: string): string |
   }
   return isNumber(str) ? +replacedValue : replacedValue;
 }
+
+export function asBoolean(val: any): boolean {
+  return val === true || val === "true";
+}

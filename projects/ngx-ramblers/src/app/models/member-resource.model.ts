@@ -1,6 +1,6 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { FileNameData } from "./aws-object.model";
-import { MailchimpCampaign } from "./mailchimp.model";
+import { MailchimpCampaign, MailchimpCampaignVersion2 } from "./mailchimp.model";
 
 export interface FilterParametersSearch {
   quickSearch: string;
@@ -8,11 +8,6 @@ export interface FilterParametersSearch {
 
 export interface FilterParameters extends FilterParametersSearch {
   filter?: AccessLevelData;
-}
-
-export enum CampaignSearchField {
-  subject = "subject",
-  title = "title"
 }
 
 export enum AccessLevel {
@@ -45,13 +40,12 @@ export interface AccessLevelData extends Identifiable {
   filter: () => boolean;
   includeAccessLevelIds: AccessLevel[];
 }
-
+export type MailchimpCampaignMixedVersion = MailchimpCampaign | MailchimpCampaignVersion2 ;
 export interface MemberResource extends Identifiable {
   data: {
     campaignSearchLimit: number;
     campaignSearchTerm?: string;
-    campaignSearchField: CampaignSearchField;
-    campaign?: MailchimpCampaign;
+    campaign?: MailchimpCampaignMixedVersion;
     fileNameData?: FileNameData;
   };
   resourceType: ResourceType;

@@ -69,9 +69,9 @@
                     <select id="walks-campaign"
                             [(ngModel)]="config.mailchimp.campaigns.walkNotification.campaignId"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.walkNotification?.campaignId)"
@@ -102,9 +102,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.socialEvents.campaignId"
                             id="social-events-campaign"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.socialEvents?.campaignId)"
@@ -135,9 +135,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.committee.campaignId"
                             id="committee-campaign-master"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.committee?.campaignId)"
@@ -164,9 +164,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.newsletter.campaignId"
                             id="newsletter-campaign"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.newsletter?.campaignId)"
@@ -199,9 +199,9 @@
                       [(ngModel)]="config.mailchimp.campaigns.expenseNotification.campaignId"
                       id="expenses-campaign"
                       class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.expenseNotification?.campaignId)"
@@ -232,9 +232,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.passwordReset.campaignId"
                             id="password-reset-campaign"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.passwordReset?.campaignId)"
@@ -270,9 +270,9 @@
                       [(ngModel)]="config.mailchimp.campaigns.forgottenPassword.campaignId"
                       id="forgot-password-campaign"
                       class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.forgottenPassword?.campaignId)"
@@ -303,9 +303,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.welcome.campaignId"
                             id="welcome-campaign"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.welcome?.campaignId)"
@@ -340,9 +340,9 @@
                     <select [(ngModel)]="config.mailchimp.campaigns.expiredMembersWarning.campaignId"
                             id="expired-members-campaign-initial"
                             class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let campaign of campaigns?.data"
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                               [ngValue]="campaign.id"
-                              [textContent]="campaign.title">
+                              [textContent]="campaign.settings.title">
                     </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.expiredMembersWarning?.campaignId)"
@@ -377,9 +377,9 @@
                   <select [(ngModel)]="config.mailchimp.campaigns.expiredMembers.campaignId"
                           id="expired-members-campaign"
                           class="form-control input-sm flex-grow-1 mr-2">
-                    <option *ngFor="let campaign of campaigns?.data"
+                    <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
                             [ngValue]="campaign.id"
-                            [textContent]="campaign.title">
+                            [textContent]="campaign.settings.title">
                   </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.expiredMembers?.campaignId)"

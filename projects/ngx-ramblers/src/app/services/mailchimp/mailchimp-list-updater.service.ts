@@ -17,7 +17,7 @@ export class MailchimpListUpdaterService {
               private stringUtils: StringUtilsService,
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.OFF);
   }
 
   updateMailchimpLists(notify: AlertInstance, members: Member[]): Promise<boolean> {

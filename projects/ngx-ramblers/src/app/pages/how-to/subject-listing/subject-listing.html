@@ -40,7 +40,7 @@
             <div class="file-detail">
               <div class="form-inline align-middle">
                 <h6><a target="_blank" [textContent]="memberResource.title"
-                       [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)"></a>
+                       [href]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).resourceUrl(memberResource)"></a>
                   <small class="text-muted"> – {{memberResource.resourceDate | displayDate}}
                     ({{memberResourcesReferenceData.accessLevelFor(memberResource.accessLevel).description}})</small>
                 </h6>
@@ -80,13 +80,13 @@
             <div class="row">
               <div class="col-sm-12 text-center">
                 <img class="icon"
-                     [src]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).icon(memberResource)"
-                     [alt]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).icon(memberResource)"/>
+                     [src]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).icon(memberResource)"
+                     [alt]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).icon(memberResource)"/>
               </div>
               <div class="col-sm-12 text-center">
                 <a class="" target='_blank' title="{{memberResource.title}}"
-                   [textContent]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).action"
-                   [href]="memberResourcesReferenceData.resourceTypeFor(memberResource.resourceType).resourceUrl(memberResource)"></a>
+                   [textContent]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).action"
+                   [href]="memberResourcesReferenceData.resourceTypeDataFor(memberResource.resourceType).resourceUrl(memberResource)"></a>
               </div>
             </div>
           </div>

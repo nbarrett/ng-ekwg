@@ -1,4 +1,3 @@
-
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -57,6 +56,11 @@ export class MailchimpCampaignService {
   }
 
   async list(options: MailchimpCampaignListRequest): Promise<MailchimpCampaignListResponse> {
+    const params: HttpParams = this.commonDataService.toHttpParams(options);
+    return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
+  }
+
+  async search(options: MailchimpCampaignListRequest): Promise<MailchimpCampaignListResponse> {
     const params: HttpParams = this.commonDataService.toHttpParams(options);
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
   }
@@ -130,10 +134,6 @@ export class MailchimpCampaignService {
       return Promise.reject(reason);
     }
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/send`, {}), this.campaignNotifications)).response;
-  }
-
-  async listCampaigns() {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {}), this.campaignNotifications)).response;
   }
 
   replicateAndSendWithOptions(campaignRequest: MailchimpCampaignSendRequest): Promise<MailchimpCampaignReplicateIdentifiersResponse> {

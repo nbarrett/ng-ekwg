@@ -60,7 +60,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   public roles: { replyTo: any[]; signoff: CommitteeMember[] };
   public selectableRecipients: MemberFilterSelection[];
   private config: MailchimpConfigResponse;
-  public campaigns: MailchimpCampaignListResponse;
+  public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public committeeEventId: string;
   private group: Organisation;
   public pageTitle: string;
@@ -137,13 +137,14 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
             this.clearRecipientsForCampaignOfType("committee");
           }),
         this.mailchimpCampaignService.list({
-          limit: 1000,
           concise: true,
+          limit: 1000,
+          start: 0,
           status: "save",
-          title: "Master"
-        }).then(response => {
-          this.campaigns = response;
-          this.logger.debug("response.data", response.data);
+          query: "Master"
+        }).then((mailchimpCampaignListResponse: MailchimpCampaignListResponse) => {
+          this.mailchimpCampaignListResponse = mailchimpCampaignListResponse;
+          this.logger.debug("mailchimpCampaignListResponse.campaigns", mailchimpCampaignListResponse.campaigns);
         })];
       if (!this.committeeFile) {
         promises.push(this.populateGroupEvents());

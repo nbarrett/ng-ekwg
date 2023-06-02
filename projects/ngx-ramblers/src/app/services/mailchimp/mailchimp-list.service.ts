@@ -8,7 +8,7 @@ import {
   MailchimpEmailWithError,
   MailchimpListDeleteSegmentMembersResponse, MailchimpListingResponse,
   MailchimpListMember,
-  MailchimpListResponse,
+  MailchimpListsMembersResponse,
   MailchimpListSegmentAddResponse,
   MailchimpListSegmentDeleteResponse,
   MailchimpListSegmentMembersAddResponse,
@@ -42,7 +42,7 @@ export class MailchimpListService {
               private commonDataService: CommonDataService,
               private memberService: MemberService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.OFF);
   }
 
   async addSegment(listType: string, segmentName: string): Promise<MailchimpListSegmentAddResponse> {
@@ -85,7 +85,7 @@ export class MailchimpListService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(this.BASE_URL), this.notifications, true)).response;
   }
 
-  async listSubscribers(listType: string, notify: AlertInstance): Promise<MailchimpListResponse> {
+  async listSubscribers(listType: string, notify: AlertInstance): Promise<MailchimpListsMembersResponse> {
     notify.success({title: "List Unsubscription", message: `Querying Mailchimp for current ${listType} subscribers`});
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/${listType}`), this.notifications, true)).response;
   }
@@ -96,8 +96,8 @@ export class MailchimpListService {
 
   batchUnsubscribeMembers(listType: string, allMembers: Member[], notify: AlertInstance) {
     return this.listSubscribers(listType, notify)
-      .then((listResponse: MailchimpListResponse) => this.updateWebId(listResponse, listType, allMembers))
-      .then((listResponse: MailchimpListResponse) => this.filterForUnsubscribes(listResponse, listType, allMembers))
+      .then((listResponse: MailchimpListsMembersResponse) => this.updateWebId(listResponse, listType, allMembers))
+      .then((listResponse: MailchimpListsMembersResponse) => this.filterForUnsubscribes(listResponse, listType, allMembers))
       .then(mailchimpSubscriptionMembers => this.batchUnsubscribeForListType(mailchimpSubscriptionMembers, listType, allMembers, notify));
   }
 
@@ -143,7 +143,7 @@ export class MailchimpListService {
     };
   }
 
-  filterForUnsubscribes(listResponse: MailchimpListResponse, listType: string, allMembers): MailchimpSubscriptionMember[] {
+  filterForUnsubscribes(listResponse: MailchimpListsMembersResponse, listType: string, allMembers): MailchimpSubscriptionMember[] {
     const unsubscribes: MailchimpSubscriptionMember[] = listResponse.members
       .filter(mailchimpListMember => this.includeInUnsubscribe(listType, allMembers, mailchimpListMember))
       .map(mailchimpListMember => ({...mailchimpListMember, status: SubscriptionStatus.UNSUBSCRIBED}));
@@ -255,7 +255,7 @@ export class MailchimpListService {
     }
   }
 
-  private updateWebId(mailchimpListResponse: MailchimpListResponse, listType: string, allMembers: Member[]): Promise<MailchimpListResponse> {
+  private updateWebId(mailchimpListResponse: MailchimpListsMembersResponse, listType: string, allMembers: Member[]): Promise<MailchimpListsMembersResponse> {
     return Promise.all(mailchimpListResponse.members.map(listResponse => {
       const member = this.findMemberAndMarkAsUpdated(listType, allMembers, listResponse);
       if (member) {

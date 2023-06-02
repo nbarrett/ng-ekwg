@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { envConfig } from "../env-config/env-config";
 
-
 export function processSuccessfulResponse(req: Request, res: Response, response, messageType, debug) {
   debug("Data:", JSON.stringify(response), "Received:", messageType, "successful response");
   res.json({request: {messageType}, response});
@@ -13,12 +12,12 @@ export function processUnsuccessfulResponse(req: Request, res: Response, error, 
   res.json({request: {messageType}, error: errorResponse});
 }
 
-export function logRequestData(messageType, requestData, debug) {
-  debug("Sending:", messageType, "request", JSON.stringify(requestData));
+export function logRequestData(messageType: string, requestData: any, debug, req?: Request) {
+  debug(messageType, "request", JSON.stringify(requestData), req ? "url: " + req.url : null);
 }
 
 export function debug(messageType, requestData, debug): void {
-  debug("Sending:", messageType, "request", JSON.stringify(requestData));
+  debug(messageType, "request", JSON.stringify(requestData));
 }
 
 export function mapListTypeToId(req: Request, debug) {

@@ -50,7 +50,7 @@ export class RamblersWalksAndEventsService {
               committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
     committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
-    this.logger = loggerFactory.createLogger("RamblersWalksAndEventsService", NgxLoggerLevel.INFO);
+    this.logger = loggerFactory.createLogger("RamblersWalksAndEventsService", NgxLoggerLevel.OFF);
     this.systemConfigService.events().subscribe(item => {
       this.ramblers = item.system.national;
       this.logger.info("systemConfigService:ramblers:", this.ramblers, "item.system", item);

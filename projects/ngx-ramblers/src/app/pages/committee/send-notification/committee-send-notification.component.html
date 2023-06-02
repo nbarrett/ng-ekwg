@@ -141,12 +141,12 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="campaign">Replicate Based On:</label>
-                  <select *ngIf="campaigns" [(ngModel)]="notification.content.campaignId"
+                  <select *ngIf="mailchimpCampaignListResponse" [(ngModel)]="notification.content.campaignId"
                           id="campaign"
                           class="form-control input-sm"
                           (ngModelChange)="campaignIdChanged()">
-                    <option *ngFor="let campaign of campaigns.data" [ngValue]="campaign.id"
-                            [textContent]="campaign.title"></option>
+                    <option *ngFor="let campaign of mailchimpCampaignListResponse.campaigns" [ngValue]="campaign.id"
+                            [textContent]="campaign.settings.title"></option>
                   </select>
                 </div>
               </div>

@@ -63,7 +63,6 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
     private notifierService: NotifierService,
     private modalService: BsModalService,
     private route: ActivatedRoute,
-    private siteEditService: SiteEditService,
     private apiResponseProcessor: ApiResponseProcessor,
     private memberLoginService: MemberLoginService,
     protected dateUtils: DateUtilsService,
@@ -79,7 +78,6 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.authService.authResponse().subscribe(() => this.authChanges()));
-    this.subscriptions.push(this.siteEditService.events.subscribe(() => this.authChanges()));
     this.notify.setBusy();
     this.destinationType = "";
     this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -148,8 +146,8 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
     return o1?.id === o2?.id;
   }
 
-  accessLevelTracker(expenseType: AccessLevelData) {
-    return expenseType?.includeAccessLevelIds;
+  accessLevelTracker(accessLevelData: AccessLevelData) {
+    return accessLevelData?.includeAccessLevelIds;
   }
 
   applyFilterToMemberResources(searchTerm?: string) {
@@ -181,7 +179,7 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
   }
 
   isActive(memberResource) {
-    const active = this.siteEditService.active() && this.memberLoginService.memberLoggedIn() && memberResource === this.memberResource;
+    const active = this.memberLoginService.allowCommittee() && memberResource === this.memberResource;
     if (active) {
       this.logger.debug("isActive =", active, "with memberResource", memberResource);
     }
@@ -189,7 +187,7 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
   }
 
   allowAdd() {
-    return this.siteEditService.active() && this.memberLoginService.allowFileAdmin();
+    return this.memberLoginService.allowCommittee() && this.memberLoginService.allowFileAdmin();
   }
 
   allowEdit(memberResource: MemberResource) {

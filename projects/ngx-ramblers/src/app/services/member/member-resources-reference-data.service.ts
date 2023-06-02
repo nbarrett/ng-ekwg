@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { FileUtilsService } from "../../file-utils.service";
-import { AccessLevel, AccessLevelData, CampaignSearchField, MemberResource, ResourceSubject, ResourceType, ResourceTypeData } from "../../models/member-resource.model";
+import { MailchimpCampaign, MailchimpCampaignVersion2 } from "../../models/mailchimp.model";
+import { AccessLevel, AccessLevelData, MailchimpCampaignMixedVersion, MemberResource, ResourceSubject, ResourceType, ResourceTypeData } from "../../models/member-resource.model";
 import { SiteEditService } from "../../site-edit/site-edit.service";
 import { ContentMetadataService } from "../content-metadata.service";
 import { DateUtilsService } from "../date-utils.service";
@@ -13,8 +14,6 @@ import { MemberLoginService } from "./member-login.service";
 })
 export class MemberResourcesReferenceDataService {
 
-  private logger: Logger;
-
   constructor(private fileUtilsService: FileUtilsService,
               private siteEditService: SiteEditService,
               protected dateUtils: DateUtilsService,
@@ -22,6 +21,16 @@ export class MemberResourcesReferenceDataService {
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MemberResourcesReferenceDataService, NgxLoggerLevel.OFF);
+  }
+
+  private logger: Logger;
+
+  static isMailchimpCampaignVersion2(campaign: MailchimpCampaignVersion2 | MailchimpCampaign): campaign is MailchimpCampaignVersion2 {
+    return (campaign as MailchimpCampaignVersion2).archive_url_long !== undefined;
+  }
+
+  static isMailchimpCampaign(campaign: MailchimpCampaignVersion2 | MailchimpCampaign): campaign is MailchimpCampaign {
+    return (campaign as MailchimpCampaign)?.long_archive_url !== undefined;
   }
 
   resourceSubjectForSubject(subject: string): ResourceSubject {
@@ -50,6 +59,7 @@ export class MemberResourcesReferenceDataService {
   }
 
   resourceTypes(): ResourceTypeData[] {
+
     return [
       {
         id: "email",
@@ -59,7 +69,12 @@ export class MemberResourcesReferenceDataService {
           return "/assets/images/local/mailchimp.ico";
         },
         resourceUrl(memberResource: MemberResource) {
-          return memberResource?.data?.campaign?.archive_url_long;
+          const campaign: MailchimpCampaignMixedVersion = memberResource?.data?.campaign;
+          if (MemberResourcesReferenceDataService.isMailchimpCampaign(campaign)) {
+            return campaign?.long_archive_url;
+          } else {
+            return campaign?.archive_url_long;
+          }
         }
       },
       {
@@ -121,7 +136,7 @@ export class MemberResourcesReferenceDataService {
 
   defaultMemberResource(): MemberResource {
     return {
-      data: {campaignSearchLimit: 1000, campaignSearchField: CampaignSearchField.title},
+      data: {campaignSearchLimit: 1000},
       resourceType: ResourceType.email,
       accessLevel: AccessLevel.hidden,
       createdDate: this.dateUtils.nowAsValue(),
@@ -129,10 +144,10 @@ export class MemberResourcesReferenceDataService {
     };
   }
 
-  resourceTypeFor(resourceType) {
-    const type = this.resourceTypes().find(type => type.id === resourceType);
-    this.logger.debug("resourceType for", type, type);
-    return type;
+  resourceTypeDataFor(resourceType): ResourceTypeData {
+    const resourceTypeData = this.resourceTypes().find(type => type.id === resourceType);
+    this.logger.debug("resourceType:", resourceType, "resourceTypeData:", resourceTypeData);
+    return resourceTypeData;
   }
 
   accessLevelFor(accessLevel: AccessLevel): AccessLevelData {
