@@ -10,13 +10,14 @@ import {
   MailchimpCampaignReplicateResponse,
   MailchimpCampaignSendRequest,
   MailchimpCampaignSendResponse,
-  MailchimpCampaignUpdateResponse,
+  MailchimpCampaignUpdateResponse, MailchimpConfig, MailchimpConfigResponse,
   MailchimpExpenseOtherContent,
   MailchimpGenericOtherContent
 } from "../../models/mailchimp.model";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MailchimpConfigService } from "../mailchimp-config.service";
 import { MemberService } from "../member/member.service";
 import { StringUtilsService } from "../string-utils.service";
 import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
@@ -29,10 +30,11 @@ export class MailchimpCampaignService {
   private logger: Logger;
   private BASE_URL = "api/mailchimp/campaigns";
   private campaignNotifications = new Subject<ApiResponse>();
-  private allowSendCampaign: boolean;
+  private mailchimpConfig: MailchimpConfig;
 
   constructor(private stringUtils: StringUtilsService,
               private http: HttpClient,
+              private mailchimpConfigService: MailchimpConfigService,
               private dateUtils: DateUtilsService,
               private memberService: MemberService,
               private commonDataService: CommonDataService,
@@ -40,7 +42,7 @@ export class MailchimpCampaignService {
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.ERROR);
-    this.allowSendCampaign = true;
+    this.mailchimpConfigService.getConfig().then(response => this.mailchimpConfig = response.mailchimp);
   }
 
   async addCampaign(campaignId, campaignName) {
@@ -129,23 +131,30 @@ export class MailchimpCampaignService {
   }
 
   async sendCampaign(campaignId: string): Promise<MailchimpCampaignSendResponse> {
-    if (!this.allowSendCampaign) {
-      const reason = "You cannot send campaigns as sending has been disabled in this release of the application";
+    if (!this.mailchimpConfig?.mailchimpEnabled) {
+      return Promise.resolve({complete: false});
+    } else if (!this.mailchimpConfig?.allowSendCampaign) {
+      const reason = "You cannot send campaigns as sending has been disabled by configuration";
       return Promise.reject(reason);
+    } else {
+      return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/send`, {}), this.campaignNotifications)).response;
     }
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/send`, {}), this.campaignNotifications)).response;
   }
 
   replicateAndSendWithOptions(campaignRequest: MailchimpCampaignSendRequest): Promise<MailchimpCampaignReplicateIdentifiersResponse> {
-    return this.replicateCampaign(campaignRequest.campaignId)
-      .then((replicateCampaignResponse: MailchimpCampaignReplicateResponse) => {
-        return this.setCampaignOptions(replicateCampaignResponse.id, campaignRequest.campaignName, campaignRequest.otherSegmentOptions)
-          .then(() => this.setContent(replicateCampaignResponse.id, campaignRequest.contentSections)
-            .then(() => this.setOrClearSegment(replicateCampaignResponse.id, campaignRequest.segmentId)
-              .then(() =>
-                campaignRequest.dontSend ? Promise.resolve({complete: false, web_id: replicateCampaignResponse.web_id}) :
-                  this.sendCampaign(replicateCampaignResponse.id)
-                    .then((sendCampaignResponse) => ({...sendCampaignResponse, ...{web_id: replicateCampaignResponse.web_id}})))));
-      });
+    if (!this.mailchimpConfig?.mailchimpEnabled) {
+      return Promise.resolve({complete: false});
+    } else {
+      return this.replicateCampaign(campaignRequest.campaignId)
+        .then((replicateCampaignResponse: MailchimpCampaignReplicateResponse) => {
+          return this.setCampaignOptions(replicateCampaignResponse.id, campaignRequest.campaignName, campaignRequest.otherSegmentOptions)
+            .then(() => this.setContent(replicateCampaignResponse.id, campaignRequest.contentSections)
+              .then(() => this.setOrClearSegment(replicateCampaignResponse.id, campaignRequest.segmentId)
+                .then(() =>
+                  campaignRequest.dontSend ? Promise.resolve({complete: false, web_id: replicateCampaignResponse.web_id}) :
+                    this.sendCampaign(replicateCampaignResponse.id)
+                      .then((sendCampaignResponse) => ({...sendCampaignResponse, ...{web_id: replicateCampaignResponse.web_id}})))));
+        });
+    }
   }
 }

@@ -8,6 +8,8 @@ export interface MailchimpConfigResponse {
 
 export interface MailchimpConfig {
   apiUrl: string;
+  allowSendCampaign: boolean;
+  mailchimpEnabled: boolean;
   lists: {
     walks: string;
     socialEvents: string;

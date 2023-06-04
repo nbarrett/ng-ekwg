@@ -5,6 +5,26 @@
         <tab heading="General">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div *ngIf="mailchimpListingResponse?.lists" class="img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Global Settings</div>
+              <div class="col-sm-12">
+                <div class="custom-control custom-checkbox">
+                  <input [(ngModel)]="config.mailchimp.mailchimpEnabled"
+                         type="checkbox" class="custom-control-input" id="mailchimp-enabled">
+                  <label class="custom-control-label"
+                         for="mailchimp-enabled">Enable Mailchimp Integration
+                  </label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input [disabled]="!config.mailchimp.mailchimpEnabled"
+                         [(ngModel)]="config.mailchimp.allowSendCampaign"
+                         type="checkbox" class="custom-control-input" id="allow-send-campaign">
+                  <label class="custom-control-label"
+                         for="allow-send-campaign">Allow Send Campaign
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="mailchimpListingResponse?.lists" class="img-thumbnail thumbnail-2">
               <div class="thumbnail-heading">List Mappings</div>
               <div class="col-sm-12">
                 <div class="form-group">
@@ -374,18 +394,18 @@
                 <div class="form-group">
                   <label for="expired-members-campaign">Campaign Master</label>
                   <div class="form-inline">
-                  <select [(ngModel)]="config.mailchimp.campaigns.expiredMembers.campaignId"
-                          id="expired-members-campaign"
-                          class="form-control input-sm flex-grow-1 mr-2">
-                    <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
-                            [ngValue]="campaign.id"
-                            [textContent]="campaign.settings.title">
-                  </select>
+                    <select [(ngModel)]="config.mailchimp.campaigns.expiredMembers.campaignId"
+                            id="expired-members-campaign"
+                            class="form-control input-sm flex-grow-1 mr-2">
+                      <option *ngFor="let campaign of mailchimpCampaignListResponse?.campaigns"
+                              [ngValue]="campaign.id"
+                              [textContent]="campaign.settings.title">
+                    </select>
                     <input type="submit" value="Edit"
                            (click)="editCampaign(config?.mailchimp?.campaigns?.expiredMembers?.campaignId)"
                            title="Edit"
                            [ngClass]="notReady() ? 'disabled-button-form button-bottom-aligned': 'button-form button-confirm blue-confirm button-bottom-aligned'">
-                </div>
+                  </div>
                 </div>
               </div>
               <div class="col-sm-8">

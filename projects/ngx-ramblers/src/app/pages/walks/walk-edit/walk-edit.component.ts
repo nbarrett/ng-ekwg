@@ -11,6 +11,7 @@ import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { DateValue } from "../../../models/date.model";
+import { MailchimpConfig } from "../../../models/mailchimp.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { Member } from "../../../models/member.model";
 import { ConfirmType } from "../../../models/ui-actions";
@@ -35,6 +36,7 @@ import { ConfigService } from "../../../services/config.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MeetupService } from "../../../services/meetup.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
@@ -65,7 +67,6 @@ interface DisplayMember {
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class WalkEditComponent implements OnInit, OnDestroy {
-
   @Input("displayedWalk")
   set initialiseWalk(displayedWalk: DisplayedWalk) {
     this.logger.debug("cloning walk for edit");
@@ -73,6 +74,8 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild(WalkNotificationDirective) notificationDirective: WalkNotificationDirective;
+  private mailchimpConfig: MailchimpConfig;
+
   public displayedWalk: DisplayedWalk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
@@ -85,6 +88,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
   public meetupConfig: MeetupConfig;
+
   private committeeReferenceData: CommitteeReferenceData;
   faCopy = faCopy;
   faPencil = faPencil;
@@ -93,6 +97,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
+    private mailchimpConfigService: MailchimpConfigService,
     public googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private addressQueryService: AddressQueryService,
@@ -130,6 +135,10 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData));
+    this.mailchimpConfigService.getConfig().then(response => {
+      this.mailchimpConfig = response.mailchimp;
+      this.logger.info("mailchimpConfig:", this.mailchimpConfig);
+    });
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig<MeetupConfig>("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
@@ -176,7 +185,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   allowNotifyConfirmation() {
-    return (this.allowSave() || this.confirmAction === ConfirmType.DELETE) && this.displayedWalk.walk.walkLeaderMemberId;
+    return this.mailchimpConfig?.mailchimpEnabled && (this.allowSave() || this.confirmAction === ConfirmType.DELETE) && this.displayedWalk.walk.walkLeaderMemberId;
   }
 
   allowHistoryView() {
@@ -268,7 +277,15 @@ export class WalkEditComponent implements OnInit, OnDestroy {
         displayedWalk.walk.venue = {type: this.walksReferenceService.venueTypes()[0].type, postcode: displayedWalk.walk.postcode};
       }
       this.confirmAction = ConfirmType.NONE;
-      this.sendNotifications = true;
+      if (this.mailchimpConfig?.allowSendCampaign) {
+        this.sendNotifications = true;
+      } else {
+        this.notify.warning({
+          title: "Mailchimp notifications",
+          message: "Mailchimp notifications have been temporarily disabled, so any changes to this walk will not be sent."
+        });
+
+      }
       this.updateGoogleMapsUrl();
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);
@@ -342,7 +359,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   previousWalkLeadersWithAliasOrMe(): DisplayMember[] {
     const displayMembers = this.membersWithAliasOrMe()
       .filter(member => this.display.previousWalkLeaderIds?.includes(member.memberId));
-    this.logger.info("this.membersWithAliasOrMe:", "\n" + displayMembers.map(item => item.membershipNumber + "," + item.contactId + "," + item.displayName).join("\n"));
+    this.logger.debug("this.membersWithAliasOrMe:", "\n" + displayMembers.map(item => item.membershipNumber + "," + item.contactId + "," + item.displayName).join("\n"));
     return displayMembers;
   }
 
