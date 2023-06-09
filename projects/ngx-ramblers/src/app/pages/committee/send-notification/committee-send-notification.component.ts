@@ -12,7 +12,7 @@ import {
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
   MailchimpConfigResponse,
-  MailchimpGenericOtherContent,
+  MailchimpGenericOtherContent, OtherOptions,
   SaveSegmentResponse
 } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
@@ -438,7 +438,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
 
             let members: MemberFilterSelection[];
             const list = this.notification.content.list;
-            const otherOptions = {
+            const otherOptions: OtherOptions = {
               from_name: this.display.committeeReferenceData.contactUsField(replyToRole, "fullName"),
               from_email: this.display.committeeReferenceData.contactUsField(replyToRole, "email"),
               list_id: config.mailchimp.lists[list]

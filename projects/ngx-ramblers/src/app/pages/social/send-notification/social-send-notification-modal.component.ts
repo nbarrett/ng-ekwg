@@ -7,7 +7,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Identifiable } from "../../../models/api-response.model";
 import { CommitteeMember } from "../../../models/committee.model";
-import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpGenericOtherContent } from "../../../models/mailchimp.model";
+import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpGenericOtherContent, OtherOptions } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { ConfirmType } from "../../../models/ui-actions";
@@ -265,7 +265,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
 
   sendEmailCampaign(contentSections, dontSend: boolean, campaignName: string) {
     const replyToRole = this.socialEvent?.notification?.content.replyTo.value ? this.roleForMemberId(this.socialEvent?.notification?.content.replyTo.value) : this.roleForType("social");
-    const otherOptions = (this.socialEvent?.notification?.content.replyTo.include && replyToRole) ? {
+    const otherOptions: OtherOptions = (this.socialEvent?.notification?.content.replyTo.include && replyToRole) ? {
       from_name: replyToRole.fullName,
       from_email: replyToRole.email
     } : {};

@@ -1,7 +1,7 @@
 import { envConfig } from "../env-config/env-config";
 import debug from "debug";
 import mongoose = require("mongoose");
-import transforms = require("../mongo/controllers/transforms");
+import transforms = require("./controllers/transforms");
 
 let connected = false;
 

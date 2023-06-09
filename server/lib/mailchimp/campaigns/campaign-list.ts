@@ -1,13 +1,14 @@
-import { Request, Response } from "express";
-import { MailchimpCampaign, MailchimpCampaignListResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { NextFunction, Request, Response } from "express";
+import { MailchimpApiError, MailchimpCampaign, MailchimpCampaignListResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../../env-config/env-config";
 import { MailchimpCampaignListRequest } from "../../shared/server-models";
 import { asBoolean } from "../../shared/string-utils";
 import { configuredMailchimp } from "../mailchimp-config";
-import * as messageHandler from "../message-handler";
+import * as messageProcessing from "../mailchimp-message-processing";
 import debug from "debug";
 
-const debugLog = debug(envConfig.logNamespace("mailchimp:campaigns:list"));
+const messageType = "mailchimp:campaigns:list";
+const debugLog = debug(envConfig.logNamespace(messageType));
 
 function campaignResponseFrom(campaigns: MailchimpCampaign[], responseData: MailchimpCampaignListResponse) {
   return {
@@ -17,9 +18,9 @@ function campaignResponseFrom(campaigns: MailchimpCampaign[], responseData: Mail
   };
 }
 
-export function list(req: Request, res: Response): void {
-  const messageType = "campaign list";
-  configuredMailchimp().then(config => {
+export function campaignList(req: Request, res: Response, next: NextFunction): Promise<void> {
+
+  return configuredMailchimp().then(config => {
     const mailchimpCampaignListRequest: MailchimpCampaignListRequest = {
       query: req.query.query?.toString(),
       fields: asBoolean(req.query.concise) ? [
@@ -54,12 +55,12 @@ export function list(req: Request, res: Response): void {
       return campaignResponseFrom(campaigns, responseData);
     }
 
-    config.mailchimp.campaigns.list(mailchimpCampaignListRequest)
+    return config.mailchimp.campaigns.list(mailchimpCampaignListRequest)
       .then((responseData: MailchimpCampaignListResponse) => {
-        messageHandler.logRequestData(messageType + " response", campaignResponseFrom(responseData.campaigns, responseData), debugLog, req);
-        messageHandler.processSuccessfulResponse(req, res, filterCampaigns(responseData, mailchimpCampaignListRequest), messageType, debugLog);
+        messageProcessing.logRequestData(messageType + " response", campaignResponseFrom(responseData.campaigns, responseData), debugLog, req);
+        messageProcessing.successfulResponse(req, res, filterCampaigns(responseData, mailchimpCampaignListRequest), messageType, debugLog);
       });
-  }).catch(error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
+  }).catch((error: MailchimpApiError) => {
+    messageProcessing.unsuccessfulResponse(req, res, error, messageType, debugLog);
   });
 }

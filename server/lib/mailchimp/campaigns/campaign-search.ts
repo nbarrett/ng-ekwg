@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
-import { MailchimpCampaignSearchResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { MailchimpApiError, MailchimpCampaignSearchResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../../env-config/env-config";
 import { MailchimpCampaignSearchRequestOptions } from "../../shared/server-models";
 import { asBoolean } from "../../shared/string-utils";
 import { configuredMailchimp } from "../mailchimp-config";
-import * as messageHandler from "../message-handler";
+import * as messageProcessing from "../mailchimp-message-processing";
 import debug from "debug";
 
 const debugLog = debug(envConfig.logNamespace("mailchimp:campaigns:search"));
 
-export function search(req: Request, res: Response): void {
+export function campaignSearch(req: Request, res: Response): Promise<void> {
   const messageType = "campaign search";
-  configuredMailchimp().then(config => {
+  return configuredMailchimp().then(config => {
     const options: MailchimpCampaignSearchRequestOptions = {
       fields: asBoolean(req.query.concise) ? [
         "results.campaign.create_time",
@@ -29,11 +29,11 @@ export function search(req: Request, res: Response): void {
       ] : null,
     };
     debugLog("req.query:", req.query, "search options:", options);
-    config.mailchimp.searchCampaigns.search(req.query.query, options)
+    return config.mailchimp.searchCampaigns.search(req.query.query, options)
       .then((responseData: MailchimpCampaignSearchResponse) => {
-        messageHandler.processSuccessfulResponse(req, res, responseData, messageType, debugLog);
+        messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
       });
-  }).catch(error => {
-    messageHandler.processUnsuccessfulResponse(req, res, error, messageType, debugLog);
+  }).catch((error: MailchimpApiError) => {
+    messageProcessing.unsuccessfulResponse(req, res, error, messageType, debugLog);
   });
 }

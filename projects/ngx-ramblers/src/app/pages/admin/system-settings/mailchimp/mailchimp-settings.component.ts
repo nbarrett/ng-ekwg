@@ -70,7 +70,7 @@ export class MailchimpSettingsComponent implements OnInit {
       .then(config => {
         this.config = config;
         this.logger.info("retrieved config", config);
-      });
+      }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));
 
     this.mailchimpCampaignService.list({
       concise: true,
@@ -86,7 +86,7 @@ export class MailchimpSettingsComponent implements OnInit {
         message: "Found " + this.mailchimpCampaignListResponse.campaigns.length + " draft campaigns matching " + this.campaignSearchTerm
       });
       this.notify.clearBusy();
-    });
+    }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));;
     this.mailchimpListService.lists(this.notify).then((response: MailchimpListingResponse) => {
       this.mailchimpListingResponse = response;
       this.logger.debug("mailchimpListService lists response:", response);

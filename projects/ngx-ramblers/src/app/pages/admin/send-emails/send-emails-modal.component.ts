@@ -8,7 +8,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
-import { SaveSegmentResponse } from "../../../models/mailchimp.model";
+import { MailchimpCampaignSendRequest, SaveSegmentResponse } from "../../../models/mailchimp.model";
 import { Member, MemberEmailType, MemberFilterSelection, MemberSelector } from "../../../models/member.model";
 import { Organisation } from "../../../models/system.model";
 import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
@@ -378,11 +378,12 @@ export class SendEmailsModalComponent implements OnInit, OnDestroy {
     const members = `${this.selectedMemberIds.length} member(s)`;
     this.notifySuccess(`Sending ${this.emailType.name} email to ${members}`);
     this.logger.debug("about to sendEmailCampaign:", this.emailType.name, "campaign Id", this.emailType.campaignId, "segmentId", segmentId, "campaignName", this.emailType.name);
-    return this.mailchimpCampaignService.replicateAndSendWithOptions({
+    const campaignRequest: MailchimpCampaignSendRequest = {
       campaignId: this.emailType.campaignId,
       campaignName: this.emailType.name,
       segmentId
-    }).then(() => {
+    };
+    return this.mailchimpCampaignService.replicateAndSendWithOptions(campaignRequest).then(() => {
       this.notifySuccess(`Sending of ${this.emailType.name} to ${members} was successful`);
     });
   }

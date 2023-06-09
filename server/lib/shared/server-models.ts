@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { UploadedFile } from "../../../projects/ngx-ramblers/src/app/models/aws-object.model";
-import { MailchimpConfigResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { MailchimpConfig, MailchimpConfigResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 
 export interface MessageHandlerOptions {
   req: any;
@@ -18,8 +18,13 @@ export interface MulterRequest extends Request {
 }
 
 export interface MailchimpConfigData {
-  config: MailchimpConfigResponse;
+  config: MailchimpConfig;
   mailchimp: any;
+}
+
+export interface MailchimpUpdateSegmentBodyParameters {
+  name: string;
+  static_segment?: string[];
 }
 
 export interface MailchimpCampaignListRequest {

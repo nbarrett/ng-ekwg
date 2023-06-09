@@ -8,6 +8,7 @@ export interface MailchimpConfigResponse {
 
 export interface MailchimpConfig {
   apiUrl: string;
+  apiKey: string;
   allowSendCampaign: boolean;
   mailchimpEnabled: boolean;
   lists: {
@@ -48,6 +49,19 @@ export enum SubscriptionStatus {
   PENDING = "pending"
 }
 
+export enum Frequency {
+  DAILY = "daily",
+  WEEKLY = "weekly",
+  MONTHLY = "monthly"
+}
+
+export enum WinnerCriteria {
+  OPENS = "opens",
+  CLICKS = "clicks",
+  MANUAL = "manual",
+  TOTAL_REVENUE = "total_revenue"
+}
+
 export interface CampaignConfig {
   campaignId: string;
   name: string;
@@ -77,6 +91,21 @@ export interface MailchimpMemberIdentifiers {
 export interface MailchimpListsMembersResponse {
   list_id: string;
   members: MailchimpListMember[];
+}
+
+export interface MailchimpSegmentUpdateResponse {
+  id: number;
+  name: string;
+  member_count: number;
+  type: string;
+  created_at: string;
+  updated_at: string;
+  options: {
+    match: string;
+    conditions: Condition[]
+  },
+  list_id: string;
+  _links: Link[]
 }
 
 export interface MailchimpListingResponse {
@@ -171,6 +200,12 @@ export interface MailchimpSubscriptionMember {
 
 export type SubscriptionRequest = SubscriberIdentifiers | MergeVariablesRequest & MailchimpSubscription;
 
+export interface MailchimpUpdateSegmentRequest {
+  segmentId: number;
+  resetSegmentMembers: boolean;
+  segmentName: string;
+}
+
 export interface MailchimpBatchSubscriptionResponse {
   new_members: MailchimpMember[];
   updated_members: MailchimpMember[];
@@ -181,8 +216,129 @@ export interface MailchimpBatchSubscriptionResponse {
   _links: Link[];
 }
 
-export interface MailchimpListSegmentResetResponse {
-  complete: boolean;
+export interface MailchimpListSegmentAddOrRemoveMembersRequest {
+  segmentId: number;
+  membersToAdd: SubscriptionRequest[];
+  membersToRemove: SubscriptionRequest[];
+}
+
+export interface MailchimpListSegmentBatchAddOrRemoveMembersResponse {
+  members_added: [
+    {
+      id: string;
+      email_address: string;
+      unique_email_id: string;
+      email_type: string;
+      status: string;
+      merge_fields: {
+        property1: null,
+        property2: null
+      },
+      interests: {
+        property1: true,
+        property2: true
+      },
+      stats: {
+        avg_open_rate: number;
+        avg_click_rate: 0
+      },
+      ip_signup: string;
+      timestamp_signup: string;
+      ip_opt: string;
+      timestamp_opt: string;
+      member_rating: number;
+      last_changed: string;
+      language: string;
+      vip: true,
+      email_client: string;
+      location: {
+        latitude: number;
+        longitude: number;
+        gmtoff: number;
+        dstoff: number;
+        country_code: string;
+        timezone: string;
+      },
+      last_note: {
+        note_id: number;
+        created_at: string;
+        created_by: string;
+        note: string;
+      },
+      tags_count: number;
+      tags: [
+        {
+          id: number;
+          name: string;
+        }
+      ],
+      list_id: string;
+      _links: Link[]
+    }
+  ],
+  members_removed: [
+    {
+      id: string;
+      email_address: string;
+      unique_email_id: string;
+      email_type: string;
+      status: string;
+      merge_fields: {
+        property1: null,
+        property2: null
+      },
+      interests: {
+        property1: true,
+        property2: true
+      },
+      stats: {
+        avg_open_rate: number;
+        avg_click_rate: number;
+      },
+      ip_signup: string;
+      timestamp_signup: string;
+      ip_opt: string;
+      timestamp_opt: string;
+      member_rating: number;
+      last_changed: string;
+      language: string;
+      vip: true,
+      email_client: string;
+      location: {
+        latitude: number;
+        longitude: number;
+        gmtoff: number;
+        dstoff: number;
+        country_code: string;
+        timezone: string;
+      },
+      last_note: {
+        note_id: number;
+        created_at: string;
+        created_by: string;
+        note: string;
+      },
+      tags_count: number;
+      tags: [
+        {
+          id: number;
+          name: string;
+        }
+      ],
+      list_id: string;
+      _links: Link[]
+    }
+  ],
+  errors: [
+    {
+      email_addresses: string[],
+      error: string;
+    }
+  ],
+  total_added: number;
+  total_removed: number;
+  error_count: number;
+  _links: Link[]
 }
 
 export interface MailchimpListSegmentAddResponse {
@@ -193,22 +349,8 @@ export interface MailchimpListSegmentAddResponse {
   error: string;
 }
 
-export interface MailchimpListDeleteSegmentMembersResponse {
-  complete: boolean;
-}
-
-export interface MailchimpListSegmentRenameResponse {
-  complete: boolean;
-}
-
 export interface MailchimpListSegmentDeleteResponse {
   complete: boolean;
-}
-
-export interface MailchimpListSegmentMembersAddResponse {
-  success_count: number;
-  error_count: number;
-  errors: [];
 }
 
 export interface MailchimpCampaignListRequest {
@@ -219,17 +361,139 @@ export interface MailchimpCampaignListRequest {
   query?: string;
 }
 
+export interface MailchimpCampaignUpdateRequestVersion2 {
+  updates: { name: string; value: any };
+}
+
+export interface VariateSettingsAB {
+  wait_time: number;
+  test_size: number;
+  subject_lines: string[];
+  send_times: string[];
+  from_names: string[];
+  reply_to_addresses: string[];
+  winner_criteria: WinnerCriteria;
+}
+
+export interface MultiVariateSettings {
+  archive: {
+    archive_content: string;
+    archive_type: string;
+  };
+  template: {
+    id: number;
+    sections: any;
+  };
+  content_label?: string;
+  plain_text?: string;
+  html?: string;
+  url?: string;
+}
+
+export interface VariateSettings {
+  winning_combination_id: string;
+  winning_campaign_id: string;
+  winner_criteria: WinnerCriteria;
+  wait_time: number;
+  test_size: number;
+  subject_lines: string[];
+  send_times: string[];
+  from_names: string[];
+  reply_to_addresses: string[];
+  contents: string[];
+  combinations: [
+    {
+      id: string;
+      subject_line: number;
+      send_time: number;
+      from_name: number;
+      reply_to: number;
+      content_description: number;
+      recipients: number
+    }
+  ];
+}
+
+export interface OtherOptions {
+  from_email?: string;
+  from_name?: string;
+  list_id?: string;
+}
+
+export interface MailchimpCampaignContentUpdateRequest {
+  archive?: {
+    archive_type: string;
+    archive_content: string;
+  };
+  template?: {
+    sections: any
+    id?: number;
+  };
+  plain_text?: string;
+  html?: string;
+  url?: string;
+  variate_contents?: MultiVariateSettings[];
+}
+
+export interface MailchimpCampaignUpdateRequest {
+  recipients: {
+    segment_opts: {
+      saved_segment_id: number;
+      prebuilt_segment_id?: string;
+      match?: string; conditions?: [];
+    }
+    list_id: string;
+  };
+  settings: {
+    preview_text?: string;
+    title?: string;
+    use_conversation?: boolean;
+    to_name?: string;
+    folder_id?: string;
+    authenticate?: boolean;
+    auto_footer?: boolean;
+    inline_css?: boolean;
+    auto_tweet?: boolean;
+    auto_fb_post?: boolean;
+    fb_comments?: string;
+    template_id?: string;
+    subject_line: string;
+    from_name: string;
+    reply_to?: string;
+  };
+  rss_opts?: {
+    schedule: {}
+    constrain_rss_img: boolean;
+    feed_url: string;
+    frequency: Frequency;
+  };
+  variate_settings?: VariateSettingsAB;
+  tracking?: {};
+  social_card?: {};
+}
+
+export interface Condition {
+  field: string;
+  op: string;
+  value: string;
+  extra?: string;
+}
+
+export interface Conditions {
+  name: string;
+  options: {
+    match: string;
+    conditions: Condition[];
+  };
+}
+
 export interface MailchimpCampaignListResponse {
   campaigns: MailchimpCampaign[];
   total_items: number;
   _links: Link[];
 }
 
-export interface MailchimpCampaignListResponseVersion2 {
-  total: number;
-  errors: any[];
-  data: MailchimpCampaignVersion2[];
-}
+export type MailchimpCampaignUpdateResponse = MailchimpCampaign;
 
 export interface MailchimpCampaign {
   id: string;
@@ -277,29 +541,7 @@ export interface MailchimpCampaign {
     template_id: number;
     drag_and_drop: boolean;
   };
-  variate_settings: {
-    winning_combination_id: string;
-    winning_campaign_id: string;
-    winner_criteria: string;
-    wait_time: number;
-    test_size: number;
-    subject_lines: string[];
-    send_times: string[];
-    from_names: string[];
-    reply_to_addresses: string[];
-    contents: string[];
-    combinations: [
-      {
-        id: string;
-        subject_line: number;
-        send_time: number;
-        from_name: number;
-        reply_to: number;
-        content_description: number;
-        recipients: number
-      }
-    ]
-  };
+  variate_settings: VariateSettings;
   tracking: {
     opens: boolean;
     html_clicks: boolean;
@@ -380,224 +622,6 @@ export interface MailchimpCampaign {
   _links: Link[];
 }
 
-export interface MailchimpCampaignVersion2 {
-  id: string;
-  web_id: number;
-  list_id: string;
-  template_id: number;
-  title: string;
-  subject: string;
-  saved_segment: {
-    id: number;
-    type: string;
-    name: string;
-  };
-  status: string;
-  from_name: string;
-  archive_url_long: string;
-  create_time: number;
-}
-
-export interface SaveSegmentResponse {
-  segment: { id: number };
-}
-
-export interface MailchimpCampaignSendRequest {
-  dontSend?: boolean;
-  campaignId: string;
-  campaignName: string;
-  segmentId?: number;
-  contentSections?: MailchimpExpenseOtherContent | MailchimpGenericOtherContent;
-  otherSegmentOptions?: any;
-}
-
-export interface MailchimpExpenseOtherContent {
-  sections: {
-    expense_id_url: string;
-    expense_notification_text: string;
-  };
-}
-
-export interface MailchimpGenericOtherContent {
-  sections: {
-    notification_text: string;
-  };
-}
-
-export interface MailchimpCampaignSearchResponse {
-  results: [
-    {
-      campaign: {
-        id: string;
-        web_id: number;
-        parent_campaign_id: string;
-        type: string;
-        create_time: string;
-        archive_url: string;
-        long_archive_url: string;
-        status: string;
-        emails_sent: number;
-        send_time: string;
-        content_type: string;
-        needs_block_refresh: boolean;
-        resendable: boolean;
-        recipients: {
-          list_id: string;
-          list_is_active: boolean;
-          list_name: string;
-          segment_text: string;
-          recipient_count: number;
-          segment_opts: {
-            saved_segment_id: number;
-            prebuilt_segment_id: string;
-            match: string;
-            conditions: string[];
-          }
-        };
-        settings: {
-          subject_line: string;
-          preview_text: string;
-          title: string;
-          from_name: string;
-          reply_to: string;
-          use_conversation: boolean;
-          to_name: string;
-          folder_id: string;
-          authenticate: boolean;
-          auto_footer: boolean;
-          inline_css: boolean;
-          auto_tweet: boolean;
-          auto_fb_post: string[];
-          fb_comments: boolean;
-          timewarp: boolean;
-          template_id: number;
-          drag_and_drop: boolean;
-        },
-        variate_settings: {
-          winning_combination_id: string;
-          winning_campaign_id: string;
-          winner_criteria: string;
-          wait_time: number;
-          test_size: number;
-          subject_lines: string[];
-          send_times: string[];
-          from_names: string[];
-          reply_to_addresses: string[];
-          contents: string[];
-          combinations: [
-            {
-              id: string;
-              subject_line: number;
-              send_time: number;
-              from_name: number;
-              reply_to: number;
-              content_description: number;
-              recipients: number;
-            }
-          ]
-        },
-        tracking: {
-          opens: boolean;
-          html_clicks: boolean;
-          text_clicks: boolean;
-          goal_tracking: boolean;
-          ecomm360: boolean;
-          google_analytics: string;
-          clicktale: string;
-          salesforce: {
-            campaign: boolean;
-            notes: boolean;
-          },
-          capsule: {
-            notes: boolean;
-          }
-        },
-        rss_opts: {
-          feed_url: string;
-          frequency: string;
-          schedule: {
-            hour: number;
-            daily_send: {
-              sunday: boolean;
-              monday: boolean;
-              tuesday: boolean;
-              wednesday: boolean;
-              thursday: boolean;
-              friday: boolean;
-              saturday: boolean;
-            },
-            weekly_send_day: string;
-            monthly_send_date: number;
-          },
-          last_sent: string;
-          constrain_rss_img: boolean;
-        },
-        ab_split_opts: {
-          split_test: string;
-          pick_winner: string;
-          wait_units: string;
-          wait_time: number;
-          split_size: 1,
-          from_name_a: string;
-          from_name_b: string;
-          reply_email_a: string;
-          reply_email_b: string;
-          subject_a: string;
-          subject_b: string;
-          send_time_a: string;
-          send_time_b: string;
-          send_time_winner: string;
-        },
-        social_card: {
-          image_url: string;
-          description: string;
-          title: string;
-        },
-        report_summary: {
-          opens: number;
-          unique_opens: number;
-          open_rate: number;
-          clicks: number;
-          subscriber_clicks: number;
-          click_rate: number;
-          ecommerce: {
-            total_orders: number;
-            total_spent: number;
-            total_revenue: number;
-          }
-        },
-        delivery_status: {
-          enabled: boolean;
-          can_cancel: boolean;
-          status: string;
-          emails_sent: number;
-          emails_canceled: number;
-        },
-        _links: [
-          {
-            rel: string;
-            href: string;
-            method: string;
-            targetSchema: string;
-            schema: string;
-          }
-        ]
-      },
-      snippet: string;
-    }
-  ],
-  total_items: number;
-  _links: [
-    {
-      rel: string;
-      href: string;
-      method: string;
-      targetSchema: string;
-      schema: string;
-    }
-  ]
-}
-
 export interface MailchimpCampaignReplicateResponse {
   id: string;
   web_id: number;
@@ -641,47 +665,10 @@ export interface MailchimpCampaignReplicateResponse {
     fb_comments: boolean;
     timewarp: boolean;
     template_id: number;
-    drag_and_drop: boolean
+    drag_and_drop: boolean;
   };
-  variate_settings: {
-    winning_combination_id: string;
-    winning_campaign_id: string;
-    winner_criteria: string;
-    wait_time: number;
-    test_size: number;
-    subject_lines: string[];
-    send_times: string[];
-    from_names: string[];
-    reply_to_addresses: string[];
-    contents: string[];
-    combinations: [
-      {
-        id: string;
-        subject_line: number;
-        send_time: number;
-        from_name: number;
-        reply_to: number;
-        content_description: number;
-        recipients: number
-      }
-    ]
-  };
-  tracking: {
-    opens: boolean;
-    html_clicks: boolean;
-    text_clicks: boolean;
-    goal_tracking: boolean;
-    ecomm360: boolean;
-    google_analytics: string;
-    clicktale: string;
-    salesforce: {
-      campaign: boolean;
-      notes: boolean
-    };
-    capsule: {
-      notes: boolean
-    }
-  };
+  variate_settings: VariateSettings;
+  tracking: Tracking;
   rss_opts: {
     feed_url: string[];
     frequency: string[];
@@ -746,9 +733,84 @@ export interface MailchimpCampaignReplicateResponse {
   _links: Link[];
 }
 
-export interface MailchimpCampaignUpdateResponse {
-  data: MailchimpCampaignReplicateResponse;
-  errors: [];
+export interface MailchimpCampaignVersion2 {
+  id: string;
+  web_id: number;
+  list_id: string;
+  template_id: number;
+  title: string;
+  subject: string;
+  saved_segment: {
+    id: number;
+    type: string;
+    name: string;
+  };
+  status: string;
+  from_name: string;
+  archive_url_long: string;
+  create_time: number;
+}
+
+export interface SaveSegmentResponse {
+  segment: { id: number };
+}
+
+export interface MailchimpCampaignSendRequest {
+  dontSend?: boolean;
+  campaignId: string;
+  campaignName: string;
+  segmentId?: number;
+  contentSections?: MailchimpExpenseOtherContent | MailchimpGenericOtherContent;
+  otherSegmentOptions?: OtherOptions;
+}
+
+export interface MailchimpExpenseOtherContent {
+  sections: {
+    expense_id_url: string;
+    expense_notification_text: string;
+  };
+}
+
+export interface MailchimpGenericOtherContent {
+  sections: {
+    notification_text: string;
+  };
+}
+
+export interface MailchimpCampaignSearchResponse {
+  results: [
+    {
+      campaign: MailchimpCampaign,
+      snippet: string;
+    }
+  ],
+  total_items: number;
+  _links: [
+    {
+      rel: string;
+      href: string;
+      method: string;
+      targetSchema: string;
+      schema: string;
+    }
+  ]
+}
+
+export interface Tracking {
+  opens: boolean;
+  html_clicks: boolean;
+  text_clicks: boolean;
+  goal_tracking: boolean;
+  ecomm360: boolean;
+  google_analytics: string;
+  clicktale: string;
+  salesforce: {
+    campaign: boolean;
+    notes: boolean
+  };
+  capsule: {
+    notes: boolean
+  };
 }
 
 export interface MailchimpCampaignSendResponse {
@@ -851,4 +913,43 @@ export interface Stats {
 export interface Tag {
   id: number;
   name: string;
+}
+
+export type MailchimpApiError = MailchimpHttpErrorResponse | MailchimpErrorResponse | Error;
+
+export interface MailchimpErrorResponse {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+}
+
+export interface MailchimpHttpErrorResponse {
+  status: number;
+  response: {
+    req: {
+      method: string;
+      url: string;
+      headers: {
+        "user-agent": string;
+        "content-type": string;
+        accept: string;
+      }
+    },
+    header: {
+      server: string;
+      "content-type": string;
+      "content-length": string;
+      "x-request-id": string;
+      link: string;
+      "content-encoding": string;
+      vary: string;
+      date: string;
+      connection: string;
+      "server-timing": string;
+    },
+    status: number;
+    text: string;
+  };
 }

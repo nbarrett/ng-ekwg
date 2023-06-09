@@ -4,7 +4,7 @@
       <tabset class="custom-tabset" *ngIf="config">
         <tab heading="General">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div *ngIf="mailchimpListingResponse?.lists" class="img-thumbnail thumbnail-2">
+            <div *ngIf="config.mailchimp" class="img-thumbnail thumbnail-2">
               <div class="thumbnail-heading">Global Settings</div>
               <div class="col-sm-12">
                 <div class="custom-control custom-checkbox">
@@ -15,12 +15,23 @@
                   </label>
                 </div>
                 <div class="custom-control custom-checkbox">
-                  <input [disabled]="!config.mailchimp.mailchimpEnabled"
-                         [(ngModel)]="config.mailchimp.allowSendCampaign"
+                  <input [(ngModel)]="config.mailchimp.allowSendCampaign"
                          type="checkbox" class="custom-control-input" id="allow-send-campaign">
                   <label class="custom-control-label"
                          for="allow-send-campaign">Allow Send Campaign
                   </label>
+                </div>
+                <div class="form-group">
+                  <label for="api-url">API Url</label>
+                  <input [(ngModel)]="config.mailchimp.apiUrl" type="text" class="form-control input-sm"
+                         id="api-url"
+                         placeholder="The Url endpoint for the mailchimp api">
+                </div>
+                <div class="form-group">
+                  <label for="api-key">API Key</label>
+                  <input [(ngModel)]="config.mailchimp.apiKey" type="text" class="form-control input-sm"
+                         id="api-key"
+                         placeholder="The API key for the mailchimp api">
                 </div>
               </div>
             </div>

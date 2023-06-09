@@ -4,13 +4,16 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
 import { ApiResponse } from "../../models/api-response.model";
 import {
+  MailchimpCampaignContentUpdateRequest,
   MailchimpCampaignListRequest,
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
   MailchimpCampaignReplicateResponse,
   MailchimpCampaignSendRequest,
   MailchimpCampaignSendResponse,
-  MailchimpCampaignUpdateResponse, MailchimpConfig, MailchimpConfigResponse,
+  MailchimpCampaignUpdateRequest,
+  MailchimpCampaignUpdateResponse,
+  MailchimpConfig,
   MailchimpExpenseOtherContent,
   MailchimpGenericOtherContent
 } from "../../models/mailchimp.model";
@@ -67,61 +70,53 @@ export class MailchimpCampaignService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
   }
 
-  setOrClearSegment(replicatedCampaignId: string, segmentId?: number): Promise<MailchimpCampaignUpdateResponse> {
-    if (segmentId) {
-      return this.setSegmentId(replicatedCampaignId, segmentId);
-    } else {
-      return this.clearSegment(replicatedCampaignId);
-    }
-  }
+  // setOrClearSegment(replicatedCampaignId: string, segmentId?: number): Promise<MailchimpCampaignUpdateResponse> {
+  //   if (segmentId) {
+  //     return this.setSegmentId(replicatedCampaignId, segmentId);
+  //   } else {
+  //     return this.clearSegment(replicatedCampaignId);
+  //   }
+  // }
 
-  setSegmentId(campaignId: string, segmentId: number): Promise<MailchimpCampaignUpdateResponse> {
-    return this.setSegmentOpts(campaignId, {saved_segment_id: segmentId});
-  }
-
-  clearSegment(campaignId: string): Promise<MailchimpCampaignUpdateResponse> {
-    return this.setSegmentOpts(campaignId, {});
-  }
+  // setSegmentId(campaignId: string, segmentId: number): Promise<MailchimpCampaignUpdateResponse> {
+  //   const updateRequest: MailchimpCampaignUpdateRequest = {recipients: {segment_opts: segmentId.toString()}};
+  //   return this.setSegmentOpts(campaignId,);
+  // }
+  //
+  // clearSegment(campaignId: string): Promise<MailchimpCampaignUpdateResponse> {
+  //   return this.setSegmentOpts(campaignId, {});
+  // }
 
   async setContent(campaignId: string, contentSections: MailchimpExpenseOtherContent | MailchimpGenericOtherContent): Promise<MailchimpCampaignUpdateResponse | void> {
     this.logger.debug("setContent:contentSections", contentSections);
     if (contentSections) {
-      return await this.updateCampaign(campaignId, {
-        updates: {
-          name: "content",
-          value: contentSections
-        }
-      });
+      const updateRequest: MailchimpCampaignContentUpdateRequest = {
+        template: {sections: contentSections.sections}
+      };
+      return await this.updateCampaignContent(campaignId, updateRequest);
     } else {
       return Promise.resolve();
     }
   }
 
-  async setSegmentOpts(campaignId: string, value?: any): Promise<MailchimpCampaignUpdateResponse> {
-    return await this.updateCampaign(campaignId, {
-      updates: {
-        name: "segment_opts",
-        value
-      }
-    });
+  // async setSegmentOpts(campaignId: string, updateRequest: MailchimpCampaignUpdateRequest): Promise<MailchimpCampaignUpdateResponse> {
+  //   return await this.updateCampaign(campaignId, updateRequest);
+  // }
+
+  // async setCampaignOptions(campaignId: string, campaignName: string, otherOptions): Promise<MailchimpCampaignUpdateResponse> {
+  //   const updateRequest: MailchimpCampaignUpdateRequest = {
+  //     settings: {title: campaignName.substring(0, 99), subject_line: campaignName};
+  //     ...otherOptions
+  //   };
+  //   return await this.updateCampaign(campaignId, updateRequest);
+  // }
+
+  private async updateCampaignContent(campaignId, body: MailchimpCampaignContentUpdateRequest) {
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/content`, body), this.campaignNotifications);
+    return apiResponse.error ? Promise.reject("campaign content sections update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse.response;
   }
 
-  async setCampaignOptions(campaignId: string, campaignName: string, otherOptions): Promise<MailchimpCampaignUpdateResponse> {
-    return await this.updateCampaign(campaignId, {
-      updates: {
-        name: "options",
-        value: {
-          ...{
-            title: campaignName.substring(0, 99),
-            subject: campaignName
-          },
-          ...otherOptions
-        }
-      }
-    });
-  }
-
-  private async updateCampaign(campaignId, body: { updates: { name: string; value: any } }) {
+  private async updateCampaign(campaignId, body: MailchimpCampaignUpdateRequest) {
     const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${campaignId}/update`, body), this.campaignNotifications);
     return apiResponse.error ? Promise.reject("campaign update failed due to error: " + this.stringUtils.stringifyObject(apiResponse.error)) : apiResponse.response;
   }
@@ -145,16 +140,35 @@ export class MailchimpCampaignService {
     if (!this.mailchimpConfig?.mailchimpEnabled) {
       return Promise.resolve({complete: false});
     } else {
+
+      // export interface OtherOptions {
+      //   from_email?: string;
+      // }
       return this.replicateCampaign(campaignRequest.campaignId)
         .then((replicateCampaignResponse: MailchimpCampaignReplicateResponse) => {
-          return this.setCampaignOptions(replicateCampaignResponse.id, campaignRequest.campaignName, campaignRequest.otherSegmentOptions)
-            .then(() => this.setContent(replicateCampaignResponse.id, campaignRequest.contentSections)
-              .then(() => this.setOrClearSegment(replicateCampaignResponse.id, campaignRequest.segmentId)
+
+            const updateRequest: MailchimpCampaignUpdateRequest = {
+              recipients: {
+                segment_opts: {
+                  saved_segment_id: campaignRequest.segmentId,
+                },
+                list_id: campaignRequest.otherSegmentOptions.list_id,
+              },
+              settings: {
+                title: campaignRequest.campaignName.substring(0, 99),
+                subject_line: campaignRequest.campaignName,
+                from_name: campaignRequest.otherSegmentOptions.from_name
+              }
+            };
+
+            return this.updateCampaign(replicateCampaignResponse.id, updateRequest)
+              .then(() => this.setContent(replicateCampaignResponse.id, campaignRequest.contentSections)
                 .then(() =>
                   campaignRequest.dontSend ? Promise.resolve({complete: false, web_id: replicateCampaignResponse.web_id}) :
                     this.sendCampaign(replicateCampaignResponse.id)
-                      .then((sendCampaignResponse) => ({...sendCampaignResponse, ...{web_id: replicateCampaignResponse.web_id}})))));
-        });
+                      .then((sendCampaignResponse) => ({...sendCampaignResponse, ...{web_id: replicateCampaignResponse.web_id}}))));
+          }
+        );
     }
   }
 }

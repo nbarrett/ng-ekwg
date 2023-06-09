@@ -1,4 +1,3 @@
-import debug from "debug";
 import * as configData from "config";
 
 function validatedEnvironmentVariable(variableName: string): string {
@@ -15,8 +14,6 @@ function logNamespace(moduleName: string) {
   return `ekwg:${env}:${moduleName || ""}`;
 }
 
-const debugLog = debug(logNamespace("env-config"));
-debugLog("configData:", JSON.stringify(configData));
 export const envConfig = {
   auth: {
     secret: validatedEnvironmentVariable("AUTH_SECRET"),
@@ -42,14 +39,6 @@ export const envConfig = {
     userId: validatedEnvironmentVariable("INSTAGRAM_USER_ID"),
   },
   logNamespace,
-  mailchimp: {
-    apiKey: validatedEnvironmentVariable("MAILCHIMP_APIKEY"),
-    lists: {
-      general: configData.mailchimp.lists.general,
-      socialEvents: configData.mailchimp.lists.socialEvents,
-      walks: configData.mailchimp.lists.walks,
-    },
-  },
   meetup: {
     apiUrl: configData.meetup.apiUrl,
     group: configData.meetup.group,

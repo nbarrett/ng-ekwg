@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
@@ -6,16 +6,16 @@ import { ApiResponse } from "../../models/api-response.model";
 import {
   MailchimpBatchSubscriptionResponse,
   MailchimpEmailWithError,
-  MailchimpListDeleteSegmentMembersResponse, MailchimpListingResponse,
+  MailchimpListingResponse,
   MailchimpListMember,
-  MailchimpListsMembersResponse,
+  MailchimpListSegmentAddOrRemoveMembersRequest,
   MailchimpListSegmentAddResponse,
+  MailchimpListSegmentBatchAddOrRemoveMembersResponse,
   MailchimpListSegmentDeleteResponse,
-  MailchimpListSegmentMembersAddResponse,
-  MailchimpListSegmentRenameResponse,
-  MailchimpListSegmentResetResponse,
+  MailchimpListsMembersResponse,
   MailchimpMemberIdentifiers,
-  MailchimpSubscriptionMember,
+  MailchimpSegmentUpdateResponse,
+  MailchimpSubscriptionMember, MailchimpUpdateSegmentRequest,
   MergeFields,
   SubscriptionRequest,
   SubscriptionStatus
@@ -49,35 +49,26 @@ export class MailchimpListService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentAdd`, {segmentName}), this.notifications, true)).response;
   }
 
-  async addSegmentMembers(listType: string, segmentId: number, segmentMembers: SubscriptionRequest[]): Promise<MailchimpListSegmentMembersAddResponse> {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersAdd`, {
+  async addSegmentMembers(listType: string, segmentId: number, segmentMembers: SubscriptionRequest[]): Promise<MailchimpListSegmentBatchAddOrRemoveMembersResponse> {
+    const body: MailchimpListSegmentAddOrRemoveMembersRequest = {
       segmentId,
-      segmentMembers
-    }), this.notifications, true)).response;
+      membersToAdd: segmentMembers,
+      membersToRemove: []
+    };
+    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersAddOrRemove`, body), this.notifications, true)).response;
   }
 
-  async deleteSegmentMembers(listType: string, segmentId: number, segmentMembers): Promise<MailchimpListDeleteSegmentMembersResponse> {
-    const params: HttpParams = this.commonDataService.toHttpParams({segmentId, segmentMembers});
-    return (await this.commonDataService.responseFrom(this.logger, this.http.delete<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersDel`, {params}), this.notifications, true)).response;
-  }
-
-  async resetSegment(listType: string, segmentId: number): Promise<MailchimpListSegmentResetResponse> {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.put<ApiResponse>(`${this.BASE_URL}/${listType}/segmentReset`, {segmentId}), this.notifications, true)).response;
-  }
-
-  async renameSegment(listType: string, segmentId: number, segmentName: string): Promise<MailchimpListSegmentRenameResponse> {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentRename`, {
+  async updateSegment(listType: string, segmentId: number, segmentName: string, resetSegmentMembers: boolean): Promise<MailchimpSegmentUpdateResponse> {
+    const body: MailchimpUpdateSegmentRequest = {
       segmentId,
-      segmentName
-    }), this.notifications, true)).response;
+      segmentName,
+      resetSegmentMembers
+    };
+    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentUpdate`, body), this.notifications, true)).response;
   }
 
   async deleteSegment(listType: string, segmentId: number): Promise<MailchimpListSegmentDeleteResponse> {
     return (await this.commonDataService.responseFrom(this.logger, this.http.delete<ApiResponse>(`${this.BASE_URL}/${listType}/segmentDel/${segmentId}`), this.notifications, true)).response;
-  }
-
-  async listSegments(listType: string) {
-    return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/${listType}/segments`), this.notifications, true)).response;
   }
 
   async lists(notify: AlertInstance): Promise<MailchimpListingResponse> {
