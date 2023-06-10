@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const pageContent = require("../models/page-content");
-const controller = require("./../controllers/crud-controller").create(pageContent, true);
+const controller = require("./../controllers/crud-controller").create(pageContent, false);
 const router = express.Router();
 
 router.post("", authConfig.authenticate(), controller.create);

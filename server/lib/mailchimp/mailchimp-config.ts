@@ -9,14 +9,13 @@ import config = require("../mongo/models/config");
 const debugLog = debug(envConfig.logNamespace("mailchimp-config"));
 
 export function configuredMailchimp(): Promise<MailchimpConfigData> {
-  debugLog("configuredMailchimp starting");
   return config.findOne({"mailchimp": {"$exists": true}})
     .then((mailchimpConfigResponse: MailchimpConfigResponse) => {
       mailchimp.setConfig({
         apiKey: mailchimpConfigResponse.mailchimp.apiKey,
         server: resolvePrefix(mailchimpConfigResponse.mailchimp),
       });
-      return {config: mailchimpConfigResponse.mailchimp, mailchimp};
+      return {config: mailchimpConfigResponse.mailchimp, client: mailchimp};
     })
     .catch(error => {
       debugLog("Error", transforms.parseError(error));

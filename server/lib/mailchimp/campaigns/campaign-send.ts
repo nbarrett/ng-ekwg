@@ -10,7 +10,7 @@ const debugLog = debug(envConfig.logNamespace(messageType));
 
 export function campaignSend(req: Request, res: Response): Promise<void> {
 
-  return configuredMailchimp().then(config => config.mailchimp.campaigns.send(req.params.campaignId)
+  return configuredMailchimp().then(config => config.client.campaigns.send(req.params.campaignId)
     .then(responseData => {
       messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
     }))

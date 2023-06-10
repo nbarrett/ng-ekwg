@@ -16,13 +16,13 @@ const debugLog = debug(envConfig.logNamespace(messageType));
 export function listsBatchSubscribe(req: Request, res: Response): Promise<any> {
 
   return configuredMailchimp().then((config: MailchimpConfigData) => {
-    const listId = messageProcessing.mapListTypeToId(req, debugLog, config.config);
+    const listId = messageProcessing.listTypeToId(req, debugLog, config.config);
     const options: BatchListMembersOpts = {
       skipMergeValidation: false,
       skipDuplicateCheck: false
     };
     const body: BatchListMembersBody = {members: req.body, update_existing: true};
-    return config.mailchimp.lists.batchListMembers(listId, body, options).then((responseData: BatchListMembersResponse) => {
+    return config.client.lists.batchListMembers(listId, body, options).then((responseData: BatchListMembersResponse) => {
       messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
     });
   }).catch((error: MailchimpApiError) => {

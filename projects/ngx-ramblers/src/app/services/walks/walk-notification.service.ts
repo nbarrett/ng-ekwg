@@ -60,7 +60,7 @@ export class WalkNotificationService {
     private auditDeltaValuePipe: AuditDeltaValuePipe,
     private displayDatePipe: DisplayDatePipe,
     private dateUtils: DateUtilsService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkNotificationService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkNotificationService, NgxLoggerLevel.ERROR);
   }
 
   public async createEventAndSendNotifications(notify: AlertInstance, members: Member[], notificationDirective: WalkNotificationDirective,

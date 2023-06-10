@@ -125,7 +125,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.ERROR);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -138,6 +138,15 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     this.mailchimpConfigService.getConfig().then(response => {
       this.mailchimpConfig = response.mailchimp;
       this.logger.info("mailchimpConfig:", this.mailchimpConfig);
+      if (this.mailchimpConfig?.allowSendCampaign) {
+        this.sendNotifications = true;
+      } else if (this.memberLoginService.memberLoggedIn()) {
+        this.notify.warning({
+          title: "Mailchimp notifications",
+          message: "Mailchimp notifications have been temporarily disabled, so any changes to this walk will not be sent."
+        });
+
+      }
     });
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
     this.configService.getConfig<MeetupConfig>("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
@@ -271,21 +280,12 @@ export class WalkEditComponent implements OnInit, OnDestroy {
 
   showWalk(displayedWalk: DisplayedWalk) {
     if (displayedWalk) {
-      this.logger.debug("showWalk", displayedWalk.walk);
+      this.logger.info("showWalk", displayedWalk.walk, "mailchimpConfig:", this.mailchimpConfig);
       if (!displayedWalk.walk.venue) {
         this.logger.debug("initialising walk venue");
         displayedWalk.walk.venue = {type: this.walksReferenceService.venueTypes()[0].type, postcode: displayedWalk.walk.postcode};
       }
       this.confirmAction = ConfirmType.NONE;
-      if (this.mailchimpConfig?.allowSendCampaign) {
-        this.sendNotifications = true;
-      } else {
-        this.notify.warning({
-          title: "Mailchimp notifications",
-          message: "Mailchimp notifications have been temporarily disabled, so any changes to this walk will not be sent."
-        });
-
-      }
       this.updateGoogleMapsUrl();
       if (this.displayedWalk.walkAccessMode.initialiseWalkLeader) {
         this.setStatus(EventType.AWAITING_WALK_DETAILS);

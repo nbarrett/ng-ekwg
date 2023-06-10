@@ -33,7 +33,7 @@ export function debug(messageType, requestData, debug): void {
   debug(messageType, "request", JSON.stringify(requestData));
 }
 
-export function mapListTypeToId(req: Request, debug, config: MailchimpConfig) {
+export function listTypeToId(req: Request, debug, config: MailchimpConfig): string {
   const listId = config.lists[req.params.listType];
   debug("Mapping list type:" + req.params.listType + "-> mailchimp list Id", listId);
   return listId;

@@ -3,7 +3,7 @@ const transforms = require("./transforms");
 const debug = require("debug")(envConfig.logNamespace("context-text"));
 
 const contentText = require("../models/content-text");
-const controller = require("./crud-controller").create(contentText, true);
+const controller = require("./crud-controller").create(contentText, false);
 debug.enabled = false;
 exports.all = controller.all;
 exports.findByConditions = controller.findByConditions;

@@ -20,7 +20,7 @@ export class StringUtilsService {
 
   constructor(private dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(StringUtilsService, NgxLoggerLevel.ERROR);
   }
 
   replaceAll(find: any, replace: any, str: any): string | number {
@@ -43,7 +43,9 @@ export class StringUtilsService {
     if (extractedMessage instanceof TypeError) {
       returnValue = extractedMessage.toString();
     } else if (extractedMessage instanceof HttpErrorResponse) {
-      returnValue = extractedMessage.statusText + " - " + this.stringifyObject(extractedMessage.message);
+      const messageToStringify = {message: extractedMessage.message, error: extractedMessage.error};
+      this.logger.info("is instanceof HttpErrorResponse:messageToStringify:", messageToStringify);
+      returnValue = extractedMessage.statusText + " - " + this.stringifyObject(messageToStringify);
     } else if (has(extractedMessage, ["error", "message"])) {
       returnValue = extractedMessage.error.message + (extractedMessage.error.error ? " - " + extractedMessage.error.error : "");
     } else if (has(extractedMessage, ["error", "errmsg"])) {

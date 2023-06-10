@@ -21,6 +21,8 @@ export class CopyIconComponent implements OnInit {
   }
 
   @Input()
+  disabled: boolean;
+  @Input()
   value: string;
   @Input()
   icon: IconDefinition;
@@ -45,13 +47,17 @@ export class CopyIconComponent implements OnInit {
   }
 
   private initialiseTooltips() {
-    this.tooltipPreCopy = `Copy ${this.elementName} to clipboard`;
-    this.tooltipPostCopy = `${this.elementName} has been copied to clipboard!`;
+    if (!this.disabled) {
+      this.tooltipPreCopy = `Copy ${this.elementName} to clipboard`;
+      this.tooltipPostCopy = `${this.elementName} has been copied to clipboard!`;
+    }
   }
 
   copyToClipboard(text: string) {
-    this.clipboardService.copyToClipboard(text);
-    this.copied = true;
+    if (!this.disabled) {
+      this.clipboardService.copyToClipboard(text);
+      this.copied = true;
+    }
   }
 
   justCopied(): boolean {

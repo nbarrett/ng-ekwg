@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { MailchimpApiError, MailchimpCampaign, MailchimpCampaignListResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../../env-config/env-config";
-import { MailchimpCampaignListRequest } from "../../shared/server-models";
+import { MailchimpCampaignListRequest, MailchimpConfigData } from "../../shared/server-models";
 import { asBoolean } from "../../shared/string-utils";
 import { configuredMailchimp } from "../mailchimp-config";
 import * as messageProcessing from "../mailchimp-message-processing";
@@ -20,7 +20,7 @@ function campaignResponseFrom(campaigns: MailchimpCampaign[], responseData: Mail
 
 export function campaignList(req: Request, res: Response, next: NextFunction): Promise<void> {
 
-  return configuredMailchimp().then(config => {
+  return configuredMailchimp().then((mailchimpConfigData: MailchimpConfigData) => {
     const mailchimpCampaignListRequest: MailchimpCampaignListRequest = {
       query: req.query.query?.toString(),
       fields: asBoolean(req.query.concise) ? [
@@ -55,7 +55,7 @@ export function campaignList(req: Request, res: Response, next: NextFunction): P
       return campaignResponseFrom(campaigns, responseData);
     }
 
-    return config.mailchimp.campaigns.list(mailchimpCampaignListRequest)
+    return mailchimpConfigData.client.campaigns.list(mailchimpCampaignListRequest)
       .then((responseData: MailchimpCampaignListResponse) => {
         messageProcessing.logRequestData(messageType + " response", campaignResponseFrom(responseData.campaigns, responseData), debugLog, req);
         messageProcessing.successfulResponse(req, res, filterCampaigns(responseData, mailchimpCampaignListRequest), messageType, debugLog);

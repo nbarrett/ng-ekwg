@@ -7,11 +7,12 @@ import { configuredMailchimp } from "../mailchimp-config";
 import * as messageProcessing from "../mailchimp-message-processing";
 import debug from "debug";
 
-const debugLog = debug(envConfig.logNamespace("mailchimp:campaigns:search"));
+const messageType = "mailchimp:campaigns:get-content";
+const debugLog = debug(envConfig.logNamespace(messageType));
 
-export function campaignSearch(req: Request, res: Response): Promise<void> {
-  const messageType = "campaign search";
+export function campaignGetContent(req: Request, res: Response): Promise<void> {
   return configuredMailchimp().then((mailchimpConfigData: MailchimpConfigData) => {
+    const campaignId = req.params.campaignId;
     const options: MailchimpCampaignSearchRequestOptions = {
       fields: asBoolean(req.query.concise) ? [
         "results.campaign.create_time",
@@ -28,9 +29,8 @@ export function campaignSearch(req: Request, res: Response): Promise<void> {
         "results.campaign.web_id",
       ] : null,
     };
-    debugLog("req.query:", req.query, "search options:", options);
-    const query: string = req.query.query?.toString();
-    return mailchimpConfigData.client.searchCampaigns.search(query, options)
+    debugLog("campaignId:", campaignId, "pptions:", options);
+    return mailchimpConfigData.client.campaigns.getContent(campaignId, options)
       .then((responseData: MailchimpCampaignSearchResponse) => {
         messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
       });

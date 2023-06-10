@@ -2,7 +2,25 @@
   <div class="row">
     <div class="col-sm-12">
       <tabset class="custom-tabset" *ngIf="notification">
-        <tab [heading]="'Recipients & Addressing'">
+        <tab *ngIf="false" heading="Existing Draft Campaigns">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group">
+                  <label for="existing-campaigns">Campaigns:</label>
+                  <select *ngIf="mailchimpCampaignListResponse" [(ngModel)]="draftCampaignId"
+                          id="existing-campaigns"
+                          class="form-control input-sm"
+                          (ngModelChange)="campaignIdChanged()">
+                    <option *ngFor="let campaign of draftMailchimpCampaignListResponse?.campaigns" [ngValue]="campaign.id"
+                            [textContent]="campaign.settings.title"></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Recipients & Addressing">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-7"><label>Send to:</label>
@@ -135,7 +153,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Edit Content'">
+        <tab heading="Edit Content">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
@@ -189,7 +207,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Auto-Include Events'">
+        <tab heading="Auto-Include Events">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-4">
@@ -326,7 +344,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Signing Off'">
+        <tab heading="Signing Off">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
               <div class="col-sm-12">
@@ -372,7 +390,7 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Preview'">
+        <tab heading="Preview">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div id="preview" class="print-preview">
               <ng-template app-committee-notification-template></ng-template>

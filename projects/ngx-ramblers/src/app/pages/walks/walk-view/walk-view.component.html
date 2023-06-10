@@ -103,7 +103,7 @@
             <div class="col-sm-6">
               <ul class="list-unstyled">
                 <app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.contactEmail">
-                  <app-copy-icon [icon]="faEnvelope" title [value]="displayedWalk.walk.contactEmail"
+                  <app-copy-icon [disabled]="!loggedIn" [icon]="faEnvelope" title [value]="displayedWalk.walk.contactEmail"
                                  [elementName]="'email address for '+ displayedWalk.walk.displayName"></app-copy-icon>
                   <div content>
                     <a *ngIf="loggedIn" [href]="'mailto:' + displayedWalk.walk.contactEmail"

@@ -1,5 +1,6 @@
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
+import keys from "lodash-es/keys";
 import extend from "lodash-es/extend";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
@@ -12,7 +13,8 @@ import {
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
   MailchimpConfigResponse,
-  MailchimpGenericOtherContent, OtherOptions,
+  MailchimpGenericOtherContent,
+  OtherOptions,
   SaveSegmentResponse
 } from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
@@ -61,9 +63,11 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   public selectableRecipients: MemberFilterSelection[];
   private config: MailchimpConfigResponse;
   public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
+  public draftMailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public committeeEventId: string;
   private group: Organisation;
   public pageTitle: string;
+  public draftCampaignId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -87,13 +91,13 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
     private urlService: UrlService,
     protected dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("CommitteeSendNotificationComponent", NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("CommitteeSendNotificationComponent", NgxLoggerLevel.ERROR);
   }
 
   ngOnInit() {
     this.logger.debug("constructed with", this.members.length, "members");
     this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget, NgxLoggerLevel.DEBUG);
     this.notify.setBusy();
     this.logger.info("subscribing to systemConfigService events");
     this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
@@ -121,6 +125,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
         }
       }));
 
+      const masterSearchTeam = "Master";
       const promises: any[] = [
         this.memberService.publicFields(this.memberService.filterFor.GROUP_MEMBERS).then(members => {
           this.members = members;
@@ -141,17 +146,33 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
           limit: 1000,
           start: 0,
           status: "save",
-          query: "Master"
+          query: masterSearchTeam
         }).then((mailchimpCampaignListResponse: MailchimpCampaignListResponse) => {
           this.mailchimpCampaignListResponse = mailchimpCampaignListResponse;
           this.logger.debug("mailchimpCampaignListResponse.campaigns", mailchimpCampaignListResponse.campaigns);
-        })];
+        }),
+        this.mailchimpCampaignService.list({
+          concise: true,
+          limit: 1000,
+          start: 0,
+          status: "save",
+        }).then((mailchimpCampaignListResponse: MailchimpCampaignListResponse) => {
+          this.draftMailchimpCampaignListResponse = {
+            ...mailchimpCampaignListResponse,
+            campaigns: mailchimpCampaignListResponse.campaigns.filter(item => !keys(this.config.mailchimp.campaigns).map(key => this.config.mailchimp.campaigns[key].campaignId).includes(item.id))
+          };
+          this.logger.debug("draftMailchimpCampaignListResponse.campaigns", mailchimpCampaignListResponse.campaigns);
+        })
+      ];
       if (!this.committeeFile) {
         promises.push(this.populateGroupEvents());
       }
       Promise.all(promises).then(() => {
         this.logger.debug("performed total of", promises.length);
         this.notify.clearBusy();
+      }).catch(error => {
+        this.logger.info("Error caught:", error);
+        this.notify.error({title: "Failed to initialise message sending", message: error});
       });
     }));
   }
@@ -605,7 +626,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
 
   idForIndex(index) {
     const id = "select-" + index;
-    this.logger.debug("id:", id);
+    this.logger.off("id:", id);
     return id;
   }
 

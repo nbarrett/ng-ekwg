@@ -1,4 +1,5 @@
 import express = require("express");
+import { campaignGetContent } from "./campaigns/campaign-get-content";
 import { campaignList } from "./campaigns/campaign-list";
 import { campaignReplicate } from "./campaigns/campaign-replicate";
 import { campaignSearch } from "./campaigns/campaign-search";
@@ -27,6 +28,7 @@ router.get("/campaigns/search", campaignSearch);
 router.post("/campaigns/:campaignId/send", campaignSend);
 router.post("/campaigns/:campaignId/replicate", campaignReplicate);
 router.post("/campaigns/:campaignId/update", campaignUpdate);
+router.get("/campaigns/:campaignId/content", campaignGetContent);
 router.post("/campaigns/:campaignId/content", campaignSetContent);
 
 export const mailchimpRoutes = router;
