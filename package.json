@@ -49,7 +49,7 @@
     "bootstrap": "4.6.2",
     "copyfiles": "2.1.1",
     "core-js": "3.6.1",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "express-session": "1.17.0",
     "instagram-node": "0.5.8",
     "jquery": "3.5.0",
