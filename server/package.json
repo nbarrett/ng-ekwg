@@ -60,7 +60,7 @@
     "csv-parse": "5.3.5",
     "debug": "4.2.0",
     "errorhandler": "1.5.1",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "express-session": "1.17.1",
     "instagram-node": "0.5.8",
     "jasmine": "3.5.0",
