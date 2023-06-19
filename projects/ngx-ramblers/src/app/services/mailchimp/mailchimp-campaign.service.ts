@@ -44,7 +44,7 @@ export class MailchimpCampaignService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.ERROR);
+    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.DEBUG);
     this.mailchimpConfigService.getConfig().then(response => this.mailchimpConfig = response.mailchimp);
   }
 

@@ -25,7 +25,7 @@ export class MailchimpSegmentService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(MailchimpSegmentService, NgxLoggerLevel.DEBUG);
   }
 
   createSubscriptionRequests(listType: string, memberIds: IdentifiableOrId[], members: Member[]): SubscriptionRequest[] {
@@ -53,7 +53,7 @@ export class MailchimpSegmentService {
         .then((mailchimpSegmentUpdateResponse: MailchimpSegmentUpdateResponse) => this.addSegmentMembersDuringUpdate(listType, segmentId, subscriptionRequests, mailchimpSegmentUpdateResponse))
         .then(() => ({segment: {id: segmentId}}));
     } else {
-      this.logger.debug("saveSegment:no segment exists", mailchimpSegmentId, "for list:", listType, " - adding new");
+      this.logger.debug("saveSegment:no segment exists for list:", listType, "adding new one named", segmentName);
       return this.mailchimpListService.addSegment(listType, segmentName)
         .then((addSegmentResponse: MailchimpListSegmentAddResponse) => this.addSegmentMembersDuringAdd(listType, subscriptionRequests, addSegmentResponse));
     }

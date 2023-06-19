@@ -73,7 +73,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
               public bsModalRef: BsModalRef,
               private committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
   }
 
   ngOnInit() {

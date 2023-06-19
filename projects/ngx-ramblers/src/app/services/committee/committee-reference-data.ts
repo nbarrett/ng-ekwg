@@ -11,18 +11,18 @@ export class CommitteeReferenceData {
   }
 
   static create(committeeConfig: CommitteeConfig, memberLoginService: MemberLoginService) {
-    return new CommitteeReferenceData(CommitteeReferenceData.toCommitteeMembers(committeeConfig), committeeConfig.committee.fileTypes, memberLoginService);
+    return new CommitteeReferenceData(CommitteeReferenceData.toCommitteeMembers(committeeConfig), committeeConfig?.committee?.fileTypes, memberLoginService);
   }
 
   public static toCommitteeMembers(committeeConfig: CommitteeConfig): CommitteeMember[] {
-    return map(committeeConfig.committee.contactUs, (data, type) => ({
+    return committeeConfig?.committee?.contactUs ? map(committeeConfig.committee.contactUs, (data, type) => ({
       type,
       fullName: data.fullName,
       memberId: data.memberId,
       nameAndDescription: data.description + " (" + data.fullName + ")",
       description: data.description,
       email: data.email
-    }));
+    })) : [];
   }
 
   createFrom(injectedCommitteeMembers: CommitteeMember[]) {

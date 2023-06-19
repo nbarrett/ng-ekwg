@@ -6,19 +6,19 @@ import { configuredMailchimp } from "../mailchimp-config";
 import * as messageProcessing from "../mailchimp-message-processing";
 import debug from "debug";
 
-const messageType = "mailchimp:lists:list";
+const messageType = "mailchimp:lists:segment-add";
 const debugLog = debug(envConfig.logNamespace(messageType));
 
 export function listsSegmentAdd(req: Request, res: Response): Promise<void> {
 
   return configuredMailchimp().then((config: MailchimpConfigData) => {
+    const listId: string = messageProcessing.listTypeToId(req, debugLog, config.config);
     const requestData: MailchimpCreateSegmentRequest = {
-      list_id: messageProcessing.listTypeToId(req, debugLog, config.config),
       name: req.body.segmentName,
-      static_segment: [],
-      options: null
+      static_segment: []
     };
-    return config.client.lists.createSegment(requestData).then((responseData: MailchimpListingResponse) => {
+    debugLog("requestData:", requestData);
+    return config.client.lists.createSegment(listId, requestData).then((responseData: MailchimpListingResponse) => {
       messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
     });
   }).catch((error: MailchimpApiError) => {

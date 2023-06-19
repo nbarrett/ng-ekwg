@@ -52,8 +52,8 @@ export interface MailchimpConfigData {
       getListMembersInfo(listId: string, mailchimpListMembersRequest: MailchimpListMembersRequest): Promise<MailchimpListsMembersResponse>;
       getAllLists(listOptions: MailchimpListsRequest): Promise<MailchimpListingResponse>;
       batchListMembers(listId: string, body: lists.BatchListMembersBody, options: lists.BatchListMembersOpts): Promise<BatchListMembersResponse>;
-      createSegment(requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
-      deleteSegment(requestData: MailchimpDeleteSegmentRequest): Promise<MailchimpListingResponse>;
+      createSegment(listId: string, requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
+      deleteSegment(listId: string, segmentId: string): Promise<MailchimpListingResponse>;
       batchSegmentMembers(bodyParameters: MailchimpBatchSegmentAddOrRemoveRequest, listId: string, segmentId: number): Promise<MailchimpListSegmentBatchAddOrRemoveMembersResponse>;
     };
   };
@@ -102,13 +102,7 @@ export interface MailchimpListMembersRequest {
 }
 
 export interface MailchimpCreateSegmentRequest {
-  list_id: string;
   name: any;
   static_segment: string[];
-  options: null;
-}
-
-export interface MailchimpDeleteSegmentRequest {
-  list_id: string;
-  segment_id: number;
+  options?: object;
 }
