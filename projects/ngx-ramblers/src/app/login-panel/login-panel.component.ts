@@ -39,7 +39,7 @@ export class LoginPanelComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.authService.authResponse().subscribe(() => this.routerHistoryService.navigateBackToLastMainPage()));
     this.logger.info("subscribing to systemConfigService events");
     this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
-      this.group = item.system.group;
+      this.group = item.group;
       this.logger.info("received:", item);
     }));
   }

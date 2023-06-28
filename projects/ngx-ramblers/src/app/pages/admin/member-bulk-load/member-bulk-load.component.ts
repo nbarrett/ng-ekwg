@@ -104,7 +104,7 @@ export class MemberBulkLoadComponent implements OnInit, OnDestroy {
       this.urlService.navigateTo("admin");
     }));
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
     this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const tab = paramMap.get("tab");
       this.logger.debug("tab is", tab);

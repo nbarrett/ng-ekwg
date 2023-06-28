@@ -1,5 +1,6 @@
 import { omit, each, includes, set, isArray } from "lodash";
 import debug from "debug";
+import { DataQueryOptions, MongoId } from "../../../../projects/ngx-ramblers/src/app/models/api-request.model";
 import { envConfig } from "../../env-config/env-config";
 
 const debugLog = debug(envConfig.logNamespace("transforms"));
@@ -37,7 +38,7 @@ export function setUnSetDocument(document: object, parent?: string, parentRespon
   return localResponse;
 }
 
-export function criteria(req) {
+export function criteria(req): MongoId {
   return {_id: req.params.id};
 }
 
@@ -50,7 +51,7 @@ export function parse(req, queryParameter) {
   }
 }
 
-export function parseQueryStringParameters(req) {
+export function parseQueryStringParameters(req): DataQueryOptions {
   return {
     criteria: parse(req, "criteria"),
     limit: parse(req, "limit"),
@@ -77,7 +78,7 @@ export function createDocument(setUnSetDocument) {
   return response;
 }
 
-export function criteriaAndDocument(req) {
+export function criteriaAndDocument(req): { criteria: { _id: string }; document: object } {
   return {
     criteria: criteria(req),
     document: updateDocumentRequest(req)

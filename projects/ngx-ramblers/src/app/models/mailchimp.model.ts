@@ -1,11 +1,6 @@
 import { ApiResponse } from "./api-response.model";
 import { AuditStatus } from "./audit";
 
-export interface MailchimpConfigResponse {
-  id: string;
-  mailchimp: MailchimpConfig;
-}
-
 export interface MailchimpConfig {
   apiUrl: string;
   apiKey: string;

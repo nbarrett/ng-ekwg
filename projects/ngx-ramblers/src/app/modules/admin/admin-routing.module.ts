@@ -11,6 +11,7 @@ import { MemberLoginAuditComponent } from "../../pages/admin/member-login-audit/
 import { ChangePasswordComponent } from "../../pages/admin/profile/change-password.component";
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
+import { CommitteeSettingsComponent } from "../../pages/admin/system-settings/committee/committee-settings";
 import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
 import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
 import { BannerComponent } from "../../pages/banner/banner.component";
@@ -35,6 +36,7 @@ import { AdminModule } from "./admin.module";
     {path: "system-settings", component: SystemSettingsComponent, canActivate: [AdminAuthGuard]},
     {path: "set-password/:password-reset-id", component: SetPasswordComponent},
     {path: "mailchimp-settings", component: MailchimpSettingsComponent, canActivate: [AdminAuthGuard]},
+    {path: "committee-settings", component: CommitteeSettingsComponent, canActivate: [AdminAuthGuard]},
     {path: "banners", component: BannerComponent},
     {matcher: hasDynamicPath, component: DynamicContentPageComponent},
   ])]

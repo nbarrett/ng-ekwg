@@ -8,6 +8,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import { ApiResponse } from "../models/api-response.model";
+import { ConfigKey } from "../models/config.model";
 import { NumericIdentifier } from "../models/generic-response.model";
 import { MeetupConfig } from "../models/meetup-config.model";
 import { MeetupErrorResponse } from "../models/meetup-error-response.model";
@@ -52,7 +53,7 @@ export class MeetupService {
   }
 
   saveConfig(notify: AlertInstance, config: MeetupConfig): Promise<void> {
-    return this.configService.saveConfig("meetup", config)
+    return this.configService.saveConfig<MeetupConfig>(ConfigKey.MEETUP, config)
       .then(() => {
         notify.success({
           title: "Meetup config",
@@ -68,12 +69,11 @@ export class MeetupService {
   }
 
   getConfig(): Promise<MeetupConfig> {
-    return this.configService.getConfig<MeetupConfig>("meetup", {
-      meetup: {
-        publishStatus: MeetupStatus.DRAFT,
-        guestLimit: 8,
-        announce: false
-      }
+    return this.configService.queryConfig<MeetupConfig>(ConfigKey.MEETUP, {
+      defaultContent: null,
+      publishStatus: MeetupStatus.DRAFT,
+      guestLimit: 8,
+      announce: false
     });
   }
 

@@ -3,7 +3,7 @@ import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { TitleLine } from "../../models/banner-configuration.model";
-import { Images, SystemConfigResponse } from "../../models/system.model";
+import { Images, SystemConfig } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { SystemConfigService } from "../../services/system/system-config.service";
 
@@ -61,8 +61,8 @@ export class BannerTitleConfigComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit");
 
     this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
-        this.icons = config.system.icons;
+      .subscribe((config: SystemConfig) => {
+        this.icons = config.icons;
         this.logger.info("retrieved icons", this.icons);
         if (!this?.titleLine?.image && this.titleLine) {
           this.titleLine.image = first(this.icons.images);

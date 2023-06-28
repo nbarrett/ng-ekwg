@@ -8,7 +8,7 @@
         <tab active="true" heading="Maintain description content">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="mb-2">
-              <ul>
+              <ul class="list-arrows">
                 <li>Here you can configure content text that will automatically be added to the beginning of
                   the walk description on Meetup events we create.
                 </li>
@@ -38,14 +38,15 @@
                 </div>
               </div>
               <div class="row">
-                <div class="col-sm-12 green-bullets-no-rule">
+                <div class="col-sm-12">
+                  <div class="mt-2 mb-2 font-weight-bold">{{selectedContent?.name}} content:</div>
                   <ng-container *ngFor="let content of contentTextItems">
                     <div *ngIf="matching(content, selectedContent)">
                       <app-markdown-editor [data]="content"
                                            [editNameEnabled]="true"
                                            [deleteEnabled]="true"
                                            [id]="content.name"
-                                           [initialView]="'view'"
+                                           [initialView]="view"
                                            [rows]="8">
                       </app-markdown-editor>
                     </div>
@@ -55,25 +56,25 @@
             </div>
           </div>
         </tab>
-        <tab [heading]="'Publishing defaults'">
+        <tab heading="Publishing defaults">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="mb-2 green-bullets-no-rule">
+            <div markdown class="mb-2">
               <ul>
                 <li>Here you can configure default settings that will be used when creating Meetup events.
                 </li>
               </ul>
             </div>
-            <app-walk-meetup-config-parameters *ngIf="config" [config]="config.meetup"
+            <app-walk-meetup-config-parameters *ngIf="config" [config]="config"
                                                [contentTextItems]="contentTextItems"></app-walk-meetup-config-parameters>
-            <div class="form-group">
-              <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
-                <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
-                <strong> {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
-              </div>
-            </div>
           </div>
         </tab>
       </tabset>
+      <div class="form-group">
+        <div *ngIf="notifyTarget.showAlert" class="alert {{notifyTarget.alertClass}}">
+          <fa-icon [icon]="notifyTarget.alert.icon"></fa-icon>
+          <strong> {{notifyTarget.alertTitle}}: </strong> {{notifyTarget.alertMessage}}
+        </div>
+      </div>
       <input *ngIf="activeTabIs(1)" type="submit" value="Save" (click)="save()"
              title="Save"
              class="button-form">

@@ -45,8 +45,7 @@
                     ({{memberResourcesReferenceData.accessLevelFor(memberResource.accessLevel).description}})</small>
                 </h6>
               </div>
-              <p markdown [data]="memberResource.description" class="green-bullets-no-rule"></p>
-
+              <p markdown [data]="memberResource.description"></p>
               <div *ngIf="isActive(memberResource)" class="row">
                 <div class="col-sm-12">
                   <div class="action-button-group">

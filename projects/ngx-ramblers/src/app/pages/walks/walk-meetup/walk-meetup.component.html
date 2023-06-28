@@ -5,7 +5,7 @@
       <ng-template app-walk-notification-template></ng-template>
     </div>
     <div class="row">
-      <div class="col-sm-12 green-bullets-no-rule">
+      <div class="col-sm-12">
         <app-markdown-editor name="meetup-help" description="Linking to Meetup"></app-markdown-editor>
       </div>
     </div>
@@ -34,7 +34,7 @@
       <div class="row">
         <div class="col-sm-12 mb-2 mt-3">
           <app-markdown-editor *ngIf="meetupConfigExists()"
-                               [initialView]="'view'"
+                               [initialView]="view"
                                [name]="'meetup-event-description'"
                                [category]="CONTENT_CATEGORY"
                                [text]="meetupEventDescription"

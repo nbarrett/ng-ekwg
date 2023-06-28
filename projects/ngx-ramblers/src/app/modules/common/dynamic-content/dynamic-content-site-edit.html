@@ -30,6 +30,11 @@
               <fa-icon [icon]="faUndo"></fa-icon>
               Revert page changes
             </div>
+            <div *ngIf="this.insertableContent?.length > 0" (click)="insertData()"
+                 delay=500 [tooltip]="'Insert missing data'" class="badge-button">
+              <fa-icon [icon]="faAdd"></fa-icon>
+              Insert data
+            </div>
             <div (click)="deletePageContent()"
                  delay=500
                  [tooltip]="deletePagContentTooltip()"

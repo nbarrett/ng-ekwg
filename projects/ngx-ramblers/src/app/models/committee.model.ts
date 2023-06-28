@@ -75,7 +75,6 @@ export interface CommitteeFileType {
 }
 
 export interface CommitteeConfig {
-  committee: {
     contactUs: {
       chairman: CommitteeMember;
       secretary: CommitteeMember;
@@ -86,7 +85,6 @@ export interface CommitteeConfig {
       support: CommitteeMember;
     };
     fileTypes: CommitteeFileType [];
-  };
 }
 
 export interface GroupEventsFilter {

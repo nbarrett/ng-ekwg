@@ -1,4 +1,3 @@
-import { Identifiable } from "./api-response.model";
 import { Link } from "./page.model";
 
 export interface Organisation {
@@ -21,10 +20,6 @@ export interface AuthenticationDetails {
   userName: string;
   password: string;
   apiKey: string;
-}
-
-export interface SystemConfigResponse {
-  system: SystemConfig;
 }
 
 export interface Footer {
@@ -82,7 +77,7 @@ export interface Images {
   images: Image[];
 }
 
-export interface SystemConfig extends Identifiable {
+export interface SystemConfig {
   icons: Images;
   backgrounds: Images
   logos: Images

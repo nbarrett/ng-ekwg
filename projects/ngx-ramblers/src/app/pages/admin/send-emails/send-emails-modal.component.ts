@@ -71,45 +71,45 @@ export class SendEmailsModalComponent implements OnInit, OnDestroy {
     this.logger.debug("constructed with members", this.members.length, "members");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
     this.memberFilterDate = this.dateUtils.asDateValue(this.dateUtils.momentNowNoTime().valueOf());
     this.mailchimpConfig.getConfig()
       .then(config => {
         this.emailTypes = [
           {
             preSend: () => this.addPasswordResetIdToMembers(),
-            name: config.mailchimp.campaigns.welcome.name,
-            monthsInPast: config.mailchimp.campaigns.welcome.monthsInPast,
-            campaignId: config.mailchimp.campaigns.welcome.campaignId,
-            segmentId: config.mailchimp.segments.general.welcomeSegmentId,
+            name: config.campaigns.welcome.name,
+            monthsInPast: config.campaigns.welcome.monthsInPast,
+            campaignId: config.campaigns.welcome.campaignId,
+            segmentId: config.segments.general.welcomeSegmentId,
             memberSelectorName: "recently-added",
-            label: `Added in last ${config.mailchimp.campaigns.welcome.monthsInPast} month(s)`,
-            dateTooltip: `All members created in the last ${config.mailchimp.campaigns.welcome.monthsInPast} month are displayed as a default, as these are most likely to need a welcome email sent`
+            label: `Added in last ${config.campaigns.welcome.monthsInPast} month(s)`,
+            dateTooltip: `All members created in the last ${config.campaigns.welcome.monthsInPast} month are displayed as a default, as these are most likely to need a welcome email sent`
           },
           {
             preSend: () => this.addPasswordResetIdToMembers(),
-            name: config.mailchimp.campaigns.passwordReset.name,
-            monthsInPast: config.mailchimp.campaigns.passwordReset.monthsInPast,
-            campaignId: config.mailchimp.campaigns.passwordReset.campaignId,
-            segmentId: config.mailchimp.segments.general.passwordResetSegmentId,
+            name: config.campaigns.passwordReset.name,
+            monthsInPast: config.campaigns.passwordReset.monthsInPast,
+            campaignId: config.campaigns.passwordReset.campaignId,
+            segmentId: config.segments.general.passwordResetSegmentId,
             memberSelectorName: "recently-added",
-            dateTooltip: `All members created in the last ${config.mailchimp.campaigns.passwordReset.monthsInPast} month are displayed as a default`
+            dateTooltip: `All members created in the last ${config.campaigns.passwordReset.monthsInPast} month are displayed as a default`
           },
           {
             preSend: () => this.includeInNextMailchimpListUpdate(),
-            name: config.mailchimp.campaigns.expiredMembersWarning.name,
-            monthsInPast: config.mailchimp.campaigns.expiredMembersWarning.monthsInPast,
-            campaignId: config.mailchimp.campaigns.expiredMembersWarning.campaignId,
-            segmentId: config.mailchimp.segments.general.expiredMembersWarningSegmentId,
+            name: config.campaigns.expiredMembersWarning.name,
+            monthsInPast: config.campaigns.expiredMembersWarning.monthsInPast,
+            campaignId: config.campaigns.expiredMembersWarning.campaignId,
+            segmentId: config.segments.general.expiredMembersWarningSegmentId,
             memberSelectorName: "expired-members",
-            dateTooltip: `Using the expiry date field, you can choose which members will automatically be included. A date ${config.mailchimp.campaigns.expiredMembersWarning.monthsInPast} months in the past has been pre-selected, to avoid including members whose membership renewal is still progress`
+            dateTooltip: `Using the expiry date field, you can choose which members will automatically be included. A date ${config.campaigns.expiredMembersWarning.monthsInPast} months in the past has been pre-selected, to avoid including members whose membership renewal is still progress`
           },
           {
             preSend: () => this.includeInNextMailchimpListUpdate(),
-            name: config.mailchimp.campaigns.expiredMembers.name,
-            monthsInPast: config.mailchimp.campaigns.expiredMembers.monthsInPast,
-            campaignId: config.mailchimp.campaigns.expiredMembers.campaignId,
-            segmentId: config.mailchimp.segments.general.expiredMembersSegmentId,
+            name: config.campaigns.expiredMembers.name,
+            monthsInPast: config.campaigns.expiredMembers.monthsInPast,
+            campaignId: config.campaigns.expiredMembers.campaignId,
+            segmentId: config.segments.general.expiredMembersSegmentId,
             memberSelectorName: "expired-members",
             postSend: () => this.removeExpiredMembersFromGroup(),
             dateTooltip: "Using the expiry date field, you can choose which members will automatically be included. " +
@@ -365,7 +365,7 @@ export class SendEmailsModalComponent implements OnInit, OnDestroy {
     this.logger.debug("saveSegmentDataToMailchimpConfig:segmentResponse", segmentResponse);
     return this.mailchimpConfig.getConfig()
       .then(config => {
-        config.mailchimp.segments.general[`${this.emailType.name}SegmentId`] = segmentResponse.segment.id;
+        config.segments.general[`${this.emailType.name}SegmentId`] = segmentResponse.segment.id;
         return this.mailchimpConfig.saveConfig(config)
           .then(() => {
             this.logger.debug("saveSegmentDataToMailchimpConfig:returning segment id", segmentResponse.segment.id);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from "@angular/core";
 import { faMeetup } from "@fortawesome/free-brands-svg-icons";
 import first from "lodash-es/first";
 import range from "lodash-es/range";
@@ -7,7 +7,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { MarkdownEditorComponent } from "../../../markdown-editor/markdown-editor.component";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { ContentText } from "../../../models/content-text.model";
+import { ContentText, View } from "../../../models/content-text.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
@@ -34,13 +34,12 @@ export class WalkMeetupSettingsComponent implements OnInit {
   public publishStatuses: string[] = [];
   private guestLimits: number[];
   faMeetup = faMeetup;
-
+  public view: View = View.VIEW;
   constructor(private urlService: UrlService,
               private contentTextService: ContentTextService,
               private meetupService: MeetupService,
               private broadcastService: BroadcastService<ContentText>,
               protected notifierService: NotifierService,
-              private changeDetectorRef: ChangeDetectorRef,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkMeetupSettingsComponent, NgxLoggerLevel.OFF);
   }
@@ -55,7 +54,6 @@ export class WalkMeetupSettingsComponent implements OnInit {
       this.logger.debug("forCategory", meetupDescriptionPrefix + ":", contentTextItems);
       this.contentTextItems = contentTextItems;
       this.onChange(first(this.contentTextItems));
-      this.changeDetectorRef.detectChanges();
     });
     this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_SYNCED, (event: NamedEvent<MarkdownEditorComponent>) => this.replaceContent(event.data.content));
     this.broadcastService.on(NamedEventType.MARKDOWN_CONTENT_DELETED, (event: NamedEvent<ContentText>) => this.removeContent(event.data));
@@ -76,7 +74,6 @@ export class WalkMeetupSettingsComponent implements OnInit {
       if (existingContent) {
         this.contentTextItems[(this.contentTextItems.indexOf(existingContent))] = contentText;
         this.onChange(contentText);
-        this.changeDetectorRef.detectChanges();
       } else {
         this.contentTextItems.push(contentText);
         this.onChange(contentText);
@@ -88,7 +85,6 @@ export class WalkMeetupSettingsComponent implements OnInit {
     if (contentText.category === meetupDescriptionPrefix) {
       this.logger.debug("Received deleted content", contentText);
       this.contentTextItems = this.contentTextItems.filter(item => item.id !== contentText.id);
-      this.changeDetectorRef.detectChanges();
     }
   }
 
@@ -103,13 +99,11 @@ export class WalkMeetupSettingsComponent implements OnInit {
   onChange(content: ContentText) {
     this.logger.debug("selected content text:", content);
     this.selectedContent = content;
-    this.changeDetectorRef.detectChanges();
   }
 
   changeGuestLimit(content: any) {
     this.logger.debug("changeGuestLimit:change to", content);
-    this.config.meetup.guestLimit = content;
-    this.changeDetectorRef.detectChanges();
+    this.config.guestLimit = content;
   }
 
   matching(content: ContentText, selectedContent: ContentText) {
@@ -117,6 +111,6 @@ export class WalkMeetupSettingsComponent implements OnInit {
   }
 
   save() {
-    this.meetupService.saveConfig(this.notify, this.config).then(() => this.changeDetectorRef.detectChanges());
+    this.meetupService.saveConfig(this.notify, this.config);
   }
 }

@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const expenseClaim = require("../models/expense-claim");
-const controller = require("./../controllers/crud-controller").create(expenseClaim);
+const controller = require("../controllers/crud-controller").create(expenseClaim);
 
 const router = express.Router();
 

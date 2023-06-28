@@ -4,7 +4,7 @@ import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { BannerImageItem } from "../../models/banner-configuration.model";
-import { Image, Images, SystemConfigResponse } from "../../models/system.model";
+import { Image, Images, SystemConfig } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { StringUtilsService } from "../../services/string-utils.service";
 import { SystemConfigService } from "../../services/system/system-config.service";
@@ -98,10 +98,10 @@ export class BannerImageSelectorComponent implements OnInit, OnDestroy {
     }
     this.propertyClass = this.configurePropertyClass();
     this.subscriptions.push(this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
-        this.logger.info("this.bannerImageItem.bannerImageType", this.bannerImageItem?.bannerImageType, "config.system:", config.system);
+      .subscribe((config: SystemConfig) => {
+        this.logger.info("this.bannerImageItem.bannerImageType", this.bannerImageItem?.bannerImageType, "config:", config);
         if (this.bannerImageItem?.bannerImageType) {
-          this.images = config.system[this.bannerImageItem?.bannerImageType];
+          this.images = config[this.bannerImageItem?.bannerImageType];
         }
         this.imageTypeDescription = this.stringUtils.asTitle(this.bannerImageItem?.bannerImageType.replace("s", ""));
         if (this.images?.images && !this?.bannerImageItem?.image) {

@@ -1,25 +1,16 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import { faAdd, faMinusCircle, faPencil, faPlusCircle, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
-import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
-import { BsDropdownConfig } from "ngx-bootstrap/dropdown";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { PageContent, PageContentEditEvent } from "../../../models/content-text.model";
-import { BroadcastService } from "../../../services/broadcast-service";
+import { PageContent } from "../../../models/content-text.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
-import { MemberResourcesReferenceDataService } from "../../../services/member/member-resources-reference-data.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
-import { NumberUtilsService } from "../../../services/number-utils.service";
-import { PageContentActionsService } from "../../../services/page-content-actions.service";
-import { PageContentEditService } from "../../../services/page-content-edit.service";
 import { PageContentService } from "../../../services/page-content.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { SiteEditService } from "../../../site-edit/site-edit.service";
 
 @Component({
   selector: "app-dynamic-content",
@@ -29,6 +20,10 @@ import { SiteEditService } from "../../../site-edit/site-edit.service";
 export class DynamicContentComponent implements OnInit, OnDestroy {
   @Input()
   public anchor: string;
+  @Input()
+  public notifier: AlertInstance;
+  @Input()
+  public defaultPageContent: PageContent;
   private logger: Logger;
   public relativePath: string;
   public contentPath: string;
@@ -36,39 +31,24 @@ export class DynamicContentComponent implements OnInit, OnDestroy {
   public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public pageTitle: string;
-  faPencil = faPencil;
-  faAdd = faAdd;
-  faPlusCircle = faPlusCircle;
-  faMinusCircle = faMinusCircle;
-  faSave = faSave;
-  faUndo = faUndo;
-  faTableCells = faTableCells;
-  providers: [{ provide: BsDropdownConfig, useValue: { isAnimated: true, autoClose: true } }];
   public contentDescription: string;
   public queryCompleted = false;
-  public pageContentEditEvents: PageContentEditEvent[] = [];
   private subscriptions: Subscription[] = [];
 
   constructor(
-    public siteEditService: SiteEditService,
-    public pageContentEditService: PageContentEditService,
-    private memberResourcesReferenceData: MemberResourcesReferenceDataService,
     private route: ActivatedRoute,
     private notifierService: NotifierService,
     private urlService: UrlService,
-    private numberUtils: NumberUtilsService,
     public stringUtils: StringUtilsService,
     private pageContentService: PageContentService,
     private pageService: PageService,
     private authService: AuthService,
-    public actions: PageContentActionsService,
-    private broadcastService: BroadcastService<PageContent>,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(DynamicContentComponent, NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("DynamicContentComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.notify = this.notifier || this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.relativePath = paramMap.get("relativePath");
       this.contentPath = this.pageService.contentPath(this.anchor);

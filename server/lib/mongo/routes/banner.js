@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const banner = require("../models/banner");
-const controller = require("./../controllers/crud-controller").create(banner);
+const controller = require("../controllers/crud-controller").create(banner);
 
 const router = express.Router();
 

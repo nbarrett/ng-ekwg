@@ -32,7 +32,7 @@ export class InstagramComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.externalUrls));
     this.instagramService.recentMedia()
       .then((recentMedia: InstagramRecentMediaData) => {
         this.recentMedia = take(recentMedia.data, 14);

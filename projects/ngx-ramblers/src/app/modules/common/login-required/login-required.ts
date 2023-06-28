@@ -30,7 +30,7 @@ export class LoginRequiredComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loggedIn = this.memberLoginService.memberLoggedIn();
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
     this.subscriptions.push(this.authService.authResponse()
       .subscribe((loginResponse: LoginResponse) => this.loggedIn = this.memberLoginService.memberLoggedIn()));
   }

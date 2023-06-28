@@ -4,11 +4,11 @@
       <tabset class="custom-tabset" *ngIf="config">
         <tab heading="Ramblers Details">
           <div class="img-thumbnail thumbnail-admin-edit">
-            <div class="row" *ngIf="config?.system?.national?.mainSite">
+            <div class="row" *ngIf="config?.national?.mainSite">
               <div class="col-md-5">
                 <div class="form-group">
                   <label>Main Site Web Url</label>
-                  <input [(ngModel)]="config.system.national.mainSite.href"
+                  <input [(ngModel)]="config.national.mainSite.href"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter main site link">
                 </div>
@@ -16,7 +16,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Main Site Name</label>
-                  <input [(ngModel)]="config.system.national.mainSite.title"
+                  <input [(ngModel)]="config.national.mainSite.title"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter main site title">
                 </div>
@@ -26,13 +26,14 @@
                   <label>Link Preview</label>
                 </div>
                 <div class="form-group">
-                  <a [href]="config.system.national.mainSite.href">{{config.system.national.mainSite.title || config.system.national.mainSite.href}}</a>
+                  <a
+                    [href]="config.national.mainSite.href">{{config.national.mainSite.title || config.national.mainSite.href}}</a>
                 </div>
               </div>
               <div class="col-md-5">
                 <div class="form-group">
                   <label>Walks Manager Web Url</label>
-                  <input [(ngModel)]="config.system.national.walksManager.href"
+                  <input [(ngModel)]="config.national.walksManager.href"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter Walks Manager site link">
                 </div>
@@ -40,7 +41,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Walks Manager Name</label>
-                  <input [(ngModel)]="config.system.national.walksManager.title"
+                  <input [(ngModel)]="config.national.walksManager.title"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter Walks Manager site title">
                 </div>
@@ -50,32 +51,40 @@
                   <label>Link Preview</label>
                 </div>
                 <div class="form-group">
-                  <a [href]="config.system.national.walksManager.href">{{config.system.national.walksManager.title || config.system.national.walksManager.href}}</a>
+                  <a
+                    [href]="config.national.walksManager.href">{{config.national.walksManager.title || config.national.walksManager.href}}</a>
                 </div>
               </div>
               <div class="col-md-5">
-                <div class="form-group">
+                <form class="form-group">
                   <label>Walks Manager User Name</label>
-                  <input [(ngModel)]="config.system.national.walksManager.userName"
+                  <input [(ngModel)]="config.national.walksManager.userName"
+                         autocomplete="nope"
+                         name="newPassword"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter Walks Manager userName">
-                </div>
+                </form>
               </div>
               <div class="col-md-4">
-                <div class="form-group">
-                  <label>Walks Manager password</label>
-                  <input [(ngModel)]="config.system.national.walksManager.password"
+                <form class="form-group">
+                  <label for="password">Walks Manager password</label>
+                  <input autocomplete="nope"
+                         [(ngModel)]="config.national.walksManager.password"
                          type="password" value="" class="form-control input-sm"
+                         id="password"
+                         name="password"
                          placeholder="Enter Walks Manager password">
-                </div>
+                </form>
               </div>
               <div class="col-md-3">
-                <div class="form-group">
+                <form class="form-group">
                   <label>Walks Manager API Key</label>
-                  <input [(ngModel)]="config.system.national.walksManager.apiKey"
+                  <input [(ngModel)]="config.national.walksManager.apiKey"
+                         autocomplete="nope"
+                         name="apiKey"
                          type="password" value="" class="form-control input-sm"
                          placeholder="Enter Walks Manager API key">
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -86,7 +95,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Web Url</label>
-                  <input [(ngModel)]="config.system.group.href"
+                  <input [(ngModel)]="config.group.href"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter a link">
                 </div>
@@ -94,7 +103,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Long Name</label>
-                  <input [(ngModel)]="config.system.group.longName"
+                  <input [(ngModel)]="config.group.longName"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter a title for group short name">
                 </div>
@@ -102,7 +111,7 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Short Name</label>
-                  <input [(ngModel)]="config.system.group.shortName"
+                  <input [(ngModel)]="config.group.shortName"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter a title for group short name">
                 </div>
@@ -110,16 +119,16 @@
               <div class="col-md-6">
                 <div class="form-group">
                   <label>Ramblers Group Code</label>
-                  <input [(ngModel)]="config.system.group.groupCode"
+                  <input [(ngModel)]="config.group.groupCode"
                          type="text" value="" class="form-control input-sm"
                          placeholder="Enter the Ramblers group code">
                 </div>
               </div>
             </div>
             <div class="row img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">Pages on Site ({{config.system.group.pages.length}})</div>
+              <div class="thumbnail-heading">Pages on Site ({{config.group.pages.length}})</div>
               <div class="col-sm-12">
-                <app-links-edit [links]="config.system.group.pages"></app-links-edit>
+                <app-links-edit [links]="config.group.pages"></app-links-edit>
               </div>
             </div>
           </div>
@@ -127,24 +136,24 @@
         <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(backgrounds)"
              [imageType]="backgrounds"
              [config]="config"
-             [images]="config.system.backgrounds">
+             [images]="config.backgrounds">
         </tab>
         <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(icons)"
              [imageType]="icons"
              [config]="config"
-             [images]="config.system.icons">
+             [images]="config.icons">
         </tab>
         <tab app-image-collection-settings [heading]="systemConfigService.imageTypeDescription(logos)"
              [imageType]="logos"
              [config]="config"
-             [images]="config.system.logos">
+             [images]="config.logos">
         </tab>
         <tab heading="Website Header">
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">Header Buttons ({{config.system.header.navigationButtons.length}})</div>
+              <div class="thumbnail-heading">Header Buttons ({{config.header.navigationButtons.length}})</div>
               <div class="col-sm-12">
-                <app-links-edit [links]="config.system.header.navigationButtons"></app-links-edit>
+                <app-links-edit [links]="config.header.navigationButtons"></app-links-edit>
               </div>
             </div>
           </div>
@@ -156,24 +165,24 @@
               <div class="col-md-12">
                 <div class="form-group">
                   <label for="facebook-group-url">Facebook Group Url</label>
-                  <input [(ngModel)]="config.system.externalUrls.facebook.groupUrl"
+                  <input [(ngModel)]="config.externalUrls.facebook.groupUrl"
                          type="text" value="" class="form-control input-sm" id="facebook-group-url"
                          placeholder="Enter a group url for Facebook">
                 </div>
                 <div class="form-group">
                   <label for="facebook-pages-url">Facebook Pages Url (optional)</label>
-                  <input [(ngModel)]="config.system.externalUrls.facebook.pagesUrl"
+                  <input [(ngModel)]="config.externalUrls.facebook.pagesUrl"
                          type="text" value="" class="form-control input-sm" id="facebook-pages-url"
                          placeholder="Enter a pages url for Facebook">
                 </div>
                 <div class="form-group">
                   <label for="facebook-appId">Facebook App Id</label>
-                  <input [(ngModel)]="config.system.externalUrls.facebook.appId"
+                  <input [(ngModel)]="config.externalUrls.facebook.appId"
                          type="text" value="" class="form-control input-sm" id="facebook-appId"
                          placeholder="Enter an app id for Facebook">
                 </div>
                 <div class="custom-control custom-checkbox">
-                  <input [(ngModel)]="config.system.externalUrls.facebook.showFeed"
+                  <input [(ngModel)]="config.externalUrls.facebook.showFeed"
                          type="checkbox" class="custom-control-input" id="facebook-show-feed">
                   <label class="custom-control-label"
                          for="facebook-show-feed">Show Facebook Feed
@@ -181,30 +190,30 @@
                 </div>
                 <div class="form-group">
                   <label for="meetup-href">Meetup</label>
-                  <input [(ngModel)]="config.system.externalUrls.meetup"
+                  <input [(ngModel)]="config.externalUrls.meetup"
                          type="text" value="" class="form-control input-sm" id="meetup-href"
                          placeholder="Enter a group url for Meetup">
                 </div>
                 <div class="form-group">
                   <label for="youtube-href">Youtube</label>
-                  <input [(ngModel)]="config.system.externalUrls.youtube"
+                  <input [(ngModel)]="config.externalUrls.youtube"
                          type="text" value="" class="form-control input-sm" id="youtube-href"
                          placeholder="Enter a group url for Youtube">
                 </div>
                 <div class="form-group">
                   <label for="twitter-href">Twitter</label>
-                  <input [(ngModel)]="config.system.externalUrls.twitter"
+                  <input [(ngModel)]="config.externalUrls.twitter"
                          type="text" value="" class="form-control input-sm" id="twitter-href"
                          placeholder="Enter a group url for Twitter">
                 </div>
                 <div class="form-group">
                   <label for="instagram-href">Instagram</label>
-                  <input [(ngModel)]="config.system.externalUrls.instagram.groupUrl"
+                  <input [(ngModel)]="config.externalUrls.instagram.groupUrl"
                          type="text" value="" class="form-control input-sm" id="instagram-href"
                          placeholder="Enter a group url for Instagram">
                 </div>
                 <div class="custom-control custom-checkbox">
-                  <input [(ngModel)]="config.system.externalUrls.instagram.showFeed"
+                  <input [(ngModel)]="config.externalUrls.instagram.showFeed"
                          type="checkbox" class="custom-control-input" id="instagram-show-feed">
                   <label class="custom-control-label"
                          for="instagram-show-feed">Show Instagram Feed
@@ -213,15 +222,15 @@
               </div>
             </div>
             <div class="row img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">Column 2: Quick Links ({{config.system.footer.quickLinks.length}})</div>
+              <div class="thumbnail-heading">Column 2: Quick Links ({{config.footer.quickLinks.length}})</div>
               <div class="col-sm-12">
-                <app-links-edit [links]="config.system.footer.quickLinks"></app-links-edit>
+                <app-links-edit [links]="config.footer.quickLinks"></app-links-edit>
               </div>
             </div>
             <div class="row img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">Column 3: Legals ({{config.system.footer.legals.length}})</div>
+              <div class="thumbnail-heading">Column 3: Legals ({{config.footer.legals.length}})</div>
               <div class="col-sm-12">
-                <app-links-edit [links]="config.system.footer.legals"></app-links-edit>
+                <app-links-edit [links]="config.footer.legals"></app-links-edit>
               </div>
             </div>
             <div class="row img-thumbnail thumbnail-2">
@@ -229,13 +238,13 @@
               <div class="col-sm-12">
                 <div class="form-group">
                   <label for="area-long-name">Apple</label>
-                  <input [(ngModel)]="config.system.footer.appDownloads.apple"
+                  <input [(ngModel)]="config.footer.appDownloads.apple"
                          id="area-long-name"
                          class="form-control input-sm">
                 </div>
                 <div class="form-group">
                   <label for="area-short-name">Google</label>
-                  <input [(ngModel)]="config.system.footer.appDownloads.google"
+                  <input [(ngModel)]="config.footer.appDownloads.google"
                          id="area-short-name"
                          class="form-control input-sm">
                 </div>

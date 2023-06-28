@@ -40,7 +40,7 @@ export class ContentMetadataService {
               public imageTagDataService: ImageTagDataService,
               private imageDuplicatesService: ImageDuplicatesService,
               private commonDataService: CommonDataService, loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(ContentMetadataService, NgxLoggerLevel.OFF);
   }
 
   contentMetadataNotifications(): Observable<MemberApiResponse> {

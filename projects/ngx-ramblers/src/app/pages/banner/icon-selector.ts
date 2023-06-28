@@ -3,7 +3,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { FileUtilsService } from "../../file-utils.service";
 import { TitleLine } from "../../models/banner-configuration.model";
-import { Image, Images, SystemConfigResponse } from "../../models/system.model";
+import { Image, Images, SystemConfig } from "../../models/system.model";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { StringUtilsService } from "../../services/string-utils.service";
 import { SystemConfigService } from "../../services/system/system-config.service";
@@ -48,8 +48,8 @@ export class IconSelectorComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.subscriptions.push(this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
-        this.icons = config.system.icons;
+      .subscribe((config: SystemConfig) => {
+        this.icons = config.icons;
         this.logger.info("retrieved icons", this.icons);
       }));
   }

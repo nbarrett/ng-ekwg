@@ -13,7 +13,6 @@ import { SharedModule } from "../../shared-module";
     CommitteeSendNotificationComponent,
     CommitteeNotificationDetailsComponent,
     CommitteeYearComponent,
-    MailchimpSettingsComponent,
     CommitteeEditFileModalComponent,
     CommitteeHomeComponent,
     CommitteeNotificationDirective,

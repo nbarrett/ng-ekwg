@@ -1,8 +1,8 @@
-import { envConfig } from "../env-config/env-config";
+import { SystemConfig } from "../../../projects/ngx-ramblers/src/app/models/system.model";
 import url = require("url");
 
-export function createApiRequestOptions() {
-  const ramblersUrl = url.parse(envConfig.ramblers.url);
+export function createApiRequestOptions(systemConfig: SystemConfig) {
+  const ramblersUrl = url.parse(systemConfig.national.walksManager.href);
   return {
     hostname: ramblersUrl.host,
     protocol: ramblersUrl.protocol,

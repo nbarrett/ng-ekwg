@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, ReplaySubject } from "rxjs";
-import { CommitteeConfig } from "../../models/committee.model";
+import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
+import { ConfigKey } from "../../models/config.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -18,27 +19,42 @@ export class CommitteeConfigService {
   constructor(private config: ConfigService,
               private memberLoginService: MemberLoginService,
               private loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(CommitteeConfigService, NgxLoggerLevel.OFF);
-    this.refresh();
+    this.logger = loggerFactory.createLogger("CommitteeConfigService", NgxLoggerLevel.OFF);
+    this.getConfig();
   }
 
-  refresh(): void {
-    this.logger.debug("queryData:started");
-    this.getConfig().then(referenceData => {
-      this.logger.debug("notifying subscribers:", referenceData);
-      this.subject.next(CommitteeReferenceData.create(referenceData, this.memberLoginService));
+  getConfig() {
+    const emptyCommitteeMember: CommitteeMember = {
+      description: null,
+      email: null,
+      fullName: null,
+      memberId: null,
+      nameAndDescription: null,
+      type: null,
+    };
+    this.config.queryConfig<CommitteeConfig>(ConfigKey.COMMITTEE, {
+      contactUs: {
+        chairman: emptyCommitteeMember,
+        secretary: emptyCommitteeMember,
+        treasurer: emptyCommitteeMember,
+        membership: emptyCommitteeMember,
+        social: emptyCommitteeMember,
+        walks: emptyCommitteeMember,
+        support: emptyCommitteeMember
+      },
+      fileTypes: []
+    }).then((committeeConfig: CommitteeConfig) => {
+      this.logger.info("notifying subscribers with committeeConfig:", committeeConfig);
+      this.subject.next(CommitteeReferenceData.create(committeeConfig, this.memberLoginService));
     });
   }
 
-  private getConfig(): Promise<CommitteeConfig> {
-    return this.config.getConfig("committee");
-  }
-
-  saveConfig(config) {
-    return this.config.saveConfig("committee", config).then(() => this.refresh());
+  saveConfig(config: CommitteeConfig) {
+    return this.config.saveConfig<CommitteeConfig>(ConfigKey.COMMITTEE, config);
   }
 
   public events(): Observable<CommitteeReferenceData> {
     return this.subject.asObservable();
   }
+
 }

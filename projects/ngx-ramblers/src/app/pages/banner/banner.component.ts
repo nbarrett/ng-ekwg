@@ -6,7 +6,7 @@ import { AuthService } from "../../auth/auth.service";
 import { AwsFileData } from "../../models/aws-object.model";
 import { BannerConfig, BannerType, LogoAndTextLinesBanner, PapercutBackgroundBanner, TitleLine } from "../../models/banner-configuration.model";
 import { Member } from "../../models/member.model";
-import { BannerImageType, colourSelectors, Image, SystemConfigResponse } from "../../models/system.model";
+import { BannerImageType, colourSelectors, Image, SystemConfig } from "../../models/system.model";
 import { FullNamePipe } from "../../pipes/full-name.pipe";
 import { sortBy } from "../../services/arrays";
 import { BannerConfigService } from "../../services/banner-config.service";
@@ -150,7 +150,7 @@ export class BannerComponent implements OnInit, OnDestroy {
   public bannerPhotos: BannerImageType = BannerImageType.bannerPhotos;
   public allowContentEdits: boolean;
   public showIcon = true;
-  public config: SystemConfigResponse;
+  public config: SystemConfig;
   public logos: BannerImageType = BannerImageType.logos;
   public bannerTypes: KeyValue[] = enumKeyValues(BannerType);
   public backgrounds: BannerImageType = BannerImageType.backgrounds;
@@ -184,7 +184,7 @@ export class BannerComponent implements OnInit, OnDestroy {
     this.refreshData();
     this.subscriptions.push(this.authService.authResponse().subscribe(() => this.refreshCachedData()));
     this.subscriptions.push(this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
+      .subscribe((config: SystemConfig) => {
         this.config = config;
         this.logger.info("retrieved config", config);
       }));
@@ -288,7 +288,7 @@ export class BannerComponent implements OnInit, OnDestroy {
   };
 
   private defaultLogoAndTextLines(): LogoAndTextLinesBanner {
-    const groupWords: string[] = this.config.system.group.longName.split(" ");
+    const groupWords: string[] = this.config.group.longName.split(" ");
     return {
       logo: {columns: 2, bannerImageType: BannerImageType.logos, show: true, image: {padding: 0, width: 100}},
       line1: {

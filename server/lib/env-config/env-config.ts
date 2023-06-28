@@ -15,6 +15,7 @@ function logNamespace(moduleName: string) {
 }
 
 export const envConfig = {
+  production: env === "production",
   auth: {
     secret: validatedEnvironmentVariable("AUTH_SECRET"),
   },
@@ -49,17 +50,6 @@ export const envConfig = {
   },
   mongo: {
     uri: validatedEnvironmentVariable("MONGODB_URI"),
-  },
-  production: env === "production",
-  ramblers: {
-    groupCode: configData.ramblers.groupCode,
-    apiKey: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_API_KEY"),
-    walksManager: {
-      password: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_PASSWORD"),
-      userName: validatedEnvironmentVariable("RAMBLERS_WALKS_MANAGER_USER"),
-    },
-    listWalksPath: configData.ramblers.listWalksPath,
-    url: configData.ramblers.url,
   },
   server: {
     listenPort: process.env.PORT || configData.server.listenPort,

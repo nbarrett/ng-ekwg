@@ -1,5 +1,5 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
-import { MeetupConfigParameters } from "./meetup-config.model";
+import { MeetupConfig } from "./meetup-config.model";
 import { FilterParametersSearch } from "./member-resource.model";
 import { WalkAccessMode } from "./walk-edit-mode.model";
 import { WalkEventType } from "./walk-event-type.model";
@@ -26,7 +26,7 @@ export interface Walk extends Identifiable {
   gridReferenceFinish?: string;
   location?: string;
   longerDescription?: string;
-  config?: { meetup: MeetupConfigParameters };
+  config?: { meetup: MeetupConfig };
   meetupEventTitle?: string;
   meetupEventDescription?: string;
   meetupEventUrl?: string;

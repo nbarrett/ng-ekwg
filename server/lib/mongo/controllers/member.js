@@ -5,7 +5,7 @@ const debug = require("debug")(envConfig.logNamespace("database:member"));
 const member = require("../models/member");
 const transforms = require("./transforms");
 const querystring = require("querystring");
-const crudController = require("./../controllers/crud-controller").create(member);
+const crudController = require("./crud-controller").create(member);
 
 exports.update = crudController.update
 exports.all = crudController.all

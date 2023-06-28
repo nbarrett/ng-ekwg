@@ -8,8 +8,7 @@ import {
   MailchimpCampaignReplicateResponse,
   MailchimpCampaignSearchResponse,
   MailchimpCampaignSendResponse,
-  MailchimpCampaignUpdateRequest,
-  MailchimpConfig,
+  MailchimpCampaignUpdateRequest, MailchimpConfig,
   MailchimpListingResponse,
   MailchimpListSegmentBatchAddOrRemoveMembersResponse,
   MailchimpListsMembersResponse,
@@ -33,30 +32,32 @@ export interface MulterRequest extends Request {
   files: UploadedFile[];
 }
 
+export interface MailchimpMarketingApiClient {
+  campaigns: {
+    setContent(campaignId: string, mailchimpCampaignContentUpdateRequest: MailchimpCampaignContentUpdateRequest): Promise<MailchimpSetContentResponse>;
+    list(mailchimpCampaignListRequest: MailchimpCampaignListRequest): Promise<MailchimpCampaignListResponse>;
+    replicate(campaignId: string): Promise<MailchimpCampaignReplicateResponse>;
+    send(campaignId: string): Promise<MailchimpCampaignSendResponse>;
+    update(campaignId: string, mailchimpCampaignListRequest: MailchimpCampaignUpdateRequest): Promise<MailchimpCampaignUpdateRequest>;
+    getContent(campaignId: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
+  };
+  searchCampaigns: {
+    search(query: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
+  };
+  lists: {
+    updateSegment(listId, segmentId, clientRequest): Promise<MailchimpSegmentUpdateResponse>;
+    getListMembersInfo(listId: string, mailchimpListMembersRequest: MailchimpListMembersRequest): Promise<MailchimpListsMembersResponse>;
+    getAllLists(listOptions: MailchimpListsRequest): Promise<MailchimpListingResponse>;
+    batchListMembers(listId: string, body: lists.BatchListMembersBody, options: lists.BatchListMembersOpts): Promise<BatchListMembersResponse>;
+    createSegment(listId: string, requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
+    deleteSegment(listId: string, segmentId: string): Promise<MailchimpListingResponse>;
+    batchSegmentMembers(bodyParameters: MailchimpBatchSegmentAddOrRemoveRequest, listId: string, segmentId: number): Promise<MailchimpListSegmentBatchAddOrRemoveMembersResponse>;
+  };
+}
+
 export interface MailchimpConfigData {
   config: MailchimpConfig;
-  client: {
-    campaigns: {
-      setContent(campaignId: string, mailchimpCampaignContentUpdateRequest: MailchimpCampaignContentUpdateRequest): Promise<MailchimpSetContentResponse>;
-      list(mailchimpCampaignListRequest: MailchimpCampaignListRequest): Promise<MailchimpCampaignListResponse>;
-      replicate(campaignId: string): Promise<MailchimpCampaignReplicateResponse>;
-      send(campaignId: string): Promise<MailchimpCampaignSendResponse>;
-      update(campaignId: string, mailchimpCampaignListRequest: MailchimpCampaignUpdateRequest): Promise<MailchimpCampaignUpdateRequest>;
-      getContent(campaignId: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
-    };
-    searchCampaigns: {
-      search(query: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
-    };
-    lists: {
-      updateSegment(listId, segmentId, clientRequest): Promise<MailchimpSegmentUpdateResponse>;
-      getListMembersInfo(listId: string, mailchimpListMembersRequest: MailchimpListMembersRequest): Promise<MailchimpListsMembersResponse>;
-      getAllLists(listOptions: MailchimpListsRequest): Promise<MailchimpListingResponse>;
-      batchListMembers(listId: string, body: lists.BatchListMembersBody, options: lists.BatchListMembersOpts): Promise<BatchListMembersResponse>;
-      createSegment(listId: string, requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
-      deleteSegment(listId: string, segmentId: string): Promise<MailchimpListingResponse>;
-      batchSegmentMembers(bodyParameters: MailchimpBatchSegmentAddOrRemoveRequest, listId: string, segmentId: number): Promise<MailchimpListSegmentBatchAddOrRemoveMembersResponse>;
-    };
-  };
+  client: MailchimpMarketingApiClient;
 }
 
 export interface MailchimpListsRequest {

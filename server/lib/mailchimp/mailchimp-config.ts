@@ -1,21 +1,23 @@
 import mailchimp from "@mailchimp/mailchimp_marketing";
 import debug from "debug";
-import { MailchimpConfig, MailchimpConfigResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { ConfigDocument, ConfigKey } from "../../../projects/ngx-ramblers/src/app/models/config.model";
+import { MailchimpConfig } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../env-config/env-config";
-import { MailchimpConfigData } from "../shared/server-models";
+import * as config from "../mongo/controllers/config";
 import * as transforms from "../mongo/controllers/transforms";
-import config = require("../mongo/models/config");
+import { MailchimpConfigData } from "../shared/server-models";
 
 const debugLog = debug(envConfig.logNamespace("mailchimp-config"));
 
 export function configuredMailchimp(): Promise<MailchimpConfigData> {
-  return config.findOne({"mailchimp": {"$exists": true}})
-    .then((mailchimpConfigResponse: MailchimpConfigResponse) => {
+  return config.queryKey(ConfigKey.MAILCHIMP)
+    .then((mailchimpConfigDocument: ConfigDocument) => {
+      const mailchimpConfigParameters: MailchimpConfig = mailchimpConfigDocument.value;
       mailchimp.setConfig({
-        apiKey: mailchimpConfigResponse.mailchimp.apiKey,
-        server: resolvePrefix(mailchimpConfigResponse.mailchimp),
+        apiKey: mailchimpConfigParameters.apiKey,
+        server: resolvePrefix(mailchimpConfigParameters),
       });
-      return {config: mailchimpConfigResponse.mailchimp, client: mailchimp};
+      return {config: mailchimpConfigParameters, client: mailchimp} as unknown as MailchimpConfigData;
     })
     .catch(error => {
       debugLog("Error", transforms.parseError(error));

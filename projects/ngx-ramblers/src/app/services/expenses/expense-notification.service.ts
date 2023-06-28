@@ -1,8 +1,8 @@
 import { ComponentFactoryResolver, Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../notifications/expenses/expense.model";
 import { MailchimpExpenseOtherContent, SaveSegmentResponse } from "../../models/mailchimp.model";
 import { ExpenseNotificationComponentAndData } from "../../notifications/expenses/expense-notification.directive";
+import { ExpenseEventType, ExpenseNotificationMapping, ExpenseNotificationRequest } from "../../notifications/expenses/expense.model";
 import { ExpenseNotificationApproverFirstApprovalComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-first-approval.component";
 import { ExpenseNotificationApproverPaidComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-paid.component";
 import { ExpenseNotificationApproverReturnedComponent } from "../../notifications/expenses/templates/approver/expense-notification-approver-returned.component";
@@ -150,7 +150,7 @@ export class ExpenseNotificationService {
     this.display.showExpenseProgressAlert(request.notify, `Sending ${request.campaignNameAndMember}`);
     return this.mailchimpConfig.getConfig()
       .then(config => {
-        const campaignId = config.mailchimp.campaigns.expenseNotification.campaignId;
+        const campaignId = config.campaigns.expenseNotification.campaignId;
         const segmentId = this.mailchimpSegmentService.getMemberSegmentId(request.member, request.segmentType);
         this.logger.debug("about to replicateAndSendWithOptions with campaignName", request.campaignNameAndMember, "campaign Id", campaignId, "segmentId", segmentId);
         return this.mailchimpCampaignService.replicateAndSendWithOptions({

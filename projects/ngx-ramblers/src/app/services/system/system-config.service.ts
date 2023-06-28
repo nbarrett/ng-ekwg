@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { shareReplay } from "rxjs/operators";
-import { Images, BannerImageType, Organisation, SystemConfigResponse, AuthenticationDetailsWithLink, Ramblers } from "../../models/system.model";
+import { ConfigKey } from "../../models/config.model";
+import { BannerImageType, Images, Organisation, Ramblers, SystemConfig } from "../../models/system.model";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -13,7 +14,7 @@ import { StringUtilsService } from "../string-utils.service";
 })
 export class SystemConfigService {
 
-  private subject = new BehaviorSubject<SystemConfigResponse>(this.default());
+  private subject = new BehaviorSubject<SystemConfig>(this.default());
   private logger: Logger;
   private state: { [key: string]: boolean } = {};
 
@@ -32,19 +33,19 @@ export class SystemConfigService {
     this.subject.next(systemConfig);
   }
 
-  private async getConfig(): Promise<SystemConfigResponse> {
-    return (await this.config.getConfig<SystemConfigResponse>("system", this.default()));
+  private async getConfig(): Promise<SystemConfig> {
+    return await this.config.queryConfig<SystemConfig>(ConfigKey.SYSTEM, this.default());
   }
 
   imageTypeDescription(imageType: BannerImageType) {
     return this.stringUtils.asTitle(imageType);
   }
 
-  saveConfig(config: SystemConfigResponse) {
-    return this.config.saveConfig<SystemConfigResponse>("system", config).then(() => this.refresh());
+  saveConfig(config: SystemConfig) {
+    return this.config.saveConfig<SystemConfig>(ConfigKey.SYSTEM, config).then(() => this.refresh());
   }
 
-  public events(): Observable<SystemConfigResponse> {
+  public events(): Observable<SystemConfig> {
     return this.subject.pipe(shareReplay());
   }
 
@@ -66,22 +67,20 @@ export class SystemConfigService {
     return {rootFolder: imageType, images: []};
   }
 
-  default(): SystemConfigResponse {
+  default(): SystemConfig {
     return {
-      system: {
-        backgrounds: this.defaultImages(BannerImageType.backgrounds),
-        icons: this.defaultImages(BannerImageType.icons),
-        logos: this.defaultImages(BannerImageType.logos),
-        externalUrls: {
-          facebook: {appId: null, pagesUrl: null, groupUrl: null},
-          meetup: null,
-          instagram: null,
-          linkedIn: null
-        },
-        area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.defaultRamblersConfig(),
-        header: {selectedLogo: null, navigationButtons: []},
-        footer: {appDownloads: {apple: undefined, google: undefined}, legals: [], pages: [], quickLinks: []}
-      }
+      backgrounds: this.defaultImages(BannerImageType.backgrounds),
+      icons: this.defaultImages(BannerImageType.icons),
+      logos: this.defaultImages(BannerImageType.logos),
+      externalUrls: {
+        facebook: {appId: null, pagesUrl: null, groupUrl: null},
+        meetup: null,
+        instagram: null,
+        linkedIn: null
+      },
+      area: this.emptyOrganisation(), group: this.emptyOrganisation(), national: this.defaultRamblersConfig(),
+      header: {selectedLogo: null, navigationButtons: []},
+      footer: {appDownloads: {apple: undefined, google: undefined}, legals: [], pages: [], quickLinks: []}
     };
   };
 

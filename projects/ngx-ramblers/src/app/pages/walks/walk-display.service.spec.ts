@@ -64,7 +64,7 @@ describe("WalkDisplayService", () => {
         {provide: "MemberAuditService", useValue: {}},
         {provide: "WalkNotificationService", useValue: {}},
         {provide: "MailchimpSegmentService", useValue: {}},
-        {provide: "MailchimpConfig", useValue: {}},
+        {provide: "MailchimpConfigDocument", useValue: {}},
         {provide: "MailchimpCampaignService", useValue: {}},
         {provide: "MeetupService", useValue: meetupService},
         {provide: "ClipboardService", useValue: {}},

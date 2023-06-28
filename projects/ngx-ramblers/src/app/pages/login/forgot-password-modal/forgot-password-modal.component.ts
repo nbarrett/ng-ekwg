@@ -4,7 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { MailchimpConfigResponse } from "../../../models/mailchimp.model";
+import { MailchimpConfig } from "../../../models/mailchimp.model";
 import { Member } from "../../../models/member.model";
 import { Organisation } from "../../../models/system.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -57,7 +57,7 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.logger.info("subscribing to systemConfigService events");
-    this.systemConfigService.events().subscribe(item => this.group = item.system.group);
+    this.systemConfigService.events().subscribe(item => this.group = item.group);
     this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse) => {
       this.logger.debug("subscribe:forgot password", loginResponse);
       if (loginResponse.member) {
@@ -95,29 +95,22 @@ export class ForgotPasswordModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  getMailchimpConfig() {
-    return this.mailchimpConfigService.getConfig()
-      .then(config => {
-        return config.mailchimp;
-      });
-  }
-
-  createOrSaveForgottenPasswordSegment(config: MailchimpConfigResponse) {
-    const segmentId = config?.mailchimp?.segments?.general?.forgottenPasswordSegmentId;
+  createOrSaveForgottenPasswordSegment(config: MailchimpConfig) {
+    const segmentId = config?.segments?.general?.forgottenPasswordSegmentId;
     if (!segmentId) {
       return Promise.reject("Forgotten password email cannot be sent due to an unxpected system error");
     }
     return this.mailchimpSegmentService.saveSegment("general", {segmentId}, [{id: this.forgottenPasswordMember.id}], this.FORGOTTEN_PASSWORD_SEGMENT, [this.forgottenPasswordMember]);
   }
 
-  sendForgottenPasswordCampaign(config: MailchimpConfigResponse) {
+  sendForgottenPasswordCampaign(config: MailchimpConfig) {
     const member = this.forgottenPasswordMember.firstName + " " + this.forgottenPasswordMember.lastName;
-    this.logger.debug("config.mailchimp.campaigns.forgottenPassword.campaignId", config.mailchimp.campaigns.forgottenPassword.campaignId);
-    this.logger.debug("config.mailchimp.segments.general.forgottenPasswordSegmentId", config.mailchimp.segments.general.forgottenPasswordSegmentId);
+    this.logger.debug("config.campaigns.forgottenPassword.campaignId", config.campaigns.forgottenPassword.campaignId);
+    this.logger.debug("config.segments.general.forgottenPasswordSegmentId", config.segments.general.forgottenPasswordSegmentId);
     return this.mailchimpCampaignService.replicateAndSendWithOptions({
-      campaignId: config.mailchimp.campaigns.forgottenPassword.campaignId,
+      campaignId: config.campaigns.forgottenPassword.campaignId,
       campaignName: `${this?.group?.shortName} website password reset instructions (${member})`,
-      segmentId: config.mailchimp.segments.general.forgottenPasswordSegmentId
+      segmentId: config.segments.general.forgottenPasswordSegmentId
     });
   }
 

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { SystemConfigResponse } from "../models/system.model";
+import { SystemConfig } from "../models/system.model";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SystemConfigService } from "../services/system/system-config.service";
 import { UrlService } from "../services/url.service";
@@ -14,7 +14,7 @@ import { UrlService } from "../services/url.service";
 })
 export class HeaderButtonsComponent implements OnInit, OnDestroy {
   private logger: Logger;
-  public systemConfigResponse: SystemConfigResponse;
+  public systemConfigResponse: SystemConfig;
   private subscriptions: Subscription[] = [];
 
   constructor(private systemConfigService: SystemConfigService, loggerFactory: LoggerFactory, public urlService: UrlService) {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from "@angular/core";
-import { faBook, faCashRegister, faEnvelopeOpenText, faIdCard, faMailBulk, faUnlockAlt, faUser, faUsersCog } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faCashRegister, faEnvelopeOpenText, faIdCard, faMailBulk, faUnlockAlt, faUsersCog } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -35,6 +35,7 @@ export class AdminComponent implements OnInit, OnDestroy, OnDestroy {
   public notifyTarget: AlertTarget = {};
   public loggedIn: boolean;
   public allowAdminEdits: boolean;
+  public defaultPageContent: PageContent;
 
   constructor(private pageService: PageService,
               private memberLoginService: MemberLoginService,
@@ -65,91 +66,100 @@ export class AdminComponent implements OnInit, OnDestroy, OnDestroy {
     this.logger.debug(loginResponse, "setPrivileges:allowAdminEdits", this.allowAdminEdits, "this.loggedIn", this.loggedIn);
   }
 
-  private generateActionButtons() {
-    this.pageContentService.findByPath("admin#action-buttons")
-      .then(async response => {
-        this.logger.debug("response:", response);
-        if (!response) {
-          const data: PageContent = {
-            path: "admin#action-buttons", rows: [
-              {
-                maxColumns: 3,
-                showSwiper: false,
-                type: PageContentType.ACTION_BUTTONS,
-                columns: [
-                  {
-                    accessLevel: AccessLevel.loggedInMember,
-                    title: "Contact details",
-                    icon: "faIdCard",
-                    href: "admin/contact-details",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("personal-details-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.loggedInMember,
-                    title: "Change Password",
-                    icon: "faUnlockAlt",
-                    href: "admin/change-password",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.loggedInMember,
-                    title: "Email subscriptions",
-                    icon: "faEnvelopeOpenText",
-                    href: "admin/email-subscriptions",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("contact-preferences-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.loggedInMember,
-                    title: "Expenses",
-                    icon: "faCashRegister",
-                    href: "admin/expenses",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("expenses-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.committee,
-                    title: "Member Admin",
-                    icon: "faUsersCog",
-                    href: "admin/member-admin",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-admin-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.committee,
-                    title: "Member Bulk Load",
-                    icon: "faMailBulk",
-                    href: "admin/member-bulk-load",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("bulk-load-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.committee,
-                    title: "Member Login Audit",
-                    icon: "faBook",
-                    href: "admin/member-login-audit",
-                    contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
-                  },
-                  {
-                    accessLevel: AccessLevel.committee,
-                    title: "System Settings",
-                    icon: "faCogs",
-                    href: "admin/system-settings",
-                    contentTextId: null
-                  },
-                  {
-                    accessLevel: AccessLevel.committee,
-                    title: "Configure Banners",
-                    icon: "faImages",
-                    href: "committee/banners",
-                    contentTextId: null
-                  },
-                ]
-              }]
-          };
-          this.logger.debug("data", data);
-          this.pageContentService.createOrUpdate(data);
-        } else {
-          this.logger.debug("found existing page content", response);
-        }
+  private async generateActionButtons() {
+    const ADMIN_ACTION_BUTTONS = "admin#action-buttons";
+    this.defaultPageContent = {
+      path: ADMIN_ACTION_BUTTONS, rows: [
+        {
+          maxColumns: 3,
+          showSwiper: false,
+          type: PageContentType.ACTION_BUTTONS,
+          columns: [
+            {
+              accessLevel: AccessLevel.loggedInMember,
+              title: "Contact details",
+              icon: "faIdCard",
+              href: "admin/contact-details",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("personal-details-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.loggedInMember,
+              title: "Change Password",
+              icon: "faUnlockAlt",
+              href: "admin/change-password",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.loggedInMember,
+              title: "Email subscriptions",
+              icon: "faEnvelopeOpenText",
+              href: "admin/email-subscriptions",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("contact-preferences-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.loggedInMember,
+              title: "Expenses",
+              icon: "faCashRegister",
+              href: "admin/expenses",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("expenses-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Member Admin",
+              icon: "faUsersCog",
+              href: "admin/member-admin",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("member-admin-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Member Bulk Load",
+              icon: "faMailBulk",
+              href: "admin/member-bulk-load",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("bulk-load-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Member Login Audit",
+              icon: "faBook",
+              href: "admin/member-login-audit",
+              contentTextId: (await this.contentTextService.findByNameAndCategory("member-login-audit-help", "admin"))?.id
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "System Settings",
+              icon: "faCogs",
+              href: "admin/system-settings",
+              contentTextId: null
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Committee Settings",
+              icon: "faUsersCog",
+              href: "admin/committee-settings",
+              contentTextId: null
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Mailchimp Settings",
+              icon: "faMailBulk",
+              href: "admin/mailchimp-settings",
+              contentTextId: null
+            },
+            {
+              accessLevel: AccessLevel.committee,
+              title: "Configure Banners",
+              icon: "faImages",
+              href: "admin/banners",
+              contentTextId: null
+            },
+          ]
+        }]
+    };
+    this.pageContentService.findByPath(ADMIN_ACTION_BUTTONS)
+      .then((response: PageContent) => {
+        this.logger.debug("found existing page content", response);
       })
-      .catch(async error => {
+      .catch(error => {
         this.logger.debug("error:", error);
       });
   }

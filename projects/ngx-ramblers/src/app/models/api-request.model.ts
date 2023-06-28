@@ -11,6 +11,10 @@ export interface DataQueryOptions {
   sort?: object;
 }
 
+export interface MongoId {
+  _id: string;
+}
+
 export enum DateCriteria {
   CURRENT_OR_FUTURE_DATES = 1,
   PAST_DATES = 2,

@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit");
     this.pageService.setTitle("Home");
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.externalUrls));
     this.subscriptions.push(this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
       this.initialiseSlidesForTag(tag, "selectedTag().subscribe");
     }));

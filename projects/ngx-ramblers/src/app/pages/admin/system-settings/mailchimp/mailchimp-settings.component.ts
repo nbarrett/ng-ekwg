@@ -3,7 +3,7 @@ import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { Notification } from "../../../../models/committee.model";
-import { MailchimpCampaignListResponse, MailchimpConfigResponse, MailchimpListingResponse } from "../../../../models/mailchimp.model";
+import { MailchimpCampaignListResponse, MailchimpConfig, MailchimpListingResponse } from "../../../../models/mailchimp.model";
 import { Member } from "../../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../../pipes/line-feeds-to-breaks.pipe";
@@ -34,14 +34,14 @@ export class MailchimpSettingsComponent implements OnInit {
   members: Member[] = [];
   public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public campaignSearchTerm: string;
-  public config: MailchimpConfigResponse;
+  public mailchimpConfig: MailchimpConfig;
   public mailchimpListingResponse: MailchimpListingResponse;
 
   constructor(private contentMetadataService: ContentMetadataService,
               private mailchimpSegmentService: MailchimpSegmentService,
               private committeeQueryService: CommitteeQueryService,
               private mailchimpCampaignService: MailchimpCampaignService,
-              private mailchimpConfig: MailchimpConfigService,
+              private mailchimpConfigService: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
@@ -54,7 +54,7 @@ export class MailchimpSettingsComponent implements OnInit {
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpSettingsComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpSettingsComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -66,10 +66,10 @@ export class MailchimpSettingsComponent implements OnInit {
       title: "Mailchimp Campaigns",
       message: "Getting campaign information matching " + this.campaignSearchTerm
     });
-    this.mailchimpConfig.getConfig()
-      .then(config => {
-        this.config = config;
-        this.logger.info("retrieved config", config);
+    this.mailchimpConfigService.getConfig()
+      .then(mailchimpConfig => {
+        this.mailchimpConfig = mailchimpConfig;
+        this.logger.info("retrieved mailchimpConfig", mailchimpConfig);
       }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));
 
     this.mailchimpCampaignService.list({
@@ -126,13 +126,13 @@ export class MailchimpSettingsComponent implements OnInit {
   }
 
   save() {
-    this.logger.debug("saving config", this.config);
-    this.mailchimpConfig.saveConfig(this.config)
-      .then(() => this.urlService.navigateTo("committee"))
+    this.logger.debug("saving config", this.mailchimpConfig);
+    this.mailchimpConfigService.saveConfig(this.mailchimpConfig)
+      .then(() => this.urlService.navigateTo("admin"))
       .catch((error) => this.notify.error(error));
   }
 
   cancel() {
-    this.urlService.navigateTo("committee");
+    this.urlService.navigateTo("admin");
   }
 }

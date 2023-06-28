@@ -42,7 +42,7 @@ export class MailchimpListService {
               private commonDataService: CommonDataService,
               private memberService: MemberService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(MailchimpListService, NgxLoggerLevel.OFF);
   }
 
   async addSegment(listType: string, segmentName: string): Promise<MailchimpListSegmentAddResponse> {

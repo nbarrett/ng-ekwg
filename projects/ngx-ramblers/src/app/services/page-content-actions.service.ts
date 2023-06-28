@@ -1,10 +1,9 @@
 import { Injectable } from "@angular/core";
-import { range } from "lodash-es";
 import first from "lodash-es/first";
 import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
 import { NamedEventType } from "../models/broadcast.model";
-import { ContentText, HasPageContentRows, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
+import { ColumnInsertData, ContentText, HasPageContentRows, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
 import { AccessLevel } from "../models/member-resource.model";
 import { move } from "./arrays";
 import { BroadcastService } from "./broadcast-service";
@@ -184,29 +183,52 @@ export class PageContentActionsService {
     this.broadcastService.broadcast(NamedEventType.PAGE_CONTENT_CHANGED);
   }
 
-  isActionButtons(row: PageContentRow): boolean {
+  public isActionButtons(row: PageContentRow): boolean {
     return ["slides", PageContentType.ACTION_BUTTONS].includes(row?.type.toString());
   }
 
-  isTextRow(row: PageContentRow) {
+  public isTextRow(row: PageContentRow) {
     return row.type === PageContentType.TEXT;
   }
 
-  pageContentFound(pageContent: PageContent, queryCompleted: boolean) {
+  public pageContentFound(pageContent: PageContent, queryCompleted: boolean) {
     const hasRows = pageContent?.rows?.length > 0;
     this.logger.debug("pageContentFound:hasRows:", hasRows, "queryCompleted:", queryCompleted);
     return hasRows && queryCompleted;
   }
 
-  rowContainer(pageContent: PageContent, rowIsNested: boolean, column: PageContentColumn): HasPageContentRows {
+  public rowContainer(pageContent: PageContent, rowIsNested: boolean, column: PageContentColumn): HasPageContentRows {
     return rowIsNested && column?.rows ? column : pageContent;
   }
 
-  moveRowUp(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
+  public moveRowUp(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
     move(this.rowContainer(pageContent, rowIsNested, column).rows, rowIndex, rowIndex - 1);
   }
 
-  moveRowDown(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
+  public moveRowDown(pageContent: PageContent, rowIndex: number, rowIsNested: boolean, column: PageContentColumn) {
     move(this.rowContainer(pageContent, rowIsNested, column).rows, rowIndex, rowIndex + 1);
+  }
+
+  public calculateInsertableContent(existingData: PageContent, defaultData: PageContent): ColumnInsertData[] {
+    const responseHrefs = this.firstRowHrefs(existingData);
+    this.logger.info("existingData hrefs:", responseHrefs);
+    const defaultDataHrefs = this.firstRowHrefs(defaultData);
+    this.logger.info("default data hrefs:", defaultDataHrefs);
+    return defaultDataHrefs?.filter(item => !responseHrefs.includes(item))?.map(href => {
+      const index = this.indexOfHref(defaultData, href);
+      return {index, data: this.firstRowColumns(defaultData)[index]};
+    });
+  }
+
+  public firstRowHrefs(pageContent: PageContent): string[] {
+    return this.firstRowColumns(pageContent)?.map(column => column.href);
+  }
+
+  public firstRowColumns(pageContent: PageContent): PageContentColumn[] {
+    return first(pageContent?.rows)?.columns;
+  }
+
+  public indexOfHref(pageContent: PageContent, href: string): number {
+    return this.firstRowHrefs(pageContent).indexOf(href);
   }
 }

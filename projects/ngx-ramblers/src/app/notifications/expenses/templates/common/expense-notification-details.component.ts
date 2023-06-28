@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { Organisation } from "../../../../models/system.model";
-import { SystemConfigService } from "../../../../services/system/system-config.service";
-import { ExpenseClaim } from "../../expense.model";
 import { Member } from "../../../../models/member.model";
+import { Organisation } from "../../../../models/system.model";
 import { ExpenseDisplayService } from "../../../../services/expenses/expense-display.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
+import { SystemConfigService } from "../../../../services/system/system-config.service";
+import { ExpenseClaim } from "../../expense.model";
 
 @Component({
   selector: "app-expense-notification-details",
@@ -32,7 +32,7 @@ export class ExpenseNotificationDetailsComponent implements OnInit, AfterViewIni
     this.logger.debug("ngOnInit:data ->", this.expenseClaim);
     this.members = this.display.members;
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
   }
 
   ngAfterViewInit(): void {

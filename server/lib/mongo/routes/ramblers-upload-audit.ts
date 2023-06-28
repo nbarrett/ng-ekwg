@@ -1,7 +1,7 @@
 import express = require("express");
 import * as authConfig from "../../auth/auth-config";
 import { ramblersUploadAudit } from "../models/ramblers-upload-audit";
-import * as crudController from "./../controllers/crud-controller";
+import * as crudController from "../controllers/crud-controller";
 
 const controller = crudController.create(ramblersUploadAudit);
 const router = express.Router();
@@ -11,4 +11,4 @@ router.get("", controller.findByConditions);
 router.get("/all", authConfig.authenticate(), controller.all);
 router.delete("/:id", authConfig.authenticate(), controller.delete);
 
-export const ramblersUploadAuditRoute = router;
+export const ramblersUploadAuditRoutes = router;

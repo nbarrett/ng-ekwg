@@ -26,27 +26,6 @@ import { StringUtilsService } from "../../../../services/string-utils.service";
   styleUrls: ["./expense-detail-modal.component.sass"]
 })
 export class ExpenseDetailModalComponent implements OnInit, OnDestroy {
-  private notify: AlertInstance;
-  public notifyTarget: AlertTarget = {};
-  public expenseItem: ExpenseItem;
-  public editable: boolean;
-  public saveInProgress: boolean;
-  private logger: Logger;
-  public expenseClaim: ExpenseClaim;
-  public editMode: EditMode;
-  public confirm = new Confirm();
-  uploadedFile: any;
-  expenseDate: Date;
-  public expenseItemIndex: number;
-  public hasFileOver = false;
-  public uploader;
-  faCalendar = faCalendar;
-
-  public fileOver(e: any): void {
-    this.hasFileOver = e;
-  }
-
-  private subscriptions: Subscription[] = [];
 
   constructor(@Inject(DOCUMENT) private document: Document,
               private fileUploadService: FileUploadService,
@@ -62,6 +41,23 @@ export class ExpenseDetailModalComponent implements OnInit, OnDestroy {
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(ExpenseDetailModalComponent, NgxLoggerLevel.OFF);
   }
+  private notify: AlertInstance;
+  public notifyTarget: AlertTarget = {};
+  public expenseItem: ExpenseItem;
+  public editable: boolean;
+  private logger: Logger;
+  public expenseClaim: ExpenseClaim;
+  public editMode: EditMode;
+  public confirm = new Confirm();
+  uploadedFile: any;
+  public expenseItemIndex: number;
+  public hasFileOver = false;
+  public uploader;
+  private subscriptions: Subscription[] = [];
+
+  public fileOver(e: any): void {
+    this.hasFileOver = e;
+  }
 
   ngOnInit() {
     this.uploader = this.fileUploadService.createUploaderFor("expenseClaims");
@@ -70,7 +66,6 @@ export class ExpenseDetailModalComponent implements OnInit, OnDestroy {
     }
     this.editMode = this.expenseItemIndex === -1 ? EditMode.ADD_NEW : EditMode.EDIT;
     this.logger.debug("constructed:editMode", this.editMode, "expenseItem:", this.expenseItem, "expenseClaim:", this.expenseClaim);
-    this.expenseDate = this.dateUtils.asDate(this.expenseItem.expenseDate);
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.uploader.response.subscribe((response: string | HttpErrorResponse) => {
         this.logger.debug("response", response, "type", typeof response);

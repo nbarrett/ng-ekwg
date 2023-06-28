@@ -3,7 +3,7 @@ import has from "lodash-es/has";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { ContentText } from "../../../models/content-text.model";
+import { ContentText, View } from "../../../models/content-text.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
 import { WalkNotification } from "../../../models/walk-notification.model";
 import { DisplayedWalk } from "../../../models/walk.model";
@@ -32,7 +32,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   @Input()
   public saveInProgress: boolean;
 
-  private contentTextItems: ContentText[] = [];
+  public contentTextItems: ContentText[] = [];
   private logger: Logger;
   public notifyTarget: AlertTarget = {};
   protected notify: AlertInstance;
@@ -40,6 +40,7 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   public config: MeetupConfig;
   meetupEventDescription: string;
   public CONTENT_CATEGORY = meetupDescriptionPrefix;
+  public view: View = View.VIEW;
 
   constructor(private memberLoginService: MemberLoginService,
               private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
@@ -94,19 +95,19 @@ export class WalkMeetupComponent implements OnInit, OnChanges {
   changedPublishMeetup($event: any) {
     if ($event && !this.meetupConfigExists()) {
       if (!this.displayedWalk.walk.config) {
-        this.displayedWalk.walk.config = {meetup: this.config.meetup};
+        this.displayedWalk.walk.config = {meetup: this.config};
       } else {
-        this.displayedWalk.walk.config.meetup = this.config.meetup;
+        this.displayedWalk.walk.config.meetup = this.config;
       }
       this.logger.debug("this.displayedWalk.walk", this.displayedWalk.walk);
     }
   }
 
-  private meetupConfigExists() {
+  public meetupConfigExists() {
     return has(this.displayedWalk.walk, ["config", "meetup"]);
   }
 
-  private meetupEventDescriptionExists() {
+  public meetupEventDescriptionExists() {
     return this.displayedWalk.walk.meetupEventDescription && this.displayedWalk.walk.meetupEventDescription.length > 0;
   }
 

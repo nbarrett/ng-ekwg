@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const socialEvent = require("../models/social-event");
-const controller = require("./../controllers/crud-controller").create(socialEvent);
+const controller = require("../controllers/crud-controller").create(socialEvent);
 
 const router = express.Router();
 

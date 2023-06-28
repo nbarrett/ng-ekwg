@@ -73,7 +73,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
               public bsModalRef: BsModalRef,
               private committeeConfig: CommitteeConfigService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.DEBUG);
+    this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
@@ -273,7 +273,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions);
     return this.mailchimpConfig.getConfig()
       .then((config) => {
-        const campaignId = config.mailchimp.campaigns.socialEvents.campaignId;
+        const campaignId = config.campaigns.socialEvents.campaignId;
         switch (this.socialEvent?.notification?.content.destinationType) {
           case "all-social-members":
             this.logger.debug("about to replicateAndSendWithOptions to aall-social-members with campaignName", campaignName, "campaign Id", campaignId);

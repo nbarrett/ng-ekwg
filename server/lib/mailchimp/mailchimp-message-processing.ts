@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { MailchimpApiError, MailchimpConfig, MailchimpErrorResponse, MailchimpHttpErrorResponse } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
-import { envConfig } from "../env-config/env-config";
 
 export function successfulResponse(req: Request, res: Response, response, messageType, debug) {
   debug("successfulResponse:", JSON.stringify(response));

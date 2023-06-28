@@ -1,9 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import has from "lodash-es/has";
 import { NgxLoggerLevel } from "ngx-logger";
-import { DataQueryOptions } from "../models/api-request.model";
 import { ApiResponse } from "../models/api-response.model";
+import { ConfigDocument, ConfigKey } from "../models/config.model";
 import { CommonDataService } from "./common-data-service";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 import { StringUtilsService } from "./string-utils.service";
@@ -21,29 +20,8 @@ export class ConfigService {
     this.logger = loggerFactory.createLogger("ConfigService", NgxLoggerLevel.OFF);
   }
 
-  async create(config: any): Promise<any> {
-    this.logger.debug("creating", config);
-    const apiResponse = await this.http.post<{ response: any }>(this.BASE_URL, config).toPromise();
-    this.logger.debug("created", config, "received:", apiResponse);
-    return apiResponse.response;
-  }
-
-  async update(config: any): Promise<any> {
-    this.logger.debug("updating", config);
-    const apiResponse = await this.http.put<{ response: any }>(this.BASE_URL + "/" + config.id, config).toPromise();
-    this.logger.debug("updated", config, "received:", apiResponse);
-    return apiResponse.response;
-  }
-
-  async createOrUpdate(config: any): Promise<any> {
-    if (config.id) {
-      return this.update(config);
-    } else {
-      return this.create(config);
-    }
-  }
-
-  async query<T>(criteria?: DataQueryOptions): Promise<T> {
+  private async queryApiForKey<T>(key: ConfigKey): Promise<T> {
+    const criteria = {key};
     this.logger.info("query:criteria", JSON.stringify(criteria));
     const params = this.commonDataService.toHttpParams(criteria);
     this.logger.info("query:params", params);
@@ -52,18 +30,15 @@ export class ConfigService {
     return apiResponse.response;
   }
 
-  getConfig<T>(key: string, defaultOnEmpty?: object): Promise<T> {
-    const criteria: any = {};
-    criteria[key] = {$exists: true};
-    return this.query<T>({criteria})
-      .then((result) => {
-        if (result) {
-          this.logger.info("getConfig:", key, "existing result", result);
-          return result;
+  queryConfig<T>(key: ConfigKey, defaultOnEmpty?: T): Promise<T> {
+    return this.queryApiForKey<T>(key)
+      .then((configDocument) => {
+        if (configDocument) {
+          this.logger.info("getConfig:", key, "existing configDocument", configDocument);
+          return configDocument;
         } else {
-          criteria[key] = {};
-          const result = defaultOnEmpty || criteria;
-          this.logger.info("getConfig:", key, "defaultOnEmpty:", defaultOnEmpty, "new result", result);
+          const result = defaultOnEmpty;
+          this.logger.info("getConfig:", key, "defaultOnEmpty:", defaultOnEmpty, "new configDocument", result);
           return result;
         }
       }).catch(error => {
@@ -72,13 +47,12 @@ export class ConfigService {
       });
   }
 
-  saveConfig<T>(key, config: T) {
-    this.logger.debug("saveConfig:", key, "config:", config);
-    if (has(config, key)) {
-      return this.createOrUpdate(config);
-    } else {
-      return Promise.reject(`Attempt to save ${this.stringUtilsService.stringify(key)} config when ${this.stringUtilsService.stringify(key)} parent key not present in data: ${this.stringUtilsService.stringify(config)}`);
-    }
+  async saveConfig<T>(key: ConfigKey, value: T): Promise<T> {
+    const configDocument: ConfigDocument = {key, value};
+    this.logger.debug("saveConfig:", configDocument);
+    const apiResponse = await this.http.post<{ response: any }>(this.BASE_URL, configDocument).toPromise();
+    this.logger.debug("created", value, "received:", apiResponse);
+    return apiResponse.response;
   }
 
 }

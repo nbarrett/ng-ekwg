@@ -44,8 +44,8 @@ export class MailchimpCampaignService {
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               private mailchimpListService: MailchimpListService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.DEBUG);
-    this.mailchimpConfigService.getConfig().then(response => this.mailchimpConfig = response.mailchimp);
+    this.logger = loggerFactory.createLogger(MailchimpCampaignService, NgxLoggerLevel.OFF);
+    this.mailchimpConfigService.getConfig().then(response => this.mailchimpConfig = response);
   }
 
   async addCampaign(campaignId, campaignName) {

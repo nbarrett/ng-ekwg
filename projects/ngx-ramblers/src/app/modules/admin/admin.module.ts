@@ -27,8 +27,11 @@ import { ChangePasswordComponent } from "../../pages/admin/profile/change-passwo
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
 import { SendEmailsModalComponent } from "../../pages/admin/send-emails/send-emails-modal.component";
+import { CommitteeMemberComponent } from "../../pages/admin/system-settings/committee/committee-member";
+import { CommitteeSettingsComponent } from "../../pages/admin/system-settings/committee/committee-settings";
 import { ImageCollectionSettingsComponent } from "../../pages/admin/system-settings/image-collection/image-collection-settings";
 import { SystemImageEditComponent } from "../../pages/admin/system-settings/image/system-image-edit";
+import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
 import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
 import { ForgotPasswordModalComponent } from "../../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../../pages/login/reset-password-modal/reset-password-modal.component";
@@ -40,6 +43,8 @@ import { SharedModule } from "../../shared-module";
   declarations: [
     AdminComponent,
     ChangePasswordComponent,
+    CommitteeMemberComponent,
+    CommitteeSettingsComponent,
     ContactDetailsComponent,
     EmailSubscriptionsComponent,
     ExpenseDetailModalComponent,
@@ -58,9 +63,11 @@ import { SharedModule } from "../../shared-module";
     ExpenseNotificationTreasurerSecondApprovalComponent,
     ExpensePaidModalComponent,
     ExpenseReturnModalComponent,
-    ExpensesComponent,
     ExpenseSubmitModalComponent,
+    ExpensesComponent,
     ForgotPasswordModalComponent,
+    ImageCollectionSettingsComponent,
+    MailchimpSettingsComponent,
     MailingPreferencesModalComponent,
     MemberAdminComponent,
     MemberAdminModalComponent,
@@ -68,9 +75,8 @@ import { SharedModule } from "../../shared-module";
     MemberLoginAuditComponent,
     ResetPasswordModalComponent,
     SendEmailsModalComponent,
-    SystemSettingsComponent,
     SystemImageEditComponent,
-    ImageCollectionSettingsComponent,
+    SystemSettingsComponent,
   ],
   imports: [
     SharedModule

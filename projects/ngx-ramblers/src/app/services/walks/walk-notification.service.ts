@@ -9,7 +9,9 @@ import { DisplayedWalk, EventType } from "../../models/walk.model";
 import { WalkNotificationDetailsComponent } from "../../notifications/walks/templates/common/walk-notification-details.component";
 import { WalkNotificationCoordinatorApprovedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
 import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
-import { WalkNotificationCoordinatorAwaitingWalkDetailsComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-walk-details.component";
+import {
+  WalkNotificationCoordinatorAwaitingWalkDetailsComponent
+} from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-walk-details.component";
 import { WalkNotificationCoordinatorDeletedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-deleted.component";
 import { WalkNotificationCoordinatorRequestedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-requested.component";
 import { WalkNotificationCoordinatorUpdatedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-updated.component";
@@ -226,7 +228,7 @@ export class WalkNotificationService {
     });
     return this.mailchimpConfig.getConfig()
       .then((config) => {
-        const campaignId = config.mailchimp.campaigns.walkNotification.campaignId;
+        const campaignId = config.campaigns.walkNotification.campaignId;
         const segmentId = this.mailchimpSegmentService.getMemberSegmentId(member, walkCampaignConfiguration.segmentType);
         this.logger.debug("about to send campaign", campaignName, "campaign Id", campaignId, "segmentId", segmentId);
         return this.mailchimpCampaignService.replicateAndSendWithOptions({

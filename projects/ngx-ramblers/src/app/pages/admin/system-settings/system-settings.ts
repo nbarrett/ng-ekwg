@@ -4,7 +4,7 @@ import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { ExternalUrls, BannerImageType, Image, SystemConfigResponse } from "../../../models/system.model";
+import { BannerImageType, ExternalUrls, SystemConfig } from "../../../models/system.model";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
@@ -22,7 +22,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
-  public config: SystemConfigResponse;
+  public config: SystemConfig;
   public icons: BannerImageType = BannerImageType.icons;
   public logos: BannerImageType = BannerImageType.logos;
   public backgrounds: BannerImageType = BannerImageType.backgrounds;
@@ -45,12 +45,12 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
     this.logger.debug("constructed");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.systemConfigService.events()
-      .subscribe((config: SystemConfigResponse) => {
+      .subscribe((config: SystemConfig) => {
         this.config = config;
         this.prepareMigrationIfRequired(config);
         this.migrateDataIfRequired(config);
-        if (!this.config.system?.national?.mainSite) {
-          this.config.system.national = this.systemConfigService.defaultRamblersConfig();
+        if (!this.config?.national?.mainSite) {
+          this.config.national = this.systemConfigService.defaultRamblersConfig();
         }
         this.logger.info("retrieved config", config);
       }));
@@ -60,26 +60,26 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  private prepareMigrationIfRequired(config: SystemConfigResponse) {
-    const facebookMigrate = this.prepareMigration(config.system.externalUrls, "facebook");
-    const instagramMigrate = this.prepareMigration(config.system.externalUrls, "instagram");
+  private prepareMigrationIfRequired(config: SystemConfig) {
+    const facebookMigrate = this.prepareMigration(config.externalUrls, "facebook");
+    const instagramMigrate = this.prepareMigration(config.externalUrls, "instagram");
     if (facebookMigrate || instagramMigrate) {
       this.systemConfigService.saveConfig(config);
     }
   }
 
-  private migrateDataIfRequired(config: SystemConfigResponse) {
-    if (!config.system.externalUrls.facebook) {
-      this.config.system.externalUrls.facebook = {appId: null, pagesUrl: null, groupUrl: null, showFeed: true};
-      this.logger.info("migrated facebook to", this.config.system.externalUrls.facebook);
+  private migrateDataIfRequired(config: SystemConfig) {
+    if (!config.externalUrls.facebook) {
+      this.config.externalUrls.facebook = {appId: null, pagesUrl: null, groupUrl: null, showFeed: true};
+      this.logger.info("migrated facebook to", this.config.externalUrls.facebook);
     } else {
-      this.logger.info("nothing to migrate for facebook", this.config.system.externalUrls.facebook);
+      this.logger.info("nothing to migrate for facebook", this.config.externalUrls.facebook);
     }
-    if (!config.system.externalUrls.instagram) {
-      this.logger.info("migrated instagram to", this.config.system.externalUrls.instagram);
-      this.config.system.externalUrls.instagram = {groupUrl: null, showFeed: true};
+    if (!config.externalUrls.instagram) {
+      this.logger.info("migrated instagram to", this.config.externalUrls.instagram);
+      this.config.externalUrls.instagram = {groupUrl: null, showFeed: true};
     } else {
-      this.logger.info("nothing to migrate for instagram", this.config.system.externalUrls.instagram);
+      this.logger.info("nothing to migrate for instagram", this.config.externalUrls.instagram);
     }
   }
 
@@ -110,7 +110,7 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   headerLogoChanged(logo: string) {
-    this.config.system.header.selectedLogo = logo;
+    this.config.header.selectedLogo = logo;
   }
 
 }

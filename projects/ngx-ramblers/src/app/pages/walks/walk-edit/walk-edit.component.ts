@@ -10,6 +10,7 @@ import { Subscription } from "rxjs";
 import { GridReferenceLookupResponse } from "../../../models/address-model";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
+import { ConfigKey } from "../../../models/config.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpConfig } from "../../../models/mailchimp.model";
 import { MeetupConfig } from "../../../models/meetup-config.model";
@@ -75,7 +76,6 @@ export class WalkEditComponent implements OnInit, OnDestroy {
 
   @ViewChild(WalkNotificationDirective) notificationDirective: WalkNotificationDirective;
   private mailchimpConfig: MailchimpConfig;
-
   public displayedWalk: DisplayedWalk;
   public confirmAction: ConfirmType = ConfirmType.NONE;
   public googleMapsUrl: SafeResourceUrl;
@@ -88,7 +88,6 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   public sendNotifications = false;
   public longerDescriptionPreview: boolean;
   public meetupConfig: MeetupConfig;
-
   private committeeReferenceData: CommitteeReferenceData;
   faCopy = faCopy;
   faPencil = faPencil;
@@ -136,7 +135,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.subscriptions.push(this.committeeConfig.events().subscribe(committeeReferenceData => this.committeeReferenceData = committeeReferenceData));
     this.mailchimpConfigService.getConfig().then(response => {
-      this.mailchimpConfig = response.mailchimp;
+      this.mailchimpConfig = response;
       this.logger.info("mailchimpConfig:", this.mailchimpConfig);
       if (this.mailchimpConfig?.allowSendCampaign) {
         this.sendNotifications = true;
@@ -149,7 +148,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
       }
     });
     this.copyFrom = {walkTemplate: {}, walkTemplates: [] as Walk[]};
-    this.configService.getConfig<MeetupConfig>("meetup").then(meetupConfig => this.meetupConfig = meetupConfig);
+    this.configService.queryConfig<MeetupConfig>(ConfigKey.MEETUP).then(meetupConfig => this.meetupConfig = meetupConfig);
     this.showWalk(this.displayedWalk);
     this.logger.debug("displayedWalk:", this.displayedWalk);
     this.logDetectChanges();

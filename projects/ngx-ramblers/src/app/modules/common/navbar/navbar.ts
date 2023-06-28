@@ -18,7 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   public navbarContentWithinCollapse: boolean;
   public logo: Image;
   public navbarExpanded = false;
-  public system: SystemConfig;
+  public systemConfig: SystemConfig;
   private subscriptions: Subscription[] = [];
 
   constructor(
@@ -46,10 +46,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
-      this.system = item.system;
-      this.logger.info("received:", item);
-      this.logo = this.system?.logos?.images?.find(logo => logo.originalFileName === this.system?.header?.selectedLogo);
+    this.subscriptions.push(this.systemConfigService.events().subscribe(systemConfig => {
+      this.systemConfig = systemConfig;
+      this.logger.info("received:", systemConfig);
+      this.logo = this.systemConfig?.logos?.images?.find(logo => logo.originalFileName === this.systemConfig?.header?.selectedLogo);
     }));
     this.broadcastService.on(NamedEventType.MENU_TOGGLE, (event: NamedEvent<boolean>) => {
       this.logger.info("menu toggled with event:", event);

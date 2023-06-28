@@ -4,17 +4,13 @@
     <button type="button" class="close float-right" aria-label="Close" (click)="bsModalRef.hide()">&times;</button>
   </div>
   <div class="modal-body">
-    <div class="img-thumbnail">
-      <div class="green-bullets-no-rule">
-        <h2>You are about to mark the Expense Claim for <strong
-          [textContent]="display.expenseClaimCreatedEvent(expenseClaim).memberId | memberIdToFullName : members"></strong>
-          as <strong>Paid</strong></h2>
-        <ul>
-          <li>This should be done once the payment to their bank account has been organised.</li>
-          <li>An email will now be sent to them informing them of this.</li>
-        </ul>
-      </div>
-    </div>
+    <h5>You are about to mark the Expense Claim for <strong
+      [textContent]="display.expenseClaimCreatedEvent(expenseClaim).memberId | memberIdToFullName : members"></strong>
+      as <strong>Paid</strong></h5>
+    <ul class="list-arrows">
+      <li>This should be done once the payment to their bank account has been organised.</li>
+      <li>An email will now be sent to them informing them of this.</li>
+    </ul>
     <div *ngIf="notifyTarget.showAlert" class="row mb-2">
       <div class="col-sm-12">
         <div class="alert {{notifyTarget.alertClass}}">

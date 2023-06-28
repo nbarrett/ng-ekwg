@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { faPencil, faRemove, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faPencil, faRemove, faSave, faUndo } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import first from "lodash-es/first";
 import isEmpty from "lodash-es/isEmpty";
@@ -11,7 +11,17 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { MarkdownEditorComponent } from "../../../markdown-editor/markdown-editor.component";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { Action, ContentText, InsertionPosition, InsertionRow, PageContent, PageContentRow, PageContentType } from "../../../models/content-text.model";
+import {
+  Action,
+  ColumnInsertData,
+  ContentText,
+  InsertionPosition,
+  InsertionRow,
+  PageContent,
+  PageContentColumn,
+  PageContentRow,
+  PageContentType
+} from "../../../models/content-text.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { ContentTextService } from "../../../services/content-text.service";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
@@ -20,7 +30,6 @@ import { MemberResourcesReferenceDataService } from "../../../services/member/me
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageContentActionsService } from "../../../services/page-content-actions.service";
-import { PageContentEditService } from "../../../services/page-content-edit.service";
 import { PageContentRowService } from "../../../services/page-content-row.service";
 import { PageContentService } from "../../../services/page-content.service";
 import { PageService } from "../../../services/page.service";
@@ -45,12 +54,22 @@ export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
   public contentDescription: string;
   @Input()
   public contentPath: string;
+  private insertableContent: ColumnInsertData[] = [];
+  private defaultPageContent: PageContent;
+
+  @Input("defaultPageContent") set acceptChangesFrom(defaultPageContent: PageContent) {
+    this.logger.info("defaultPageContent:", defaultPageContent);
+    this.defaultPageContent = defaultPageContent;
+    this.deriveInsertableData();
+  }
+
   private destinationPageContent: PageContent;
   private logger: Logger;
   public relativePath: string;
   public pageTitle: string;
   faPencil = faPencil;
   faRemove = faRemove;
+  faAdd = faAdd;
   faSave = faSave;
   faUndo = faUndo;
   public area: string;
@@ -102,6 +121,28 @@ export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
     }));
   }
 
+  deriveInsertableData() {
+    if (this.pageContent && this.defaultPageContent) {
+      this.insertableContent = this.actions.calculateInsertableContent(this.pageContent, this.defaultPageContent);
+      this.logger.info("deriveInsertableData:insertableContent:from:defaultData", this.defaultPageContent, "returned:", this.insertableContent);
+      const message = `Insert ${this.stringUtils.pluraliseWithCount(this.insertableContent.length, "new item")}: ${this.insertableContent?.map(item => item.data.title)?.join(", ")}`;
+      if (this.insertableContent.length > 0) {
+        this.notify.warning({title: "Additional content available for page:", message});
+      } else {
+        this.notify.hide();
+      }
+    }
+  }
+
+  insertData() {
+    const pageContentColumns: PageContentColumn[] = this.actions.firstRowColumns(this.pageContent);
+    this.insertableContent.forEach(item => {
+      pageContentColumns.splice(item.index, 0, item.data);
+    });
+    this.logger.info("pageContentColumns after insert:", pageContentColumns);
+    this.deriveInsertableData();
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
@@ -109,7 +150,7 @@ export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
   private runInitCode() {
     this.logger.info("ngOnInit:subscribing to systemConfigService events");
     this.systemConfigService.events().subscribe(item => {
-      const pageHrefs: string[] = item.system.group.pages.map(link => link.href).filter(item => item);
+      const pageHrefs: string[] = item.group.pages.map(link => link.href).filter(item => item);
       this.logger.info("pageHrefs received as:", pageHrefs);
       if (pageHrefs.length > 0) {
         this.pageHrefs = pageHrefs;
@@ -222,7 +263,10 @@ export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
 
   public revertPageContent() {
     this.pageContentService.findByPath(this.pageContent.path)
-      .then(pageContent => this.pageContent = pageContent);
+      .then(pageContent => {
+        this.pageContent = pageContent;
+        this.deriveInsertableData();
+      });
   }
 
   public deletePageContent() {

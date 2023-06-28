@@ -97,3 +97,8 @@ export enum InsertionPosition {
   BEFORE = "Before",
   AFTER = "After"
 }
+
+export interface ColumnInsertData {
+  data: PageContentColumn;
+  index: number;
+}

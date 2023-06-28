@@ -23,7 +23,7 @@ export class FooterIconsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.system.externalUrls));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.externalUrls));
   }
 
   ngOnDestroy(): void {

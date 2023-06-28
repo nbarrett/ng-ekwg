@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const committeeFile = require("../models/committee-file");
-const controller = require("./../controllers/crud-controller").create(committeeFile);
+const controller = require("../controllers/crud-controller").create(committeeFile);
 
 const router = express.Router();
 

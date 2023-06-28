@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
-import keys from "lodash-es/keys";
 import extend from "lodash-es/extend";
+import keys from "lodash-es/keys";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { chain } from "../../../functions/chain";
@@ -12,7 +12,7 @@ import {
   CampaignConfig,
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
-  MailchimpConfigResponse,
+  MailchimpConfig,
   MailchimpGenericOtherContent,
   OtherOptions,
   SaveSegmentResponse
@@ -61,7 +61,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   public roles: { replyTo: any[]; signoff: CommitteeMember[] };
   public selectableRecipients: MemberFilterSelection[];
-  private config: MailchimpConfigResponse;
+  private mailchimpConfig: MailchimpConfig;
   public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public draftMailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public committeeEventId: string;
@@ -76,7 +76,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
     private mailchimpSegmentService: MailchimpSegmentService,
     private committeeQueryService: CommitteeQueryService,
     private mailchimpCampaignService: MailchimpCampaignService,
-    private mailchimpConfig: MailchimpConfigService,
+    private mailchimpConfigService: MailchimpConfigService,
     private notifierService: NotifierService,
     public display: CommitteeDisplayService,
     public stringUtils: StringUtilsService,
@@ -97,10 +97,10 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("constructed with", this.members.length, "members");
     this.display.confirm.as(ConfirmType.SEND_NOTIFICATION);
-    this.notify = this.notifierService.createAlertInstance(this.notifyTarget, NgxLoggerLevel.DEBUG);
+    this.notify = this.notifierService.createAlertInstance(this.notifyTarget, NgxLoggerLevel.OFF);
     this.notify.setBusy();
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.system.group));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
     this.subscriptions.push(this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
       this.generateNotification();
@@ -135,10 +135,10 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
             .sort(SORT_BY_NAME);
           this.logger.debug("refreshMembers -> populated ->", this.selectableRecipients.length, "selectableRecipients:", this.selectableRecipients);
         }),
-        this.mailchimpConfig.getConfig()
+        this.mailchimpConfigService.getConfig()
           .then(config => {
-            this.config = config;
-            this.logger.debug("retrieved config", this.config);
+            this.mailchimpConfig = config;
+            this.logger.debug("retrieved mailchimpConfig", this.mailchimpConfig);
             this.clearRecipientsForCampaignOfType("committee");
           }),
         this.mailchimpCampaignService.list({
@@ -159,7 +159,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
         }).then((mailchimpCampaignListResponse: MailchimpCampaignListResponse) => {
           this.draftMailchimpCampaignListResponse = {
             ...mailchimpCampaignListResponse,
-            campaigns: mailchimpCampaignListResponse.campaigns.filter(item => !keys(this.config.mailchimp.campaigns).map(key => this.config.mailchimp.campaigns[key].campaignId).includes(item.id))
+            campaigns: mailchimpCampaignListResponse.campaigns.filter(item => !keys(this.mailchimpConfig.campaigns).map(key => this.mailchimpConfig.campaigns[key].campaignId).includes(item.id))
           };
           this.logger.debug("draftMailchimpCampaignListResponse.campaigns", mailchimpCampaignListResponse.campaigns);
         })
@@ -193,7 +193,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
         selectedMemberIds: [],
         signoffAs: {
           include: true,
-          value: this.display.committeeReferenceData.loggedOnRole().type || "secretary"
+          value: this.display.committeeReferenceData.loggedOnRole()?.type || "secretary"
         },
         title: {value: "Committee Notification", include: true}
       },
@@ -389,20 +389,20 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   campaignIdFor(campaignType: string): string {
     switch (campaignType) {
       case "committee":
-        return this.config.mailchimp.campaigns.committee.campaignId;
+        return this.mailchimpConfig.campaigns.committee.campaignId;
       case "general":
-        return this.config.mailchimp.campaigns.newsletter.campaignId;
+        return this.mailchimpConfig.campaigns.newsletter.campaignId;
       case "socialEvents":
-        return this.config.mailchimp.campaigns.socialEvents.campaignId;
+        return this.mailchimpConfig.campaigns.socialEvents.campaignId;
       case "walks":
-        return this.config.mailchimp.campaigns.walkNotification.campaignId;
+        return this.mailchimpConfig.campaigns.walkNotification.campaignId;
       default:
-        return this.config.mailchimp.campaigns.committee.campaignId;
+        return this.mailchimpConfig.campaigns.committee.campaignId;
     }
   }
 
   campaignInfoForCampaign(campaignId: string): CampaignConfig {
-    return chain(this.config.mailchimp.campaigns)
+    return chain(this.mailchimpConfig.campaigns)
       .map((data, campaignType) => {
         const campaignData = extend({campaignType}, data);
         this.logger.off("campaignData for", campaignType, "->", campaignData);
@@ -452,7 +452,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
     };
     return this.memberService.getById(this.memberLoginService.loggedInMember().memberId)
       .then(currentMember => {
-        return this.mailchimpConfig.getConfig()
+        return this.mailchimpConfigService.getConfig()
           .then((config) => {
             const replyToRole = this.notification.content.signoffAs.value || "secretary";
             this.logger.debug("replyToRole", replyToRole);
@@ -462,7 +462,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
             const otherOptions: OtherOptions = {
               from_name: this.display.committeeReferenceData.contactUsField(replyToRole, "fullName"),
               from_email: this.display.committeeReferenceData.contactUsField(replyToRole, "email"),
-              list_id: config.mailchimp.lists[list]
+              list_id: config.lists[list]
             };
             this.logger.debug("Sending", campaignName, "with otherOptions", otherOptions, "config", config);
             const segmentId = this.mailchimpSegmentService.getMemberSegmentId(currentMember, list);

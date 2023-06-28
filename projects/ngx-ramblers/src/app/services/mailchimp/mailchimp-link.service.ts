@@ -19,7 +19,7 @@ export class MailchimpLinkService {
     this.logger.debug("queryData:");
     this.mailchimpConfigService.getConfig().then(config => {
       this.logger.debug("config:", config);
-      this.mailchimpApiUrl = config.mailchimp.apiUrl;
+      this.mailchimpApiUrl = config.apiUrl;
     });
   }
 

@@ -6,7 +6,7 @@ import { FileUploader } from "ng2-file-upload";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../../models/alert-target.model";
 import { AwsFileData } from "../../../../models/aws-object.model";
-import { BannerImageType, Image, Images, SystemConfigResponse } from "../../../../models/system.model";
+import { BannerImageType, Image, Images, SystemConfig } from "../../../../models/system.model";
 import { sortBy } from "../../../../services/arrays";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -50,7 +50,7 @@ export class ImageCollectionSettingsComponent implements OnInit {
 
   @Input() imageType: BannerImageType;
   @Input() images: Images;
-  @Input() config: SystemConfigResponse;
+  @Input() config: SystemConfig;
 
   ngOnInit() {
     this.logger.info("constructed with:", this.images, "image:", this.images);
@@ -75,7 +75,7 @@ export class ImageCollectionSettingsComponent implements OnInit {
   }
 
   headerLogoDefault(image: Image): boolean {
-    return this.config.system.header.selectedLogo === image.originalFileName;
+    return this.config.header.selectedLogo === image.originalFileName;
   }
 
   toggleImageEditor() {
@@ -85,7 +85,7 @@ export class ImageCollectionSettingsComponent implements OnInit {
   imageChanged(imageFileData: Image, imageIndex: number) {
     this.logger.info("imageChanged:imageFileData:", imageFileData, "for imageIndex:", imageIndex, "images (before change):", this.images.images);
     this.images.images = this.images.images.map((item, index) => index === imageIndex ? imageFileData : item);
-    this.config.system[this.imageType] = this.images;
+    this.config[this.imageType] = this.images;
     this.logger.info("imageChanged:imageFileData:", imageFileData, "for imageIndex:", imageIndex, "images (after change):", this.images.images);
   }
 }
