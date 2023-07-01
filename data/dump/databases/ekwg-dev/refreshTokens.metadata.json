@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg-dev.refreshTokens"}],"uuid":"c65b9fc1243c4a03afb66bb40d0fa9eb","collectionName":"refreshTokens"}

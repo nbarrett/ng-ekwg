@@ -1,1 +1,0 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"ekwg-dev.walks"}],"uuid":"7d755643a2e848ef92e0a216bb8a520c","collectionName":"walks"}
