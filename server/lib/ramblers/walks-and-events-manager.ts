@@ -28,7 +28,7 @@ export function listWalks(req, res): void {
         debug: debugLog,
         res,
         req,
-        mapper: transformListWalksResponse
+        mapper: transformListWalksResponse(systemConfig)
       });
     })
     .then(response => res.json(response))
@@ -36,20 +36,21 @@ export function listWalks(req, res): void {
   ;
 }
 
-function transformListWalksResponse(response: RamblersWalksRawApiResponse): RamblersWalkResponse[] {
-  debugLog("transformListWalksResponse:", response);
-  return response.data.map(walk => {
-    debugLog("transformListWalksResponse:walk:", response);
-    const walkMoment = moment(walk.start_date_time, moment.ISO_8601).tz("Europe/London");
-    return {
-      id: walk.id,
-      url: walk.url,
-      walksManagerUrl: walk.url,
-      title: walk.title,
-      startDate: walkMoment.format("dddd, Do MMMM YYYY"),
-      startDateValue: walkMoment.valueOf(),
-      startLocationW3w: walk.start_location.w3w
-    };
-  });
+function transformListWalksResponse(systemConfig: SystemConfig) {
+  return function (response: RamblersWalksRawApiResponse): RamblersWalkResponse[] {
+    debugLog("transformListWalksResponse:", response);
+    return response.data.map(walk => {
+      debugLog("transformListWalksResponse:walk:", response);
+      const walkMoment = moment(walk.start_date_time, moment.ISO_8601).tz("Europe/London");
+      return {
+        id: walk.id,
+        url: walk.url,
+        walksManagerUrl: walk.url.replace(systemConfig.national.mainSite.href, systemConfig.national.walksManager.href),
+        title: walk.title,
+        startDate: walkMoment.format("dddd, Do MMMM YYYY"),
+        startDateValue: walkMoment.valueOf(),
+        startLocationW3w: walk.start_location.w3w
+      };
+    });
+  };
 }
-

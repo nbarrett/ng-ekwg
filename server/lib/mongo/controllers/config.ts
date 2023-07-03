@@ -16,7 +16,7 @@ export const all = controller.all;
 export const deleteKey = controller.delete;
 
 function criteriaForKey(configKey: ConfigKey) {
-  const criteria = {$or: [{key: {$eq: configKey}}, {[configKey]: {"$exists": true}}]};
+  const criteria = {key: {$eq: configKey}};
   debugLog("criteriaForKey:", configKey, "returning:", criteria);
   return criteria;
 }
@@ -58,28 +58,16 @@ export function update(req: Request, res: Response) {
     });
 }
 
-function transformResponse(configKey: ConfigKey, response) {
-  const configDocument: ConfigDocument = toObjectWithId(response);
-  if (!configDocument.key) {
-    const migratedData = {id: configDocument.id, key: configKey, value: configDocument[configKey]};
-    debugLog("migrating config data for:", configKey, "from:", configDocument, "to:", migratedData);
-    return migratedData;
-  } else {
-    debugLog("config data for:", configKey, "already migrated:", configDocument);
-    return configDocument;
-  }
-}
-
 export function queryKey(configKey: ConfigKey): Promise<ConfigDocument> {
   return config.findOne(criteriaForKey(configKey))
-    .then(response => transformResponse(configKey, response));
+    .then(response => toObjectWithId(response));
 }
 
 export function handleQuery(req: Request, res: Response): Promise<void> {
   const criteria = configCriteriaFromQuerystring(req);
   return config.findOne(criteria)
     .then(response => {
-      const configDocument: ConfigDocument = transformResponse(configKeyFromQuerystring(req), response);
+      const configDocument: ConfigDocument = toObjectWithId(response);
       debugLog(req.query, "findByConditions:criteria", criteria, "configDocument:", configDocument);
       return res.status(200).json({
         action: "query",
