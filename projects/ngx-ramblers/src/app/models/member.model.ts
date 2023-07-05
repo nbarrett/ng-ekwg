@@ -121,6 +121,7 @@ export interface Member extends Auditable, Identifiable {
   walkChangeNotifications?: boolean;
   receivedInLastBulkLoad?: boolean;
   lastBulkLoadDate?: number;
+  assembleId?: number;
 }
 
 export interface StatusMessage {

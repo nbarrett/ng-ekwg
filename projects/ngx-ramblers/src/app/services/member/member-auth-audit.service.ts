@@ -30,9 +30,9 @@ export class MemberAuthAuditService {
 
   async all(dataQueryOptions?: DataQueryOptions): Promise<MemberAuthAudit[]> {
     const params = this.commonDataService.toHttpParams(dataQueryOptions);
-    this.logger.debug("find-one:criteria", dataQueryOptions, "params", params.toString());
+    this.logger.debug("find-all:criteria", dataQueryOptions, "params", params.toString());
     const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<MemberAuthAuditApiResponse>(`${this.BASE_URL}/all`, {params}), this.authNotifications);
-    this.logger.debug("find-one - received", apiResponse);
+    this.logger.debug("find-all:received", apiResponse);
     return apiResponse.response as MemberAuthAudit[];
   }
 

@@ -13,7 +13,7 @@
             <div class="col-sm-12">
               <div class="form-group">
                 <p class="title-in-thumbnail">The following contact information is managed
-                  locally in EKWG and is never overwritten by the monthly Ramblers head office
+                  locally in the member database and is never overwritten by the monthly Ramblers head office
                   data</p>
               </div>
             </div>
@@ -77,39 +77,18 @@
                        placeholder="Enter home postcode">
               </form>
             </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="form-group">
-                <p class="title-in-thumbnail">The following information is used to publish
-                  to <a target="_blank"
-                        href="http://www.ramblers.org.uk/group-walks-and-events-manager.aspx?tab=Contacts">Ramblers
-                    Walks and Events
-                    Manager</a></p>
-              </div>
-            </div>
-          </div>
-          <div class="row">
             <div class="col col-sm-6">
               <form class="form-group">
                 <label for="display-name">Display Name</label>
                 <input autocomplete="nope" name="displayName" [(ngModel)]="member.displayName" type="text"
                        class="form-control input-sm" id="display-name"
-                       placeholder="The display name as shown to non-logged in members as stored in the ramblers GWEM">
-              </form>
-            </div>
-            <div class="col col-sm-6">
-              <form class="form-group">
-                <label for="contact-id">Contact Id</label>
-                <input autocomplete="nope" name="contactId" [(ngModel)]="member.contactId" type="text"
-                       class="form-control input-sm" id="contact-id"
-                       placeholder="The contact Id as stored in the ramblers GWEM">
+                       placeholder="The display name as shown in walks and social events">
               </form>
             </div>
           </div>
         </div>
       </tab>
-      <tab [heading]="'Login'">
+      <tab heading="Login">
         <form>
           <div class="img-thumbnail thumbnail-admin-edit">
             <div class="row">
@@ -125,10 +104,10 @@
               <div class="col-sm-6">
                 <form class="form-group">
                   <label for="new-password">Password</label>
-                  <input autocomplete="nope" name="new-password" [disabled]="!allowEdits"
+                  <input autocomplete="nope" name="new-password" [disabled]="true"
                          [(ngModel)]="member.password"
                          type="password" class="form-control input-sm" id="new-password"
-                         placeholder="Enter password here">
+                         placeholder="Password can't be entered here">
                 </form>
               </div>
               <div class="col-sm-6">
@@ -153,7 +132,7 @@
           </div>
         </form>
       </tab>
-      <tab [heading]="'Privileges'">
+      <tab heading="Privileges">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
             <div class="col-sm-12">
@@ -261,7 +240,7 @@
           </div>
         </div>
       </tab>
-      <tab [heading]="'Preferences'">
+      <tab heading="Preferences">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
             <div class="col-sm-12">
@@ -365,7 +344,7 @@
           </div>
         </div>
       </tab>
-      <tab [heading]="'Membership'">
+      <tab heading="Membership">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
             <div class="col col-sm-12">
@@ -393,7 +372,65 @@
           </div>
         </div>
       </tab>
-      <tab [heading]="'Audit'">
+      <tab heading="Ramblers Systems">
+        <div class="img-thumbnail thumbnail-admin-edit">
+          <div class="row">
+            <div class="col-sm-12">
+              <p class="title-in-thumbnail">The following section allows data to be managed for
+                <a target="_blank" [href]="config.national.walksManager.href">Ramblers Walks and Events Manager</a>
+                and <a target="_blank" href="https://volunteer.ramblers.org.uk">Assemble</a>
+            </div>
+            <div class="col-sm-12 mt-2 mb-2">
+              <app-markdown-editor category="admin" name="walks-manager-fields-help"
+                                   description="Walks Manager fields help"></app-markdown-editor>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-sm-6">
+              <label for="contact-id">Assemble First name and Last name</label>
+              <div class="input-group">
+                <input autocomplete="nope" name="contactId" [(ngModel)]="member.contactId" type="text"
+                       class="form-control input-sm" id="contact-id"
+                       placeholder="The first name and last name used in Ramblers Assemble System">
+                <div class="input-group-append" tooltip="Set this field to be {{member | fullNameWithAlias}}">
+                  <div class="input-group-text pointer" (click)="defaultAssembleName()">
+                    <fa-icon [icon]="faPaste" class="fa-icon"></fa-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col col-sm-6">
+              <form class="form-group">
+                <label for="assemble-id">Assemble Id</label>
+                <input autocomplete="nope" name="assembleId" [(ngModel)]="member.assembleId" type="text"
+                       class="form-control input-sm" id="assemble-id"
+                       placeholder="The Identifier as used in Ramblers Assemble System">
+              </form>
+            </div>
+            <div class="col col-sm-12">
+              <div class="form-group mb-0">
+                <label class="title-in-thumbnail">Assemble Links</label>
+              </div>
+              <div class="form-group" markdown>
+                <ul>
+                  <li><a *ngIf="member.assembleId" target="_blank"
+                         [href]="'https://volunteer.ramblers.org.uk/portal/user/'+member.assembleId+'#tab=1'">{{member | fullNameWithAlias}}
+                    's User Details</a>
+                  </li>
+                  <li>
+                    <a target="_blank"
+                       [href]="'https://volunteer.ramblers.org.uk/portal/supervisor/myteam'">View My Team</a>
+                  </li>
+                  <li><a target="_blank"
+                         [href]="'https://volunteer.ramblers.org.uk/portal/supervisor/volunteer/create#type=volunteer&sid'">
+                    Create new Volunteer in Assemble</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab heading="Audit">
         <div class="img-thumbnail thumbnail-admin-edit">
           <div class="row">
             <div class="col-sm-12">
@@ -451,7 +488,7 @@
           </div>
         </div>
       </tab>
-      <tab [heading]="'Member Raw Data'">
+      <tab heading="Member Raw Data">
         <pre>{{member | json}}</pre>
       </tab>
     </tabset>

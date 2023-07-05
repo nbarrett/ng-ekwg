@@ -61,7 +61,8 @@ const memberSchema = mongoose.Schema({
   createdDate: {type: Number},
   createdBy: {type: String},
   updatedDate: {type: Number},
-  updatedBy: {type: String}
+  updatedBy: {type: String},
+  assembleId: {type: Number},
 }, {collection: "members"});
 
 memberSchema.plugin(uniqueValidator);

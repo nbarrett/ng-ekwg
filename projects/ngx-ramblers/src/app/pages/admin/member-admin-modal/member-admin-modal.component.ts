@@ -1,13 +1,17 @@
 import { Component, OnInit } from "@angular/core";
+import { faPaste } from "@fortawesome/free-solid-svg-icons";
 import omit from "lodash-es/omit";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
+import { Subscription } from "rxjs";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
 import { MailchimpSubscription } from "../../../models/mailchimp.model";
 import { Member, MemberUpdateAudit } from "../../../models/member.model";
+import { SystemConfig } from "../../../models/system.model";
 import { EditMode } from "../../../models/ui-actions";
+import { FullNameWithAliasPipe } from "../../../pipes/full-name-with-alias.pipe";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { DbUtilsService } from "../../../services/db-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
@@ -15,6 +19,7 @@ import { MailchimpCampaignService } from "../../../services/mailchimp/mailchimp-
 import { MailchimpLinkService } from "../../../services/mailchimp/mailchimp-link.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
 import { MailchimpSegmentService } from "../../../services/mailchimp/mailchimp-segment.service";
+import { MemberAuthAuditService } from "../../../services/member/member-auth-audit.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberNamingService } from "../../../services/member/member-naming.service";
 import { MemberUpdateAuditService } from "../../../services/member/member-update-audit.service";
@@ -22,6 +27,7 @@ import { MemberService } from "../../../services/member/member.service";
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { ProfileConfirmationService } from "../../../services/profile-confirmation.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
+import { SystemConfigService } from "../../../services/system/system-config.service";
 
 @Component({
   selector: "app-member-admin-modal",
@@ -29,6 +35,29 @@ import { StringUtilsService } from "../../../services/string-utils.service";
   styleUrls: ["./member-admin-modal.component.sass"]
 })
 export class MemberAdminModalComponent implements OnInit {
+
+  constructor(public systemConfigService: SystemConfigService,
+              private mailchimpSegmentService: MailchimpSegmentService,
+              private mailchimpCampaignService: MailchimpCampaignService,
+              private notifierService: NotifierService,
+              private memberUpdateAuditService: MemberUpdateAuditService,
+              private memberAuthAuditService: MemberAuthAuditService,
+              private memberNamingService: MemberNamingService,
+              private stringUtils: StringUtilsService,
+              private memberService: MemberService,
+              private modalService: BsModalService,
+              private mailchimpLinkService: MailchimpLinkService,
+              private fullNameWithAliasPipe: FullNameWithAliasPipe,
+              private memberLoginService: MemberLoginService,
+              private profileConfirmationService: ProfileConfirmationService,
+              private mailchimpListService: MailchimpListService,
+              private dbUtils: DbUtilsService,
+              protected dateUtils: DateUtilsService,
+              public bsModalRef: BsModalRef,
+              loggerFactory: LoggerFactory) {
+    this.logger = loggerFactory.createLogger(MemberAdminModalComponent, NgxLoggerLevel.OFF);
+  }
+
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   lastLoggedIn: number;
@@ -44,27 +73,16 @@ export class MemberAdminModalComponent implements OnInit {
   public member: Member;
   public editMode: EditMode;
   public members: Member[] = [];
-
-  constructor(private mailchimpSegmentService: MailchimpSegmentService,
-              private mailchimpCampaignService: MailchimpCampaignService,
-              private notifierService: NotifierService,
-              private memberUpdateAuditService: MemberUpdateAuditService,
-              private memberNamingService: MemberNamingService,
-              private stringUtils: StringUtilsService,
-              private memberService: MemberService,
-              private modalService: BsModalService,
-              private mailchimpLinkService: MailchimpLinkService,
-              private memberLoginService: MemberLoginService,
-              private profileConfirmationService: ProfileConfirmationService,
-              private mailchimpListService: MailchimpListService,
-              private dbUtils: DbUtilsService,
-              protected dateUtils: DateUtilsService,
-              public bsModalRef: BsModalRef,
-              loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminModalComponent, NgxLoggerLevel.OFF);
-  }
+  private subscriptions: Subscription[] = [];
+  public config: SystemConfig;
+  public readonly faPaste = faPaste;
 
   ngOnInit() {
+    this.subscriptions.push(this.systemConfigService.events()
+      .subscribe((config: SystemConfig) => {
+        this.config = config;
+        this.logger.info("retrieved config", config);
+      }));
     this.membershipExpiryDate = this.dateUtils.asDateValue(this.member.membershipExpiryDate);
     this.logger.debug("constructed with member", this.member, this.members.length, "members", "membershipExpiryDate", this.membershipExpiryDate);
     this.allowEdits = this.memberLoginService.allowMemberAdminEdits();
@@ -84,7 +102,7 @@ export class MemberAdminModalComponent implements OnInit {
       }).then(memberUpdateAudits => {
         this.logger.debug("MemberUpdateAuditService:", memberUpdateAudits.length, "events", memberUpdateAudits);
         this.memberUpdateAudits = memberUpdateAudits;
-        this.lastLoggedIn = this.findLastLoginTimeForMember();
+        this.findLastLoginTimeForMember();
       });
     } else {
       this.logger.debug("new member with default values", this.member);
@@ -97,12 +115,12 @@ export class MemberAdminModalComponent implements OnInit {
   }
 
   findLastLoginTimeForMember() {
-    const memberAudit = chain(this.memberUpdateAudits)
-      .filter(memberAudit => memberAudit.loginTime)
-      .sortBy(memberAudit => memberAudit.lastLoggedIn)
-      .last()
-      .value();
-    return memberAudit && memberAudit.loginTime;
+    return this.memberAuthAuditService.all({criteria: {userName: {$eq: this.member.userName}}, sort: {loginTime: -1}})
+      .then(results => {
+        if (results.length > 0) {
+          this.lastLoggedIn = results[0].loginTime;
+        }
+      });
   }
 
   confirmDeleteMemberDetails() {
@@ -202,6 +220,10 @@ export class MemberAdminModalComponent implements OnInit {
       mailchimpSubscription.updated = false;
       this.logger.info("listType", listType, "mailchimpSubscription now:", mailchimpSubscription);
     }
+  }
+
+  defaultAssembleName() {
+    this.member.contactId = this.fullNameWithAliasPipe.transform(this.member);
   }
 
 }

@@ -30,6 +30,7 @@ import { EventNotePipe } from "../../../pipes/event-note.pipe";
 import { FullNameWithAliasOrMePipe } from "../../../pipes/full-name-with-alias-or-me.pipe";
 import { FullNamePipe } from "../../../pipes/full-name.pipe";
 import { MemberIdToFullNamePipe } from "../../../pipes/member-id-to-full-name.pipe";
+import { sortBy } from "../../../services/arrays";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { CommitteeConfigService } from "../../../services/committee/commitee-config.service";
 import { CommitteeReferenceData } from "../../../services/committee/committee-reference-data";
@@ -342,7 +343,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   membersWithAliasOrMe(): DisplayMember[] {
-    return this.display.members.map(member => {
+    return this.display.members.sort(sortBy("firstName", "lastName")).map(member => {
       return {
         memberId: member.id,
         name: this.fullNameWithAliasOrMePipe.transform(member),
@@ -378,6 +379,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
       delete walkTemplate.meetupEventUrl;
       delete walkTemplate.meetupPublish;
       delete walkTemplate.meetupEventTitle;
+      walkTemplate.riskAssessment = [];
       Object.assign(this.displayedWalk.walk, walkTemplate);
       const event = this.walkEventService.createEventIfRequired(this.displayedWalk.walk,
         EventType.WALK_DETAILS_COPIED, "Copied from previous walk on " + templateDate);
@@ -551,15 +553,24 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   public async saveWalkDetails(): Promise<void> {
-    Promise.resolve().then(() => {
+    Promise.resolve().then(async () => {
       this.notify.setBusy();
       this.saveInProgress = true;
+      await this.updateGridReferenceIfRequired();
       const walkNotification: WalkNotification = this.walkNotificationService.toWalkNotification(this.displayedWalk, this.display.members);
       return this.walkNotificationService.generateNotificationHTML(walkNotification, this.notificationDirective, MeetupDescriptionComponent);
     })
       // .then((meetupDescription: string) => this.meetupService.synchroniseWalkWithEvent(this.notify, this.displayedWalk, meetupDescription))
       .then(() => this.sendNotificationsSaveAndCloseIfNotSent())
       .catch(error => this.notifyError(error));
+  }
+
+  private updateGridReferenceIfRequired() {
+    if (!this.displayedWalk.walk.gridReference || this.displayedWalk.walk.gridReference.length < 8) {
+      return this.postcodeChange();
+    } else {
+      return Promise.resolve();
+    }
   }
 
   private notifyError(message: any) {
@@ -744,10 +755,14 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   async postcodeChange() {
-    const postcode = this.displayedWalk.walk.postcode;
-    this.displayedWalk.walk.postcode = postcode.toUpperCase().trim();
-    this.displayedWalk.walk.gridReference = await this.lookupGridReferenceBasedOn(postcode);
-    this.updateGoogleMapsUrl();
+    if (this.displayedWalk.walk.postcode.length > 3) {
+      const postcode = this.displayedWalk.walk.postcode;
+      this.displayedWalk.walk.postcode = postcode?.toUpperCase()?.trim();
+      this.displayedWalk.walk.gridReference = await this.lookupGridReferenceBasedOn(postcode);
+      return this.updateGoogleMapsUrl();
+    } else {
+      return Promise.resolve();
+    }
   }
 
   async postcodeFinishChange() {

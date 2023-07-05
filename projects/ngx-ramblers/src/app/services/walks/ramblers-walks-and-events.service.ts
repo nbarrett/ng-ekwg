@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { first } from "lodash-es";
 import isEmpty from "lodash-es/isEmpty";
+import isNumber from "lodash-es/isNumber";
 import without from "lodash-es/without";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
@@ -207,6 +208,7 @@ export class RamblersWalksAndEventsService {
 
   validateWalk(walk: Walk): WalkExport {
     const validationMessages = [];
+    const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be supplied for this walk on Walk Leader tab." : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
     if (isEmpty(walk)) {
       validationMessages.push("walk does not exist");
     } else {
@@ -234,11 +236,15 @@ export class RamblersWalksAndEventsService {
       }
 
       if (isEmpty(walk.contactId)) {
-        const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "this can be supplied for this walk on Walk Leader tab" : "this will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
-        validationMessages.push("walk leader has no Ramblers contact Id setup on their member record (" + contactIdMessage + ")");
+        validationMessages.push("Walk leader has no Ramblers contact Id setup on their member record. " + contactIdMessage);
       }
-      if (isEmpty(walk.displayName) && isEmpty(walk.displayName)) {
-        validationMessages.push("displayName for walk leader is missing");
+
+      if (isNumber(walk.contactId)) {
+        validationMessages.push("Walk leader has an old Ramblers contact Id setup on their member record. This needs to be updated to an Assemble Contact Id." + contactIdMessage);
+      }
+
+      if (isEmpty(walk.displayName)) {
+        validationMessages.push("Display Name for walk leader is missing. This can be entered manually on the Walk Leader tab.");
       }
     }
     return {
@@ -273,23 +279,8 @@ export class RamblersWalksAndEventsService {
     return value ? value : "";
   }
 
-  contactDisplayName(walk: Walk) {
-    return walk.displayName ? this.replaceSpecialCharacters(first(walk.displayName.split(" "))) : "";
-  }
-
-  contactIdLookup(walk: Walk, members: Member[]) {
-    if (walk.contactId) {
-      return walk.contactId;
-    } else {
-      const member = members.find(member => member.id === walk.walkLeaderMemberId);
-      const returnValue = member && member.contactId;
-      this.logger.debug("contactId: for walkLeaderMemberId", walk.walkLeaderMemberId, "->", returnValue);
-      return returnValue;
-    }
-  }
-
-  contactIdLookupAssemble(walk: Walk, members: Member[]) {
-    return "Nick Barrett";
+  contactIdLookupAssemble(walk: Walk) {
+    return walk.displayName ? this.replaceSpecialCharacters(walk.displayName) : "";
   }
 
   replaceSpecialCharacters(value) {
@@ -355,7 +346,7 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.DESCRIPTION] = this.walkDescription(walk);
     csvRecord[WalkUploadColumnHeading.ADDITIONAL_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.WEBSITE_LINK] = this.walkLink(walk);
-    csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.contactIdLookupAssemble(walk, members);
+    csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.contactIdLookupAssemble(walk);
     csvRecord[WalkUploadColumnHeading.LINEAR_OR_CIRCULAR] = this.walkType(walk);
     csvRecord[WalkUploadColumnHeading.START_TIME] = this.walkStartTime(walk);
     csvRecord[WalkUploadColumnHeading.STARTING_LOCATION] = "";

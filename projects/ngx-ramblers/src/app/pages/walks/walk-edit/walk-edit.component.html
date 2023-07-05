@@ -228,8 +228,8 @@
         <div *ngIf="allowAdminEdits()" class="row">
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="display-name">Display Name</label>
-              <input [disabled]="true" [(ngModel)]="displayedWalk.walk.displayName"
+              <label for="display-name">Display Name (how it will be published on this walk)</label>
+              <input [(ngModel)]="displayedWalk.walk.displayName"
                      type="text"
                      class="form-control input-sm" id="display-name"
                      placeholder="Name as displayed to the public and sent to Ramblers in CSV export file">
@@ -237,23 +237,13 @@
           </div>
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="contact-id">Contact Id</label>
-              <input [(ngModel)]="displayedWalk.walk.contactId"
+              <label for="walk-leader-contact-id">Ramblers Assemble name</label>
+              <input [disabled]="!allowAdminEdits()" [(ngModel)]="displayedWalk.walk.contactId"
                      type="text"
-                     class="form-control input-sm" id="contact-id"
-                     placeholder="Sent to Ramblers in CSV export file">
-            </div>
+                     class="form-control input-sm" id="walk-leader-contact-id"
+                     placeholder="Name that matches the User Details in Assemble. This will be sent in Ramblers in CSV export file">
           </div>
         </div>
-        <div *ngIf="!allowAdminEdits()" class="row">
-          <div *ngIf="!allowAdminEdits()" class="col-sm-12">
-            <div class="form-group">
-              <label for="display-name-readonly">Walk Leader</label>
-              <input [disabled]="true" [(ngModel)]="displayedWalk.walk.displayName" type="text"
-                     class="form-control input-sm" id="display-name-readonly"
-                     placeholder="Name as displayed to the public and sent to Ramblers">
-            </div>
-          </div>
         </div>
         <div class="row">
           <div class="col-sm-12">

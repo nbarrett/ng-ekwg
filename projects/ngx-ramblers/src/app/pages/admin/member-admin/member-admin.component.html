@@ -42,6 +42,9 @@
               <input [disabled]="notifyTarget.busy" type="submit" value="Update Mailchimp Lists"
                      (click)="updateMailchimpLists()" title="Update Mailchimp Lists"
                      [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
+              <input *ngIf="false" [disabled]="notifyTarget.busy" type="submit" value="Migrate Assemble Data"
+                     (click)="migrateAssembleData()"
+                     [ngClass]="notifyTarget.busy ? 'disabled-button-form button-form-in-tab': 'button-form button-form-in-tab'">
             </ng-container>
             <ng-container *ngIf="notReceivedInLastBulkLoadSelected()">
               <input *ngIf="!confirm.bulkDeleteOutstanding()" [disabled]="notifyTarget.busy" type="submit"

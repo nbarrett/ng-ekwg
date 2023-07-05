@@ -74,7 +74,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
               private profileService: ProfileService,
               private memberLoginService: MemberLoginService,
               loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.ERROR);
+    this.logger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
     this.apiResponseProcessorlogger = loggerFactory.createLogger(MemberAdminComponent, NgxLoggerLevel.OFF);
     this.searchChangeObservable = new Subject<string>();
   }
@@ -186,6 +186,166 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  migrateAssembleData(): void {
+    const assembleData = [
+      {
+        assembleName: "Alison Hargreaves",
+        assembleId: 499513,
+        membershipNumber: 2477895
+      },
+      {
+        assembleName: "Amanda Greenaway",
+        assembleId: 499510,
+        membershipNumber: 2273369
+      },
+      {
+        assembleName: "Andrew Goh",
+        assembleId: 80891,
+        membershipNumber: 3280304
+      },
+      {
+        assembleName: "C Mansfield",
+        assembleId: 482303,
+        membershipNumber: 2273838
+      },
+      {
+        assembleName: "Celine Praquin",
+        assembleId: 75258,
+        membershipNumber: 3025795
+      },
+      {
+        assembleName: "Dawn Jones",
+        assembleId: 482305,
+        membershipNumber: 3303374
+      },
+      {
+        assembleName: "Debbie Brown",
+        assembleId: 482291,
+        membershipNumber: 3315452
+      },
+      {
+        assembleName: "Desiree Nel",
+        assembleId: 74640,
+        membershipNumber: 2179401
+      },
+      {
+        assembleName: "Gary Sayer",
+        assembleId: 482293,
+        membershipNumber: 3160653
+      },
+      {
+        assembleName: "Gillian Ross",
+        assembleId: 482306,
+        membershipNumber: 3255040
+      },
+      {
+        assembleName: "James Cheney",
+        assembleId: 94694,
+        membershipNumber: 3279960
+      },
+      {
+        assembleName: "Jayne Mattocks",
+        assembleId: 482296,
+        membershipNumber: 3299806
+      },
+      {
+        assembleName: "Jenny Brown",
+        assembleId: 95667,
+        membershipNumber: 3239216
+      },
+      {
+        assembleName: "Jenny J Brown",
+        assembleId: 482307,
+        membershipNumber: 2255309
+      },
+      {
+        assembleName: "Jon Inglett",
+        assembleId: 75124,
+        membershipNumber: 2439052
+      },
+      {
+        assembleName: "Keith Law",
+        assembleId: 482298,
+        membershipNumber: 3053256
+      },
+      {
+        assembleName: "Kerry O'Grady",
+        assembleId: 26611,
+        membershipNumber: 3244898
+      },
+      {
+        assembleName: "Lesley Wheway",
+        assembleId: 129310,
+        membershipNumber: 3260469
+      },
+      {
+        assembleName: "Lindsay Wratten",
+        assembleId: 26660,
+        membershipNumber: 3128639
+      },
+      {
+        assembleName: "M Daniels",
+        assembleId: 482299,
+        membershipNumber: 2267090
+      },
+      {
+        assembleName: "Malcolm Wills",
+        assembleId: 200272,
+        membershipNumber: 3300453
+      },
+      {
+        assembleName: "Neil Callingham-Carter",
+        assembleId: 75136,
+        membershipNumber: 2447389
+      },
+      {
+        assembleName: "Nick Barrett",
+        assembleId: 77057,
+        membershipNumber: 3277493
+      },
+      {
+        assembleName: "Nic Meadway",
+        assembleId: 77039,
+        membershipNumber: 3276053
+      },
+      {
+        assembleName: "Roz Edridge",
+        assembleId: 360350,
+        membershipNumber: 2341619
+      },
+      {
+        assembleName: "Stuart Maisner",
+        assembleId: 76607,
+        membershipNumber: 3253761
+      },
+      {
+        assembleName: "Suzanne Graham",
+        assembleId: 76780,
+        membershipNumber: 3262480
+      },
+      {
+        assembleName: "Tim Weston",
+        assembleId: 482300,
+        membershipNumber: 3305324
+      },
+      {
+        assembleName: "Tina Callingham-Carter",
+        assembleId: 482301,
+        membershipNumber: 3107611
+      }
+    ];
+    Promise.all(assembleData.map(record => {
+      const editable: Member = this.members.find(member => member.membershipNumber === record.membershipNumber.toString());
+      if (editable) {
+        editable.assembleId = record.assembleId;
+        editable.contactId = record.assembleName;
+        return this.memberService.createOrUpdate(editable);
+      } else {
+        this.logger.warn("cant find member based on", record);
+      }
+    })).then((updates) => this.logger.info("completed updates with", updates.length, "records"));
   }
 
   onSearchChange(searchEntry: string) {
