@@ -125,7 +125,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef,
     private committeeConfig: CommitteeConfigService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.ERROR);
+    this.logger = loggerFactory.createLogger(WalkEditComponent, NgxLoggerLevel.OFF);
   }
 
   copySource = "copy-selected-walk-leader";
@@ -566,7 +566,8 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   }
 
   private updateGridReferenceIfRequired() {
-    if (!this.displayedWalk.walk.gridReference || this.displayedWalk.walk.gridReference.length < 8) {
+    this.logger.info("walk:", this.displayedWalk.walk);
+    if (this.displayedWalk.walk.postcode && (!this.displayedWalk.walk.gridReference || this.displayedWalk.walk.gridReference.length < 8)) {
       return this.postcodeChange();
     } else {
       return Promise.resolve();
@@ -740,7 +741,9 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   private async lookupGridReferenceBasedOn(postcode: string): Promise<string> {
     this.notify.hide();
     this.logger.debug("postcodeChange:", postcode);
-    if (postcode) {
+    if (isEmpty(postcode)) {
+      return Promise.resolve(null);
+    } else {
       const gridReferenceLookupResponse: GridReferenceLookupResponse = await this.addressQueryService.gridReferenceLookup(postcode);
       if (gridReferenceLookupResponse.error) {
         this.notify.error({

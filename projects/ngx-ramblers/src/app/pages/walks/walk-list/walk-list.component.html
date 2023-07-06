@@ -59,14 +59,14 @@
                  target="_blank" [textContent]="viewWalkField(displayedWalk, 'postcode')"
                  name="postcode"
                  tooltip="Click to locate postcode {{viewWalkField(displayedWalk, 'postcode')}} on Google Maps"
-                 tooltipPlacement="left"></a></td>
+                 placement="left"></a></td>
             <td class="d-none d-lg-table-cell" width="12%" id="contactEmail-{{index}}">
               <a *ngIf="allowDetailView()" [href]="'mailto:'+ displayedWalk.walk.contactEmail"
                  [textContent]="displayedWalk.walk.displayName"
                  name="displayName"
                  tooltip="Click to email {{displayedWalk.walk.displayName}} at {{displayedWalk.walk.contactEmail}}"
-                 tooltipPlacement="left"></a>
-              <span class="tooltip-link" *ngIf="!allowDetailView()" tooltipPlacement="left"
+                 placement="left"></a>
+              <span class="tooltip-link" *ngIf="!allowDetailView()" placement="left"
                     (click)="login()" tooltip="Click to login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}">
                 {{displayedWalk.walk.displayName}}</span></td>
             <td class="d-none d-lg-table-cell" width="11%" id="contactPhone-{{index}}">
@@ -74,12 +74,12 @@
                  [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                  name="contactPhone"
                  tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
-                 tooltipPlacement="left"></a>
+                 placement="left"></a>
               <a *ngIf="!allowDetailView()" [href]="'tel:' + displayedWalk.walk.contactPhone">
                               <span [textContent]="viewWalkField(displayedWalk, 'contactPhone')"
                                     name="contactPhone"
                                     tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{viewWalkField(displayedWalk, 'contactPhone')}} (mobile devices only)"
-                                    tooltipPlacement="left"></span></a>
+                                    placement="left"></span></a>
               <app-panel-expander class="d-none d-lg-inline" [walk]="displayedWalk.walk" [expandable]="true">
               </app-panel-expander>
             </td>

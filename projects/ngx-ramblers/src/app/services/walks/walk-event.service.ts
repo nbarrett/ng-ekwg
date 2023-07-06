@@ -19,10 +19,40 @@ import { MemberLoginService } from "../member/member-login.service";
 import { StringUtilsService } from "../string-utils.service";
 import { WalksReferenceService } from "./walks-reference-data.service";
 
-const auditedFields = ["grade", "walkDate", "walkType", "startTime", "briefDescriptionAndStartPoint", "longerDescription",
-  "distance", "nearestTown", "gridReference", "meetupEventUrl", "meetupEventTitle", "meetupEventDescription", "osMapsRoute", "osMapsTitle", "postcode",
-  "walkLeaderMemberId", "contactPhone", "contactEmail", "displayName",
-  "ramblersWalkId", "ramblersWalkUrl", "ramblersPublish", "meetupPublish", "venue", "config", "riskAssessment"];
+const auditedFields: string[] = [
+  "briefDescriptionAndStartPoint",
+  "config",
+  "contactEmail",
+  "contactId",
+  "contactName",
+  "contactPhone",
+  "displayName",
+  "distance",
+  "grade",
+  "gridReference",
+  "gridReferenceFinish",
+  "location",
+  "longerDescription",
+  "meetupEventDescription",
+  "meetupEventTitle",
+  "meetupEventUrl",
+  "meetupPublish",
+  "nearestTown",
+  "osMapsRoute",
+  "osMapsTitle",
+  "postcode",
+  "postcodeFinish",
+  "ramblersPublish",
+  "ramblersWalkId",
+  "ramblersWalkUrl",
+  "riskAssessment",
+  "startLocationW3w",
+  "startTime",
+  "venue",
+  "walkDate",
+  "walkLeaderMemberId",
+  "walkType",
+];
 
 @Injectable({
   providedIn: "root"
@@ -40,12 +70,12 @@ export class WalkEventService {
     this.logger = loggerFactory.createLogger(WalkEventService, NgxLoggerLevel.OFF);
   }
 
-  public latestEventWithStatusChange(walk): WalkEvent {
+  public latestEventWithStatusChange(walk: Walk): WalkEvent {
     const eventType = this.eventsLatestFirst(walk).find((event) => {
       const walkEventType = this.walksReferenceService.toWalkEventType(event.eventType);
       return walkEventType && walkEventType.statusChange;
     });
-    this.logger.debug("latestEventWithStatusChange:walk", walk._id, "eventType =>", eventType);
+    this.logger.debug("latestEventWithStatusChange:walk", walk.id, "eventType =>", eventType);
     return eventType;
   }
 

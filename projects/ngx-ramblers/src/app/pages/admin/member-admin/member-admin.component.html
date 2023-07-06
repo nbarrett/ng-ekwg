@@ -158,12 +158,12 @@
                    [ngClass]="notifyTarget.busy ? 'disabled-button-form': 'button-form'">
           </td>
           <td><a [href]="'mailto:' + member.email">
-                        <span tooltipPlacement="right"
+                        <span placement="right"
                               tooltip="Click to email {{member | fullNameWithAlias}} at {{member.email}}">{{member | fullNameWithAlias}}</span></a>
           </td>
           <td>
             <a [href]="'tel: ' + member.mobileNumber">
-                                            <span tooltipPlacement="right"
+                                            <span placement="right"
                                                   tooltip="Click to ring {{member | fullNameWithAlias}} on {{member.mobileNumber}} (mobile devices only)">{{member.mobileNumber}}</span></a>
           </td>
           <td class="nowrap">{{member.createdDate | displayDate}}</td>

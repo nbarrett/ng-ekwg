@@ -44,10 +44,10 @@ describe("WalksEventService", () => {
       };
       expect(service.walkDataAuditFor(walk, EventType.AWAITING_APPROVAL, true).changedItems)
         .toEqual([
-          {fieldName: "walkDate", previousValue: undefined, currentValue: 12},
-          {fieldName: "nearestTown", previousValue: "that", currentValue: "this"},
           {fieldName: "gridReference", previousValue: undefined, currentValue: "123"},
+          {fieldName: "nearestTown", previousValue: "that", currentValue: "this"},
           {fieldName: "postcode", previousValue: undefined, currentValue: "TN26 3HF"},
+          {fieldName: "walkDate", previousValue: undefined, currentValue: 12},
         ]);
     });
   });

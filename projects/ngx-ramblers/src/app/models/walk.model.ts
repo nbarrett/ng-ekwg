@@ -13,7 +13,7 @@ export interface GoogleMapsConfig {
 
 export interface Walk extends Identifiable {
   contactName?: string;
-  walkType?: string;
+  walkType?: WalkType;
   briefDescriptionAndStartPoint?: string;
   contactEmail?: string;
   contactId?: string;
@@ -66,6 +66,11 @@ export interface WalkExport {
 export interface WalkApiResponse extends ApiResponse {
   request: any;
   response?: Walk | Walk[];
+}
+
+export enum WalkType {
+  CIRCULAR = "Circular",
+  LINEAR = "Linear"
 }
 
 export enum EventType {

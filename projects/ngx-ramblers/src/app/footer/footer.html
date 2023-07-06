@@ -15,7 +15,7 @@
             <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
               <p class="h5 mb-3 mb-lg-5 text-green">Quick links</p>
               <ng-container *ngFor="let link of footer?.quickLinks">
-                <li tooltipPlacement="left"
+                <li placement="left"
                     [tooltip]="'View ' + link.title +' (opens a new browser tab)'"><a [href]="link.href">{{link.title}}</a></li>
               </ng-container>
             </ul>
@@ -24,7 +24,7 @@
             <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
               <p class="h5 mb-3 mb-lg-5 text-green">Legals</p>
               <ng-container *ngFor="let link of footer?.legals">
-                <li tooltipPlacement="left"
+                <li placement="left"
                     [tooltip]="'View ' + link.title +' (opens a new browser tab)'"><a
                   [href]="link.href">{{link.title}}</a></li>
               </ng-container>
@@ -33,14 +33,14 @@
           <div class="col-sm-4 col-lg-3 col-12">
             <ul class="custom-nav list-unstyled text-center text-nowrap mb-5">
               <p class="h5 mb-3 mb-lg-5 text-green">Download the app</p>
-              <li *ngIf="footer.appDownloads.apple" tooltipPlacement="left"
+              <li *ngIf="footer.appDownloads.apple" placement="left"
                   tooltip="Download the Ramblers app on the Apple App Store (opens a new browser tab)">
                 <a [href]="footer.appDownloads.apple"
                    target="_blank" class="brand-badge"><img
                   alt="Download the Ramblers app on the Apple App Store (opens a new browser tab)"
                   src="/assets/images/local/apple-badge.svg" class="app-download-image"></a>
               </li>
-              <li *ngIf="footer.appDownloads.google" tooltipPlacement="left"
+              <li *ngIf="footer.appDownloads.google" placement="left"
                   tooltip="Download the Ramblers app on Google Play (opens a new browser tab)">
                 <a [href]="footer.appDownloads.google"
                    class="brand-badge"><img

@@ -1,6 +1,5 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { first } from "lodash-es";
 import isEmpty from "lodash-es/isEmpty";
 import isNumber from "lodash-es/isNumber";
 import without from "lodash-es/without";
@@ -12,7 +11,7 @@ import { Member } from "../../models/member.model";
 import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-audit.model";
 import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeading, WalkUploadRow } from "../../models/ramblers-walks-manager";
 import { Ramblers } from "../../models/system.model";
-import { Walk, WalkExport } from "../../models/walk.model";
+import { Walk, WalkExport, WalkType } from "../../models/walk.model";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { CommitteeConfigService } from "../committee/commitee-config.service";
 import { CommitteeReferenceData } from "../committee/committee-reference-data";
@@ -208,7 +207,7 @@ export class RamblersWalksAndEventsService {
 
   validateWalk(walk: Walk): WalkExport {
     const validationMessages = [];
-    const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be supplied for this walk on Walk Leader tab." : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
+    const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be supplied for this walk on Walk Leader tab" : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
     if (isEmpty(walk)) {
       validationMessages.push("walk does not exist");
     } else {
@@ -236,15 +235,23 @@ export class RamblersWalksAndEventsService {
       }
 
       if (isEmpty(walk.contactId)) {
-        validationMessages.push("Walk leader has no Ramblers contact Id setup on their member record. " + contactIdMessage);
+        validationMessages.push("Walk leader has no Ramblers Assemble Name entered on their member record. " + contactIdMessage);
       }
 
       if (isNumber(walk.contactId)) {
-        validationMessages.push("Walk leader has an old Ramblers contact Id setup on their member record. This needs to be updated to an Assemble Contact Id." + contactIdMessage);
+        validationMessages.push("Walk leader has an old Ramblers contact Id setup on their member record. This needs to be updated to an Assemble Ramblers Assemble Name." + contactIdMessage);
       }
 
-      if (isEmpty(walk.displayName)) {
-        validationMessages.push("Display Name for walk leader is missing. This can be entered manually on the Walk Leader tab.");
+      if (isEmpty(walk.walkType)) {
+        validationMessages.push("Display Name for walk leader is missing. This can be entered manually on the Walk Leader tab");
+      }
+
+      if (walk.walkType === WalkType.LINEAR && isEmpty(walk.postcodeFinish)) {
+        validationMessages.push(`Walk is ${WalkType.LINEAR} but no finish postcode has been entered in the Walk Details tab`);
+      }
+
+      if (walk.walkType === WalkType.CIRCULAR && !isEmpty(walk.postcodeFinish) && walk.postcodeFinish !== walk.postcode) {
+        validationMessages.push(`Walk is ${WalkType.CIRCULAR} but the finish postcode ${walk.postcodeFinish} does not match the start postcode ${walk.postcode} in the Walk Details tab`);
       }
     }
     return {
@@ -279,8 +286,8 @@ export class RamblersWalksAndEventsService {
     return value ? value : "";
   }
 
-  contactIdLookupAssemble(walk: Walk) {
-    return walk.displayName ? this.replaceSpecialCharacters(walk.displayName) : "";
+  walkLeader(walk: Walk) {
+    return walk.contactId ? this.replaceSpecialCharacters(walk.contactId) : "";
   }
 
   replaceSpecialCharacters(value) {
@@ -346,7 +353,7 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.DESCRIPTION] = this.walkDescription(walk);
     csvRecord[WalkUploadColumnHeading.ADDITIONAL_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.WEBSITE_LINK] = this.walkLink(walk);
-    csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.contactIdLookupAssemble(walk);
+    csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.walkLeader(walk);
     csvRecord[WalkUploadColumnHeading.LINEAR_OR_CIRCULAR] = this.walkType(walk);
     csvRecord[WalkUploadColumnHeading.START_TIME] = this.walkStartTime(walk);
     csvRecord[WalkUploadColumnHeading.STARTING_LOCATION] = "";

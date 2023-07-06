@@ -11,7 +11,7 @@ describe("MailchimpLinkService", () => {
     providers: [
       {
         provide: MailchimpConfigService, useValue: {
-          getConfig: () => Promise.resolve({mailchimp: {apiUrl: "https://us3.admin.mailchimp.com"}}),
+          getConfig: () => Promise.resolve({apiUrl: "https://us3.admin.mailchimp.com"}),
         }
       }]
   }));

@@ -1,4 +1,3 @@
-import { waitForAsync } from "@angular/core/testing";
 import { CommitteeConfig, CommitteeMember } from "../../models/committee.model";
 import { CommitteeReferenceData } from "./committee-reference-data";
 
@@ -21,8 +20,7 @@ const EXPECTED_NIC: CommitteeMember = {
 };
 
 const mockData: CommitteeConfig = {
-  committee: {
-    contactUs: {
+  contactUs: {
       chairman: {
         type: "chairman",
         description: "Chairman",
@@ -68,7 +66,6 @@ const mockData: CommitteeConfig = {
       }
     },
     fileTypes: [{description: "file", public: true}]
-  },
 };
 
 describe("CommitteeReferenceData", () => {

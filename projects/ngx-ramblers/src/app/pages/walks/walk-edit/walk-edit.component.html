@@ -237,7 +237,7 @@
           </div>
           <div class="col-sm-6">
             <div class="form-group">
-              <label for="walk-leader-contact-id">Ramblers Assemble name</label>
+              <label for="walk-leader-contact-id">Ramblers Assemble Name</label>
               <input [disabled]="!allowAdminEdits()" [(ngModel)]="displayedWalk.walk.contactId"
                      type="text"
                      class="form-control input-sm" id="walk-leader-contact-id"
@@ -343,7 +343,7 @@
                            placeholder="Enter start grid Reference here">
                     <div class="input-group-append">
                       <div class="input-group-text pointer">
-                        <div (click)="viewGridReference(displayedWalk.walk.gridReference)" tooltipPlacement="top"
+                        <div (click)="viewGridReference(displayedWalk.walk.gridReference)" placement="top"
                              tooltip="View start grid reference position in gridreferencefinder.com">
                           <img src="/assets/images/local/grid-reference-finder.ico"/>
                         </div>
@@ -372,7 +372,7 @@
                       <div class="input-group-append">
                         <div class="input-group-text pointer">
                           <div (click)="viewGridReference(displayedWalk.walk.gridReferenceFinish)"
-                               tooltipPlacement="top"
+                               placement="top"
                                tooltip="View finish grid reference position in gridreferencefinder.com">
                             <img src="/assets/images/local/grid-reference-finder.ico"/>
                           </div>

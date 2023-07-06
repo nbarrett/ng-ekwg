@@ -58,7 +58,13 @@ describe("StringUtilsService", () => {
             guestLimit: 7
           }
         }
-      })).toEqual("Title: a Brief Description and Start Point, Config -> Meetup -> Announce: true, Default Content: Prompt to join after 3 walks, Publish Status: published, Guest Limit: 7");
+      })).toEqual([
+        "Config -> Meetup -> Announce: true",
+        "Default Content: Prompt to join after 3 walks",
+        "Guest Limit: 7",
+        "Publish Status: published",
+        "Title: a Brief Description and Start Point",
+      ].join(", "));
     });
   });
 

@@ -86,7 +86,7 @@ export class StringUtilsService {
         } else {
           return `${startCase(key)}: ${value || defaultValue || "(none)"}`;
         }
-      }).join(", ");
+      }).sort().join(", ");
     } else {
       return inputValue || defaultValue || "(none)";
     }
