@@ -35,6 +35,8 @@
                       <th>Click to Export</th>
                       <th>Already Published</th>
                       <th>Walk Date</th>
+                      <th>Leader</th>
+                      <th>Status</th>
                       <th>Description</th>
                       <th>Problems</th>
                     </tr>
@@ -48,8 +50,10 @@
                                  type="checkbox" class="custom-control-input">
                           <label class="custom-control-label"></label></div></td>
                       <td>{{walkExport.publishedOnRamblers}}</td>
-                      <td class="nowrap">{{walkExport.walk.walkDate | displayDate}}</td>
-                      <td>{{walkExport.walk.briefDescriptionAndStartPoint}}</td>
+                      <td class="nowrap">{{walkExport.displayedWalk.walk.walkDate | displayDate}}</td>
+                      <td class="nowrap">{{walkExport.displayedWalk.walk.displayName}}</td>
+                      <td>{{walkExport.displayedWalk.latestEventType.description}}</td>
+                      <td>{{walkExport.displayedWalk.walk.briefDescriptionAndStartPoint}}</td>
                       <td>{{walkExport.validationMessages.join(", ")}}</td>
                     </tr>
                     </tbody>

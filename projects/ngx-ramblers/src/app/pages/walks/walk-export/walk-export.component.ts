@@ -11,8 +11,8 @@ import { switchMap } from "rxjs/operators";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Member } from "../../../models/member.model";
-import { WalkUploadRow } from "../../../models/ramblers-walks-manager";
 import { RamblersUploadAudit, RamblersUploadAuditApiResponse } from "../../../models/ramblers-upload-audit.model";
+import { WalkUploadRow } from "../../../models/ramblers-walks-manager";
 import { Walk, WalkExport } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -209,7 +209,7 @@ export class WalkExportComponent implements OnInit, OnDestroy {
       this.walkExportNotifier.hide();
     } else {
       this.walkExportNotifier.error({
-        title: `You can't export the walk for ${this.displayDate.transform(walkExport.walk.walkDate)}`,
+        title: `You can't export the walk for ${this.displayDate.transform(walkExport.displayedWalk.walk.walkDate)}`,
         message: walkExport.validationMessages.join(", ")
       });
     }

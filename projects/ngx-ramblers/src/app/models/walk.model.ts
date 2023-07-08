@@ -57,7 +57,7 @@ export interface RiskAssessmentRecord {
 }
 
 export interface WalkExport {
-  walk: Walk;
+  displayedWalk: DisplayedWalk;
   validationMessages: string[];
   publishedOnRamblers: boolean;
   selected: boolean;

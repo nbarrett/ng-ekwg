@@ -39,7 +39,6 @@ export class WalkDisplayService {
   public previousWalkLeaderIds: string[];
 
   constructor(
-    private ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private memberService: MemberService,
@@ -196,8 +195,8 @@ export class WalkDisplayService {
       walkAccessMode: this.toWalkAccessMode(walk),
       status: this.statusFor(walk),
       latestEventType: this.latestEventTypeFor(walk),
-      walkLink: this.ramblersWalksAndEventsService.walkLink(walk),
-      ramblersLink: this.ramblersWalksAndEventsService.ramblersLink(walk),
+      walkLink: this.walkLink(walk),
+      ramblersLink: this.ramblersLink(walk),
     };
   }
 
@@ -205,8 +204,15 @@ export class WalkDisplayService {
     displayedWalk.walkAccessMode = this.toWalkAccessMode(displayedWalk.walk);
     displayedWalk.status = this.statusFor(displayedWalk.walk);
     displayedWalk.latestEventType = this.latestEventTypeFor(displayedWalk.walk);
-    displayedWalk.walkLink = this.ramblersWalksAndEventsService.walkLink(displayedWalk.walk);
-    displayedWalk.ramblersLink = this.ramblersWalksAndEventsService.ramblersLink(displayedWalk.walk);
+    displayedWalk.walkLink = this.walkLink(displayedWalk.walk);
+    displayedWalk.ramblersLink = this.ramblersLink(displayedWalk.walk);
+  }
+  walkLink(walk: Walk): string {
+    return walk?.id ? this.urlService.linkUrl({area: "walks", id: walk.id}) : null;
+  }
+
+  ramblersLink(walk: Walk): string {
+    return walk.ramblersWalkUrl || (walk.ramblersWalkId ? `https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=${walk.ramblersWalkId}` : null);
   }
 
   isNextWalk(walk: Walk): boolean {

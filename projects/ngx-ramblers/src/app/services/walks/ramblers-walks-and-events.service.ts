@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import isEmpty from "lodash-es/isEmpty";
-import isNumber from "lodash-es/isNumber";
+import isNaN from "lodash-es/isNaN";
 import without from "lodash-es/without";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Observable, Subject } from "rxjs";
@@ -12,6 +12,7 @@ import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-aud
 import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeading, WalkUploadRow } from "../../models/ramblers-walks-manager";
 import { Ramblers } from "../../models/system.model";
 import { Walk, WalkExport, WalkType } from "../../models/walk.model";
+import { WalkDisplayService } from "../../pages/walks/walk-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { CommitteeConfigService } from "../committee/commitee-config.service";
 import { CommitteeReferenceData } from "../committee/committee-reference-data";
@@ -45,6 +46,7 @@ export class RamblersWalksAndEventsService {
               private stringUtilsService: StringUtilsService,
               private dateUtils: DateUtilsService,
               private displayDate: DisplayDatePipe,
+              private walkDisplayService: WalkDisplayService,
               private memberLoginService: MemberLoginService,
               private commonDataService: CommonDataService,
               committeeConfig: CommitteeConfigService,
@@ -84,11 +86,11 @@ export class RamblersWalksAndEventsService {
 
   selectedExportableWalks(walkExports: WalkExport[]): WalkExport[] {
     return walkExports.filter(walkExport => walkExport.selected)
-      .sort(walkExport => walkExport.walk.walkDate);
+      .sort(walkExport => walkExport.displayedWalk.walk.walkDate);
   }
 
   walkUploadRows(walkExports: WalkExport[], members: Member[]): WalkUploadRow[] {
-    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk).map(walk => this.walkToUploadRow(walk, members));
+    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.displayedWalk.walk).map((walk: Walk) => this.walkToUploadRow(walk, members));
   }
 
   createWalksForExportPrompt(walks): Promise<WalkExport[]> {
@@ -190,8 +192,8 @@ export class RamblersWalksAndEventsService {
       });
   }
 
-  public walkDeletionList(walkExports: WalkExport[]) {
-    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.walk)
+  public walkDeletionList(walkExports: WalkExport[]): string[] {
+    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.displayedWalk.walk)
       .filter(walk => !isEmpty(walk.ramblersWalkUrl)).map(walk => this.transformUrl(walk));
   }
 
@@ -207,7 +209,7 @@ export class RamblersWalksAndEventsService {
 
   validateWalk(walk: Walk): WalkExport {
     const validationMessages = [];
-    const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be supplied for this walk on Walk Leader tab" : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
+    const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be entered on the Walk Leader tab" : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
     if (isEmpty(walk)) {
       validationMessages.push("walk does not exist");
     } else {
@@ -238,8 +240,8 @@ export class RamblersWalksAndEventsService {
         validationMessages.push("Walk leader has no Ramblers Assemble Name entered on their member record. " + contactIdMessage);
       }
 
-      if (isNumber(walk.contactId)) {
-        validationMessages.push("Walk leader has an old Ramblers contact Id setup on their member record. This needs to be updated to an Assemble Ramblers Assemble Name." + contactIdMessage);
+      if (!isNaN(+walk.contactId)) {
+        validationMessages.push(`Walk leader has an old Ramblers contact Id (${walk.contactId}) setup on their member record. This needs to be updated to an Assemble Full Name. ${contactIdMessage}`);
       }
 
       if (isEmpty(walk.walkType)) {
@@ -255,7 +257,7 @@ export class RamblersWalksAndEventsService {
       }
     }
     return {
-      walk,
+      displayedWalk: this.walkDisplayService.toDisplayedWalk(walk),
       validationMessages,
       publishedOnRamblers: walk && !isEmpty(walk.ramblersWalkId),
       selected: walk && walk.ramblersPublish && validationMessages.length === 0 && isEmpty(walk.ramblersWalkId)
@@ -334,14 +336,6 @@ export class RamblersWalksAndEventsService {
     return this.dateUtils.asString(walk.walkDate, null, format);
   }
 
-  walkLink(walk: Walk): string {
-    return walk?.id ? this.urlService.linkUrl({area: "walks", id: walk.id}) : null;
-  }
-
-  ramblersLink(walk: Walk): string {
-    return walk.ramblersWalkUrl || (walk.ramblersWalkId ? `https://www.ramblers.org.uk/go-walking/find-a-walk-or-route/walk-detail.aspx?walkID=${walk.ramblersWalkId}` : null);
-  }
-
   walkToUploadRow(walk, members: Member[]): WalkUploadRow {
     return this.walkToWalkUploadRow(walk, members);
   }
@@ -352,7 +346,7 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.TITLE] = this.walkTitle(walk);
     csvRecord[WalkUploadColumnHeading.DESCRIPTION] = this.walkDescription(walk);
     csvRecord[WalkUploadColumnHeading.ADDITIONAL_DETAILS] = "";
-    csvRecord[WalkUploadColumnHeading.WEBSITE_LINK] = this.walkLink(walk);
+    csvRecord[WalkUploadColumnHeading.WEBSITE_LINK] = this.walkDisplayService.walkLink(walk);
     csvRecord[WalkUploadColumnHeading.WALK_LEADERS] = this.walkLeader(walk);
     csvRecord[WalkUploadColumnHeading.LINEAR_OR_CIRCULAR] = this.walkType(walk);
     csvRecord[WalkUploadColumnHeading.START_TIME] = this.walkStartTime(walk);
