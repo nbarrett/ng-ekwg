@@ -8,7 +8,7 @@ import {
   MailchimpCampaignListRequest,
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateIdentifiersResponse,
-  MailchimpCampaignReplicateResponse,
+  MailchimpCampaignReplicateResponse, MailchimpCampaignSearchRequest, MailchimpCampaignSearchResponse,
   MailchimpCampaignSendRequest,
   MailchimpCampaignSendResponse,
   MailchimpCampaignUpdateRequest,
@@ -30,7 +30,7 @@ import { MailchimpListService } from "./mailchimp-list.service";
   providedIn: "root"
 })
 export class MailchimpCampaignService {
-  private logger: Logger;
+  private readonly logger: Logger;
   private BASE_URL = "api/mailchimp/campaigns";
   private campaignNotifications = new Subject<ApiResponse>();
   private mailchimpConfig: MailchimpConfig;
@@ -65,9 +65,9 @@ export class MailchimpCampaignService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
   }
 
-  async search(options: MailchimpCampaignListRequest): Promise<MailchimpCampaignListResponse> {
+  async search(options: MailchimpCampaignSearchRequest): Promise<MailchimpCampaignSearchResponse> {
     const params: HttpParams = this.commonDataService.toHttpParams(options);
-    return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/list`, {params}), this.campaignNotifications)).response;
+    return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/search`, {params}), this.campaignNotifications)).response;
   }
 
   async setContent(templateId: number, campaignId: string, contentSections: MailchimpExpenseOtherContent | MailchimpGenericOtherContent): Promise<MailchimpSetContentResponse | void> {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { MailchimpApiError, MailchimpCampaignSearchResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { MailchimpApiError, MailchimpCampaignGetContentResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../../env-config/env-config";
 import { MailchimpCampaignSearchRequestOptions, MailchimpConfigData } from "../../shared/server-models";
 import { asBoolean } from "../../shared/string-utils";
@@ -31,8 +31,8 @@ export function campaignGetContent(req: Request, res: Response): Promise<void> {
     };
     debugLog("campaignId:", campaignId, "pptions:", options);
     return mailchimpConfigData.client.campaigns.getContent(campaignId, options)
-      .then((responseData: MailchimpCampaignSearchResponse) => {
-        messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
+      .then((getContentResponse: MailchimpCampaignGetContentResponse) => {
+        messageProcessing.successfulResponse(req, res, getContentResponse, messageType, debugLog);
       });
   }).catch((error: MailchimpApiError) => {
     messageProcessing.unsuccessfulResponse(req, res, error, messageType, debugLog);

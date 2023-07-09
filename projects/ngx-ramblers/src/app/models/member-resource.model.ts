@@ -43,7 +43,6 @@ export interface AccessLevelData extends Identifiable {
 export type MailchimpCampaignMixedVersion = MailchimpCampaign | MailchimpCampaignVersion2 ;
 export interface MemberResource extends Identifiable {
   data: {
-    campaignSearchLimit: number;
     campaignSearchTerm?: string;
     campaign?: MailchimpCampaignMixedVersion;
     fileNameData?: FileNameData;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { MailchimpApiError, MailchimpCampaignSearchResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
+import { MailchimpApiError, MailchimpCampaignGetContentResponse, MailchimpCampaignSearchResponse } from "../../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import { envConfig } from "../../env-config/env-config";
 import { MailchimpCampaignSearchRequestOptions, MailchimpConfigData } from "../../shared/server-models";
 import { asBoolean } from "../../shared/string-utils";
@@ -8,7 +8,7 @@ import * as messageProcessing from "../mailchimp-message-processing";
 import debug from "debug";
 
 const debugLog = debug(envConfig.logNamespace("mailchimp:campaigns:search"));
-
+debugLog.debug = false;
 export function campaignSearch(req: Request, res: Response): Promise<void> {
   const messageType = "campaign search";
   return configuredMailchimp().then((mailchimpConfigData: MailchimpConfigData) => {
@@ -31,8 +31,8 @@ export function campaignSearch(req: Request, res: Response): Promise<void> {
     debugLog("req.query:", req.query, "search options:", options);
     const query: string = req.query.query?.toString();
     return mailchimpConfigData.client.searchCampaigns.search(query, options)
-      .then((responseData: MailchimpCampaignSearchResponse) => {
-        messageProcessing.successfulResponse(req, res, responseData, messageType, debugLog);
+      .then((searchResponse: MailchimpCampaignSearchResponse) => {
+        messageProcessing.successfulResponse(req, res, searchResponse, messageType, debugLog);
       });
   }).catch((error: MailchimpApiError) => {
     messageProcessing.unsuccessfulResponse(req, res, error, messageType, debugLog);

@@ -136,7 +136,7 @@ export class MemberResourcesReferenceDataService {
 
   defaultMemberResource(): MemberResource {
     return {
-      data: {campaignSearchLimit: 1000},
+      data: {},
       resourceType: ResourceType.email,
       accessLevel: AccessLevel.hidden,
       createdDate: this.dateUtils.nowAsValue(),

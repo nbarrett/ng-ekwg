@@ -356,8 +356,15 @@ export interface MailchimpCampaignListRequest {
   query?: string;
 }
 
-export interface MailchimpCampaignUpdateRequestVersion2 {
-  updates: { name: string; value: any };
+export interface MailchimpCampaignSearchRequest {
+  concise: boolean;
+  query?: string;
+}
+
+export interface MailchimpCampaignSearchResponse {
+  results: [{
+    campaign: MailchimpCampaign;
+  }];
 }
 
 export interface VariateSettingsAB {
@@ -492,8 +499,6 @@ export interface MailchimpCampaignListResponse {
   total_items: number;
   _links: Link[];
 }
-
-export type MailchimpCampaignUpdateResponse = MailchimpCampaign;
 
 export interface MailchimpSetContentResponse {
   id: string;
@@ -832,7 +837,7 @@ export interface MailchimpGenericOtherContent {
   };
 }
 
-export interface MailchimpCampaignSearchResponse {
+export interface MailchimpCampaignGetContentResponse {
   results: [
     {
       campaign: MailchimpCampaign,

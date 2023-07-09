@@ -6,14 +6,14 @@ import {
   MailchimpCampaignContentUpdateRequest,
   MailchimpCampaignListResponse,
   MailchimpCampaignReplicateResponse,
-  MailchimpCampaignSearchResponse,
+  MailchimpCampaignGetContentResponse,
   MailchimpCampaignSendResponse,
   MailchimpCampaignUpdateRequest, MailchimpConfig,
   MailchimpListingResponse,
   MailchimpListSegmentBatchAddOrRemoveMembersResponse,
   MailchimpListsMembersResponse,
   MailchimpSegmentUpdateResponse,
-  MailchimpSetContentResponse
+  MailchimpSetContentResponse, MailchimpCampaignSearchResponse
 } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import BatchListMembersResponse = lists.BatchListMembersResponse;
 
@@ -39,7 +39,7 @@ export interface MailchimpMarketingApiClient {
     replicate(campaignId: string): Promise<MailchimpCampaignReplicateResponse>;
     send(campaignId: string): Promise<MailchimpCampaignSendResponse>;
     update(campaignId: string, mailchimpCampaignListRequest: MailchimpCampaignUpdateRequest): Promise<MailchimpCampaignUpdateRequest>;
-    getContent(campaignId: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
+    getContent(campaignId: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignGetContentResponse>;
   };
   searchCampaigns: {
     search(query: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;

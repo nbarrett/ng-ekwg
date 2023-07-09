@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
@@ -8,9 +8,9 @@ import { Subscription } from "rxjs";
 import { FileUtilsService } from "../../file-utils.service";
 import { AlertTarget } from "../../models/alert-target.model";
 import { DateValue } from "../../models/date.model";
-import { MailchimpCampaign, MailchimpCampaignListRequest } from "../../models/mailchimp.model";
+import { MailchimpCampaign, MailchimpCampaignSearchRequest } from "../../models/mailchimp.model";
 import { MailchimpCampaignMixedVersion, MemberResource } from "../../models/member-resource.model";
-import { Confirm, ConfirmType } from "../../models/ui-actions";
+import { Confirm } from "../../models/ui-actions";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { FullNameWithAliasPipe } from "../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../pipes/line-feeds-to-breaks.pipe";
@@ -32,7 +32,8 @@ import { UrlService } from "../../services/url.service";
   selector: "app-how-to-modal",
   templateUrl: "how-to-modal.component.html",
 })
-export class HowToModalComponent implements OnInit, OnDestroy {
+export class HowToModalComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild("searchInput") private searchInput: ElementRef;
   public memberResource: MemberResource;
   public confirm: Confirm;
   public notify: AlertInstance;
@@ -43,7 +44,6 @@ export class HowToModalComponent implements OnInit, OnDestroy {
   public resourceDate: DateValue;
   private existingTitle: string;
   public uploader: FileUploader;
-  private confirmType: ConfirmType = ConfirmType.NONE;
   public selectedMemberIds: string[] = [];
   public editMode: string;
   public campaigns: MailchimpCampaign[] = [];
@@ -97,6 +97,11 @@ export class HowToModalComponent implements OnInit, OnDestroy {
     ));
     this.editMode = this.memberResource.id ? "Edit existing" : "Create new";
     this.resourceDate = this.dateUtils.asDateValue(this.memberResource.resourceDate);
+  }
+
+  ngAfterViewInit(): void {
+    this.logger.info("ngAfterViewInit:searchInput.nativeElement",this.searchInput.nativeElement);
+    this.searchInput.nativeElement.focus();
   }
 
   ngOnDestroy(): void {
@@ -165,31 +170,29 @@ export class HowToModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  performCampaignSearch(selectFirst): Promise<any> {
-    const campaignSearchTerm = this.memberResource.data.campaignSearchTerm;
+  performCampaignSearch(campaignSearchTerm:string, selectFirst:boolean): Promise<any> {
+    this.logger.info("campaignSearchTerm:",campaignSearchTerm);
     if (campaignSearchTerm) {
       this.notify.setBusy();
       this.notify.progress({
         title: "Email search",
         message: "searching for campaigns matching '" + campaignSearchTerm + "'"
       });
-      const options: MailchimpCampaignListRequest = {
+      const options: MailchimpCampaignSearchRequest = {
         concise: true,
         query: campaignSearchTerm,
-        limit: this.memberResource.data.campaignSearchLimit,
-        start: 0,
-        status: "sent"
       };
-      return this.mailchimpCampaignService.list(options)
+      return this.mailchimpCampaignService.search(options)
         .then((response) => {
-          this.campaigns = response.campaigns;
+          this.campaigns = response.results.map(item => item.campaign);
+          this.logger.info("mailchimpCampaignService search response", response);
           if (selectFirst) {
             this.memberResource.data.campaign = first(this.campaigns);
             this.campaignChange();
           } else {
             this.logger.debug("this.memberResource.data.campaign", this.memberResource.data.campaign, "first campaign=", first(this.campaigns));
           }
-          this.logger.debug("response.data", response.campaigns);
+          this.logger.debug("response.data", response.results);
           this.notify.success({
             title: "Email search",
             message: "Found " + this.campaigns.length + " campaigns matching '" + campaignSearchTerm + "'"
