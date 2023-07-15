@@ -13,7 +13,7 @@ import {
   MailchimpListSegmentBatchAddOrRemoveMembersResponse,
   MailchimpListsMembersResponse,
   MailchimpSegmentUpdateResponse,
-  MailchimpSetContentResponse, MailchimpCampaignSearchResponse
+  MailchimpSetContentResponse, MailchimpCampaignSearchResponse, MailchimpCampaignDefaults, MailchimpList, MergeFieldAddResponse, MergeField
 } from "../../../projects/ngx-ramblers/src/app/models/mailchimp.model";
 import BatchListMembersResponse = lists.BatchListMembersResponse;
 
@@ -45,13 +45,16 @@ export interface MailchimpMarketingApiClient {
     search(query: string, options: MailchimpCampaignSearchRequestOptions): Promise<MailchimpCampaignSearchResponse>;
   };
   lists: {
-    updateSegment(listId, segmentId, clientRequest): Promise<MailchimpSegmentUpdateResponse>;
-    getListMembersInfo(listId: string, mailchimpListMembersRequest: MailchimpListMembersRequest): Promise<MailchimpListsMembersResponse>;
-    getAllLists(listOptions: MailchimpListsRequest): Promise<MailchimpListingResponse>;
+    addListMergeField(listId: string, mergeField: MergeField): Promise<MergeFieldAddResponse>;
     batchListMembers(listId: string, body: lists.BatchListMembersBody, options: lists.BatchListMembersOpts): Promise<BatchListMembersResponse>;
-    createSegment(listId: string, requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
-    deleteSegment(listId: string, segmentId: string): Promise<MailchimpListingResponse>;
     batchSegmentMembers(bodyParameters: MailchimpBatchSegmentAddOrRemoveRequest, listId: string, segmentId: number): Promise<MailchimpListSegmentBatchAddOrRemoveMembersResponse>;
+    createList(mailchimpListMembersRequest: MailchimpListCreateRequest): Promise<MailchimpList>;
+    createSegment(listId: string, requestData: MailchimpCreateSegmentRequest): Promise<MailchimpListingResponse>;
+    deleteList(listId: string): Promise<void>;
+    deleteSegment(listId: string, segmentId: string): Promise<MailchimpListingResponse>;
+    getAllLists(listOptions: MailchimpListsRequest): Promise<MailchimpListingResponse>;
+    getListMembersInfo(listId: string, mailchimpListMembersRequest: MailchimpListMembersRequest): Promise<MailchimpListsMembersResponse>;
+    updateSegment(listId, segmentId, clientRequest): Promise<MailchimpSegmentUpdateResponse>;
   };
 }
 
@@ -100,6 +103,30 @@ export interface MailchimpListMembersRequest {
   status: string;
   offset: number;
   count: number;
+}
+
+export interface MailchimpContact {
+  company: string;
+  address1: string;
+  address2?: string;
+  city: string;
+  state?: string;
+  zip?: string;
+  country: string;
+  phone?: string;
+}
+
+export interface MailchimpListCreateRequest {
+  name?: string;
+  contact: MailchimpContact;
+  permission_reminder: string;
+  campaign_defaults: MailchimpCampaignDefaults;
+  email_type_option: boolean;
+  use_archive_bar: boolean;
+  notify_on_subscribe: string;
+  notify_on_unsubscribe: string;
+  double_optin: boolean;
+  marketing_permissions: boolean;
 }
 
 export interface MailchimpCreateSegmentRequest {

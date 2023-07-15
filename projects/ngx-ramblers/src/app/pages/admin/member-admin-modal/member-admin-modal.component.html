@@ -262,50 +262,9 @@
             <div class="col-sm-12">
               <p>Please select how {{member | fullNameWithAlias}} wants to be <b>emailed</b>
                 by using the subscription checkboxes below. To see the member entry in a
-                mailchimp list, click the corresponding mailchimp icon!</p>
+                mailchimp list, click the corresponding mailchimp icon</p>
 
-              <div class="row">
-                <div class="col-sm-5">
-                  <div class="custom-control custom-checkbox">
-                    <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
-                           type="checkbox" class="custom-control-input" id="subscribe-walks-emails">
-                    <label class="custom-control-label"
-                           for="subscribe-walks-emails">Walks emails
-                    </label>
-                  </div>
-                </div>
-                <div class="col-sm-7">
-                  <button [disabled]="!member?.mailchimpLists?.walks?.web_id"
-                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.web_id)"
-                          title="View walks list entry In Mailchimp">
-                    <img
-                      [ngClass]="member?.mailchimpLists?.walks?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
-                      src="/assets/images/mailchimp/freddie_wink.svg"
-                      alt="View walks list entry In Mailchimp"></button>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-sm-5">
-                  <div class="custom-control custom-checkbox">
-                    <input (change)="changeSubscribed('socialEvents')"
-                           [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
-                           type="checkbox" class="custom-control-input" id="subscribe-social-events-emails">
-                    <label class="custom-control-label"
-                           for="subscribe-social-events-emails">Social events emails
-                    </label>
-                  </div>
-                </div>
-                <div class="col-sm-7">
-                  <button [disabled]="!member?.mailchimpLists?.socialEvents.web_id"
-                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.web_id)"
-                          title="View social list entry In Mailchimp">
-                    <img
-                      [ngClass]="member?.mailchimpLists?.socialEvents?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
-                      src="/assets/images/mailchimp/freddie_wink.svg"
-                      alt="View social list entry In Mailchimp"></button>
-                </div>
-              </div>
-              <div class="row">
+              <div *ngIf="mailchimpConfig?.lists?.general" class="row">
                 <div class="col-sm-5">
                   <div class="custom-control custom-checkbox">
                     <input (change)="changeSubscribed('general')"
@@ -326,8 +285,48 @@
                       alt="View general list entry In Mailchimp"></button>
                 </div>
               </div>
+              <div *ngIf="mailchimpConfig?.lists?.walks" class="row">
+                <div class="col-sm-5">
+                  <div class="custom-control custom-checkbox">
+                    <input (change)="changeSubscribed('walks')" [(ngModel)]="member.mailchimpLists.walks.subscribed"
+                           type="checkbox" class="custom-control-input" id="subscribe-walks-emails">
+                    <label class="custom-control-label"
+                           for="subscribe-walks-emails">Walks emails
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-7">
+                  <button [disabled]="!member?.mailchimpLists?.walks?.web_id"
+                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.walks?.web_id)"
+                          title="View walks list entry In Mailchimp">
+                    <img
+                      [ngClass]="member?.mailchimpLists?.walks?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                      src="/assets/images/mailchimp/freddie_wink.svg"
+                      alt="View walks list entry In Mailchimp"></button>
+                </div>
+              </div>
+              <div *ngIf="mailchimpConfig?.lists?.socialEvents" class="row">
+                <div class="col-sm-5">
+                  <div class="custom-control custom-checkbox">
+                    <input (change)="changeSubscribed('socialEvents')"
+                           [(ngModel)]="member.mailchimpLists.socialEvents.subscribed"
+                           type="checkbox" class="custom-control-input" id="subscribe-social-events-emails">
+                    <label class="custom-control-label"
+                           for="subscribe-social-events-emails">Social events emails
+                    </label>
+                  </div>
+                </div>
+                <div class="col-sm-7">
+                  <button [disabled]="!member?.mailchimpLists?.socialEvents.web_id"
+                          (click)="viewMailchimpListEntry(member?.mailchimpLists?.socialEvents.web_id)"
+                          title="View social list entry In Mailchimp">
+                    <img
+                      [ngClass]="member?.mailchimpLists?.socialEvents?.web_id ? 'mailchimp-logo': 'mailchimp-logo disabled-image'"
+                      src="/assets/images/mailchimp/freddie_wink.svg"
+                      alt="View social list entry In Mailchimp"></button>
+                </div>
+              </div>
             </div>
-            <div class="row">
               <div class="col-sm-12">
                 <p>Please select how {{member | fullNameWithAlias}} wishes to limit
                   access to
@@ -341,7 +340,6 @@
                 </div>
               </div>
             </div>
-          </div>
         </div>
       </tab>
       <tab heading="Membership">

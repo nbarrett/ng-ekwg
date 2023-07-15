@@ -26,7 +26,6 @@ import { AlertInstance, NotifierService } from "../../../services/notifier.servi
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
-import { SiteEditService } from "../../../site-edit/site-edit.service";
 import { HowToModalComponent } from "../how-to-modal.component";
 
 @Component({
@@ -151,7 +150,7 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
   }
 
   applyFilterToMemberResources(searchTerm?: string) {
-    this.logger.debug("applyFilterToMemberResources:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
+    this.logger.info("applyFilterToMemberResources:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
 
     const unfilteredMemberResources = this.memberResources
@@ -165,10 +164,10 @@ export class HowToSubjectListingComponent implements OnInit, OnDestroy {
       })
       .sort(sortBy("-resourceDate"));
     this.filteredMemberResources = this.searchFilterPipe.transform(unfilteredMemberResources, this.filterParameters.quickSearch);
-
     const filteredCount = (this.filteredMemberResources?.length) || 0;
     const totalCount = (unfilteredMemberResources.length) || 0;
-    this.notify.progress(`${filteredCount} of ${totalCount} article${totalCount === 1 ? "" : "s"}`);
+    this.logger.info("unfilteredMemberResources:", unfilteredMemberResources, "this.filteredMemberResources", this.filteredMemberResources);
+    this.notify.progress(`${filteredCount} of ${this.stringUtils.pluraliseWithCount(totalCount, "article")}`);
     this.notify.clearBusy();
   }
 

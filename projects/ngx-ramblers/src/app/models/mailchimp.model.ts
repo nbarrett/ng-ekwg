@@ -1,3 +1,4 @@
+import { MailchimpContact } from "../../../../../server/lib/shared/server-models";
 import { ApiResponse } from "./api-response.model";
 import { AuditStatus } from "./audit";
 
@@ -6,10 +7,12 @@ export interface MailchimpConfig {
   apiKey: string;
   allowSendCampaign: boolean;
   mailchimpEnabled: boolean;
+  contactDefaults: MailchimpContact;
+  campaignDefaults: MailchimpCampaignDefaults,
   lists: {
-    walks: string;
-    socialEvents: string;
-    general: string
+    walks?: string;
+    socialEvents?: string;
+    general?: string
   };
   segments: {
     walks: {};
@@ -63,6 +66,12 @@ export interface CampaignConfig {
   monthsInPast?: number;
 }
 
+export enum CustomMergeFieldTag {
+  MEMBER_NUM = "MEMBER_NUM",
+  MEMBER_EXP = "MEMBER_EXP",
+  USERNAME = "USERNAME",
+  PW_RESET = "PW_RESET",
+}
 export interface MergeFields {
   EMAIL: string;
   FNAME: string;
@@ -114,6 +123,57 @@ export interface MailchimpListingResponse {
   _links: Link[]
 }
 
+export interface MailchimpCampaignDefaults {
+  from_name: string;
+  from_email: string;
+  subject: string;
+  language: string;
+}
+
+export type MergeFieldType = "text" | "number" | "address" | "phone" | "date" | "url" | "imageurl" | "radio" | "dropdown" | "birthday" | "zip";
+
+export interface MergeField {
+  merge_id?: number;
+  tag?: string;
+  name: string;
+  type: MergeFieldType;
+  required?: boolean;
+  default_value?: string;
+  public?: boolean;
+  display_order?: number;
+  options?: {
+    default_country: number;
+    phone_format: string;
+    date_format: string;
+    choices: string[];
+    size: number;
+  };
+  help_text?: string;
+  list_id?: string;
+  _links?: Link[];
+}
+
+export interface MergeFieldAddResponse {
+  merge_id: number;
+  tag: string;
+  name: string;
+  type: string;
+  required: boolean;
+  default_value: string;
+  public: boolean;
+  display_order: number;
+  options: {
+    size: number;
+    date_format: string;
+    choices: string[];
+    default_country: number;
+    phone_format: string
+  };
+  help_text: string;
+  list_id: string;
+  _links: Link[];
+}
+
 export interface MailchimpList {
   id: string;
   web_id: number;
@@ -130,12 +190,7 @@ export interface MailchimpList {
   },
   permission_reminder: string;
   use_archive_bar: false,
-  campaign_defaults: {
-    from_name: string;
-    from_email: string;
-    subject: string;
-    language: string;
-  },
+  campaign_defaults: MailchimpCampaignDefaults,
   notify_on_subscribe: false,
   notify_on_unsubscribe: false,
   date_created: string;

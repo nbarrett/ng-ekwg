@@ -3,6 +3,7 @@ import { faSearch, faUserXmark } from "@fortawesome/free-solid-svg-icons";
 import cloneDeep from "lodash-es/cloneDeep";
 import extend from "lodash-es/extend";
 import groupBy from "lodash-es/groupBy";
+import keys from "lodash-es/keys";
 import map from "lodash-es/map";
 import sortBy from "lodash-es/sortBy";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
@@ -11,6 +12,7 @@ import { Subject, Subscription } from "rxjs";
 import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { MailchimpConfig } from "../../../models/mailchimp.model";
 import { DeletedMember, DuplicateMember, Member } from "../../../models/member.model";
 import { ASCENDING, DESCENDING, MEMBER_SORT, MemberTableFilter, NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD, SELECT_ALL } from "../../../models/table-filtering.model";
 import { Confirm, ConfirmType, EditMode } from "../../../models/ui-actions";
@@ -19,6 +21,7 @@ import { ApiResponseProcessor } from "../../../services/api-response-processor.s
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
+import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
 import { MailchimpListService } from "../../../services/mailchimp/mailchimp-list.service";
@@ -56,8 +59,11 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   public confirm = new Confirm();
   faSearch = faSearch;
   faUserXmark = faUserXmark;
+  public mailchimpConfig: MailchimpConfig;
+  public noMailchimpListsConfigured: boolean;
 
-  constructor(private memberService: MemberService,
+  constructor(private mailchimpConfigService: MailchimpConfigService,
+              private memberService: MemberService,
               private contentMetadata: ContentMetadataService,
               private apiResponseProcessor: ApiResponseProcessor,
               private searchFilterPipe: SearchFilterPipe,
@@ -80,6 +86,94 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.mailchimpConfigService.getConfig().then((mailchimpConfig: MailchimpConfig) => {
+      this.mailchimpConfig = mailchimpConfig;
+      this.noMailchimpListsConfigured = keys(mailchimpConfig.lists).length === 0;
+      this.memberFilter = {
+        sortField: "memberName",
+        sortFunction: MEMBER_SORT,
+        reverseSort: false,
+        sortDirection: ASCENDING,
+        results: [],
+        availableFilters: [
+          {
+            title: "Active Group Member", group: "Group Settings", filter: this.memberService.filterFor.GROUP_MEMBERS
+          },
+          {
+            title: "All Members", filter: SELECT_ALL
+          },
+          {
+            title: "Active Social Member", group: "Group Settings", filter: this.memberService.filterFor.SOCIAL_MEMBERS
+          },
+          {
+            title: "Membership Date Active/Not set",
+            group: "From Ramblers Supplied Datas",
+            filter: member => !member.membershipExpiryDate || (member.membershipExpiryDate >= this.today)
+          },
+          {
+            title: "Membership Date Expired", group: "From Ramblers Supplied Data", filter: member => member.membershipExpiryDate < this.today
+          },
+          {
+            title: NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD,
+            group: "From Ramblers Supplied Data",
+            filter: member => !member.receivedInLastBulkLoad
+          },
+          {
+            title: "Was received in last Ramblers Bulk Load",
+            group: "From Ramblers Supplied Data",
+            filter: member => member.receivedInLastBulkLoad
+          },
+          {
+            title: "Password Expired", group: "Other Settings", filter: member => member.expiredPassword
+          },
+          {
+            title: "Walk Admin", group: "Administrators", filter: member => member.walkAdmin
+          },
+          {
+            title: "Walk Change Notifications", group: "Administrators", filter: member => member.walkChangeNotifications
+          },
+          {
+            title: "Social Admin", group: "Administrators", filter: member => member.socialAdmin
+          },
+          {
+            title: "Member Admin", group: "Administrators", filter: member => member.memberAdmin
+          },
+          {
+            title: "Finance Admin", group: "Administrators", filter: member => member.financeAdmin
+          },
+          {
+            title: "File Admin", group: "Administrators", filter: member => member.fileAdmin
+          },
+          {
+            title: "Treasury Admin", group: "Administrators", filter: member => member.treasuryAdmin
+          },
+          {
+            title: "Content Admin", group: "Administrators", filter: member => member.contentAdmin
+          },
+          {
+            title: "Committee Member", group: "Administrators", filter: member => member.committee
+          },
+          this.mailchimpConfig?.lists?.general ? {
+            title: "Subscribed to the General emails list",
+            group: "Email Subscriptions",
+            filter: this.memberService.filterFor.GENERAL_MEMBERS_SUBSCRIBED
+          } : null,
+          this.mailchimpConfig?.lists?.walks ? {
+            title: "Subscribed to the Walks email list",
+            group: "Email Subscriptions",
+            filter: this.memberService.filterFor.WALKS_MEMBERS_SUBSCRIBED
+          } : null,
+          this.mailchimpConfig?.lists?.socialEvents ? {
+            title: "Subscribed to the Social email list",
+            group: "Email Subscriptions",
+            filter: this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED
+          } : null,
+        ].filter(item => item)
+      };
+      this.memberFilter.selectedFilter = this.memberFilter.availableFilters[0];
+      this.logger.info("mailchimpConfig:", mailchimpConfig, "this.noMailchimpListsConfigured", this.noMailchimpListsConfigured);
+      this.refreshMembers();
+    });
     this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
     this.logger.off("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
@@ -90,88 +184,7 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       .pipe(distinctUntilChanged())
       .subscribe(searchTerm => this.applyFilterToMembers(searchTerm)));
     this.memberLoginService.showLoginPromptWithRouteParameter("expenseId");
-    this.memberFilter = {
-      sortField: "memberName",
-      sortFunction: MEMBER_SORT,
-      reverseSort: false,
-      sortDirection: ASCENDING,
-      results: [],
-      availableFilters: [
-        {
-          title: "Active Group Member", group: "Group Settings", filter: this.memberService.filterFor.GROUP_MEMBERS
-        },
-        {
-          title: "All Members", filter: SELECT_ALL
-        },
-        {
-          title: "Active Social Member", group: "Group Settings", filter: this.memberService.filterFor.SOCIAL_MEMBERS
-        },
-        {
-          title: "Membership Date Active/Not set",
-          group: "From Ramblers Supplied Datas",
-          filter: member => !member.membershipExpiryDate || (member.membershipExpiryDate >= this.today)
-        },
-        {
-          title: "Membership Date Expired", group: "From Ramblers Supplied Data", filter: member => member.membershipExpiryDate < this.today
-        },
-        {
-          title: NOT_RECEIVED_IN_LAST_RAMBLERS_BULK_LOAD,
-          group: "From Ramblers Supplied Data",
-          filter: member => !member.receivedInLastBulkLoad
-        },
-        {
-          title: "Was received in last Ramblers Bulk Load",
-          group: "From Ramblers Supplied Data",
-          filter: member => member.receivedInLastBulkLoad
-        },
-        {
-          title: "Password Expired", group: "Other Settings", filter: member => member.expiredPassword
-        },
-        {
-          title: "Walk Admin", group: "Administrators", filter: member => member.walkAdmin
-        },
-        {
-          title: "Walk Change Notifications", group: "Administrators", filter: member => member.walkChangeNotifications
-        },
-        {
-          title: "Social Admin", group: "Administrators", filter: member => member.socialAdmin
-        },
-        {
-          title: "Member Admin", group: "Administrators", filter: member => member.memberAdmin
-        },
-        {
-          title: "Finance Admin", group: "Administrators", filter: member => member.financeAdmin
-        },
-        {
-          title: "File Admin", group: "Administrators", filter: member => member.fileAdmin
-        },
-        {
-          title: "Treasury Admin", group: "Administrators", filter: member => member.treasuryAdmin
-        },
-        {
-          title: "Content Admin", group: "Administrators", filter: member => member.contentAdmin
-        },
-        {
-          title: "Committee Member", group: "Administrators", filter: member => member.committee
-        },
-        {
-          title: "Subscribed to the General emails list",
-          group: "Email Subscriptions",
-          filter: this.memberService.filterFor.GENERAL_MEMBERS_SUBSCRIBED
-        },
-        {
-          title: "Subscribed to the Walks email list",
-          group: "Email Subscriptions",
-          filter: this.memberService.filterFor.WALKS_MEMBERS_SUBSCRIBED
-        },
-        {
-          title: "Subscribed to the Social email list",
-          group: "Email Subscriptions",
-          filter: this.memberService.filterFor.SOCIAL_MEMBERS_SUBSCRIBED
-        }
-      ]
-    };
-    this.memberFilter.selectedFilter = this.memberFilter.availableFilters[0];
+    ;
     this.logger.off("this.memberFilter:", this.memberFilter);
     this.subscriptions.push(this.memberService.notifications().subscribe(apiResponse => {
       if (apiResponse.error) {
@@ -181,171 +194,10 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
         this.applyFilterToMembers();
       }
     }));
-    this.refreshMembers();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-  }
-
-  migrateAssembleData(): void {
-    const assembleData = [
-      {
-        assembleName: "Alison Hargreaves",
-        assembleId: 499513,
-        membershipNumber: 2477895
-      },
-      {
-        assembleName: "Amanda Greenaway",
-        assembleId: 499510,
-        membershipNumber: 2273369
-      },
-      {
-        assembleName: "Andrew Goh",
-        assembleId: 80891,
-        membershipNumber: 3280304
-      },
-      {
-        assembleName: "C Mansfield",
-        assembleId: 482303,
-        membershipNumber: 2273838
-      },
-      {
-        assembleName: "Celine Praquin",
-        assembleId: 75258,
-        membershipNumber: 3025795
-      },
-      {
-        assembleName: "Dawn Jones",
-        assembleId: 482305,
-        membershipNumber: 3303374
-      },
-      {
-        assembleName: "Debbie Brown",
-        assembleId: 482291,
-        membershipNumber: 3315452
-      },
-      {
-        assembleName: "Desiree Nel",
-        assembleId: 74640,
-        membershipNumber: 2179401
-      },
-      {
-        assembleName: "Gary Sayer",
-        assembleId: 482293,
-        membershipNumber: 3160653
-      },
-      {
-        assembleName: "Gillian Ross",
-        assembleId: 482306,
-        membershipNumber: 3255040
-      },
-      {
-        assembleName: "James Cheney",
-        assembleId: 94694,
-        membershipNumber: 3279960
-      },
-      {
-        assembleName: "Jayne Mattocks",
-        assembleId: 482296,
-        membershipNumber: 3299806
-      },
-      {
-        assembleName: "Jenny Brown",
-        assembleId: 95667,
-        membershipNumber: 3239216
-      },
-      {
-        assembleName: "Jenny J Brown",
-        assembleId: 482307,
-        membershipNumber: 2255309
-      },
-      {
-        assembleName: "Jon Inglett",
-        assembleId: 75124,
-        membershipNumber: 2439052
-      },
-      {
-        assembleName: "Keith Law",
-        assembleId: 482298,
-        membershipNumber: 3053256
-      },
-      {
-        assembleName: "Kerry O'Grady",
-        assembleId: 26611,
-        membershipNumber: 3244898
-      },
-      {
-        assembleName: "Lesley Wheway",
-        assembleId: 129310,
-        membershipNumber: 3260469
-      },
-      {
-        assembleName: "Lindsay Wratten",
-        assembleId: 26660,
-        membershipNumber: 3128639
-      },
-      {
-        assembleName: "M Daniels",
-        assembleId: 482299,
-        membershipNumber: 2267090
-      },
-      {
-        assembleName: "Malcolm Wills",
-        assembleId: 200272,
-        membershipNumber: 3300453
-      },
-      {
-        assembleName: "Neil Callingham-Carter",
-        assembleId: 75136,
-        membershipNumber: 2447389
-      },
-      {
-        assembleName: "Nick Barrett",
-        assembleId: 77057,
-        membershipNumber: 3277493
-      },
-      {
-        assembleName: "Nic Meadway",
-        assembleId: 77039,
-        membershipNumber: 3276053
-      },
-      {
-        assembleName: "Roz Edridge",
-        assembleId: 360350,
-        membershipNumber: 2341619
-      },
-      {
-        assembleName: "Stuart Maisner",
-        assembleId: 76607,
-        membershipNumber: 3253761
-      },
-      {
-        assembleName: "Suzanne Graham",
-        assembleId: 76780,
-        membershipNumber: 3262480
-      },
-      {
-        assembleName: "Tim Weston",
-        assembleId: 482300,
-        membershipNumber: 3305324
-      },
-      {
-        assembleName: "Tina Callingham-Carter",
-        assembleId: 482301,
-        membershipNumber: 3107611
-      }
-    ];
-    Promise.all(assembleData.map(record => {
-      const editable: Member = this.members.find(member => member.membershipNumber === record.membershipNumber.toString());
-      if (editable) {
-        editable.assembleId = record.assembleId;
-        editable.contactId = record.assembleName;
-        return this.memberService.createOrUpdate(editable);
-      } else {
-        this.logger.warn("cant find member based on", record);
-      }
-    })).then((updates) => this.logger.info("completed updates with", updates.length, "records"));
   }
 
   onSearchChange(searchEntry: string) {
@@ -371,7 +223,10 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
       animated: false,
       show: true,
       initialState: {
-        editMode, member: cloneDeep(member), members: this.members
+        editMode,
+        member: cloneDeep(member),
+        members: this.members,
+        mailchimpConfig: this.mailchimpConfig,
       }
     });
   }
@@ -434,7 +289,6 @@ export class MemberAdminComponent implements OnInit, OnDestroy {
   }
 
   refreshMembers(memberFilter?: any) {
-    this.logger.off("refreshMembers:this.memberFilter.filterSelection", this.memberFilter.selectedFilter, "passed memberFilter:", memberFilter);
     if (memberFilter) {
       this.memberFilter.selectedFilter = memberFilter;
     }

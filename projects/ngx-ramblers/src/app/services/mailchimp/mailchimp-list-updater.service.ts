@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core";
+import keys from "lodash-es/keys";
 import { NgxLoggerLevel } from "ngx-logger";
+import { MailchimpConfig } from "../../models/mailchimp.model";
 import { Member } from "../../models/member.model";
 import { Logger, LoggerFactory } from "../logger-factory.service";
+import { MailchimpConfigService } from "../mailchimp-config.service";
 import { AlertInstance } from "../notifier.service";
 import { StringUtilsService } from "../string-utils.service";
 import { MailchimpListSubscriptionService } from "./mailchimp-list-subscription.service";
@@ -13,38 +16,24 @@ import { MailchimpListService } from "./mailchimp-list.service";
 export class MailchimpListUpdaterService {
   private logger: Logger;
 
-  constructor(private mailchimpListService: MailchimpListService,
+  constructor(private mailchimpConfigService: MailchimpConfigService,
+              private mailchimpListService: MailchimpListService,
               private stringUtils: StringUtilsService,
               private mailchimpListSubscriptionService: MailchimpListSubscriptionService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(MailchimpListUpdaterService, NgxLoggerLevel.OFF);
   }
 
-  updateMailchimpLists(notify: AlertInstance, members: Member[]): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      notify.success("Sending updates to Mailchimp lists", true);
-      this.logger.info("updateMailchimpLists:members:", members);
-      this.updateWalksList(members, notify)
-        .then(() => this.updateSocialEventsList(members, notify))
-        .then(() => this.updateGeneralList(members, notify))
-        .then(() => this.unsubscribeWalksList(members, notify))
-        .then(() => this.unsubscribeSocialEventsList(members, notify))
-        .then(() => this.unsubscribeGeneralList(members, notify))
+  updateMailchimpLists(notify: AlertInstance, members: Member[]): Promise<any> {
+    this.logger.info("updateMailchimpLists:members:", members);
+    return this.mailchimpConfigService.getConfig().then((config: MailchimpConfig) => {
+      const listTypes: string[] = keys(config.lists);
+      notify.success(`Sending updates to Mailchimp lists ${listTypes.join(", ")}`, true);
+      return Promise.all(listTypes.map((listType: string) => this.mailchimpListSubscriptionService.createBatchSubscriptionForList(listType, members)))
+        .then(() => Promise.all(listTypes.map((listType: string) => this.mailchimpListService.batchUnsubscribeMembers(listType, members, notify))))
         .then(() => this.notifyUpdatesComplete(notify))
-        .catch((error) => reject(this.mailchimpError(error, notify)));
+        .catch((error) => this.mailchimpError(error, notify));
     });
-  }
-
-  private unsubscribeWalksList(members, notify: AlertInstance) {
-    return this.mailchimpListService.batchUnsubscribeMembers("walks", members, notify);
-  }
-
-  private unsubscribeSocialEventsList(members, notify: AlertInstance) {
-    return this.mailchimpListService.batchUnsubscribeMembers("socialEvents", members, notify);
-  }
-
-  private unsubscribeGeneralList(members, notify: AlertInstance) {
-    return this.mailchimpListService.batchUnsubscribeMembers("general", members, notify);
   }
 
   private mailchimpError(errorResponse, notify: AlertInstance) {
@@ -54,18 +43,6 @@ export class MailchimpListUpdaterService {
       message: (errorResponse.message || errorResponse) + (errorResponse.error ? (". Error was: " + this.stringUtils.stringify(errorResponse.error)) : "")
     });
     notify.clearBusy();
-  }
-
-  private updateWalksList(members, notify: AlertInstance) {
-    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("walks", members);
-  }
-
-  private updateSocialEventsList(members, notify: AlertInstance) {
-    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("socialEvents", members);
-  }
-
-  private updateGeneralList(members, notify: AlertInstance) {
-    return this.mailchimpListSubscriptionService.createBatchSubscriptionForList("general", members);
   }
 
   private notifyUpdatesComplete(notify: AlertInstance) {

@@ -12,8 +12,8 @@ import { ChangePasswordComponent } from "../../pages/admin/profile/change-passwo
 import { ContactDetailsComponent } from "../../pages/admin/profile/contact-details.component";
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
 import { CommitteeSettingsComponent } from "../../pages/admin/system-settings/committee/committee-settings";
+import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings";
 import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
-import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
 import { BannerComponent } from "../../pages/banner/banner.component";
 import { MailingPreferencesModalComponent } from "../../pages/mailing-preferences/mailing-preferences-modal.component";
 import { hasDynamicPath } from "../../services/path-matchers";

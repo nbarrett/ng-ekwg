@@ -1,7 +1,7 @@
 const express = require("express");
 const authConfig = require("../../auth/auth-config");
 const memberResource = require("../models/member-resource");
-const controller = require("../controllers/crud-controller").create(memberResource, true);
+const controller = require("../controllers/crud-controller").create(memberResource, false);
 
 const router = express.Router();
 

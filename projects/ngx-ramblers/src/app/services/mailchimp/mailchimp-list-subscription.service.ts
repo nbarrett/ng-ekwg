@@ -42,21 +42,23 @@ export class MailchimpListSubscriptionService {
     const endState: string = subscribedState ? "subscribe" : "unsubscribe";
     const savePromises = [];
     notify.warning({title: "Bulk " + endState, message: `Bulk setting Mailchimp subscriptions for ${members.length} members to ${subscribedState}`}, false, true);
-    members.forEach(member => {
+    members.map(member => {
       this.mailchimpListService.setMailchimpSubscriptionStateFor(member, subscribedState);
       savePromises.push(this.memberService.update(member));
     });
 
     return Promise.all(savePromises).then(() => {
-      notify.success({title: "Bulk " + endState, message: `Reset of subscriptions completed. Next Mailchimp send will bulk ${endState} all Mailchimp lists`}, false);
+      notify.success({title: `Bulk ${endState}`, message: `Reset of subscriptions completed. Next Mailchimp send will bulk ${endState} all Mailchimp lists`}, false);
       return this.refreshMembersIfAdmin();
     });
   }
 
   private refreshMembersIfAdmin(): Promise<Member[]> {
     if (this.memberLoginService.allowMemberAdminEdits()) {
+      this.logger.info("refreshing all members");
       return this.memberService.all();
     } else {
+      this.logger.info("not refreshing all members as not admin");
       return Promise.resolve([]);
     }
   }

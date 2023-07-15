@@ -16,9 +16,6 @@ export class CommitteeMemberComponent implements OnInit {
   @Input()
   public committeeMember: CommitteeMember;
 
-  @Input()
-  public members: Member[];
-
   private logger: Logger;
 
   constructor(private urlService: UrlService,
@@ -32,8 +29,7 @@ export class CommitteeMemberComponent implements OnInit {
     this.logger.debug("ngOnInit", this.committeeMember);
   }
 
-  setOtherMemberFields(memberId: string) {
-    const member = this.members.find(item => item.id === memberId);
+  setOtherMemberFields(member: Member) {
     this.logger.debug("setOtherMemberFields:", member);
     this.committeeMember.fullName = this.fullNamePipe.transform(member);
     this.committeeMember.email = member.email;

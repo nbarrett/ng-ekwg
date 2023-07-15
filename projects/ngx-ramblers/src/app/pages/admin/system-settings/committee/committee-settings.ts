@@ -3,7 +3,6 @@ import { faAdd, faClose } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
 import { CommitteeConfig, CommitteeFileType, Notification } from "../../../../models/committee.model";
-import { Member } from "../../../../models/member.model";
 import { sortBy } from "../../../../services/arrays";
 import { CommitteeConfigService } from "../../../../services/committee-config.service";
 import { CommitteeQueryService } from "../../../../services/committee/committee-query.service";
@@ -33,14 +32,12 @@ export class CommitteeSettingsComponent implements OnInit {
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeSettingsComponent, NgxLoggerLevel.OFF);
-    this.queryCommitteeMembers();
   }
 
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   public notification: Notification;
   private logger: Logger;
-  public members: Member[] = [];
   public committeeConfig: CommitteeConfig;
   protected readonly faClose = faClose;
   protected readonly faAdd = faAdd;
@@ -52,15 +49,6 @@ export class CommitteeSettingsComponent implements OnInit {
         this.logger.info("retrieved committeeConfig", committeeConfig);
       }).catch(error => this.notify.error({title: "Failed to query Committee config", message: error}));
 
-  }
-
-  queryCommitteeMembers() {
-    this.memberService.all({
-      criteria: {committee: {$eq: true}}
-    }).then(members => {
-      this.logger.info("queried members:", members);
-      this.members = members;
-    });
   }
 
   save() {

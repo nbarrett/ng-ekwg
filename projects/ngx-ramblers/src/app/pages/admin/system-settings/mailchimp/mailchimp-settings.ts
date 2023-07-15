@@ -2,12 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { BsModalService } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../../models/alert-target.model";
-import { Notification } from "../../../../models/committee.model";
+import { NamedEventType } from "../../../../models/broadcast.model";
 import { MailchimpCampaignListResponse, MailchimpConfig, MailchimpListingResponse } from "../../../../models/mailchimp.model";
-import { Member } from "../../../../models/member.model";
 import { FullNameWithAliasPipe } from "../../../../pipes/full-name-with-alias.pipe";
 import { LineFeedsToBreaksPipe } from "../../../../pipes/line-feeds-to-breaks.pipe";
-import { CommitteeQueryService } from "../../../../services/committee/committee-query.service";
+import { BroadcastService } from "../../../../services/broadcast-service";
+import { CommitteeConfigService } from "../../../../services/committee/commitee-config.service";
 import { ContentMetadataService } from "../../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -24,14 +24,12 @@ import { UrlService } from "../../../../services/url.service";
 
 @Component({
   selector: "app-mailchimp-settings",
-  templateUrl: "./mailchimp-settings.component.html",
+  templateUrl: "./mailchimp-settings.html",
 })
 export class MailchimpSettingsComponent implements OnInit {
-  private notify: AlertInstance;
+  public notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
-  public notification: Notification;
   private logger: Logger;
-  members: Member[] = [];
   public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public campaignSearchTerm: string;
   public mailchimpConfig: MailchimpConfig;
@@ -39,11 +37,11 @@ export class MailchimpSettingsComponent implements OnInit {
 
   constructor(private contentMetadataService: ContentMetadataService,
               private mailchimpSegmentService: MailchimpSegmentService,
-              private committeeQueryService: CommitteeQueryService,
               private mailchimpCampaignService: MailchimpCampaignService,
               private mailchimpConfigService: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
+              private committeeConfig: CommitteeConfigService,
               private memberService: MemberService,
               private fullNameWithAlias: FullNameWithAliasPipe,
               private lineFeedsToBreaks: LineFeedsToBreaksPipe,
@@ -51,6 +49,7 @@ export class MailchimpSettingsComponent implements OnInit {
               private mailchimpLinkService: MailchimpLinkService,
               private memberLoginService: MemberLoginService,
               private mailchimpListService: MailchimpListService,
+              private broadcastService: BroadcastService<any>,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
@@ -58,7 +57,7 @@ export class MailchimpSettingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug("constructed with member", this.members.length, "members");
+    this.logger.debug("constructed");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.campaignSearchTerm = "Master";
     this.notify.setBusy();
@@ -69,9 +68,15 @@ export class MailchimpSettingsComponent implements OnInit {
     this.mailchimpConfigService.getConfig()
       .then(mailchimpConfig => {
         this.mailchimpConfig = mailchimpConfig;
-        this.logger.info("retrieved mailchimpConfig", mailchimpConfig);
+        this.logger.info("retrieved mailchimpConfig (pre-validation)", this.mailchimpConfig);
+        if (!this.mailchimpConfig.campaignDefaults) {
+          this.mailchimpConfigService.setCampaignDefaults(this.mailchimpConfig);
+        }
+        if (!this.mailchimpConfig.lists) {
+          this.mailchimpConfig.lists = {};
+        }
+        this.logger.info("retrieved mailchimpConfig (post-validation)", this.mailchimpConfig);
       }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));
-
     this.mailchimpCampaignService.list({
       concise: true,
       limit: 1000,
@@ -86,15 +91,27 @@ export class MailchimpSettingsComponent implements OnInit {
         message: "Found " + this.mailchimpCampaignListResponse.campaigns.length + " draft campaigns matching " + this.campaignSearchTerm
       });
       this.notify.clearBusy();
-    }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));;
-    this.mailchimpListService.lists(this.notify).then((response: MailchimpListingResponse) => {
+    }).catch(error => this.notify.error({title: "Failed to query Mailchimp config", message: error}));
+    this.refreshMailchimpLists();
+    this.broadcastService.on(NamedEventType.MAILCHIMP_LISTS_CHANGED, () => {
+      this.logger.info("event received:", NamedEventType.MAILCHIMP_LISTS_CHANGED);
+      this.refreshMailchimpLists().then(() => this.notify.hide());
+    });
+    this.broadcastService.on(NamedEventType.ERROR, (error) => {
+      this.logger.info("event received:", NamedEventType.ERROR);
+      this.notify.error({title: "Unexpected Error Occurred", message: error});
+    });
+  }
+
+  private refreshMailchimpLists(): Promise<void> {
+    return this.mailchimpListService.lists(this.notify).then((response: MailchimpListingResponse) => {
       this.mailchimpListingResponse = response;
       this.logger.debug("mailchimpListService lists response:", response);
     });
   }
 
   notReady() {
-    return this.mailchimpCampaignListResponse?.campaigns?.length === 0;
+    return !this.mailchimpCampaignListResponse;
   }
 
   editCampaign(campaignId) {
@@ -111,20 +128,6 @@ export class MailchimpSettingsComponent implements OnInit {
     }
   }
 
-  viewList(id: string) {
-    if (!id) {
-      this.notify.error({
-        title: "View Mailchimp List",
-        message: "Please select a list from the drop-down before choosing view"
-      });
-    } else {
-      this.notify.hide();
-      const webId = this.mailchimpListingResponse.lists.find(item => item.id === id)?.web_id;
-      this.logger.debug("viewList:id", id, "web_id", webId);
-      return window.open(`${this.mailchimpLinkService.listView(webId)}`, "_blank");
-    }
-  }
-
   save() {
     this.logger.debug("saving config", this.mailchimpConfig);
     this.mailchimpConfigService.saveConfig(this.mailchimpConfig)
@@ -135,4 +138,5 @@ export class MailchimpSettingsComponent implements OnInit {
   cancel() {
     this.urlService.navigateTo("admin");
   }
+
 }

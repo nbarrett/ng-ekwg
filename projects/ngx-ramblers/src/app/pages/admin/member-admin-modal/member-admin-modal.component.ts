@@ -7,7 +7,7 @@ import { Subscription } from "rxjs";
 import { chain } from "../../../functions/chain";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { DateValue } from "../../../models/date.model";
-import { MailchimpSubscription } from "../../../models/mailchimp.model";
+import { MailchimpConfig, MailchimpSubscription } from "../../../models/mailchimp.model";
 import { Member, MemberUpdateAudit } from "../../../models/member.model";
 import { SystemConfig } from "../../../models/system.model";
 import { EditMode } from "../../../models/ui-actions";
@@ -73,6 +73,7 @@ export class MemberAdminModalComponent implements OnInit {
   public member: Member;
   public editMode: EditMode;
   public members: Member[] = [];
+  public mailchimpConfig: MailchimpConfig;
   private subscriptions: Subscription[] = [];
   public config: SystemConfig;
   public readonly faPaste = faPaste;

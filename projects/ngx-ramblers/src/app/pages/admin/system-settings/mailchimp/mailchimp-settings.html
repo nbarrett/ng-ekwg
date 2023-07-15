@@ -29,63 +29,48 @@
                 </div>
                 <div class="form-group">
                   <label for="api-key">API Key</label>
-                  <input [(ngModel)]="mailchimpConfig.apiKey" type="password" class="form-control input-sm"
+                  <input [(ngModel)]="mailchimpConfig.apiKey" type="text" class="form-control input-sm"
                          id="api-key"
                          placeholder="The API key for the mailchimp api">
                 </div>
               </div>
             </div>
-            <div *ngIf="mailchimpListingResponse?.lists" class="img-thumbnail thumbnail-2">
-              <div class="thumbnail-heading">List Mappings</div>
-              <div class="col-sm-12">
-                <div class="form-group">
-                  <label for="walks-list">Walks</label>
-                  <div class="form-inline">
-                    <select id="walks-list"
-                            [(ngModel)]="mailchimpConfig.lists.walks"
-                            class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let list of mailchimpListingResponse.lists"
-                              [ngValue]="list.id">{{list.name}}</option>
-                    </select>
-                    <input type="submit" value="Edit"
-                           (click)="viewList(mailchimpConfig.lists.walks)"
-                           title="Edit"
-                           [ngClass]="notReady() ? 'disabled-button-form button-bottom-aligned': 'button-form xbutton-confirm blue-confirm button-bottom-aligned'">
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-12">
-                <div class="form-group">
-                  <label for="social-events-list">Social Events</label>
-                  <div class="form-inline">
-                    <select id="social-events-list"
-                            [(ngModel)]="mailchimpConfig.lists.socialEvents"
-                            class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let list of mailchimpListingResponse.lists"
-                              [ngValue]="list.id">{{list.name}}</option>
-                    </select>
-                    <input type="submit" value="Edit"
-                           (click)="viewList(mailchimpConfig.lists.socialEvents)"
-                           title="Edit"
-                           [ngClass]="notReady() ? 'disabled-button-form button-bottom-aligned': 'button-form xbutton-confirm blue-confirm button-bottom-aligned'">
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="general-list">General</label>
-                  <div class="form-inline">
-                    <select id="general-list"
-                            [(ngModel)]="mailchimpConfig.lists.general"
-                            class="form-control input-sm flex-grow-1 mr-2">
-                      <option *ngFor="let list of mailchimpListingResponse.lists"
-                              [ngValue]="list.id">{{list.name}}</option>
-                    </select>
-                    <input type="submit" value="Edit"
-                           (click)="viewList(mailchimpConfig.lists.general)"
-                           title="Edit"
-                           [ngClass]="notReady() ? 'disabled-button-form button-bottom-aligned': 'button-form xbutton-confirm blue-confirm button-bottom-aligned'">
-                  </div>
-                </div>
-              </div>
+            <div class="img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">List Settings</div>
+              <app-mailchimp-list-settings label="General"
+                                          [mailchimpListingResponse]="mailchimpListingResponse"
+                                          [notify]="notify"
+                                          [notReady]="notReady()"
+                                          [mailchimpConfig]="mailchimpConfig"
+                                          [listType]="'general'">
+              </app-mailchimp-list-settings>
+              <app-mailchimp-list-settings label="Walks"
+                                          [mailchimpListingResponse]="mailchimpListingResponse"
+                                          [notify]="notify"
+                                          [notReady]="notReady()"
+                                          [mailchimpConfig]="mailchimpConfig"
+                                          [listType]="'walks'">
+              </app-mailchimp-list-settings>
+              <app-mailchimp-list-settings label="Social Events"
+                                          [mailchimpListingResponse]="mailchimpListingResponse"
+                                          [notify]="notify"
+                                          [notReady]="notReady()"
+                                          [mailchimpConfig]="mailchimpConfig"
+                                          [listType]="'socialEvents'">
+              </app-mailchimp-list-settings>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Defaults">
+          <div class="img-thumbnail thumbnail-admin-edit">
+            <div *ngIf="mailchimpConfig.contactDefaults" class="img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Contact Defaults</div>
+              <app-mailchimp-contact [mailchimpContact]="mailchimpConfig.contactDefaults"></app-mailchimp-contact>
+            </div>
+            <div class="img-thumbnail thumbnail-2">
+              <div class="thumbnail-heading">Campaign Defaults</div>
+              <app-mailchimp-campaign-defaults [campaignDefaults]="mailchimpConfig.campaignDefaults">
+              </app-mailchimp-campaign-defaults>
             </div>
           </div>
         </tab>

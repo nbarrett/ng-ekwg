@@ -2,10 +2,12 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subject } from "rxjs";
+import { MailchimpListCreateRequest } from "../../../../../../server/lib/shared/server-models";
 import { ApiResponse } from "../../models/api-response.model";
 import {
   MailchimpBatchSubscriptionResponse,
   MailchimpEmailWithError,
+  MailchimpList,
   MailchimpListingResponse,
   MailchimpListMember,
   MailchimpListSegmentAddOrRemoveMembersRequest,
@@ -15,7 +17,8 @@ import {
   MailchimpListsMembersResponse,
   MailchimpMemberIdentifiers,
   MailchimpSegmentUpdateResponse,
-  MailchimpSubscriptionMember, MailchimpUpdateSegmentRequest,
+  MailchimpSubscriptionMember,
+  MailchimpUpdateSegmentRequest, MergeField, MergeFieldAddResponse,
   MergeFields,
   SubscriptionRequest,
   SubscriptionStatus
@@ -58,6 +61,18 @@ export class MailchimpListService {
     return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/segmentMembersAddOrRemove`, body), this.notifications, true)).response;
   }
 
+  async create(mailchimpListCreateRequest: MailchimpListCreateRequest): Promise<MailchimpList> {
+    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/create`, mailchimpListCreateRequest), this.notifications, true)).response;
+  }
+
+  async delete(listType: string): Promise<any> {
+    return (await this.commonDataService.responseFrom(this.logger, this.http.delete<ApiResponse>(`${this.BASE_URL}/${listType}/delete`), this.notifications, true)).response;
+  }
+
+  async addMergeField(listType: string, mergeField: MergeField): Promise<MergeFieldAddResponse> {
+    return (await this.commonDataService.responseFrom(this.logger, this.http.post<ApiResponse>(`${this.BASE_URL}/${listType}/addMergeField`, mergeField), this.notifications, true)).response;
+  }
+
   async updateSegment(listType: string, segmentId: number, segmentName: string, resetSegmentMembers: boolean): Promise<MailchimpSegmentUpdateResponse> {
     const body: MailchimpUpdateSegmentRequest = {
       segmentId,
@@ -72,12 +87,12 @@ export class MailchimpListService {
   }
 
   async lists(notify: AlertInstance): Promise<MailchimpListingResponse> {
-    notify.success({title: "List Unsubscription", message: `Querying Mailchimp for all lists`});
+    notify.success({title: "Mailchimp Lists", message: `Querying Mailchimp for all lists`});
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(this.BASE_URL), this.notifications, true)).response;
   }
 
   async listSubscribers(listType: string, notify: AlertInstance): Promise<MailchimpListsMembersResponse> {
-    notify.success({title: "List Unsubscription", message: `Querying Mailchimp for current ${listType} subscribers`});
+    notify.success({title: "Mailchimp Lists", message: `Querying Mailchimp for current ${listType} subscribers`});
     return (await this.commonDataService.responseFrom(this.logger, this.http.get<ApiResponse>(`${this.BASE_URL}/${listType}`), this.notifications, true)).response;
   }
 
@@ -112,11 +127,11 @@ export class MailchimpListService {
           member.mailchimpLists[listType] = {subscribed: false, updated: true};
           return this.memberService.update(member);
         } else {
-          notify.warning({title: "List Unsubscription", message: "Could not find member from " + listType + " response containing data " + JSON.stringify(mailchimpListMember)});
+          notify.warning({title: "Remove Subscriber Error", message: "Could not find member from " + listType + " response containing data " + JSON.stringify(mailchimpListMember)});
         }
       });
       Promise.all(updatedMembers).then(() => {
-        notify.success({title: "List Unsubscription", message: "Successfully unsubscribed " + updatedMembers.length + " member(s) from " + listType + " list"});
+        notify.success({title: "Remove Subscriber", message: "Successfully unsubscribed " + updatedMembers.length + " member(s) from " + listType + " list"});
         return updatedMembers;
       });
     };

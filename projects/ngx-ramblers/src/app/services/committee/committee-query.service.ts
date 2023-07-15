@@ -1,14 +1,16 @@
 import { Injectable } from "@angular/core";
-import  first from "lodash-es/first";
+import first from "lodash-es/first";
 import { NgxLoggerLevel } from "ngx-logger";
 import { chain } from "../../functions/chain";
 import { CommitteeFile, CommitteeMember, CommitteeYear, GroupEvent, GroupEventsFilter, GroupEventTypes } from "../../models/committee.model";
+import { Member } from "../../models/member.model";
 import { CommitteeDisplayService } from "../../pages/committee/committee-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { descending, sortBy } from "../arrays";
 import { DateUtilsService } from "../date-utils.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { MemberService } from "../member/member.service";
 import { SocialEventsService } from "../social-events/social-events.service";
 import { UrlService } from "../url.service";
 import { WalksQueryService } from "../walks/walks-query.service";
@@ -25,11 +27,13 @@ export class CommitteeQueryService {
   private logger: Logger;
   private committeeReferenceData: CommitteeReferenceData;
   public committeeFiles: CommitteeFile[] = [];
+  public committeeMembers: Member[] = [];
 
   constructor(
     public display: CommitteeDisplayService,
     private dateUtils: DateUtilsService,
     private walksService: WalksService,
+    private memberService: MemberService,
     private walksQueryService: WalksQueryService,
     private committeeFileService: CommitteeFileService,
     private committeeDisplayService: CommitteeDisplayService,
@@ -37,9 +41,10 @@ export class CommitteeQueryService {
     private memberLoginService: MemberLoginService,
     private displayDatePipe: DisplayDatePipe,
     private urlService: UrlService,
-    committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
+    private committeeConfig: CommitteeConfigService, loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(CommitteeQueryService, NgxLoggerLevel.OFF);
     committeeConfig.events().subscribe(data => this.committeeReferenceData = data);
+    this.queryCommitteeMembers();
   }
 
   groupEvents(groupEventsFilter: GroupEventsFilter): Promise<GroupEvent[]> {
@@ -108,12 +113,17 @@ export class CommitteeQueryService {
     });
   }
 
-  dataQueried() {
-    return this.committeeFiles.length > 0;
-  }
-
   queryAllFiles(): Promise<void> {
     return this.queryFiles();
+  }
+
+  queryCommitteeMembers() {
+    this.memberService.all({
+      criteria: {committee: {$eq: true}}, sort: {firstName: 1, lastName: 1}
+    }).then(members => {
+      this.logger.info("queried committeeMembers:", members);
+      this.committeeMembers = members;
+    });
   }
 
   queryFiles(committeeFileId?: string): Promise<void> {

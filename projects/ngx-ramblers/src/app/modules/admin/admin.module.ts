@@ -28,10 +28,14 @@ import { ContactDetailsComponent } from "../../pages/admin/profile/contact-detai
 import { EmailSubscriptionsComponent } from "../../pages/admin/profile/email-subscriptions.component";
 import { SendEmailsModalComponent } from "../../pages/admin/send-emails/send-emails-modal.component";
 import { CommitteeMemberComponent } from "../../pages/admin/system-settings/committee/committee-member";
+import { CommitteeMemberLookupComponent } from "../../pages/admin/system-settings/committee/committee-member-lookup";
 import { CommitteeSettingsComponent } from "../../pages/admin/system-settings/committee/committee-settings";
 import { ImageCollectionSettingsComponent } from "../../pages/admin/system-settings/image-collection/image-collection-settings";
 import { SystemImageEditComponent } from "../../pages/admin/system-settings/image/system-image-edit";
-import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings.component";
+import { MailchimpCampaignDefaultsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-campaign-defaults";
+import { MailchimpContactComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-contact";
+import { MailchimpListSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-list-settings";
+import { MailchimpSettingsComponent } from "../../pages/admin/system-settings/mailchimp/mailchimp-settings";
 import { SystemSettingsComponent } from "../../pages/admin/system-settings/system-settings";
 import { ForgotPasswordModalComponent } from "../../pages/login/forgot-password-modal/forgot-password-modal.component";
 import { ResetPasswordModalComponent } from "../../pages/login/reset-password-modal/reset-password-modal.component";
@@ -44,6 +48,7 @@ import { SharedModule } from "../../shared-module";
     AdminComponent,
     ChangePasswordComponent,
     CommitteeMemberComponent,
+    CommitteeMemberLookupComponent,
     CommitteeSettingsComponent,
     ContactDetailsComponent,
     EmailSubscriptionsComponent,
@@ -67,6 +72,9 @@ import { SharedModule } from "../../shared-module";
     ExpensesComponent,
     ForgotPasswordModalComponent,
     ImageCollectionSettingsComponent,
+    MailchimpCampaignDefaultsComponent,
+    MailchimpContactComponent,
+    MailchimpListSettingsComponent,
     MailchimpSettingsComponent,
     MailingPreferencesModalComponent,
     MemberAdminComponent,

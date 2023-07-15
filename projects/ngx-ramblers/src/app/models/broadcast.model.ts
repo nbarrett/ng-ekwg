@@ -1,10 +1,12 @@
 export enum NamedEventType {
     APPLY_FILTER = "apply-filter",
     EDIT_SITE = "editSite",
+    ERROR = "error",
+    MAILCHIMP_LISTS_CHANGED = "mailchimp-lists-changed",
     MARKDOWN_CONTENT_CHANGED = "markdownContentChanged",
-    MARKDOWN_CONTENT_UNSAVED = "markdownContentUnsaved",
     MARKDOWN_CONTENT_DELETED = "markdownContentDeleted",
     MARKDOWN_CONTENT_SYNCED = "markdownContentSynced",
+    MARKDOWN_CONTENT_UNSAVED = "markdownContentUnsaved",
     MEETUP_DEFAULT_CONTENT_CHANGED = "meetupContentChanged",
     MEMBER_LOGIN_COMPLETE = "memberLoginComplete",
     MEMBER_LOGOUT_COMPLETE = "memberLogoutComplete",

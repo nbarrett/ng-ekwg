@@ -104,13 +104,13 @@ export class SocialDisplayService {
 
   committeeMembersPlusOrganiser(socialEvent: SocialEvent, members: Member[]): CommitteeMember[] {
     const committeeMembers = socialEvent.eventContactMemberId ?
-      [this.committeeMemberFromSocialEvent(socialEvent, members)].concat(this.committeeReferenceData.committeeMembers()) : this.committeeReferenceData.committeeMembers();
+      [this.committeeMemberFromSocialEvent(socialEvent, members)].concat(this.committeeReferenceData?.committeeMembers()) : this.committeeReferenceData?.committeeMembers();
     this.logger.debug("committeeMembersPlusOrganiser:", committeeMembers);
     return committeeMembers;
   }
 
   committeeMembers(): CommitteeMember[] {
-    return this.committeeReferenceData.committeeMembers();
+    return this.committeeReferenceData?.committeeMembers();
   }
 
   committeeMemberFromSocialEvent(socialEvent: SocialEvent, members: Member[]): CommitteeMember {
