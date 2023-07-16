@@ -138,7 +138,7 @@
     <div class="col-sm-12 col-lg-6 rounded" *ngIf="displayedWalk.latestEventType.showDetails">
       <div class="row">
         <div class="col-sm-12">
-          <iframe *ngIf="displayedWalk.walk.postcode" class="map-thumbnail-image"
+          <iframe *ngIf="googleMapsUrl" class="map-thumbnail-image"
                   style="border:0;border-radius: 10px;"
                   [src]="googleMapsUrl" allowfullscreen></iframe>
         </div>
