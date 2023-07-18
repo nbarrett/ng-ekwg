@@ -90,10 +90,8 @@ export class WalkEditComponent implements OnInit, OnDestroy {
   public longerDescriptionPreview: boolean;
   public meetupConfig: MeetupConfig;
   private committeeReferenceData: CommitteeReferenceData;
-  faCopy = faCopy;
   faPencil = faPencil;
   faMagnifyingGlass = faMagnifyingGlass;
-  faCalendar = faCalendar;
   private subscriptions: Subscription[] = [];
 
   constructor(

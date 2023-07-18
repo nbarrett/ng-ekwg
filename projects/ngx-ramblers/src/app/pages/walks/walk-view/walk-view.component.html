@@ -5,9 +5,9 @@
   <div class="row">
     <div class="col-sm-12 col-lg-6 rounded">
       <h1 *ngIf="displayedWalk.latestEventType.showDetails"
-          id="briefDescriptionAndStartPoint">{{displayedWalk.walk.briefDescriptionAndStartPoint}}</h1>
-      <h2 id="walkDate">{{displayedWalk.walk.walkDate | displayDay}}
-        <div id="durationInFuture"
+          id="{{displayedWalk.walk.id}}-briefDescriptionAndStartPoint">{{displayedWalk.walk.briefDescriptionAndStartPoint}}</h1>
+      <h2 id="{{displayedWalk.walk.id}}-walkDate">{{displayedWalk.walk.walkDate | displayDay}}
+        <div id="{{displayedWalk.walk.id}}-durationInFuture"
              class="badge event-badge blue-badge">{{durationInFutureFor(displayedWalk.walk)}}</div>
         <div *ngIf="display.isNextWalk(displayedWalk.walk)"
              class="badge event-badge next-event-badge"> Our next walk
@@ -138,32 +138,32 @@
     <div class="col-sm-12 col-lg-6 rounded" *ngIf="displayedWalk.latestEventType.showDetails">
       <div class="row">
         <div class="col-sm-12">
-          <iframe *ngIf="googleMapsUrl" class="map-thumbnail-image"
+          <iframe *ngIf="display.mapViewReady(googleMapsUrl)" class="map-thumbnail-image"
                   style="border:0;border-radius: 10px;"
                   [src]="googleMapsUrl" allowfullscreen></iframe>
         </div>
       </div>
-      <div class="rounded img-thumbnail map-radio-frame" (click)="refreshView()">
+      <form class="rounded img-thumbnail map-radio-frame" (click)="refreshView()">
         <label class="ml-2 mr-2 font-weight-bold">Show Map:</label>
         <div class="col-sm-12 ml-2 mr-2">
           <div class="custom-control custom-radio custom-control-inline">
-            <input class="custom-control-input" id="show-start-point"
+            <input class="custom-control-input" id="{{displayedWalk.walk.id}}-show-start-point"
                    type="radio"
                    class="custom-control-input"
                    [ngModel]="mapDisplay" name="mapDisplay"
                    (ngModelChange)="changeShowDrivingDirections($event)"
                    value="show-start-point"/>
-            <label class="custom-control-label" for="show-start-point">At starting
+            <label class="custom-control-label" for="{{displayedWalk.walk.id}}-show-start-point">At starting
               point {{displayedWalk.walk.postcode}}</label>
           </div>
           <div class="custom-control custom-radio custom-control-inline">
-            <input id="show-driving-directions"
+            <input id="{{displayedWalk.walk.id}}-show-driving-directions"
                    type="radio"
                    class="custom-control-input postcode-input"
                    (ngModelChange)="changeShowDrivingDirections($event)"
                    [ngModel]="mapDisplay" name="mapDisplay"
                    value="show-driving-directions"/>
-            <label class="custom-control-label" for="show-driving-directions">Driving from postcode</label>
+            <label class="custom-control-label" for="{{displayedWalk.walk.id}}-show-driving-directions">Driving from postcode</label>
           </div>
           <input
             class="form-control input-sm text-uppercase postcode-input mt-2"
@@ -172,7 +172,7 @@
             (click)="autoSelectMapDisplay()"
             type="text">
         </div>
-      </div>
+      </form>
       <div class="event-panel rounded">
         <h1>Walk Details</h1>
         <div *ngIf="!displayedWalk.latestEventType.showDetails">

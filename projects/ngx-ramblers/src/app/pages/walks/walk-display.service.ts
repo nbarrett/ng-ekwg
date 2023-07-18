@@ -97,6 +97,10 @@ export class WalkDisplayService {
     return googleMapsUrl;
   }
 
+  mapViewReady(googleMapsUrl: SafeResourceUrl): boolean {
+    return !!(this.googleMapsConfig && googleMapsUrl);
+  }
+
   loggedInMemberIsLeadingWalk(walk: Walk) {
     return this.memberLoginService.memberLoggedIn() && walk && walk.walkLeaderMemberId === this.memberLoginService.loggedInMember().memberId;
   }
