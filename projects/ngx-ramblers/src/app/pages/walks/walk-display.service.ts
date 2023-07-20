@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
+import isNumber from "lodash-es/isNumber";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
@@ -16,7 +17,6 @@ import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
 import { UrlService } from "../../services/url.service";
-import { RamblersWalksAndEventsService } from "../../services/walks/ramblers-walks-and-events.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
@@ -98,7 +98,9 @@ export class WalkDisplayService {
   }
 
   mapViewReady(googleMapsUrl: SafeResourceUrl): boolean {
-    return !!(this.googleMapsConfig && googleMapsUrl);
+    const zoomLevelValid = isNumber(this?.googleMapsConfig?.zoomLevel);
+    this.logger.debug("mapViewReady:", zoomLevelValid);
+    return !!(zoomLevelValid && googleMapsUrl);
   }
 
   loggedInMemberIsLeadingWalk(walk: Walk) {
