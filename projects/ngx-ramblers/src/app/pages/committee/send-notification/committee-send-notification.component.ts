@@ -61,7 +61,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   public roles: { replyTo: any[]; signoff: CommitteeMember[] };
   public selectableRecipients: MemberFilterSelection[];
-  private mailchimpConfig: MailchimpConfig;
+  public mailchimpConfig: MailchimpConfig;
   public mailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public draftMailchimpCampaignListResponse: MailchimpCampaignListResponse;
   public committeeEventId: string;
@@ -100,6 +100,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget, NgxLoggerLevel.OFF);
     this.notify.setBusy();
     this.logger.info("subscribing to systemConfigService events");
+    this.mailchimpConfigService.getConfig().then(config => this.mailchimpConfig = config);
     this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.group = item.group));
     this.subscriptions.push(this.display.configEvents().subscribe(() => {
       this.roles = {signoff: this.display.committeeReferenceData.committeeMembers(), replyTo: []};
@@ -264,10 +265,10 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   toMemberFilterSelection(member: Member): MemberFilterSelection {
     let memberGrouping;
     let order;
-    if (member.groupMember && member.mailchimpLists.general.subscribed) {
+    if (member.groupMember && member.mailchimpLists?.general?.subscribed) {
       memberGrouping = "Subscribed to general emails";
       order = 0;
-    } else if (member.groupMember && !member.mailchimpLists.general.subscribed) {
+    } else if (member.groupMember && !member.mailchimpLists?.general?.subscribed) {
       memberGrouping = "Not subscribed to general emails";
       order = 1;
     } else if (!member.groupMember) {
@@ -289,10 +290,10 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   toSelectWalksMember(member: Member): MemberFilterSelection {
     let memberGrouping;
     let order;
-    if (member.groupMember && member.mailchimpLists.walks.subscribed) {
+    if (member.groupMember && member.mailchimpLists?.walks?.subscribed) {
       memberGrouping = "Subscribed to walks emails";
       order = 0;
-    } else if (member.groupMember && !member.mailchimpLists.walks.subscribed) {
+    } else if (member.groupMember && !member.mailchimpLists?.walks?.subscribed) {
       memberGrouping = "Not subscribed to walks emails";
       order = 1;
     } else if (!member.groupMember) {
@@ -314,10 +315,10 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   toSelectSocialMember(member: Member): MemberFilterSelection {
     let memberGrouping;
     let order;
-    if (member.groupMember && member.mailchimpLists.socialEvents.subscribed) {
+    if (member.groupMember && member.mailchimpLists?.socialEvents?.subscribed) {
       memberGrouping = "Subscribed to social emails";
       order = 0;
-    } else if (member.groupMember && !member.mailchimpLists.socialEvents.subscribed) {
+    } else if (member.groupMember && !member.mailchimpLists?.socialEvents?.subscribed) {
       memberGrouping = "Not subscribed to social emails";
       order = 1;
     } else if (!member.groupMember) {
@@ -389,15 +390,15 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
   campaignIdFor(campaignType: string): string {
     switch (campaignType) {
       case "committee":
-        return this.mailchimpConfig.campaigns.committee.campaignId;
+        return this.mailchimpConfig.campaigns?.committee?.campaignId;
       case "general":
-        return this.mailchimpConfig.campaigns.newsletter.campaignId;
+        return this.mailchimpConfig.campaigns?.newsletter?.campaignId;
       case "socialEvents":
-        return this.mailchimpConfig.campaigns.socialEvents.campaignId;
+        return this.mailchimpConfig.campaigns?.socialEvents?.campaignId;
       case "walks":
-        return this.mailchimpConfig.campaigns.walkNotification.campaignId;
+        return this.mailchimpConfig.campaigns?.walkNotification?.campaignId;
       default:
-        return this.mailchimpConfig.campaigns.committee.campaignId;
+        return this.mailchimpConfig.campaigns?.committee?.campaignId;
     }
   }
 
@@ -495,7 +496,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
                 campaignId,
                 campaignName,
                 contentSections,
-                otherSegmentOptions: otherOptions,
+                otherOptions,
                 dontSend
               }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
             } else {
@@ -510,7 +511,7 @@ export class CommitteeSendNotificationComponent implements OnInit, OnDestroy {
                     campaignName,
                     contentSections,
                     segmentId: segmentResponse.segment.id,
-                    otherSegmentOptions: otherOptions,
+                    otherOptions,
                     dontSend
                   }).then((replicateCampaignResponse) => this.openInMailchimpIf(replicateCampaignResponse, dontSend));
                 });

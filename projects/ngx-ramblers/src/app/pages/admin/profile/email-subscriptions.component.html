@@ -11,7 +11,7 @@
         <div class="col col-sm-12 mt-2">
           <p>You can change your emailing preferences at any time using the subscription checkboxes
             below:</p>
-          <div class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox" *ngIf="mailchimpConfig?.lists?.walks">
             <input [(ngModel)]="member.mailchimpLists.walks.subscribed" type="checkbox" class="custom-control-input"
                    name="walks-subscribed"
                    id="prof-subscribe-walks-emails">
@@ -19,7 +19,7 @@
                    for="prof-subscribe-walks-emails">Walks emails
             </label>
           </div>
-          <div class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox"*ngIf="mailchimpConfig?.lists?.socialEvents">
             <input [(ngModel)]="member.mailchimpLists.socialEvents.subscribed" type="checkbox"
                    class="custom-control-input"
                    name="social-events-subscribed"
@@ -28,7 +28,7 @@
                    for="prof-subscribe-social-events-emails">Social events emails
             </label>
           </div>
-          <div class="custom-control custom-checkbox">
+          <div class="custom-control custom-checkbox"*ngIf="mailchimpConfig?.lists?.general">
             <input [(ngModel)]="member.mailchimpLists.general.subscribed" type="checkbox" class="custom-control-input"
                    name="general-subscribed"
                    id="prof-subscribe-general-emails">

@@ -876,7 +876,7 @@ export interface MailchimpCampaignSendRequest {
   campaignName: string;
   segmentId?: number;
   contentSections?: MailchimpExpenseOtherContent | MailchimpGenericOtherContent;
-  otherSegmentOptions?: OtherOptions;
+  otherOptions?: OtherOptions;
 }
 
 export interface MailchimpExpenseOtherContent {

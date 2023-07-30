@@ -7,7 +7,13 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { Identifiable } from "../../../models/api-response.model";
 import { CommitteeMember } from "../../../models/committee.model";
-import { MailchimpCampaignListResponse, MailchimpCampaignReplicateIdentifiersResponse, MailchimpGenericOtherContent, OtherOptions } from "../../../models/mailchimp.model";
+import {
+  MailchimpCampaignListResponse,
+  MailchimpCampaignReplicateIdentifiersResponse,
+  MailchimpConfig,
+  MailchimpGenericOtherContent,
+  OtherOptions
+} from "../../../models/mailchimp.model";
 import { Member, MemberFilterSelection } from "../../../models/member.model";
 import { SocialEvent } from "../../../models/social-events.model";
 import { ConfirmType } from "../../../models/ui-actions";
@@ -50,13 +56,12 @@ export class SocialSendNotificationModalComponent implements OnInit {
   public campaigns: MailchimpCampaignListResponse;
   destinationType = "";
   committeeFiles = [];
-  alertMessages = [];
-  private attachmentBaseUrl: string;
+  public mailchimpConfig: MailchimpConfig;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               private mailchimpSegmentService: MailchimpSegmentService,
               private mailchimpCampaignService: MailchimpCampaignService,
-              private mailchimpConfig: MailchimpConfigService,
+              private mailchimpConfigService: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
@@ -271,17 +276,17 @@ export class SocialSendNotificationModalComponent implements OnInit {
     } : {};
     this.notify.progress(dontSend ? ("Preparing to complete " + campaignName + " in Mailchimp") : ("Sending " + campaignName));
     this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions);
-    return this.mailchimpConfig.getConfig()
+    return this.mailchimpConfigService.getConfig()
       .then((config) => {
         const campaignId = config.campaigns.socialEvents.campaignId;
         switch (this.socialEvent?.notification?.content.destinationType) {
           case "all-social-members":
-            this.logger.debug("about to replicateAndSendWithOptions to aall-social-members with campaignName", campaignName, "campaign Id", campaignId);
+            this.logger.debug("about to replicateAndSendWithOptions with campaignName", campaignName, "campaign Id", campaignId);
             return this.mailchimpCampaignService.replicateAndSendWithOptions({
               campaignId,
               campaignName,
               contentSections,
-              otherSegmentOptions: otherOptions,
+              otherOptions,
               dontSend
             }).then((response) => this.openInMailchimpIf(response, dontSend));
           default:
@@ -295,7 +300,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
               campaignName,
               contentSections,
               segmentId,
-              otherSegmentOptions: otherOptions,
+              otherOptions,
               dontSend
             }).then((response) => this.openInMailchimpIf(response, dontSend));
         }

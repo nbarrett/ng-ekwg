@@ -41,7 +41,7 @@
                     <a class="ml-1" *ngIf="allCommitteeList()?.length>0"
                        (click)="editCommitteeRecipients()">(edit)</a>
                   </div>
-                  <div class="custom-control custom-radio">
+                  <div class="custom-control custom-radio" *ngIf="mailchimpConfig?.lists?.general">
                     <input (click)="clearRecipientsForCampaignOfType('general')" id="send-to-general"
                            [disabled]="allGeneralSubscribedList().length===0"
                            name="send-to"
@@ -55,7 +55,7 @@
                     <a class="ml-1" *ngIf="allGeneralSubscribedList().length>0"
                        (click)="editAllGroupRecipients()">(edit)</a>
                   </div>
-                  <div class="custom-control custom-radio">
+                  <div class="custom-control custom-radio" *ngIf="mailchimpConfig?.lists?.walks">
                     <input (click)="clearRecipientsForCampaignOfType('walks')"
                            name="send-to"
                            id="send-to-walks"
@@ -71,7 +71,7 @@
                     <a class="ml-1" *ngIf="allWalksSubscribedList().length>0"
                        (click)="editAllWalksRecipients()">(edit)</a>
                   </div>
-                  <div class="custom-control custom-radio">
+                  <div class="custom-control custom-radio" *ngIf="mailchimpConfig?.lists?.socialEvents">
                     <input (click)="clearRecipientsForCampaignOfType('socialEvents')"
                            name="send-to"
                            id="send-to-social"

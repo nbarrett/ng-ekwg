@@ -120,13 +120,13 @@ export class MailchimpCampaignService {
                 segment_opts: {
                   saved_segment_id: campaignRequest.segmentId,
                 },
-                list_id: campaignRequest?.otherSegmentOptions?.list_id,
+                list_id: campaignRequest?.otherOptions?.list_id,
               },
               settings: {
                 title: campaignRequest?.campaignName.substring(0, 99),
                 subject_line: campaignRequest?.campaignName,
-                from_name: campaignRequest?.otherSegmentOptions?.from_name,
-                reply_to: campaignRequest?.otherSegmentOptions?.from_email
+                from_name: campaignRequest?.otherOptions?.from_name,
+                reply_to: campaignRequest?.otherOptions?.from_email
               }
             };
 

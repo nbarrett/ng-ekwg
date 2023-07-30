@@ -4,10 +4,12 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
 import { AlertTarget } from "../../../models/alert-target.model";
+import { MailchimpConfig } from "../../../models/mailchimp.model";
 import { Member, ProfileUpdateType } from "../../../models/member.model";
 import { SearchFilterPipe } from "../../../pipes/search-filter.pipe";
 import { ContentMetadataService } from "../../../services/content-metadata.service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { MailchimpConfigService } from "../../../services/mailchimp-config.service";
 import { MailchimpListSubscriptionService } from "../../../services/mailchimp/mailchimp-list-subscription.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MailchimpListUpdaterService } from "../../../services/mailchimp/mailchimp-list-updater.service";
@@ -44,6 +46,7 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
               private stringUtils: StringUtilsService,
               public profileService: ProfileService,
               private authService: AuthService,
+              private mailchimpConfigService: MailchimpConfigService,
               private memberLoginService: MemberLoginService,
               private routerHistoryService: RouterHistoryService,
               loggerFactory: LoggerFactory) {
@@ -53,12 +56,14 @@ export class EmailSubscriptionsComponent implements OnInit, OnDestroy {
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
   private logger: Logger;
+  public mailchimpConfig: MailchimpConfig;
 
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.notify.setBusy();
     this.subscriptions.push(this.profileService.subscribeToLogout(this.logger));
+    this.mailchimpConfigService.getConfig().then(config => this.mailchimpConfig = config);
     this.profileService.queryMember(this.notify, ProfileUpdateType.CONTACT_PREFERENCES).then(member => {
       this.member = member;
       this.notify.clearBusy();
