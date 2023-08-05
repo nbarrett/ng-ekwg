@@ -31,7 +31,8 @@ import { WalksService } from "./walks.service";
 })
 export class RamblersWalksAndEventsService {
   WALKS_MANAGER_DATE_FORMAT = "DD/MM/YYYY";
-
+  private MILES_TO_KILOMETRES_FACTOR = 1.60934;
+  private FEET_TO_METRES_FACTOR = 0.3048;
   private BASE_URL = "/api/ramblers/walks-manager";
   private readonly logger: Logger;
   private auditNotifications = new Subject<RamblersUploadAuditApiResponse>();
@@ -304,8 +305,20 @@ export class RamblersWalksAndEventsService {
       .replace(/(\r\n|\n|\r)/gm, " ") : "";
   }
 
-  walkDistanceMiles(walk) {
-    return walk.distance ? String(parseFloat(walk.distance).toFixed(1)) : "";
+  walkDistanceMiles(walk): number {
+    return walk.distance ? +parseFloat(walk.distance).toFixed(1) : 0;
+  }
+
+  walksDistanceKilometres(walk): number {
+    return this.MILES_TO_KILOMETRES_FACTOR * this.walkDistanceMiles(walk);
+  }
+
+  walkDistanceMilesAsString(walk) {
+    return walk.distance ? this.walkDistanceMiles(walk).toString() : "";
+  }
+
+  distanceKilometresAsString(walk) {
+    return walk.distance ? this.walksDistanceKilometres(walk) : "";
   }
 
   walkStartTime(walk: Walk): string {
@@ -365,8 +378,8 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.FINISHING_GRIDREF] = this.walkFinishGridReference(walk);
     csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.DIFFICULTY] = this.asString(walk.grade);
-    csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = "";
-    csvRecord[WalkUploadColumnHeading.DISTANCE_MILES] = this.walkDistanceMiles(walk);
+    csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = this.distanceKilometresAsString(walk);
+    csvRecord[WalkUploadColumnHeading.DISTANCE_MILES] = this.walkDistanceMilesAsString(walk);
     csvRecord[WalkUploadColumnHeading.ASCENT_METRES] = "";
     csvRecord[WalkUploadColumnHeading.ASCENT_FEET] = "";
     csvRecord[WalkUploadColumnHeading.DOG_FRIENDLY] = "";

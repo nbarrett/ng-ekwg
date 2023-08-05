@@ -69,7 +69,7 @@ export class WalkDisplayService {
 
   walkMode(walk: Walk): WalkViewMode {
     const expandedWalk = find(this.expandedWalks, {walkId: walk.id}) as ExpandedWalk;
-    const walkViewMode = expandedWalk ? expandedWalk.mode : this.urlService.pathContains("edit") ? WalkViewMode.EDIT_FULL_SCREEN : WalkViewMode.LIST;
+    const walkViewMode = expandedWalk ? expandedWalk.mode : this.urlService.pathContainsMongoId() ? WalkViewMode.VIEW_SINGLE : this.urlService.pathContains("edit") ? WalkViewMode.EDIT_FULL_SCREEN : WalkViewMode.LIST;
     this.logger.debug("walkMode:", walkViewMode, "expandedWalk:", expandedWalk);
     return walkViewMode;
   }
@@ -90,17 +90,24 @@ export class WalkDisplayService {
   }
 
   googleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
+    if (this.googleMapsConfig?.apiKey && this.googleMapsConfig?.zoomLevel) {
     const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
       `https://www.google.com/maps/embed/v1/directions?origin=${fromPostcode}&destination=${walk.postcode}&key=${this.googleMapsConfig?.apiKey}` :
       `https://www.google.com/maps/embed/v1/place?q=${walk.postcode}&zoom=${this.googleMapsConfig?.zoomLevel || 12}&key=${this.googleMapsConfig?.apiKey}`);
-    this.logger.debug("this.googleMapsUrl", googleMapsUrl);
+    this.logger.info("this.googleMapsUrl", googleMapsUrl);
     return googleMapsUrl;
+    }
   }
 
   mapViewReady(googleMapsUrl: SafeResourceUrl): boolean {
     const zoomLevelValid = isNumber(this?.googleMapsConfig?.zoomLevel);
-    this.logger.debug("mapViewReady:", zoomLevelValid);
-    return !!(zoomLevelValid && googleMapsUrl);
+    const mapviewReady = !!(zoomLevelValid && googleMapsUrl);
+    this.logger.info("mapViewReady:", mapviewReady);
+    return mapviewReady;
+  }
+
+  public shouldShowFullDetails(displayedWalk: DisplayedWalk): boolean {
+    return !!(displayedWalk.walkAccessMode.walkWritable && displayedWalk.walk.postcode) || displayedWalk.latestEventType.showDetails;
   }
 
   loggedInMemberIsLeadingWalk(walk: Walk) {
@@ -149,15 +156,18 @@ export class WalkDisplayService {
     const walkId = walk.id;
     const existingWalk: ExpandedWalk = this.findWalk(walk);
     if (existingWalk && toggleTo === WalkViewMode.LIST) {
-      this.expandedWalks = this.expandedWalks.filter(ele => ele.walkId !== walkId);
-      this.logger.debug("display.toggleViewFor", toggleTo, "removed", walkId);
+      this.expandedWalks = this.expandedWalks.filter(expandedWalk => expandedWalk.walkId !== walkId);
+      this.logger.info("display.toggleViewFor", toggleTo, "removed", walkId);
     } else if (existingWalk) {
       existingWalk.mode = toggleTo;
-      this.logger.debug("display.toggleViewFor", toggleTo, "updated", existingWalk);
+      this.logger.info("display.toggleViewFor", toggleTo, "updated", existingWalk);
     } else {
       const newWalk = {walkId, mode: toggleTo};
       this.expandedWalks.push(newWalk);
-      this.logger.debug("display.toggleViewFor", toggleTo, "added", newWalk);
+      this.logger.info("display.toggleViewFor", toggleTo, "added", newWalk);
+      if (this.urlService.pathContainsMongoId() && toggleTo === WalkViewMode.EDIT) {
+        this.editFullscreen(walk);
+      }
     }
     return existingWalk;
   }

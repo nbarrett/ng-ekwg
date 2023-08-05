@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faCaretDown, faCaretUp, faCashRegister, faUnlockAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Walk, WalkViewMode } from "../models/walk.model";
 import { WalkDisplayService } from "../pages/walks/walk-display.service";
@@ -13,8 +13,6 @@ import { Logger, LoggerFactory } from "../services/logger-factory.service";
 export class PanelExpanderComponent implements OnInit {
 
   public modes = WalkViewMode;
-  faUnlockAlt = faUnlockAlt;
-  faCashRegister = faCashRegister;
   faCaretUp = faCaretUp;
   faCaretDown = faCaretDown;
 
@@ -46,13 +44,20 @@ export class PanelExpanderComponent implements OnInit {
 
   expand() {
     const viewMode = this.display.walkMode(this.walk);
-    this.logger.debug("expanding walk from current mode", viewMode);
-    if (viewMode === WalkViewMode.LIST) {
-      this.display.view(this.walk);
-    } else if (viewMode === WalkViewMode.VIEW) {
-      this.display.toggleExpandedViewFor(this.walk, WalkViewMode.EDIT);
-    } else if (viewMode === WalkViewMode.EDIT) {
-      this.display.editFullscreen(this.walk);
+    this.logger.info("expanding walk from current mode", viewMode);
+    switch (viewMode) {
+      case WalkViewMode.LIST:
+        this.display.view(this.walk);
+        break;
+      case WalkViewMode.VIEW:
+        this.display.toggleExpandedViewFor(this.walk, WalkViewMode.EDIT);
+        break;
+      case WalkViewMode.VIEW_SINGLE:
+        this.display.editFullscreen(this.walk);
+        break;
+      case WalkViewMode.EDIT:
+        this.display.editFullscreen(this.walk);
+        break;
     }
   }
 

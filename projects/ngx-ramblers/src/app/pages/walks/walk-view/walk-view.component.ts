@@ -48,7 +48,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   public googleMapsUrl: SafeResourceUrl;
   public loggedIn: boolean;
   private subscriptions: Subscription[] = [];
-  faCopy = faCopy;
   faEnvelope = faEnvelope;
   faPhone = faPhone;
   config: ModalOptions = {
@@ -133,7 +132,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   }
 
   updateGoogleMap() {
-    if (this.displayedWalk.latestEventType.showDetails) {
+    if (this.display.shouldShowFullDetails(this.displayedWalk)) {
       this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk,
         !this.drivingDirectionsDisabled() && this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
     }

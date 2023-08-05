@@ -3,8 +3,8 @@
                       [collapsable]="true" [collapseAction]="'collapse'">
   </app-panel-expander>
   <div class="row">
-    <div class="col-sm-12 col-lg-6 rounded">
-      <h1 *ngIf="displayedWalk.latestEventType.showDetails"
+    <div [ngClass]="display.shouldShowFullDetails(displayedWalk)?'col-sm-12 col-lg-6':'col-sm-12'" class="rounded">
+      <h1 *ngIf="display.shouldShowFullDetails(displayedWalk)"
           id="{{displayedWalk.walk.id}}-briefDescriptionAndStartPoint">{{displayedWalk.walk.briefDescriptionAndStartPoint}}</h1>
       <h2 id="{{displayedWalk.walk.id}}-walkDate">{{displayedWalk.walk.walkDate | displayDay}}
         <div id="{{displayedWalk.walk.id}}-durationInFuture"
@@ -13,18 +13,17 @@
              class="badge event-badge next-event-badge"> Our next walk
         </div>
       </h2>
-      <h2 *ngIf="displayedWalk.latestEventType.showDetails && displayedWalk.walk.startTime" name="startTime">
+      <h2 *ngIf="display.shouldShowFullDetails(displayedWalk) && displayedWalk.walk.startTime" name="startTime">
         Start Time: {{displayedWalk.walk.startTime}}</h2>
       <input *ngIf="displayedWalk.walkAccessMode.walkWritable" type="submit"
              [value]="displayedWalk.walkAccessMode.caption"
              (click)="display.edit(displayedWalk)"
              [tooltip]="displayedWalk.walkAccessMode.caption + ' this walk'"
              class="button-form button-form-edit-event mt-2 mr-2">
-
-      <div *ngIf="displayedWalk.latestEventType.showDetails" class="event-description">
-          <p markdown [data]="displayedWalk.walk.longerDescription"></p>
+      <div *ngIf="display.shouldShowFullDetails(displayedWalk)" class="event-description">
+        <p markdown [data]="displayedWalk.walk.longerDescription"></p>
       </div>
-      <div *ngIf="displayedWalk.latestEventType.showDetails && displayLinks"
+      <div *ngIf="display.shouldShowFullDetails(displayedWalk) && displayLinks"
            class="event-panel rounded event-panel-inner">
         <h1>Related Links</h1>
         <div class="row">
@@ -91,17 +90,18 @@
       </div>
       <div class="event-panel rounded">
         <h1>Walk Leader</h1>
-        <div *ngIf="!displayedWalk.latestEventType.showDetails">
-          <div class="col-sm-12">
-            <p [textContent]="displayedWalk.latestEventType.description" name="description"></p>
+        <div *ngIf="!display.shouldShowFullDetails(displayedWalk)">
+          <div [ngClass]="display.shouldShowFullDetails(displayedWalk)?'col-sm-6':'col-sm-12'">
+            <p name="description">{{displayedWalk.latestEventType.description}}</p>
           </div>
         </div>
-        <div *ngIf="displayedWalk.latestEventType.showDetails">
+        <div *ngIf="display.shouldShowFullDetails(displayedWalk)">
           <div class="row">
             <div class="col-sm-6">
               <ul class="list-unstyled">
                 <app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.contactEmail">
-                  <app-copy-icon [disabled]="!loggedIn" [icon]="faEnvelope" title [value]="displayedWalk.walk.contactEmail"
+                  <app-copy-icon [disabled]="!loggedIn" [icon]="faEnvelope" title
+                                 [value]="displayedWalk.walk.contactEmail"
                                  [elementName]="'email address for '+ displayedWalk.walk.displayName"></app-copy-icon>
                   <div content>
                     <a *ngIf="loggedIn" [href]="'mailto:' + displayedWalk.walk.contactEmail"
@@ -135,7 +135,7 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-12 col-lg-6 rounded" *ngIf="displayedWalk.latestEventType.showDetails">
+    <div class="col-sm-12 col-lg-6 rounded" *ngIf="display.shouldShowFullDetails(displayedWalk)">
       <div class="row">
         <div class="col-sm-12">
           <iframe *ngIf="display.mapViewReady(googleMapsUrl)" class="map-thumbnail-image"
@@ -175,12 +175,12 @@
       </form>
       <div class="event-panel rounded">
         <h1>Walk Details</h1>
-        <div *ngIf="!displayedWalk.latestEventType.showDetails">
+        <div *ngIf="!display.shouldShowFullDetails(displayedWalk)">
           <div class="col-sm-12">
             <p>{{displayedWalk.latestEventType.description}}</p>
           </div>
         </div>
-        <div *ngIf="displayedWalk.latestEventType.showDetails" class="row">
+        <div *ngIf="display.shouldShowFullDetails(displayedWalk)" class="row">
           <div class="col-sm-6">
             <ul class="list-unstyled">
               <app-related-link [mediaWidth]="walkDetailsMediaWidth">

@@ -94,6 +94,7 @@ export interface WalkFilter {
 
 export enum WalkViewMode {
   VIEW = "view",
+  VIEW_SINGLE = "view-single",
   EDIT = "edit",
   EDIT_FULL_SCREEN = "edit-full-screen",
   LIST = "list"

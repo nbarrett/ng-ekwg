@@ -386,12 +386,11 @@
           </div>
           <div class="col-sm-6 rounded">
             <h5>Google Maps</h5>
-            <p>The map below is a preview of where postcode <strong
-              [textContent]="displayedWalk.walk.postcode"></strong> will appear on
+            <p>The map below is a preview of where postcode <strong>{{displayedWalk.walk.postcode}}</strong> will appear on
               Google Maps. This map will be displayed in the detail view of the walk.</p>
             <input type="number" min="1" max="20" *ngIf="false"
                    [(ngModel)]="display.googleMapsConfig.zoomLevel">
-            <iframe *ngIf="display.mapViewReady(googleMapsUrl)" class="map-thumbnail-image-dialog"
+            <iframe *ngIf="display.shouldShowFullDetails(displayedWalk)" class="map-thumbnail-image-dialog"
                     frameborder="0"
                     style="border:0;border-radius: 10px;"
                     [src]="googleMapsUrl" allowfullscreen></iframe>
