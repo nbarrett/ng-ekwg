@@ -11,6 +11,34 @@ export interface GoogleMapsConfig {
   zoomLevel: number;
 }
 
+export interface ValueAndFormatted {
+  value: number;
+  valueAsString: string;
+  formatted: string;
+};
+
+export enum DistanceUnit {
+  FEET,
+  KILOMETRES,
+  METRES,
+  MILES,
+  UNKNOWN,
+}
+
+export interface WalkDistance {
+  rawData: string;
+  miles: ValueAndFormatted;
+  kilometres: ValueAndFormatted;
+  validationMessage?: string;
+}
+
+export interface WalkAscent {
+  rawData: string;
+  feet: ValueAndFormatted;
+  metres: ValueAndFormatted;
+  validationMessage?: string;
+}
+
 export interface Walk extends Identifiable {
   contactName?: string;
   walkType?: WalkType;
@@ -20,6 +48,7 @@ export interface Walk extends Identifiable {
   contactPhone?: string;
   displayName?: string;
   distance?: string;
+  ascent?: string;
   events: WalkEvent[];
   grade?: string;
   gridReference?: string;
@@ -107,6 +136,7 @@ export interface DisplayedWalk {
   latestEventType?: WalkEventType;
   walkLink?: string;
   ramblersLink?: string;
+  showEndpoint: boolean;
 }
 
 export interface FilterParameters extends FilterParametersSearch {

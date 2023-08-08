@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
+import isEmpty from "lodash-es/isEmpty";
 import isNumber from "lodash-es/isNumber";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
@@ -213,6 +214,7 @@ export class WalkDisplayService {
       latestEventType: this.latestEventTypeFor(walk),
       walkLink: this.walkLink(walk),
       ramblersLink: this.ramblersLink(walk),
+      showEndpoint: walk.walkType === WalkType.LINEAR && !isEmpty(walk.postcodeFinish)
     };
   }
 

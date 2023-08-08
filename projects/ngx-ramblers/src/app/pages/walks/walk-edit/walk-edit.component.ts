@@ -312,6 +312,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
           events: []
         },
         status: EventType.AWAITING_LEADER,
+        showEndpoint: false
       };
     }
     this.populateCopySourceFromWalkLeaderMemberId();

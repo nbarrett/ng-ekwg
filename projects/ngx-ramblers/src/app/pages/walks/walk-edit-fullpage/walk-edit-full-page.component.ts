@@ -47,7 +47,8 @@ export class WalkEditFullPageComponent implements OnInit, OnDestroy {
             walkDate: this.dateUtils.momentNowNoTime().valueOf(),
             events: []
           },
-          status: EventType.AWAITING_LEADER
+          status: EventType.AWAITING_LEADER,
+          showEndpoint: false
         };
         this.setPageTitle();
       } else {

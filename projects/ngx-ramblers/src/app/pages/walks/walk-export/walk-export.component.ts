@@ -159,8 +159,8 @@ export class WalkExportComponent implements OnInit, OnDestroy {
   }
 
   walksDownloadFileContents(): WalkUploadRow[] {
-    const walkUploadRows = this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks(), this.members);
-    this.logger.debug("walksDownloadFileContents:", walkUploadRows);
+    const walkUploadRows = this.ramblersWalksAndEventsService.walkUploadRows(this.exportableWalks());
+    this.logger.info("walksDownloadFileContents:", walkUploadRows);
     return walkUploadRows;
   }
 

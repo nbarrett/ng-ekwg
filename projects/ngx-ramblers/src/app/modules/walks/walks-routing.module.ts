@@ -9,7 +9,7 @@ import { WalkExportComponent } from "../../pages/walks/walk-export/walk-export.c
 import { WalkListComponent } from "../../pages/walks/walk-list/walk-list.component";
 import { WalkMeetupSettingsComponent } from "../../pages/walks/walk-meetup-settings/walk-meetup-settings.component";
 import { WalkSubPageComponent } from "../../pages/walks/walk-sub-page/walk-sub-page";
-import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view.component";
+import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { PageService } from "../../services/page.service";
 import { hasDynamicPath, hasMongoId } from "../../services/path-matchers";

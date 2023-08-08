@@ -11,7 +11,7 @@ import { Member } from "../../models/member.model";
 import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-audit.model";
 import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeading, WalkUploadRow } from "../../models/ramblers-walks-manager";
 import { Ramblers } from "../../models/system.model";
-import { Walk, WalkExport, WalkType } from "../../models/walk.model";
+import { Walk, WalkAscent, WalkDistance, WalkExport, WalkType } from "../../models/walk.model";
 import { WalkDisplayService } from "../../pages/walks/walk-display.service";
 import { DisplayDatePipe } from "../../pipes/display-date.pipe";
 import { CommitteeConfigService } from "../committee/commitee-config.service";
@@ -24,6 +24,8 @@ import { MemberLoginService } from "../member/member-login.service";
 import { StringUtilsService } from "../string-utils.service";
 import { SystemConfigService } from "../system/system-config.service";
 import { UrlService } from "../url.service";
+import { AscentValidationService } from "./ascent-validation.service";
+import { DistanceValidationService } from "./distance-validation.service";
 import { WalksService } from "./walks.service";
 
 @Injectable({
@@ -31,8 +33,6 @@ import { WalksService } from "./walks.service";
 })
 export class RamblersWalksAndEventsService {
   WALKS_MANAGER_DATE_FORMAT = "DD/MM/YYYY";
-  private MILES_TO_KILOMETRES_FACTOR = 1.60934;
-  private FEET_TO_METRES_FACTOR = 0.3048;
   private BASE_URL = "/api/ramblers/walks-manager";
   private readonly logger: Logger;
   private auditNotifications = new Subject<RamblersUploadAuditApiResponse>();
@@ -44,6 +44,8 @@ export class RamblersWalksAndEventsService {
               private systemConfigService: SystemConfigService,
               private walksService: WalksService,
               private urlService: UrlService,
+              private distanceValidationService: DistanceValidationService,
+              private ascentValidationService: AscentValidationService,
               private stringUtilsService: StringUtilsService,
               private dateUtils: DateUtilsService,
               private displayDate: DisplayDatePipe,
@@ -90,8 +92,8 @@ export class RamblersWalksAndEventsService {
       .sort(walkExport => walkExport.displayedWalk.walk.walkDate);
   }
 
-  walkUploadRows(walkExports: WalkExport[], members: Member[]): WalkUploadRow[] {
-    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.displayedWalk.walk).map((walk: Walk) => this.walkToUploadRow(walk, members));
+  walkUploadRows(walkExports: WalkExport[]): WalkUploadRow[] {
+    return this.selectedExportableWalks(walkExports).map(walkExport => walkExport.displayedWalk.walk).map((walk: Walk) => this.walkToUploadRow(walk));
   }
 
   createWalksForExportPrompt(walks): Promise<WalkExport[]> {
@@ -160,7 +162,7 @@ export class RamblersWalksAndEventsService {
     notify.setBusy();
     const walkIdDeletionList = this.walkDeletionList(walkExports);
     this.logger.debug("sourceData", walkExports);
-    const rows = this.walkUploadRows(walkExports, members);
+    const rows = this.walkUploadRows(walkExports);
     const fileName = this.exportWalksFileName();
     const walksUploadRequest: RamblersWalksUploadRequest = {
       headings: this.walkUploadHeadings(),
@@ -210,6 +212,9 @@ export class RamblersWalksAndEventsService {
 
   validateWalk(walk: Walk): WalkExport {
     const validationMessages = [];
+    const walkDistance: WalkDistance = this.distanceValidationService.parse(walk);
+    const walkAscent: WalkAscent = this.ascentValidationService.parse(walk);
+    this.logger.info("walkDistance:", walkDistance);
     const contactIdMessage = this.memberLoginService.allowWalkAdminEdits() ? "This can be entered on the Walk Leader tab" : "This will need to be setup for you by " + this.committeeReferenceData.contactUsField("walks", "fullName");
     if (isEmpty(walk)) {
       validationMessages.push("walk does not exist");
@@ -217,8 +222,11 @@ export class RamblersWalksAndEventsService {
       if (isEmpty(this.walkTitle(walk))) {
         validationMessages.push("title is missing");
       }
-      if (isEmpty(this.walkDistanceMiles(walk))) {
-        validationMessages.push("distance is missing");
+      if (walkDistance.validationMessage) {
+        validationMessages.push(walkDistance.validationMessage);
+      }
+      if (walkAscent.validationMessage) {
+        validationMessages.push(walkAscent.validationMessage);
       }
       if (isEmpty(walk.startTime)) {
         validationMessages.push("start time is missing");
@@ -305,21 +313,6 @@ export class RamblersWalksAndEventsService {
       .replace(/(\r\n|\n|\r)/gm, " ") : "";
   }
 
-  walkDistanceMiles(walk): number {
-    return walk.distance ? +parseFloat(walk.distance).toFixed(1) : 0;
-  }
-
-  walksDistanceKilometres(walk): number {
-    return this.MILES_TO_KILOMETRES_FACTOR * this.walkDistanceMiles(walk);
-  }
-
-  walkDistanceMilesAsString(walk) {
-    return walk.distance ? this.walkDistanceMiles(walk).toString() : "";
-  }
-
-  distanceKilometresAsString(walk) {
-    return walk.distance ? this.walksDistanceKilometres(walk) : "";
-  }
 
   walkStartTime(walk: Walk): string {
     return walk.startTime ? this.dateUtils.asString(this.dateUtils.startTime(walk), null, "HH:mm") : "";
@@ -349,12 +342,16 @@ export class RamblersWalksAndEventsService {
     return this.dateUtils.asString(walk.walkDate, null, format);
   }
 
-  walkToUploadRow(walk, members: Member[]): WalkUploadRow {
-    return this.walkToWalkUploadRow(walk, members);
+  walkToUploadRow(walk): WalkUploadRow {
+    return this.walkToWalkUploadRow(walk);
   }
 
-  walkToWalkUploadRow(walk, members: Member[]): WalkUploadRow {
+  walkToWalkUploadRow(walk): WalkUploadRow {
     const csvRecord: WalkUploadRow = {};
+    const walkDistance: WalkDistance = this.distanceValidationService.parse(walk);
+    this.logger.debug("walkDistance:", walkDistance);
+    const walkAscent: WalkAscent = this.ascentValidationService.parse(walk);
+    this.logger.debug("walkAscent:", walkAscent);
     csvRecord[WalkUploadColumnHeading.DATE] = this.walkDate(walk, this.WALKS_MANAGER_DATE_FORMAT);
     csvRecord[WalkUploadColumnHeading.TITLE] = this.walkTitle(walk);
     csvRecord[WalkUploadColumnHeading.DESCRIPTION] = this.walkDescription(walk);
@@ -378,10 +375,10 @@ export class RamblersWalksAndEventsService {
     csvRecord[WalkUploadColumnHeading.FINISHING_GRIDREF] = this.walkFinishGridReference(walk);
     csvRecord[WalkUploadColumnHeading.FINISHING_LOCATION_DETAILS] = "";
     csvRecord[WalkUploadColumnHeading.DIFFICULTY] = this.asString(walk.grade);
-    csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = this.distanceKilometresAsString(walk);
-    csvRecord[WalkUploadColumnHeading.DISTANCE_MILES] = this.walkDistanceMilesAsString(walk);
-    csvRecord[WalkUploadColumnHeading.ASCENT_METRES] = "";
-    csvRecord[WalkUploadColumnHeading.ASCENT_FEET] = "";
+    csvRecord[WalkUploadColumnHeading.DISTANCE_KM] = walkDistance.kilometres.valueAsString;
+    csvRecord[WalkUploadColumnHeading.DISTANCE_MILES] = walkDistance.miles.valueAsString;
+    csvRecord[WalkUploadColumnHeading.ASCENT_METRES] = walkAscent.metres.valueAsString;
+    csvRecord[WalkUploadColumnHeading.ASCENT_FEET] = walkAscent.feet.valueAsString;
     csvRecord[WalkUploadColumnHeading.DOG_FRIENDLY] = "";
     csvRecord[WalkUploadColumnHeading.INTRODUCTORY_WALK] = "";
     csvRecord[WalkUploadColumnHeading.NO_STILES] = "";

@@ -25,8 +25,8 @@ const SHOW_DRIVING_DIRECTIONS = "show-driving-directions";
 
 @Component({
   selector: "app-walk-view",
-  templateUrl: "./walk-view.component.html",
-  styleUrls: ["./walk-view.component.sass"],
+  templateUrl: "./walk-view.html",
+  styleUrls: ["./walk-view.sass"],
   changeDetection: ChangeDetectionStrategy.Default
 })
 
@@ -55,7 +55,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     initialState: {}
   };
   public relatedLinksMediaWidth = 22;
-  public walkDetailsMediaWidth = 70;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
 

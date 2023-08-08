@@ -20,6 +20,7 @@ import { StringUtilsService } from "../string-utils.service";
 import { WalksReferenceService } from "./walks-reference-data.service";
 
 const auditedFields: string[] = [
+  "ascent",
   "briefDescriptionAndStartPoint",
   "config",
   "contactEmail",
