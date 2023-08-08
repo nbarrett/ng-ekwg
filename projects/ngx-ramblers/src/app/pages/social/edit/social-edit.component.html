@@ -118,8 +118,7 @@
           </div>
           <div class="form-group">
             <label for="linkTitle" class="mr-2">Link Preview: </label>
-            <a [disabled]="!display.allow.edits"
-               [href]="socialEvent.link">{{socialEvent.linkTitle || socialEvent.link}}</a>
+            <a [href]="socialEvent.link">{{socialEvent.linkTitle || socialEvent.link}}</a>
           </div>
         </ng-template>
         <div class="img-thumbnail thumbnail-admin-edit">

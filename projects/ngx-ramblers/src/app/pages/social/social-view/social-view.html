@@ -27,7 +27,7 @@
       <div class="col-sm-6">
         <div class="event-panel rounded">
           <h1>Location and Links</h1>
-          <app-related-link>
+          <div app-related-link class="col-sm-12">
             <app-copy-icon [icon]="faMapMarkerAlt" title [value]="googleMapsService.urlForPostcode(socialEvent?.postcode)"
                            elementName="Google Maps link for {{socialEvent?.postcode}}"></app-copy-icon>
             <div content>
@@ -40,33 +40,33 @@
 
               </p>
             </div>
-          </app-related-link>
-          <app-related-link *ngIf="socialEvent?.link">
+          </div>
+          <div app-related-link class="col-sm-12" *ngIf="socialEvent?.link">
             <app-copy-icon [icon]="faHouse" title [value]="socialEvent.link"
                            [elementName]="socialEvent.link"></app-copy-icon>
             <div content>
               <a tooltip="Click to visit {{socialEvent.link}}" [href]="socialEvent.link" target="_blank">{{socialEvent.linkTitle || 'Social Event Venue'}}</a>
             </div>
-          </app-related-link>
-          <app-related-link *ngIf="socialEvent?.attachment">
+          </div>
+          <div app-related-link class="col-sm-12" *ngIf="socialEvent?.attachment">
             <fa-icon title [icon]="faFile" class="fa-icon ml-1 mr-1"></fa-icon>
             <div content>
               <a tooltip="Click to view attachment" [href]="display.attachmentUrl(socialEvent)" target="_blank">{{display.attachmentTitle(socialEvent)}}</a>
             </div>
-          </app-related-link>
-          <app-related-link>
+          </div>
+          <div app-related-link class="col-sm-12">
             <app-copy-icon title [value]="display.socialEventLink(socialEvent, false)"
                            [elementName]="'This social event'"></app-copy-icon>
             <div content>
               <a [href]="display.socialEventLink(socialEvent, true)" target="_blank">This Social Event</a>
             </div>
-          </app-related-link>
+          </div>
         </div>
       </div>
       <div class="col-sm-6">
         <div class="event-panel rounded">
           <h1>Contact Details</h1>
-          <app-related-link>
+          <div app-related-link class="col-sm-12">
             <app-copy-icon [icon]="faEnvelope" title [value]="socialEvent?.contactEmail"
                            [elementName]="'email address for '+ socialEvent?.displayName "></app-copy-icon>
             <div content>
@@ -75,8 +75,8 @@
                 {{socialEvent?.displayName}}
               </a>
             </div>
-          </app-related-link>
-          <app-related-link>
+          </div>
+          <div app-related-link class="col-sm-12">
             <app-copy-icon [icon]="faPhone" title [value]="socialEvent?.contactPhone"
                            [elementName]="'phone number for '+ socialEvent?.displayName "></app-copy-icon>
             <div content>
@@ -85,7 +85,7 @@
                 {{socialEvent?.contactPhone}}
               </a>
             </div>
-          </app-related-link>
+          </div>
         </div>
       </div>
     </div>
