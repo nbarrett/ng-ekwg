@@ -81,8 +81,9 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.logger = loggerFactory.createLogger(SocialSendNotificationModalComponent, NgxLoggerLevel.OFF);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.logger.debug("ngOnInit", this.socialEvent, "memberFilterSelections:", this.display.memberFilterSelections);
+    this.mailchimpConfig = await this.mailchimpConfigService.getConfig();
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.memberService.all().then(members => {
       this.initialiseRoles(members);
@@ -278,6 +279,7 @@ export class SocialSendNotificationModalComponent implements OnInit {
     this.logger.debug("Sending " + campaignName, "with otherOptions", otherOptions);
     return this.mailchimpConfigService.getConfig()
       .then((config) => {
+        this.mailchimpConfig = config;
         const campaignId = config.campaigns.socialEvents.campaignId;
         switch (this.socialEvent?.notification?.content.destinationType) {
           case "all-social-members":

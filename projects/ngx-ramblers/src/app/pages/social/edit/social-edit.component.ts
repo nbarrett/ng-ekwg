@@ -68,7 +68,7 @@ export class SocialEditComponent implements OnInit, OnDestroy {
               private mailchimpListService: MailchimpListService,
               public display: SocialDisplayService,
               private mailchimpCampaignService: MailchimpCampaignService,
-              private mailchimpConfig: MailchimpConfigService,
+              private mailchimpConfigService: MailchimpConfigService,
               private notifierService: NotifierService,
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
