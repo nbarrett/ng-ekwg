@@ -1,44 +1,39 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faListCheck, faPersonWalkingArrowLoopLeft, faPersonWalkingDashedLineArrowRight, faRulerVertical } from "@fortawesome/free-solid-svg-icons";
-import { faRulerHorizontal } from "@fortawesome/free-solid-svg-icons/faRulerHorizontal";
+import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
+import { RamblersGroupsApiResponse } from "../../../models/ramblers-walks-manager";
 import { DisplayedWalk } from "../../../models/walk.model";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { GoogleMapsService } from "../../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
-import { AscentValidationService } from "../../../services/walks/ascent-validation.service";
-import { DistanceValidationService } from "../../../services/walks/distance-validation.service";
+import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalkDisplayService } from "../walk-display.service";
 
 @Component({
-  selector: "app-walk-details",
-  templateUrl: "./walk-details.html",
+  selector: "app-walk-group",
+  templateUrl: "./walk-group.html",
 })
 
-export class WalkDetailsComponent implements OnInit {
+export class WalkGroupComponent implements OnInit {
   private logger: Logger;
   @Input()
   public displayedWalk: DisplayedWalk;
-  public walkDetailsMediaWidth = 70;
-  protected readonly faPersonWalkingDashedLineArrowRight = faPersonWalkingDashedLineArrowRight;
-  protected readonly faPersonWalkingArrowLoopLeft = faPersonWalkingArrowLoopLeft;
-  protected readonly faRulerHorizontal = faRulerHorizontal;
-  protected readonly faRulerVertical = faRulerVertical;
-  protected readonly faListCheck = faListCheck;
+  faPeopleGroup = faPeopleGroup;
+  private groups: RamblersGroupsApiResponse[] = [];
 
   constructor(
     public googleMapsService: GoogleMapsService,
-    public distanceValidationService: DistanceValidationService,
-    public ascentValidationService: AscentValidationService,
     private memberLoginService: MemberLoginService,
     public display: WalkDisplayService,
+    public ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     private dateUtils: DateUtilsService,
     loggerFactory: LoggerFactory) {
-    this.logger = loggerFactory.createLogger("WalkDetailsComponent", NgxLoggerLevel.OFF);
+    this.logger = loggerFactory.createLogger("WalkGroupComponent", NgxLoggerLevel.OFF);
   }
 
   ngOnInit() {
+    this.ramblersWalksAndEventsService.groupNotifications().subscribe(item => this.groups = item.response);
   }
 
   elementNameStart(elementName: string) {
@@ -49,4 +44,9 @@ export class WalkDetailsComponent implements OnInit {
     return `${this.displayedWalk.showEndpoint ? "Finish " : ""}${elementName}`;
   }
 
+  urlFor(groupCode: string): string {
+    const ramblersGroupsApiResponse = this.groups?.find(item => item.group_code === groupCode);
+    this.logger.info("given groupCode:", groupCode, "returned:", ramblersGroupsApiResponse);
+    return ramblersGroupsApiResponse?.url;
+  }
 }

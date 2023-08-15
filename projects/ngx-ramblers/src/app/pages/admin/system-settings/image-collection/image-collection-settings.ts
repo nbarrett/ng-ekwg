@@ -1,11 +1,8 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faAdd, faEdit, faSortAlphaAsc } from "@fortawesome/free-solid-svg-icons";
-import { faRemove } from "@fortawesome/free-solid-svg-icons/faRemove";
-import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
+import { faAdd, faRemove, faSortAlphaAsc } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "ng2-file-upload";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../../models/alert-target.model";
-import { AwsFileData } from "../../../../models/aws-object.model";
 import { BannerImageType, Image, Images, SystemConfig } from "../../../../models/system.model";
 import { sortBy } from "../../../../services/arrays";
 import { DateUtilsService } from "../../../../services/date-utils.service";
@@ -28,10 +25,7 @@ export class ImageCollectionSettingsComponent implements OnInit {
   private logger: Logger;
   faAdd = faAdd;
   faSortAlphaAsc = faSortAlphaAsc;
-  faSave = faSave;
-  faEdit = faEdit;
   faRemove = faRemove;
-  public awsFileData: AwsFileData;
   public imageEditActive: boolean;
   public uploader: FileUploader;
   public imageTypeDescription: string;

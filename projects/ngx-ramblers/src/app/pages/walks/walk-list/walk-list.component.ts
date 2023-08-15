@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import range from "lodash-es/range";
+import uniq from "lodash-es/uniq";
 import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { NgxLoggerLevel } from "ngx-logger";
@@ -10,6 +11,8 @@ import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { LoginResponse } from "../../../models/member.model";
 import { DeviceSize } from "../../../models/page.model";
+import { GroupWalk, RamblersWalksRawApiResponse } from "../../../models/ramblers-walks-manager";
+import { WalkPopulation } from "../../../models/system.model";
 import { DisplayedWalk, EventType, FilterParameters, Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
 import { DisplayDatePipe } from "../../../pipes/display-date.pipe";
@@ -26,6 +29,7 @@ import { NumberUtilsService } from "../../../services/number-utils.service";
 import { PageService } from "../../../services/page.service";
 import { StringUtilsService } from "../../../services/string-utils.service";
 import { UrlService } from "../../../services/url.service";
+import { RamblersWalksAndEventsService } from "../../../services/walks/ramblers-walks-and-events.service";
 import { WalkNotificationService } from "../../../services/walks/walk-notification.service";
 import { WalksQueryService } from "../../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../../services/walks/walks-reference-data.service";
@@ -68,6 +72,7 @@ export class WalkListComponent implements OnInit, OnDestroy {
     private memberService: MemberService,
     private numberUtils: NumberUtilsService,
     private authService: AuthService,
+    public ramblersWalksAndEventsService: RamblersWalksAndEventsService,
     public memberLoginService: MemberLoginService,
     private walksNotificationService: WalkNotificationService,
     public display: WalkDisplayService,
@@ -95,18 +100,18 @@ export class WalkListComponent implements OnInit, OnDestroy {
     this.pageSize = 10;
     this.pageNumber = 1;
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.broadcastService.on(NamedEventType.SYSTEM_CONFIG_LOADED, () => this.refreshWalks(NamedEventType.SYSTEM_CONFIG_LOADED));
+    this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
+    this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshWalks(NamedEventType.REFRESH));
+    this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: NamedEvent<string>) => this.applyFilterToWalks(searchTerm));
+    this.broadcastService.on(NamedEventType.WALK_SAVED, (event: NamedEvent<Walk>) => this.replaceWalkInList(event.data));
     this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       this.currentWalkId = paramMap.get("walk-id");
       this.logger.debug("walk-id from route params:", this.currentWalkId);
     }));
     this.display.refreshCachedData();
-    this.refreshWalks("ngOnInit");
     this.pageService.setTitle("Home");
     this.subscriptions.push(this.authService.authResponse().subscribe((loginResponse: LoginResponse) => this.refreshWalks(loginResponse)));
-    this.broadcastService.on(NamedEventType.WALK_SLOTS_CREATED, () => this.refreshWalks(NamedEventType.WALK_SLOTS_CREATED));
-    this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshWalks(NamedEventType.REFRESH));
-    this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToWalks(searchTerm));
-    this.broadcastService.on(NamedEventType.WALK_SAVED, (event) => this.replaceWalkInList(event.data));
   }
 
   ngOnDestroy(): void {
@@ -127,7 +132,7 @@ export class WalkListComponent implements OnInit, OnDestroy {
     return walks.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
   }
 
-  applyFilterToWalks(searchTerm?: string): void {
+  applyFilterToWalks(searchTerm?: NamedEvent<string>): void {
     this.notify.setBusy();
     this.logger.info("applyFilterToWalks:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.filteredWalks = this.searchFilterPipe.transform(this.walks, this.filterParameters.quickSearch)
@@ -147,12 +152,9 @@ export class WalkListComponent implements OnInit, OnDestroy {
     this.logger.info("total walks count", this.walks.length, "walks:", this.walks, "filteredWalks count", this.filteredWalks.length, "currentPageWalks count", this.currentPageWalks.length, "pageSize:", this.pageSize, "pageCount", this.pageCount, "pages", this.pages);
     const offset = (this.pageNumber - 1) * this.pageSize + 1;
     const pageIndicator = this.pages.length > 1 ? `page ${this.pageNumber} of ${this.pageCount}` : "";
-    this.notify.progress(`Showing ${offset} to ${offset + this.pageSize - 1} of ${this.stringUtils.pluraliseWithCount(this.walks.length, "walk")} ${pageIndicator}`);
+    const toWalkNumber = Math.min(offset + this.pageSize - 1, this.walks.length);
+    this.notify.progress(`Showing ${offset} to ${toWalkNumber} of ${this.stringUtils.pluraliseWithCount(this.walks.length, "walk")} - ${pageIndicator}`);
     this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SHOW_PAGINATION, this.pageCount > 1));
-  }
-
-  allowAdminEdits() {
-    return this.memberLoginService.allowWalkAdminEdits();
   }
 
   allowDetailView() {
@@ -160,21 +162,13 @@ export class WalkListComponent implements OnInit, OnDestroy {
   }
 
   viewWalkField(displayedWalk: DisplayedWalk, field) {
-    if (displayedWalk.latestEventType.showDetails) {
+    if (displayedWalk.walk.events.length === 0 || displayedWalk.latestEventType.showDetails) {
       return displayedWalk.walk[field] || "";
     } else if (field === "briefDescriptionAndStartPoint") {
-      return displayedWalk.latestEventType.description;
+      return displayedWalk?.latestEventType?.description;
     } else {
       return "";
     }
-  }
-
-  addWalk() {
-    this.urlService.navigateTo("walks", "add");
-  }
-
-  showAllWalks() {
-    this.urlService.navigateTo("walks");
   }
 
   walksCriteriaObject() {
@@ -233,17 +227,44 @@ export class WalkListComponent implements OnInit, OnDestroy {
     }
   }
 
-  refreshWalks(event?: any): Promise<void> {
-    this.logger.debug("Refreshing walks due to", event);
-    this.notify.progress("Refreshing walks...", true);
-    return this.query()
-      .then(walks => {
-        this.display.setNextWalkId(walks);
-        this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
-        this.walks = this.currentWalkId || this.filterParameters.selectType === 6 ? walks : this.walksQueryService.activeWalks(walks);
-        this.applyFilterToWalks();
-        this.notify.clearBusy();
-      });
+  refreshWalks(event?: any): Promise<any> {
+    this.logger.info("Refreshing walks due to", event, "event and walkPopulation:", this.display.group.walkPopulation);
+    this.notify.progress(`Refreshing ${this.stringUtils.asTitle(this.display.group.walkPopulation)} walks...`, true);
+    switch (this.display.group.walkPopulation) {
+      case WalkPopulation.WALKS_MANAGER:
+        return this.ramblersWalksAndEventsService.listRamblersWalksRawData()
+          .then((ramblersWalksRawApiResponse: RamblersWalksRawApiResponse) => {
+            this.applyWalks(this.populateFromGroupWalks(ramblersWalksRawApiResponse));
+          })
+          .catch(error => {
+            this.logger.error("error->", error);
+            this.notify.error({
+              title: "Problem with Querying Ramblers Walks Manager",
+              continue: true,
+              message: error
+            });
+          });
+      case WalkPopulation.LOCAL:
+        return this.query()
+          .then(walks => {
+            this.display.setNextWalkId(walks);
+            this.logger.info("refreshWalks", "hasWalksId", this.currentWalkId, "walks:", walks);
+            this.applyWalks(this.currentWalkId || this.filterParameters.selectType === 6 ? walks : this.walksQueryService.activeWalks(walks));
+            this.applyFilterToWalks();
+            this.notify.clearBusy();
+          });
+      default:
+        return Promise.resolve(() => {
+          this.logger.warn("unhandled case:", this.display?.group?.walkPopulation);
+          this.applyWalks([]);
+        });
+    }
+  }
+
+  private applyWalks(walks: Walk[]) {
+    this.walks = walks;
+    this.applyFilterToWalks();
+    this.notify.clearBusy();
   }
 
   login() {
@@ -259,20 +280,19 @@ export class WalkListComponent implements OnInit, OnDestroy {
     this.goToPage(event.page);
   }
 
-  previousPage() {
-    if (this.pageNumber > 1) {
-      this.goToPage(this.pageNumber - 1);
-    }
-  }
-
-  nextPage() {
-    if (this.pageNumber < this.pageCount) {
-      this.goToPage(this.pageNumber + 1);
-    }
-  }
-
   goToPage(pageNumber) {
     this.pageNumber = pageNumber;
     this.applyPagination();
+  }
+
+  private populateFromGroupWalks(ramblersWalksRawApiResponse: RamblersWalksRawApiResponse): Walk[] {
+    this.queryGroups(ramblersWalksRawApiResponse);
+    return ramblersWalksRawApiResponse.data.map(remoteWalk => this.ramblersWalksAndEventsService.toWalk(remoteWalk));
+  }
+
+  private async queryGroups(ramblersWalksRawApiResponse: RamblersWalksRawApiResponse) {
+    const groups: string[] = uniq(ramblersWalksRawApiResponse.data.map((groupWalk: GroupWalk) => groupWalk.group_code));
+    this.logger.info("finding groups:", groups);
+    await this.ramblersWalksAndEventsService.listRamblersGroups(groups);
   }
 }

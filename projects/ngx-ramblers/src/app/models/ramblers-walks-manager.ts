@@ -140,6 +140,41 @@ export interface RamblersWalksRawApiResponse {
   data: GroupWalk[];
 }
 
+export interface GroupListRequest {
+  limit: number;
+  groups: string[];
+}
+
+export interface WalkListRequest {
+  rawData: boolean;
+  limit: number;
+}
+
+export interface RamblersGroupsApiResponseApiResponse extends ApiResponse {
+  request: any;
+  response?: RamblersGroupsApiResponse[];
+}
+
+export interface RamblersGroupsApiResponse {
+  scope: string;
+  group_code: string;
+  area_code: string;
+  groups_in_area: string[];
+  name: string;
+  url: string;
+  external_url: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  date_updated: string;
+  date_walks_events_updated: string;
+}
+
+export interface RamblersWalksRawApiResponseApiResponse extends ApiResponse {
+  request: any;
+  response?: RamblersWalksRawApiResponse;
+}
+
 export enum WalkUploadColumnHeading {
   DATE = "Date",
   TITLE = "Title",

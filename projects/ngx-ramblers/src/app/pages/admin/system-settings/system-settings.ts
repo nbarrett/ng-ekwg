@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { faAdd } from "@fortawesome/free-solid-svg-icons";
-import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
-import { BannerImageType, ExternalUrls, SystemConfig } from "../../../models/system.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
+import { BannerImageType, ExternalUrls, SystemConfig, WalkPopulation } from "../../../models/system.model";
+import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
+import { enumKeyValues, KeyValue } from "../../../services/enums";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";
 import { MemberLoginService } from "../../../services/member/member-login.service";
 import { MemberService } from "../../../services/member/member.service";
@@ -27,16 +29,17 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   public logos: BannerImageType = BannerImageType.logos;
   public backgrounds: BannerImageType = BannerImageType.backgrounds;
   faAdd = faAdd;
-  faSave = faSave;
   private subscriptions: Subscription[] = [];
+  public populationMethods: KeyValue[] = enumKeyValues(WalkPopulation);
 
   constructor(public systemConfigService: SystemConfigService,
               private notifierService: NotifierService,
-              private stringUtils: StringUtilsService,
+              public stringUtils: StringUtilsService,
               private memberService: MemberService,
               private memberLoginService: MemberLoginService,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
+              private broadcastService: BroadcastService<string>,
               loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(SystemSettingsComponent, NgxLoggerLevel.OFF);
   }
@@ -44,6 +47,10 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("constructed");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
+    this.broadcastService.on(NamedEventType.DEFAULT_LOGO_CHANGED, (namedEvent: NamedEvent<string>) => {
+      this.logger.info("event received:", namedEvent);
+      this.headerLogoChanged(namedEvent.data);
+    });
     this.subscriptions.push(this.systemConfigService.events()
       .subscribe((config: SystemConfig) => {
         this.config = config;

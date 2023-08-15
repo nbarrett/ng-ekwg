@@ -1,20 +1,23 @@
 import debug from "debug";
 import moment from "moment-timezone";
 import { ConfigDocument, ConfigKey } from "../../../projects/ngx-ramblers/src/app/models/config.model";
-import { RamblersWalkResponse, RamblersWalksRawApiResponse } from "../../../projects/ngx-ramblers/src/app/models/ramblers-walks-manager";
+import { RamblersWalkResponse, RamblersWalksRawApiResponse, WalkListRequest } from "../../../projects/ngx-ramblers/src/app/models/ramblers-walks-manager";
 import { SystemConfig } from "../../../projects/ngx-ramblers/src/app/models/system.model";
 import { envConfig } from "../env-config/env-config";
 import * as config from "../mongo/controllers/config";
 import { httpRequest } from "../shared/message-handlers";
 import * as requestDefaults from "./request-defaults";
 
-const debugLog = debug(envConfig.logNamespace("ramblers:walks-manager"));
+const debugLog = debug(envConfig.logNamespace("ramblers:walks-and-events"));
 debugLog.enabled = true;
 
 export function listWalks(req, res): void {
   config.queryKey(ConfigKey.SYSTEM)
     .then((configDocument: ConfigDocument) => {
       const systemConfig: SystemConfig = configDocument.value;
+      const body: WalkListRequest = req.body;
+      const limit = body.limit;
+      const rawData: boolean = body.rawData;
       const defaultOptions = requestDefaults.createApiRequestOptions(systemConfig);
       debugLog("listWalks:defaultOptions:", defaultOptions);
       return httpRequest({
@@ -23,17 +26,16 @@ export function listWalks(req, res): void {
           protocol: defaultOptions.protocol,
           headers: defaultOptions.headers,
           method: "get",
-          path: `/api/volunteers/walksevents?types=group-walk&limit=100&groups=${systemConfig?.group?.groupCode}&api-key=${systemConfig?.national?.walksManager?.apiKey}`
+          path: `/api/volunteers/walksevents?types=group-walk&limit=${limit}&groups=${systemConfig?.group?.groupCode}&api-key=${systemConfig?.national?.walksManager?.apiKey}`
         },
         debug: debugLog,
         res,
         req,
-        mapper: transformListWalksResponse(systemConfig)
+        mapper: rawData ? null : transformListWalksResponse(systemConfig)
       });
     })
     .then(response => res.json(response))
     .catch(error => res.json(error));
-  ;
 }
 
 function transformListWalksResponse(systemConfig: SystemConfig) {

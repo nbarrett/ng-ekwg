@@ -23,11 +23,12 @@
       <div *ngIf="display.shouldShowFullDetails(displayedWalk)" class="event-description">
         <p markdown [data]="displayedWalk.walk.longerDescription"></p>
       </div>
+      <app-walk-leader [displayedWalk]="displayedWalk"></app-walk-leader>
       <div *ngIf="display.shouldShowFullDetails(displayedWalk) && displayLinks"
            class="event-panel rounded event-panel-inner">
         <h1>Related Links</h1>
         <div class="row">
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.meetupEventUrl"
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth" *ngIf="displayedWalk.walk.meetupEventUrl"
                class="col-sm-12">
             <img title class="related-links-image"
                  src="/assets/images/local/meetup.ico"
@@ -40,7 +41,7 @@
               </div>
             </a>
           </div>
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.ramblersWalkId"
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth" *ngIf="displayedWalk.walk.ramblersWalkId"
                class="col-sm-12">
             <img title class="related-links-ramblers-image"
                  src="favicon.ico"
@@ -48,7 +49,7 @@
             <a content tooltip="Click to view on Ramblers Walks and Events Manager" target="_blank"
                [href]="displayedWalk.ramblersLink">On Ramblers</a>
           </div>
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.osMapsRoute"
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth" *ngIf="displayedWalk.walk.osMapsRoute"
                class="col-sm-12">
             <img title class="related-links-image"
                  src="/assets/images/local/ordnance-survey-untitled.png"
@@ -59,7 +60,8 @@
               View map on OS Maps
             </a>
           </div>
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.startLocationW3w"
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth"
+               *ngIf="displayedWalk.walk.startLocationW3w"
                class="col-sm-12">
             <img title class="w3w-image"
                  src="/assets/images/local/w3w.png"
@@ -70,7 +72,7 @@
               View start location in what3words
             </a>
           </div>
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth"
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth"
                *ngIf="displayedWalk?.walk?.venue?.venuePublish && (displayedWalk?.walk?.venue?.url||displayedWalk?.walk?.venue?.postcode)"
                class="col-sm-12">
             <fa-icon title [icon]="displayedWalk.walk.venue.type | toVenueIcon" class="fa-icon"></fa-icon>
@@ -80,46 +82,12 @@
               {{displayedWalk.walk.venue.type}}: {{displayedWalk.walk.venue.name}}
             </a>
           </div>
-          <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walkLink" class="col-sm-12">
+          <div app-related-link [mediaWidth]="display.relatedLinksMediaWidth" *ngIf="displayedWalk.walkLink"
+               class="col-sm-12">
             <app-copy-icon title [value]="displayedWalk.walkLink"
                            [elementName]="'This Walk'"></app-copy-icon>
             <div content>
               <a [href]="displayedWalk.walkLink " target="_blank">This Walk</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="event-panel rounded">
-        <h1>Walk Leader</h1>
-        <div *ngIf="!display.shouldShowFullDetails(displayedWalk)">
-          <div [ngClass]="display.shouldShowFullDetails(displayedWalk)?'col-sm-6':'col-sm-12'">
-            <p name="description">{{displayedWalk.latestEventType.description}}</p>
-          </div>
-        </div>
-        <div *ngIf="display.shouldShowFullDetails(displayedWalk)">
-          <div class="row">
-            <div app-related-link [mediaWidth]="relatedLinksMediaWidth" *ngIf="displayedWalk.walk.contactEmail"
-                 class="col-sm-12">
-              <app-copy-icon [disabled]="!loggedIn" [icon]="faEnvelope" title
-                             [value]="displayedWalk.walk.contactEmail"
-                             [elementName]="'email address for '+ displayedWalk.walk.displayName"></app-copy-icon>
-              <div content>
-                <a *ngIf="loggedIn" [href]="'mailto:' + displayedWalk.walk.contactEmail"
-                   tooltip="Click to email {{displayedWalk.walk.displayName}}">
-                  {{displayedWalk.walk.displayName}}
-                </a>
-                <span (click)="login()" *ngIf="!loggedIn" class="tooltip-link span-margin"
-                      trigger="mouseenter"
-                      tooltip="Login as an EKWG member and send an email to {{displayedWalk.walk.displayName}}">
-          {{displayedWalk.walk.displayName}}</span></div>
-            </div>
-            <div app-related-link [mediaWidth]="relatedLinksMediaWidth" class="col-sm-12">
-              <app-copy-icon [icon]="faPhone" title [value]="displayedWalk.walk.contactPhone"
-                             [elementName]="'mobile number for '+ displayedWalk.walk.displayName "></app-copy-icon>
-              <a content [href]="'tel:' + displayedWalk.walk.contactPhone" name="contactPhone"
-                 tooltip="Click to ring {{displayedWalk.walk.displayName}} on {{displayedWalk.walk.contactPhone}} (mobile devices only)">
-                {{displayedWalk.walk.contactPhone}}
-              </a>
             </div>
           </div>
         </div>

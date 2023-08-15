@@ -68,7 +68,7 @@ export class SocialHomeComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit started");
     this.notify = this.notifierService.createAlertInstance(this.notifyTarget);
     this.broadcastService.on(NamedEventType.REFRESH, () => this.refreshSocialEvents());
-    this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: string) => this.applyFilterToSocialEvents(searchTerm));
+    this.broadcastService.on(NamedEventType.APPLY_FILTER, (searchTerm?: NamedEvent<string>) => this.applyFilterToSocialEvents(searchTerm));
     this.subscriptions.push(this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const socialEventId = paramMap.get("relativePath");
       this.logger.debug("socialEventId from route params:", paramMap, socialEventId);
@@ -142,7 +142,7 @@ export class SocialHomeComponent implements OnInit, OnDestroy {
     return {eventDate: this.filterParameters.fieldSort};
   }
 
-  applyFilterToSocialEvents(searchTerm?: string) {
+  applyFilterToSocialEvents(searchTerm?: NamedEvent<string>) {
     this.logger.info("applyFilterToSocialEvents:searchTerm:", searchTerm, "filterParameters.quickSearch:", this.filterParameters.quickSearch);
     this.notify.setBusy();
     this.filteredSocialEvents = this.searchFilterPipe.transform(this.socialEvents, this.filterParameters.quickSearch);

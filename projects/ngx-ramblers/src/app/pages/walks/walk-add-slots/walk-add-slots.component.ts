@@ -4,7 +4,7 @@ import { faCalendar } from "@fortawesome/free-solid-svg-icons";
 import difference from "lodash-es/difference";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../models/alert-target.model";
-import { NamedEventType } from "../../../models/broadcast.model";
+import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
 import { DateValue } from "../../../models/date.model";
 import { Walk } from "../../../models/walk.model";
 import { DisplayDateAndTimePipe } from "../../../pipes/display-date-and-time.pipe";
@@ -58,7 +58,7 @@ export class WalkAddSlotsComponent implements OnInit {
     private walksQueryService: WalksQueryService,
     private dateUtils: DateUtilsService,
     private notifierService: NotifierService,
-    private broadcastService: BroadcastService<void>,
+    private broadcastService: BroadcastService<Walk[]>,
     private urlService: UrlService,
     private walkEventService: WalkEventService,
     private walksReferenceService: WalksReferenceService,
@@ -190,10 +190,10 @@ export class WalkAddSlotsComponent implements OnInit {
     });
     Promise.all(this.requiredWalkSlots.map((slot: Walk) => {
       return this.walksService.createOrUpdate(slot);
-    })).then(() => {
+    })).then((walkSlots) => {
       this.notify.success({title: "Done!", message: "Choose Back to walks to see your newly created slots"});
       delete this.confirmAction;
-      this.broadcastService.broadcast(NamedEventType.WALK_SLOTS_CREATED);
+      this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.WALK_SLOTS_CREATED, walkSlots));
     });
   }
 

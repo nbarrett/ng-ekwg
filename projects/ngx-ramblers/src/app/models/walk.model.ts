@@ -1,6 +1,7 @@
 import { ApiResponse, Identifiable } from "./api-response.model";
 import { MeetupConfig } from "./meetup-config.model";
 import { FilterParametersSearch } from "./member-resource.model";
+import { Group } from "./system.model";
 import { WalkAccessMode } from "./walk-edit-mode.model";
 import { WalkEventType } from "./walk-event-type.model";
 import { WalkEvent } from "./walk-event.model";
@@ -74,6 +75,7 @@ export interface Walk extends Identifiable {
   walkLeaderMemberId?: string;
   venue?: WalkVenue;
   riskAssessment?: RiskAssessmentRecord[];
+  group?: Group;
 }
 
 export interface RiskAssessmentRecord {

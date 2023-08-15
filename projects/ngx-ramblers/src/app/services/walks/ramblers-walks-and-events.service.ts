@@ -4,12 +4,24 @@ import isEmpty from "lodash-es/isEmpty";
 import isNaN from "lodash-es/isNaN";
 import without from "lodash-es/without";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, Subject } from "rxjs";
-import { DataQueryOptions } from "../../models/api-request.model";
+import { Observable, ReplaySubject } from "rxjs";
 import { ApiResponse } from "../../models/api-response.model";
 import { Member } from "../../models/member.model";
 import { RamblersUploadAuditApiResponse } from "../../models/ramblers-upload-audit.model";
-import { RamblersWalkResponse, RamblersWalksApiResponse, RamblersWalksUploadRequest, WalkUploadColumnHeading, WalkUploadRow } from "../../models/ramblers-walks-manager";
+import {
+  GroupListRequest,
+  GroupWalk,
+  RamblersGroupsApiResponse,
+  RamblersGroupsApiResponseApiResponse,
+  RamblersWalkResponse,
+  RamblersWalksApiResponse,
+  RamblersWalksRawApiResponse,
+  RamblersWalksRawApiResponseApiResponse,
+  RamblersWalksUploadRequest,
+  WalkListRequest,
+  WalkUploadColumnHeading,
+  WalkUploadRow
+} from "../../models/ramblers-walks-manager";
 import { Ramblers } from "../../models/system.model";
 import { Walk, WalkAscent, WalkDistance, WalkExport, WalkType } from "../../models/walk.model";
 import { WalkDisplayService } from "../../pages/walks/walk-display.service";
@@ -18,9 +30,10 @@ import { CommitteeConfigService } from "../committee/commitee-config.service";
 import { CommitteeReferenceData } from "../committee/committee-reference-data";
 import { CommonDataService } from "../common-data-service";
 import { DateUtilsService } from "../date-utils.service";
-import { enumValues } from "../enums";
+import { enumForKey, enumValues } from "../enums";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
+import { MemberNamingService } from "../member/member-naming.service";
 import { StringUtilsService } from "../string-utils.service";
 import { SystemConfigService } from "../system/system-config.service";
 import { UrlService } from "../url.service";
@@ -32,18 +45,22 @@ import { WalksService } from "./walks.service";
   providedIn: "root"
 })
 export class RamblersWalksAndEventsService {
-  WALKS_MANAGER_DATE_FORMAT = "DD/MM/YYYY";
-  private BASE_URL = "/api/ramblers/walks-manager";
   private readonly logger: Logger;
-  private auditNotifications = new Subject<RamblersUploadAuditApiResponse>();
-  private walkNotifications = new Subject<RamblersWalksApiResponse>();
+  private auditSubject = new ReplaySubject<RamblersUploadAuditApiResponse>();
+  private walksSubject = new ReplaySubject<RamblersWalksApiResponse>();
+  private rawWalksSubject = new ReplaySubject<RamblersWalksRawApiResponseApiResponse>();
+  private groupsSubject = new ReplaySubject<RamblersGroupsApiResponseApiResponse>();
   private committeeReferenceData: CommitteeReferenceData;
   private ramblers: Ramblers;
+  private WALKS_MANAGER_DATE_FORMAT = "DD/MM/YYYY";
+  private BASE_URL = "/api/ramblers/walks-manager";
+  private NEAREST_TOWN_PREFIX = "Nearest Town is ";
 
   constructor(private http: HttpClient,
               private systemConfigService: SystemConfigService,
               private walksService: WalksService,
               private urlService: UrlService,
+              private memberNamingService: MemberNamingService,
               private distanceValidationService: DistanceValidationService,
               private ascentValidationService: AscentValidationService,
               private stringUtilsService: StringUtilsService,
@@ -63,28 +80,38 @@ export class RamblersWalksAndEventsService {
 
   }
 
-  notifications(): Observable<RamblersUploadAuditApiResponse> {
-    return this.auditNotifications.asObservable();
+  auditNotifications(): Observable<RamblersUploadAuditApiResponse> {
+    return this.auditSubject.asObservable();
   }
 
-  all(dataQueryOptions?: DataQueryOptions): Promise<RamblersUploadAuditApiResponse> {
-    const params = this.commonDataService.toHttpParams(dataQueryOptions);
-    this.logger.debug("all:dataQueryOptions", dataQueryOptions, "params", params.toString());
-    return this.commonDataService.responseFrom(this.logger, this.http.get<RamblersUploadAuditApiResponse>(`${this.BASE_URL}/all`, {params}), this.auditNotifications);
+  groupNotifications(): Observable<RamblersGroupsApiResponseApiResponse> {
+    return this.groupsSubject.asObservable();
   }
 
   uploadRamblersWalks(data: RamblersWalksUploadRequest): Promise<ApiResponse> {
-    return this.commonDataService.responseFrom(this.logger, this.http.post<RamblersUploadAuditApiResponse>(`${this.BASE_URL}/upload-walks`, data), this.auditNotifications);
+    return this.commonDataService.responseFrom(this.logger, this.http.post<RamblersUploadAuditApiResponse>(`${this.BASE_URL}/upload-walks`, data), this.auditSubject);
   }
 
   async listRamblersWalks(): Promise<RamblersWalkResponse[]> {
-    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.get<RamblersWalksApiResponse>(`${this.BASE_URL}/list-walks`), this.walkNotifications);
+    const apiResponse = await this.commonDataService.responseFrom(this.logger, this.http.post<RamblersWalksApiResponse>(`${this.BASE_URL}/list-walks`, {}), this.walksSubject);
     this.logger.info("received", apiResponse);
     return apiResponse.response;
   }
 
+  async listRamblersWalksRawData(): Promise<RamblersWalksRawApiResponse> {
+    const body: WalkListRequest = {rawData: true, limit: 200};
+    const rawData = await this.commonDataService.responseFrom(this.logger, this.http.post<RamblersWalksRawApiResponseApiResponse>(`${this.BASE_URL}/list-walks`, body), this.rawWalksSubject);
+    return rawData.response;
+  }
+
+  async listRamblersGroups(groups: string[]): Promise<RamblersGroupsApiResponse[]> {
+    const body: GroupListRequest = {limit: 1000, groups};
+    const rawData = await this.commonDataService.responseFrom(this.logger, this.http.post<RamblersGroupsApiResponseApiResponse>(`${this.BASE_URL}/list-groups`, body), this.groupsSubject);
+    return rawData.response;
+  }
+
   exportWalksFileName(omitExtension?: boolean): string {
-    return "walks-export-" + this.dateUtils.asMoment().format("DD-MMMM-YYYY-HH-mm") + (omitExtension ? "" : ".csv");
+    return `walks-export-${this.dateUtils.asMoment().format("DD-MMMM-YYYY-HH-mm")}${omitExtension ? "" : ".csv"}`;
   }
 
   selectedExportableWalks(walkExports: WalkExport[]): WalkExport[] {
@@ -274,7 +301,7 @@ export class RamblersWalksAndEventsService {
   }
 
   nearestTown(walk: Walk) {
-    return walk.nearestTown ? "Nearest Town is " + walk.nearestTown : "";
+    return walk.nearestTown ? `${this.NEAREST_TOWN_PREFIX}${walk.nearestTown}` : "";
   }
 
   walkTitle(walk: Walk) {
@@ -344,6 +371,55 @@ export class RamblersWalksAndEventsService {
 
   walkToUploadRow(walk): WalkUploadRow {
     return this.walkToWalkUploadRow(walk);
+  }
+
+  toWalk(groupWalk: GroupWalk): Walk {
+    const startMoment = this.dateUtils.asMoment(groupWalk.start_date_time);
+    const contactName = groupWalk?.walk_leader?.name;
+    const displayName = this.memberNamingService.createDisplayNameFromContactName(contactName);
+    const walk: Walk = {
+      ascent: groupWalk.ascent_feet?.toString(),
+      briefDescriptionAndStartPoint: groupWalk.title,
+      config: {meetup: null},
+      contactEmail: groupWalk?.walk_leader?.email_form,
+      contactId: "n/a",
+      contactName,
+      contactPhone: groupWalk?.walk_leader?.telephone,
+      displayName,
+      distance: `${groupWalk?.distance_miles} miles`,
+      events: [],
+      grade: groupWalk.difficulty.description,
+      gridReference: groupWalk.start_location?.grid_reference_8,
+      gridReferenceFinish: groupWalk.end_location?.grid_reference_8,
+      id: groupWalk.id,
+      location: null,
+      longerDescription: groupWalk.description,
+      meetupEventDescription: null,
+      meetupEventTitle: null,
+      meetupEventUrl: null,
+      meetupPublish: false,
+      nearestTown: groupWalk.start_location.description.replace(this.NEAREST_TOWN_PREFIX, ""),
+      osMapsRoute: null,
+      osMapsTitle: null,
+      postcode: groupWalk.start_location?.postcode,
+      postcodeFinish: groupWalk.end_location?.postcode,
+      ramblersPublish: false,
+      ramblersWalkId: groupWalk.id,
+      ramblersWalkUrl: groupWalk.url,
+      riskAssessment: [],
+      startLocationW3w: groupWalk.start_location?.w3w,
+      startTime: this.dateUtils.asString(startMoment, undefined, this.dateUtils.formats.displayTime),
+      venue: undefined,
+      walkDate: this.dateUtils.asValueNoTime(startMoment),
+      walkLeaderMemberId: null,
+      walkType: enumForKey(WalkType, groupWalk.shape),
+      group: {
+        groupCode: groupWalk.group_code,
+        longName: groupWalk.group_name
+      }
+    };
+    this.logger.debug("groupWalk:", groupWalk, "walk:", walk, "contactName:", contactName, "displayName:", displayName);
+    return walk;
   }
 
   walkToWalkUploadRow(walk): WalkUploadRow {

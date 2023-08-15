@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import first from "lodash-es/first";
 import kebabCase from "lodash-es/kebabCase";
 import { NgxLoggerLevel } from "ngx-logger";
-import { NamedEventType } from "../models/broadcast.model";
+import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { ColumnInsertData, ContentText, HasPageContentRows, PageContent, PageContentColumn, PageContentRow, PageContentType, View } from "../models/content-text.model";
 import { AccessLevel } from "../models/member-resource.model";
 import { move } from "./arrays";
@@ -97,14 +97,14 @@ export class PageContentActionsService {
     row.maxColumns = row.maxColumns + 1;
     row.columns.splice(columnIndex, 0, columnData);
     this.logger.debug("pageContent:", pageContent);
-    this.notifyPageContentChanges();
+    this.notifyPageContentChanges(pageContent);
   }
 
   deleteColumn(row: PageContentRow, columnIndex: number, pageContent: PageContent) {
     this.calculateColumnsFor(row, -1);
     row.columns = row.columns.filter((item, index) => index !== columnIndex);
     this.logger.debug("pageContent:", pageContent);
-    this.notifyPageContentChanges();
+    this.notifyPageContentChanges(pageContent);
   }
 
   private calculateColumnsFor(row: PageContentRow, columnIncrement: number) {
@@ -179,8 +179,8 @@ export class PageContentActionsService {
     return this.stringUtils.replaceAll("-", " ", relativePath);
   }
 
-  private notifyPageContentChanges() {
-    this.broadcastService.broadcast(NamedEventType.PAGE_CONTENT_CHANGED);
+  private notifyPageContentChanges(pageContent: PageContent) {
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.PAGE_CONTENT_CHANGED, pageContent));
   }
 
   public isActionButtons(row: PageContentRow): boolean {

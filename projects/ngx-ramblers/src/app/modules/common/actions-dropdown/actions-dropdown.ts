@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { faTableCells } from "@fortawesome/free-solid-svg-icons/faTableCells";
+import { faTableCells } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { PageContent, PageContentColumn, PageContentRow } from "../../../models/content-text.model";
 import { Logger, LoggerFactory } from "../../../services/logger-factory.service";

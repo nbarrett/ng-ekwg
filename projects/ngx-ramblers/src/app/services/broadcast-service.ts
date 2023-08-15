@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
-import { Observable, Observer } from "rxjs";
-import { filter, share } from "rxjs/operators";
-import { NamedEvent } from "../models/broadcast.model";
+import { ReplaySubject } from "rxjs";
+import { filter } from "rxjs/operators";
+import { NamedEvent, NamedEventType } from "../models/broadcast.model";
 import { Logger, LoggerFactory } from "./logger-factory.service";
 
 @Injectable({
@@ -10,35 +10,25 @@ import { Logger, LoggerFactory } from "./logger-factory.service";
 })
 
 export class BroadcastService<T> {
-  observable: Observable<NamedEvent<T>>;
-  observer: Observer<NamedEvent<T>>;
   private logger: Logger;
+  private readonly subject: ReplaySubject<NamedEvent<T>>;
 
   constructor(loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(BroadcastService, NgxLoggerLevel.OFF);
-    const temp = new Observable(((observer: Observer<NamedEvent<T>>) => {
-      this.observer = observer;
-    }));
-    this.observable = temp.pipe(share());
+    this.subject = new ReplaySubject<NamedEvent<T>>();
   }
 
-  broadcast(event: NamedEvent<T> | string): void {
-    if (this.observer) {
-      this.logger.debug("broadcast:", event);
-      if (event instanceof NamedEvent) {
-        this.observer.next(event);
-      } else {
-        this.observer.next(new NamedEvent(event));
-      }
-    }
+  broadcast(event: NamedEvent<T>): void {
+    this.logger.debug("broadcasting:event:", event);
+    this.subject.next(event);
   }
 
-  on(eventName, callback) {
-    this.observable.pipe(
+  on(eventName: NamedEventType, callback: (data?: NamedEvent<T>) => void) {
+    this.subject.asObservable().pipe(
       filter((event: NamedEvent<T>) => {
         const found = event.name === eventName;
         if (found) {
-          this.logger.debug("filtering for event", event, eventName, "found:", found);
+          this.logger.debug("filtering for event", event, eventName, "found:", found,);
         }
         return found;
       })

@@ -105,7 +105,7 @@ export class DynamicContentSiteEditComponent implements OnInit, OnDestroy {
     private pageService: PageService,
     private authService: AuthService,
     public actions: PageContentActionsService,
-    private broadcastService: BroadcastService<PageContent>,
+    private broadcastService: BroadcastService<any>,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(DynamicContentSiteEditComponent, NgxLoggerLevel.OFF);
   }

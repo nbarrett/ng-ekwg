@@ -2,8 +2,10 @@ import { Injectable } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { BehaviorSubject, Observable } from "rxjs";
 import { shareReplay } from "rxjs/operators";
+import { NamedEvent, NamedEventType } from "../../models/broadcast.model";
 import { ConfigKey } from "../../models/config.model";
-import { BannerImageType, Images, Organisation, Ramblers, SystemConfig } from "../../models/system.model";
+import { BannerImageType, Images, Organisation, Ramblers, SystemConfig, WalkPopulation } from "../../models/system.model";
+import { BroadcastService } from "../broadcast-service";
 import { ConfigService } from "../config.service";
 import { Logger, LoggerFactory } from "../logger-factory.service";
 import { MemberLoginService } from "../member/member-login.service";
@@ -19,6 +21,7 @@ export class SystemConfigService {
   private state: { [key: string]: boolean } = {};
 
   constructor(private config: ConfigService,
+              private broadcastService: BroadcastService<SystemConfig>,
               private memberLoginService: MemberLoginService,
               public stringUtils: StringUtilsService,
               private loggerFactory: LoggerFactory) {
@@ -27,10 +30,11 @@ export class SystemConfigService {
   }
 
   async refresh() {
-    this.logger.debug("systemConfig query:started");
+    this.logger.info("systemConfig query:started");
     const systemConfig = await this.getConfig();
-    this.logger.debug("notifying systemConfig subscribers with:", systemConfig);
+    this.logger.info("notifying systemConfig subscribers with:", systemConfig);
     this.subject.next(systemConfig);
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.SYSTEM_CONFIG_LOADED, systemConfig));
   }
 
   private async getConfig(): Promise<SystemConfig> {
@@ -51,7 +55,11 @@ export class SystemConfigService {
 
   private emptyOrganisation(): Organisation {
     return {
-      shortName: "", longName: "", pages: [], href: null
+      href: null,
+      longName: null,
+      pages: [],
+      shortName: null,
+      walkPopulation: WalkPopulation.WALKS_MANAGER
     };
   }
 
@@ -89,7 +97,8 @@ export class SystemConfigService {
       mainSite: {
         href: "https://ramblers.org.uk",
         title: "Ramblers"
-      }, walksManager: {
+      },
+      walksManager: {
         href: "https://walks-manager.ramblers.org.uk/walks-manager",
         title: "Walks Manager",
         apiKey: null,

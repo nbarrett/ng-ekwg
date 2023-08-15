@@ -4,19 +4,15 @@ import {
   faArrowRightArrowLeft,
   faClose,
   faCompress,
-  faCompressAlt,
   faExpand,
-  faGripLinesVertical,
   faMagnifyingGlassMinus,
   faMagnifyingGlassPlus,
   faRedoAlt,
   faRotateLeft,
-  faRulerCombined,
-  faRulerVertical,
+  faRotateRight,
+  faSave,
   faUpDown
 } from "@fortawesome/free-solid-svg-icons";
-import { faRotateRight } from "@fortawesome/free-solid-svg-icons/faRotateRight";
-import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import first from "lodash-es/first";
 import { FileUploader } from "ng2-file-upload";
 import { base64ToFile, Dimensions, ImageCroppedEvent, ImageCropperComponent, ImageTransform, LoadedImage, OutputFormat } from "ngx-image-cropper";
@@ -96,10 +92,6 @@ export class ImageCropperAndResizerComponent implements OnInit, AfterViewInit, O
   faUpDown = faUpDown;
   faCompress = faCompress;
   faExpand = faExpand;
-  faCompressAlt = faCompressAlt;
-  faGripLinesVertical = faGripLinesVertical;
-  faRulerCombined = faRulerCombined;
-  faRulerVertical = faRulerVertical;
   action: string;
   maintainAspectRatio: boolean;
   imageQuality = 80;

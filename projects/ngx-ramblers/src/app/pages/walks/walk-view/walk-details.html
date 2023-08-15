@@ -6,7 +6,7 @@
   </h1>
   <ng-container *ngIf="!display.shouldShowFullDetails(displayedWalk)">
     <div class="col-sm-12">
-      <p>{{displayedWalk.latestEventType.description}}</p>
+      <p>{{displayedWalk?.latestEventType?.description}}</p>
     </div>
   </ng-container>
   <div *ngIf="display.shouldShowFullDetails(displayedWalk)" class="row">
@@ -42,7 +42,7 @@
         <div title>
           <app-copy-icon [value]="displayedWalk.walk.postcodeFinish"
                          [elementName]="'Finish Postcode'"></app-copy-icon>
-          Finish Postcode
+          {{elementNameFinish('Postcode')}}
         </div>
         <div content>
           <a tooltip="Click to locate finish postcode {{displayedWalk.walk.postcodeFinish}} on Google Maps"
@@ -55,7 +55,7 @@
         <div title>
           <app-copy-icon [value]="displayedWalk.walk.gridReferenceFinish"
                          [elementName]="'Finish Grid reference'"></app-copy-icon>
-          Finish Grid Ref
+          {{elementNameFinish('Grid Ref')}}
         </div>
         <div content>
           <a content

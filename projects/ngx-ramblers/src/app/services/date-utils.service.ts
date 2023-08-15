@@ -24,6 +24,7 @@ export class DateUtilsService {
   }
 
   public formats = {
+    displayTime: "h:mm a",
     displayDateAndTime: "ddd DD-MMM-YYYY, h:mm:ss a",
     displayDateTh: "MMMM Do YYYY",
     displayDate: "ddd DD-MMM-YYYY",

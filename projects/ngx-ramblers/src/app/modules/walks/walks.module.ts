@@ -4,7 +4,9 @@ import { WalkNotificationDetailsComponent } from "../../notifications/walks/temp
 import { WalkNotificationFooterComponent } from "../../notifications/walks/templates/common/walk-notification-footer.component";
 import { WalkNotificationCoordinatorApprovedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-approved.component";
 import { WalkNotificationCoordinatorAwaitingApprovalComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-approval.component";
-import { WalkNotificationCoordinatorAwaitingWalkDetailsComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-walk-details.component";
+import {
+  WalkNotificationCoordinatorAwaitingWalkDetailsComponent
+} from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-awaiting-walk-details.component";
 import { WalkNotificationCoordinatorDeletedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-deleted.component";
 import { WalkNotificationCoordinatorRequestedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-requested.component";
 import { WalkNotificationCoordinatorUpdatedComponent } from "../../notifications/walks/templates/coordinator/walk-notification-coordinator-updated.component";
@@ -31,6 +33,8 @@ import { WalkSearchComponent } from "../../pages/walks/walk-search/walk-search.c
 import { WalkSubPageComponent } from "../../pages/walks/walk-sub-page/walk-sub-page";
 import { WalkVenueComponent } from "../../pages/walks/walk-venue/walk-venue.component";
 import { WalkDetailsComponent } from "../../pages/walks/walk-view/walk-details";
+import { WalkGroupComponent } from "../../pages/walks/walk-view/walk-group";
+import { WalkLeaderComponent } from "../../pages/walks/walk-view/walk-leader";
 import { WalkViewComponent } from "../../pages/walks/walk-view/walk-view";
 import { AuditDeltaChangedItemsPipePipe } from "../../pipes/audit-delta-changed-items.pipe";
 import { AuditDeltaValuePipe } from "../../pipes/audit-delta-value.pipe";
@@ -51,11 +55,13 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     VenueIconPipe,
     WalkAddSlotsComponent,
     WalkAdminComponent,
+    WalkDetailsComponent,
     WalkEditComponent,
-    WalkSubPageComponent,
     WalkEditFullPageComponent,
     WalkEventTypePipe,
     WalkExportComponent,
+    WalkGroupComponent,
+    WalkLeaderComponent,
     WalkListComponent,
     WalkMeetupComponent,
     WalkMeetupConfigParametersComponent,
@@ -78,12 +84,12 @@ import { WalksAuthGuard } from "../../walks-auth-guard.service";
     WalkNotificationLeaderUpdatedComponent,
     WalkRiskAssessmentComponent,
     WalkRiskAssessmentSectionComponent,
+    WalkSearchComponent,
+    WalkSubPageComponent,
     WalkSummaryPipe,
     WalkValidationsListPipe,
     WalkVenueComponent,
     WalkViewComponent,
-    WalkDetailsComponent,
-    WalkSearchComponent,
   ],
   imports: [
     SharedModule

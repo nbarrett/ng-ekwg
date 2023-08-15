@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { faAdd, faEdit } from "@fortawesome/free-solid-svg-icons";
-import { faRemove } from "@fortawesome/free-solid-svg-icons/faRemove";
-import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
+import { faAdd, faEdit, faRemove, faSave } from "@fortawesome/free-solid-svg-icons";
 import { remove } from "lodash-es";
 import { FileUploader } from "ng2-file-upload";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertMessage, AlertTarget } from "../../../../models/alert-target.model";
 import { AwsFileData } from "../../../../models/aws-object.model";
-import { Image, Images, BannerImageType } from "../../../../models/system.model";
+import { NamedEvent, NamedEventType } from "../../../../models/broadcast.model";
+import { BannerImageType, Image, Images } from "../../../../models/system.model";
+import { BroadcastService } from "../../../../services/broadcast-service";
 import { DateUtilsService } from "../../../../services/date-utils.service";
 import { FileUploadService } from "../../../../services/file-upload.service";
 import { Logger, LoggerFactory } from "../../../../services/logger-factory.service";
@@ -44,6 +44,7 @@ export class SystemImageEditComponent implements OnInit {
               private stringUtils: StringUtilsService,
               private memberService: MemberService,
               private memberLoginService: MemberLoginService,
+              private broadcastService: BroadcastService<string>,
               private urlService: UrlService,
               protected dateUtils: DateUtilsService,
               loggerFactory: LoggerFactory) {
@@ -54,7 +55,6 @@ export class SystemImageEditComponent implements OnInit {
   @Input() imageType: BannerImageType;
   @Input() images: Images;
   @Input() image: Image;
-  @Output() headerLogoChanged: EventEmitter<string> = new EventEmitter();
   @Output() imageChanged: EventEmitter<Image> = new EventEmitter();
 
   ngOnInit() {
@@ -105,7 +105,7 @@ export class SystemImageEditComponent implements OnInit {
   }
 
   makeDefault() {
-    this.headerLogoChanged.next(this.image.originalFileName);
+    this.broadcastService.broadcast(NamedEvent.withData(NamedEventType.DEFAULT_LOGO_CHANGED, this.image.originalFileName));
   }
 
   imageSourceOrPreview(): string {

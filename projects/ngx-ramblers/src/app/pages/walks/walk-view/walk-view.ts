@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
-import { faCopy, faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AuthService } from "../../../auth/auth.service";
@@ -17,7 +15,6 @@ import { MemberLoginService } from "../../../services/member/member-login.servic
 import { AlertInstance, NotifierService } from "../../../services/notifier.service";
 import { UrlService } from "../../../services/url.service";
 import { WalksService } from "../../../services/walks/walks.service";
-import { LoginModalComponent } from "../../login/login-modal/login-modal.component";
 import { WalkDisplayService } from "../walk-display.service";
 
 const SHOW_START_POINT = "show-start-point";
@@ -48,13 +45,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
   public googleMapsUrl: SafeResourceUrl;
   public loggedIn: boolean;
   private subscriptions: Subscription[] = [];
-  faEnvelope = faEnvelope;
-  faPhone = faPhone;
-  config: ModalOptions = {
-    animated: false,
-    initialState: {}
-  };
-  public relatedLinksMediaWidth = 22;
   private notify: AlertInstance;
   public notifyTarget: AlertTarget = {};
 
@@ -64,7 +54,6 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     public googleMapsService: GoogleMapsService,
     private authService: AuthService,
     private memberLoginService: MemberLoginService,
-    private modalService: BsModalService,
     public display: WalkDisplayService,
     private dateUtils: DateUtilsService,
     public meetupService: MeetupService,
@@ -126,21 +115,15 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  login() {
-    this.modalService.show(LoginModalComponent, this.config);
-  }
-
   updateGoogleMap() {
     if (this.display.shouldShowFullDetails(this.displayedWalk)) {
-      this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk.walk,
+      this.googleMapsUrl = this.display.googleMapsUrl(this.displayedWalk?.walk,
         !this.drivingDirectionsDisabled() && this.mapDisplay === SHOW_DRIVING_DIRECTIONS, this.fromPostcode);
     }
   }
 
   refreshHomePostcode() {
-    this.fromPostcode = this.memberLoginService.memberLoggedIn() ? this.memberLoginService.loggedInMember().postcode : "";
-    this.logger.debug("set from postcode to", this.fromPostcode);
-    this.autoSelectMapDisplay();
+    this.changeFromPostcode(this.memberLoginService.memberLoggedIn() ? this.memberLoginService.loggedInMember().postcode : "");
   }
 
   autoSelectMapDisplay() {
@@ -151,6 +134,7 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     } else if (switchToShowDrivingDirections) {
       this.mapDisplay = SHOW_DRIVING_DIRECTIONS;
     }
+    this.logger.info("autoSelectMapDisplay:mapDisplay:", this.mapDisplay);
   }
 
   showDrivingDirections(): boolean {
@@ -176,8 +160,9 @@ export class WalkViewComponent implements OnInit, OnDestroy {
     this.updateGoogleMap();
   }
 
-  changeFromPostcode(newValue: string) {
-    this.fromPostcode = newValue;
+  changeFromPostcode(fromPostcode: string) {
+    this.logger.info("changeFromPostcode:", fromPostcode);
+    this.fromPostcode = fromPostcode;
     this.autoSelectMapDisplay();
     this.updateGoogleMap();
   }

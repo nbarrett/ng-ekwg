@@ -1,5 +1,6 @@
 export enum NamedEventType {
     APPLY_FILTER = "apply-filter",
+    DEFAULT_LOGO_CHANGED = "default-logo-changed",
     EDIT_SITE = "editSite",
     ERROR = "error",
     MAILCHIMP_LISTS_CHANGED = "mailchimp-lists-changed",
@@ -15,6 +16,7 @@ export enum NamedEventType {
     REFRESH = "refresh",
     SAVE_PAGE_CONTENT = "save-page-content",
     SHOW_PAGINATION = "show-pagination",
+    SYSTEM_CONFIG_LOADED = "system-config-loaded",
     WALK_SAVED = "walkSaved",
     WALK_SLOTS_CREATED = "walk-slots-created",
 }

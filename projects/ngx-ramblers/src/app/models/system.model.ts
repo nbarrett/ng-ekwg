@@ -1,9 +1,18 @@
 import { Link } from "./page.model";
 
-export interface Organisation {
-  shortName?: string;
+export enum WalkPopulation {
+  WALKS_MANAGER = "walks-manager",
+  LOCAL = "local"
+}
+
+export interface Group {
   longName?: string;
   groupCode?: string;
+}
+
+export interface Organisation extends Group {
+  walkPopulation: WalkPopulation;
+  shortName?: string;
   href?: string;
   pages: Link[];
 }

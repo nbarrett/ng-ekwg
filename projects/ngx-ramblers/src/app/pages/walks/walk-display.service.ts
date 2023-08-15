@@ -4,8 +4,10 @@ import { ActivatedRoute, Router } from "@angular/router";
 import find from "lodash-es/find";
 import isEmpty from "lodash-es/isEmpty";
 import isNumber from "lodash-es/isNumber";
+import { BsModalService, ModalOptions } from "ngx-bootstrap/modal";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Member } from "../../models/member.model";
+import { Organisation, WalkPopulation } from "../../models/system.model";
 import { WalkAccessMode } from "../../models/walk-edit-mode.model";
 import { WalkEventType } from "../../models/walk-event-type.model";
 import { ExpandedWalk } from "../../models/walk-expanded-view.model";
@@ -17,34 +19,42 @@ import { GoogleMapsService } from "../../services/google-maps.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
 import { MemberLoginService } from "../../services/member/member-login.service";
 import { MemberService } from "../../services/member/member.service";
+import { SystemConfigService } from "../../services/system/system-config.service";
 import { UrlService } from "../../services/url.service";
 import { WalkEventService } from "../../services/walks/walk-event.service";
 import { WalksQueryService } from "../../services/walks/walks-query.service";
 import { WalksReferenceService } from "../../services/walks/walks-reference-data.service";
 import { WalksService } from "../../services/walks/walks.service";
+import { LoginModalComponent } from "../login/login-modal/login-modal.component";
 
 @Injectable({
   providedIn: "root"
 })
 
 export class WalkDisplayService {
-
-  expandedWalks: ExpandedWalk [] = [];
+  public relatedLinksMediaWidth = 22;
+  public expandedWalks: ExpandedWalk [] = [];
   private logger: Logger;
   public grades = ["Easy access", "Easy", "Leisurely", "Moderate", "Strenuous", "Technical"];
   public walkTypes = enumValues(WalkType);
   private nextWalkId: string;
   public members: Member[] = [];
   public googleMapsConfig: GoogleMapsConfig;
-  loggedIn: boolean;
+  public group: Organisation;
   public previousWalkLeaderIds: string[];
+  public config: ModalOptions = {
+    animated: false,
+    initialState: {}
+  };
 
   constructor(
+    private systemConfigService: SystemConfigService,
     private googleMapsService: GoogleMapsService,
     private walksService: WalksService,
     private memberService: MemberService,
     private memberLoginService: MemberLoginService,
     private router: Router,
+    private modalService: BsModalService,
     private urlService: UrlService,
     private route: ActivatedRoute,
     private sanitiser: DomSanitizer,
@@ -54,10 +64,18 @@ export class WalkDisplayService {
     private walksQueryService: WalksQueryService,
     loggerFactory: LoggerFactory) {
     this.logger = loggerFactory.createLogger(WalkDisplayService, NgxLoggerLevel.OFF);
+    this.applyConfig();
     this.refreshGoogleMapsService();
     this.refreshCachedData();
     this.logger.debug("this.memberLoginService", this.memberLoginService.loggedInMember());
-    this.loggedIn = memberLoginService.memberLoggedIn();
+  }
+
+  login() {
+    this.modalService.show(LoginModalComponent, this.config);
+  }
+
+  loggedIn(): boolean {
+    return this.memberLoginService.memberLoggedIn();
   }
 
   private queryPreviousWalkLeaderIds(): Promise<string[]> {
@@ -92,23 +110,31 @@ export class WalkDisplayService {
 
   googleMapsUrl(walk: Walk, showDrivingDirections: boolean, fromPostcode: string): SafeResourceUrl {
     if (this.googleMapsConfig?.apiKey && this.googleMapsConfig?.zoomLevel) {
-    const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
-      `https://www.google.com/maps/embed/v1/directions?origin=${fromPostcode}&destination=${walk.postcode}&key=${this.googleMapsConfig?.apiKey}` :
-      `https://www.google.com/maps/embed/v1/place?q=${walk.postcode}&zoom=${this.googleMapsConfig?.zoomLevel || 12}&key=${this.googleMapsConfig?.apiKey}`);
-    this.logger.info("this.googleMapsUrl", googleMapsUrl);
-    return googleMapsUrl;
+      const googleMapsUrl = this.sanitiser.bypassSecurityTrustResourceUrl(showDrivingDirections ?
+        `https://www.google.com/maps/embed/v1/directions?origin=${fromPostcode}&destination=${walk.postcode}&key=${this.googleMapsConfig?.apiKey}` :
+        `https://www.google.com/maps/embed/v1/place?q=${walk.postcode}&zoom=${this.googleMapsConfig?.zoomLevel || 12}&key=${this.googleMapsConfig?.apiKey}`);
+      this.logger.debug("given showDrivingDirections:", showDrivingDirections, "googleMapsUrl set to:", googleMapsUrl);
+      return googleMapsUrl;
+    } else {
+      this.logger.debug("cant set googleMapsUrl as apiKey:", this.googleMapsConfig?.apiKey, "zoomLevel:", this.googleMapsConfig?.zoomLevel);
     }
   }
 
   mapViewReady(googleMapsUrl: SafeResourceUrl): boolean {
     const zoomLevelValid = isNumber(this?.googleMapsConfig?.zoomLevel);
     const mapviewReady = !!(zoomLevelValid && googleMapsUrl);
-    this.logger.info("mapViewReady:", mapviewReady);
+    this.logger.debug("mapViewReady:", mapviewReady);
     return mapviewReady;
   }
 
   public shouldShowFullDetails(displayedWalk: DisplayedWalk): boolean {
-    return !!(displayedWalk.walkAccessMode.walkWritable && displayedWalk.walk.postcode) || displayedWalk.latestEventType.showDetails;
+    return this.walkPopulationWalksManager() || !!(displayedWalk.walkAccessMode.walkWritable && displayedWalk.walk.postcode) || displayedWalk.latestEventType.showDetails;
+  }
+
+  public walkPopulationWalksManager(): boolean {
+    const result = this.group?.walkPopulation === WalkPopulation.WALKS_MANAGER;
+    this.logger.debug("walkPopulationWalksManager:walkPopulation:", this.group?.walkPopulation, "result:", result);
+    return result;
   }
 
   loggedInMemberIsLeadingWalk(walk: Walk) {
@@ -252,4 +278,11 @@ export class WalkDisplayService {
     this.toggleExpandedViewFor(walk, WalkViewMode.VIEW);
   }
 
+  private applyConfig() {
+    this.logger.info("applyConfig called");
+    this.systemConfigService.events().subscribe(item => {
+      this.group = item.group;
+      this.logger.info("group:", this.group);
+    });
+  }
 }
