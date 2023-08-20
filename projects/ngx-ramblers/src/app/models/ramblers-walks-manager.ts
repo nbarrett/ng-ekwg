@@ -30,7 +30,7 @@ export enum WalkType {
 }
 
 export enum WalkStatus {
-  CONFIRMED = "confirimed",
+  CONFIRMED = "confirmed",
   CANCELLED = "cancelled"
 }
 

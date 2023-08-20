@@ -40,6 +40,6 @@
 </div>
 <app-dynamic-content [anchor]="'home-content'"></app-dynamic-content>
 <div class="card-columns">
-  <app-facebook *ngIf="externalUrls?.facebook?.showFeed"></app-facebook>
-  <app-instagram *ngIf="externalUrls?.instagram?.showFeed"></app-instagram>
+  <app-facebook *ngIf="externalSystems?.facebook?.showFeed"></app-facebook>
+  <app-instagram *ngIf="externalSystems?.instagram?.showFeed"></app-instagram>
 </div>

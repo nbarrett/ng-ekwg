@@ -4,7 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { groupEventTypeFor } from "../../models/committee.model";
 import { ALL_PHOTOS, ContentMetadataItem, ImageFilterType, IMAGES_HOME, ImageTag, RECENT_PHOTOS } from "../../models/content-metadata.model";
-import { ExternalUrls } from "../../models/system.model";
+import { ExternalSystems } from "../../models/system.model";
 import { ContentMetadataService } from "../../services/content-metadata.service";
 import { ImageTagDataService } from "../../services/image-tag-data-service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public showIndicators: boolean;
   faPencil = faPencil;
   private subscriptions: Subscription[] = [];
-  public externalUrls: ExternalUrls;
+  public externalSystems: ExternalSystems;
 
   @HostListener("window:resize", ["$event"])
   onResize(event) {
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit");
     this.pageService.setTitle("Home");
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.externalUrls));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalSystems = item.externalSystems));
     this.subscriptions.push(this.imageTagDataService.selectedTag().subscribe((tag: ImageTag) => {
       this.initialiseSlidesForTag(tag, "selectedTag().subscribe");
     }));
@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   allowEdits() {
-    return this.siteEditService.active() && this.memberLoginService.allowContentEdits();
+    return this.memberLoginService.allowContentEdits();
   }
 
   eventUrl(slide: ContentMetadataItem) {

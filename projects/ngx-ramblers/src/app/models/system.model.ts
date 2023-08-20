@@ -41,25 +41,31 @@ export interface Footer {
   };
 }
 
-export interface Instagram {
+export interface ExternalSystem {
   groupUrl?: string;
+  showFooterLink?: boolean;
   showFeed?: boolean;
 }
 
-export interface Facebook {
-  groupUrl?: string;
+export interface Meetup extends ExternalSystem {
+  apiUrl: string;
+  groupName: string;
+  accessToken: string;
+  apiKey: string;
+}
+
+export interface Facebook extends ExternalSystem {
   pagesUrl?: string;
   appId?: string;
-  showFeed?: boolean;
 }
 
-export interface ExternalUrls {
+export interface ExternalSystems {
   facebook?: Facebook;
-  instagram?: Instagram;
-  linkedIn?: string;
-  meetup?: string;
-  twitter?: string;
-  youtube?: string;
+  instagram?: ExternalSystem;
+  meetup?: Meetup;
+  linkedIn?: ExternalSystem;
+  twitter?: ExternalSystem;
+  youtube?: ExternalSystem;
 }
 
 export interface Header {
@@ -95,7 +101,7 @@ export interface SystemConfig {
   group: Organisation;
   area: Organisation;
   national: Ramblers;
-  externalUrls: ExternalUrls
+  externalSystems: ExternalSystems
 }
 
 export interface ColourSelector {

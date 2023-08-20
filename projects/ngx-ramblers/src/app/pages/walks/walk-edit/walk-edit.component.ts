@@ -188,7 +188,7 @@ export class WalkEditComponent implements OnInit, OnDestroy {
 
   allowDelete() {
     return !this.saveInProgress && this.confirmAction === ConfirmType.NONE && this.memberLoginService.allowWalkAdminEdits()
-      && this.displayedWalk.walkAccessMode && this.displayedWalk.walkAccessMode.walkWritable;
+      && this.displayedWalk.walkAccessMode && this.displayedWalk?.walkAccessMode?.walkWritable;
   }
 
   allowNotifyConfirmation() {

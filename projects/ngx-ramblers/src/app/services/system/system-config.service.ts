@@ -80,7 +80,7 @@ export class SystemConfigService {
       backgrounds: this.defaultImages(BannerImageType.backgrounds),
       icons: this.defaultImages(BannerImageType.icons),
       logos: this.defaultImages(BannerImageType.logos),
-      externalUrls: {
+      externalSystems: {
         facebook: {appId: null, pagesUrl: null, groupUrl: null},
         meetup: null,
         instagram: null,

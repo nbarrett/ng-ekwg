@@ -3,7 +3,7 @@ import take from "lodash-es/take";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { InstagramMediaPost, InstagramRecentMediaData } from "../../models/instagram.model";
-import { ExternalUrls } from "../../models/system.model";
+import { ExternalSystems } from "../../models/system.model";
 import { DateUtilsService } from "../../services/date-utils.service";
 import { InstagramService } from "../../services/instagram.service";
 import { Logger, LoggerFactory } from "../../services/logger-factory.service";
@@ -18,7 +18,7 @@ import { UrlService } from "../../services/url.service";
 export class InstagramComponent implements OnInit, OnDestroy {
   private logger: Logger;
   public recentMedia: InstagramMediaPost[];
-  public externalUrls: ExternalUrls;
+  public externalSystems: ExternalSystems;
   private subscriptions: Subscription[] = [];
 
   constructor(private urlService: UrlService,
@@ -32,7 +32,7 @@ export class InstagramComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.logger.debug("ngOnInit");
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalUrls = item.externalUrls));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.externalSystems = item.externalSystems));
     this.instagramService.recentMedia()
       .then((recentMedia: InstagramRecentMediaData) => {
         this.recentMedia = take(recentMedia.data, 14);
@@ -53,6 +53,6 @@ export class InstagramComponent implements OnInit, OnDestroy {
   }
 
   instagramPath() {
-    return this.urlService.urlPath(this.externalUrls?.instagram?.groupUrl);
+    return this.urlService.urlPath(this.externalSystems?.instagram?.groupUrl);
   }
 }

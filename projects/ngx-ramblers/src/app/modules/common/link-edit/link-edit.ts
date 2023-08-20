@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
-import { faDownLong } from "@fortawesome/free-solid-svg-icons/faDownLong";
-import { faUpLong } from "@fortawesome/free-solid-svg-icons/faUpLong";
+import { faDownLong } from "@fortawesome/free-solid-svg-icons";
+import { faUpLong } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Link } from "../../../models/page.model";
 import { move } from "../../../services/arrays";

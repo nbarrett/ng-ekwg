@@ -4,7 +4,7 @@ import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { NamedEvent, NamedEventType } from "../../../models/broadcast.model";
-import { BannerImageType, ExternalUrls, SystemConfig, WalkPopulation } from "../../../models/system.model";
+import { BannerImageType, ExternalSystems, SystemConfig, WalkPopulation } from "../../../models/system.model";
 import { BroadcastService } from "../../../services/broadcast-service";
 import { DateUtilsService } from "../../../services/date-utils.service";
 import { enumKeyValues, KeyValue } from "../../../services/enums";
@@ -68,41 +68,61 @@ export class SystemSettingsComponent implements OnInit, OnDestroy {
   }
 
   private prepareMigrationIfRequired(config: SystemConfig) {
-    const facebookMigrate = this.prepareMigration(config.externalUrls, "facebook");
-    const instagramMigrate = this.prepareMigration(config.externalUrls, "instagram");
-    if (facebookMigrate || instagramMigrate) {
+    const externalSystemsMigrate = this.migrateConfigKeyIfRequired(config, "externalUrls", "externalSystems");
+    const facebookMigrate = this.prepareMigration(config.externalSystems, "facebook");
+    const instagramMigrate = this.prepareMigration(config.externalSystems, "instagram");
+    const meetupMigrate = this.prepareMigration(config.externalSystems, "meetup");
+    if (externalSystemsMigrate || facebookMigrate || instagramMigrate || meetupMigrate) {
       this.systemConfigService.saveConfig(config);
     }
   }
 
   private migrateDataIfRequired(config: SystemConfig) {
-    if (!config.externalUrls.facebook) {
-      this.config.externalUrls.facebook = {appId: null, pagesUrl: null, groupUrl: null, showFeed: true};
-      this.logger.info("migrated facebook to", this.config.externalUrls.facebook);
+    if (!config.externalSystems.facebook) {
+      this.config.externalSystems.facebook = {appId: null, pagesUrl: null, groupUrl: null, showFeed: true};
+      this.logger.info("migrated facebook to", this.config.externalSystems.facebook);
     } else {
-      this.logger.info("nothing to migrate for facebook", this.config.externalUrls.facebook);
+      this.logger.info("nothing to migrate for facebook", this.config.externalSystems.facebook);
     }
-    if (!config.externalUrls.instagram) {
-      this.logger.info("migrated instagram to", this.config.externalUrls.instagram);
-      this.config.externalUrls.instagram = {groupUrl: null, showFeed: true};
+    if (!config.externalSystems.instagram) {
+      this.logger.info("migrated instagram to", this.config.externalSystems.instagram);
+      this.config.externalSystems.instagram = {groupUrl: null, showFeed: true};
     } else {
-      this.logger.info("nothing to migrate for instagram", this.config.externalUrls.instagram);
+      this.logger.info("nothing to migrate for instagram", this.config.externalSystems.instagram);
+    }
+    if (!config.externalSystems.meetup) {
+      this.logger.info("migrated meetup to", this.config.externalSystems.meetup);
+      this.config.externalSystems.meetup = {groupUrl: null, apiUrl: null, groupName: null, accessToken: null, apiKey: null};
+    } else {
+      this.logger.info("nothing to migrate for meetup", this.config.externalSystems.meetup);
     }
   }
 
-  private prepareMigration(externalUrls: ExternalUrls, field: string): boolean {
-    const needsMigration = this.needsMigration(externalUrls, field);
+  private prepareMigration(externalSystems: ExternalSystems, field: string): boolean {
+    const needsMigration = this.needsMigration(externalSystems, field);
     if (needsMigration) {
-      this.logger.info("externalUrls ", field, "with value", externalUrls[field], "needs migration");
-      externalUrls[field] = null;
+      this.logger.info("externalSystems ", field, "with value", externalSystems[field], "needs migration");
+      externalSystems[field] = null;
     } else {
-      this.logger.info("externalUrls ", field, "with value", externalUrls[field], "already migrated");
+      this.logger.info("externalSystems ", field, "with value", externalSystems[field], "already migrated");
     }
     return needsMigration;
   }
 
-  private needsMigration(externalUrls: ExternalUrls, field: string): boolean {
-    return typeof externalUrls[field] === "string";
+  private migrateConfigKeyIfRequired(systemConfig: SystemConfig, oldKey: string, newKey: string): boolean {
+    const needsMigration = !systemConfig[newKey] && systemConfig[oldKey];
+    if (needsMigration) {
+      this.logger.info("migrating systemConfig old key", oldKey, "to new key", newKey);
+      systemConfig[newKey] = systemConfig[oldKey];
+      delete systemConfig[oldKey];
+    } else {
+      this.logger.info("systemConfig ", newKey, "with value", systemConfig[newKey], "already migrated");
+    }
+    return needsMigration;
+  }
+
+  private needsMigration(externalSystems: ExternalSystems, field: string): boolean {
+    return typeof externalSystems[field] === "string";
   }
 
   save() {

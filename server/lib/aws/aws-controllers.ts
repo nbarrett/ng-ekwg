@@ -1,5 +1,5 @@
 import * as AWS from "@aws-sdk/client-s3";
-import { GetObjectCommand, GetObjectRequest, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, GetObjectRequest, PutObjectCommand, S3, S3Client } from "@aws-sdk/client-s3";
 import { ListObjectsCommandOutput } from "@aws-sdk/client-s3/dist-types/commands/ListObjectsCommand";
 import * as crypto from "crypto";
 import debug from "debug";
@@ -20,11 +20,10 @@ const s3Config = {
   secretAccessKey: envConfig.aws.secretAccessKey,
   region: envConfig.aws.region
 };
-const s3 = new AWS.S3(s3Config);
-const baseHostingUrl = envConfig.aws.baseHostingUrl;
+const s3: S3 = new AWS.S3(s3Config);
 const debugLog = debug(envConfig.logNamespace("aws"));
 debugLog.enabled = false;
-debugLog("configured with", s3Config, "Proxying S3 requests to", baseHostingUrl, "http.globalAgent.maxSockets:", https.globalAgent.maxSockets);
+debugLog("configured with", s3Config, "Proxying S3 requests to", envConfig.aws.uploadUrl, "http.globalAgent.maxSockets:", https.globalAgent.maxSockets);
 
 export function listObjects(req: Request, res: Response) {
   const bucketParams = {

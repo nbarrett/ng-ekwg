@@ -15,13 +15,13 @@
       </h2>
       <h2 *ngIf="display.shouldShowFullDetails(displayedWalk) && displayedWalk.walk.startTime" name="startTime">
         Start Time: {{displayedWalk.walk.startTime}}</h2>
-      <input *ngIf="displayedWalk.walkAccessMode.walkWritable" type="submit"
-             [value]="displayedWalk.walkAccessMode.caption"
+      <input *ngIf="displayedWalk?.walkAccessMode?.walkWritable" type="submit"
+             [value]="displayedWalk?.walkAccessMode?.caption"
              (click)="display.edit(displayedWalk)"
-             [tooltip]="displayedWalk.walkAccessMode.caption + ' this walk'"
+             [tooltip]="displayedWalk?.walkAccessMode?.caption + ' this walk'"
              class="button-form button-form-edit-event mt-2 mr-2">
       <div *ngIf="display.shouldShowFullDetails(displayedWalk)" class="event-description">
-        <p markdown [data]="displayedWalk.walk.longerDescription"></p>
+        <p markdown [data]="displayedWalk?.walk?.longerDescription"></p>
       </div>
       <app-walk-leader [displayedWalk]="displayedWalk"></app-walk-leader>
       <div *ngIf="display.shouldShowFullDetails(displayedWalk) && displayLinks"

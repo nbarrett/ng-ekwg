@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgxLoggerLevel } from "ngx-logger";
 import { Subscription } from "rxjs";
-import { Footer } from "../models/system.model";
+import { Footer, Ramblers } from "../models/system.model";
 import { DateUtilsService } from "../services/date-utils.service";
 import { Logger, LoggerFactory } from "../services/logger-factory.service";
 import { SystemConfigService } from "../services/system/system-config.service";
@@ -16,6 +16,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   public year: string;
   public footer: Footer;
   private subscriptions: Subscription[] = [];
+  private national: Ramblers;
   constructor(private dateUtils: DateUtilsService,
               private systemConfigService: SystemConfigService,
               loggerFactory: LoggerFactory) {
@@ -25,7 +26,10 @@ export class FooterComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.logger.info("subscribing to systemConfigService events");
-    this.subscriptions.push(this.systemConfigService.events().subscribe(item => this.footer = item.footer));
+    this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
+      return this.footer = item.footer;
+      return this.national = item.national;
+    }));
     this.year = this.dateUtils.asString(this.dateUtils.momentNow().valueOf(), undefined, "YYYY");
   }
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { faCopy, faEnvelope, faHouse, faMapMarkerAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { faFile } from "@fortawesome/free-solid-svg-icons/faFile";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { AlertTarget } from "../../../models/alert-target.model";
 import { SocialEvent } from "../../../models/social-events.model";

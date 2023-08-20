@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { faListCheck, faPersonWalkingArrowLoopLeft, faPersonWalkingDashedLineArrowRight, faRulerVertical } from "@fortawesome/free-solid-svg-icons";
-import { faRulerHorizontal } from "@fortawesome/free-solid-svg-icons/faRulerHorizontal";
+import { faRulerHorizontal } from "@fortawesome/free-solid-svg-icons";
 import { NgxLoggerLevel } from "ngx-logger";
 import { DisplayedWalk } from "../../../models/walk.model";
 import { DateUtilsService } from "../../../services/date-utils.service";

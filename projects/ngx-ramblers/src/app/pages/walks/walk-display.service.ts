@@ -128,7 +128,7 @@ export class WalkDisplayService {
   }
 
   public shouldShowFullDetails(displayedWalk: DisplayedWalk): boolean {
-    return this.walkPopulationWalksManager() || !!(displayedWalk.walkAccessMode.walkWritable && displayedWalk.walk.postcode) || displayedWalk.latestEventType.showDetails;
+    return this.walkPopulationWalksManager() || !!(displayedWalk?.walkAccessMode?.walkWritable && displayedWalk?.walk?.postcode) || displayedWalk?.latestEventType?.showDetails;
   }
 
   public walkPopulationWalksManager(): boolean {

@@ -59,7 +59,7 @@ export class FacebookComponent implements OnInit, OnDestroy {
     this.logger.debug("ngOnInit window.innerWidth:", window.innerWidth);
     this.logger.info("subscribing to systemConfigService events");
     this.subscriptions.push(this.systemConfigService.events().subscribe(item => {
-      this.facebook = item.externalUrls.facebook;
+      this.facebook = item.externalSystems.facebook;
       this.pluginUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://www.facebook.com/plugins/page.php?${this.parameters()}`);
       this.scriptSrcUrl = this.sanitiser.bypassSecurityTrustResourceUrl(`https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=${this.version}&appId=${this.facebook.appId}`);
       this.logger.debug("facebook:", this.facebook, "pluginUrl:", this.pluginUrl, "scriptSrcUrl:", this.scriptSrcUrl);

@@ -1,5 +1,3 @@
-import * as configData from "config";
-
 function validatedEnvironmentVariable(variableName: string): string {
   const variableValue = process.env[variableName];
   if (!variableValue) {
@@ -21,12 +19,10 @@ export const envConfig = {
   },
   aws: {
     accessKeyId: validatedEnvironmentVariable("AWS_ACCESS_KEY_ID"),
-    baseHostingUrl: `http://s3-${configData.aws.region}.${configData.aws.domain}/${configData.aws.bucket}`,
-    bucket: configData.aws.bucket,
-    domain: configData.aws.domain,
-    region: configData.aws.region,
+    bucket: validatedEnvironmentVariable("AWS_BUCKET"),
+    region: validatedEnvironmentVariable("AWS_REGION"),
     secretAccessKey: validatedEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
-    uploadUrl: `https://${configData.aws.bucket}.s3.amazonaws.com`,
+    uploadUrl: `https://${validatedEnvironmentVariable("AWS_BUCKET")}.s3.amazonaws.com`,
   },
   dev: env !== "production",
   env,
@@ -41,19 +37,19 @@ export const envConfig = {
   },
   logNamespace,
   meetup: {
-    apiUrl: configData.meetup.apiUrl,
-    group: configData.meetup.group,
+    apiUrl: null,
+    group: null,
     oauth: {
       accessToken: validatedEnvironmentVariable("MEETUP_ACCESS_TOKEN"),
     },
-    url: configData.meetup.url,
+    url: null,
   },
   mongo: {
     uri: validatedEnvironmentVariable("MONGODB_URI"),
   },
   server: {
-    listenPort: process.env.PORT || configData.server.listenPort,
-    staticUrl: configData.server.staticUrl,
-    uploadDir: configData.server.uploadDir,
+    listenPort: process.env.PORT || 5000,
+    staticUrl: "/",
+    uploadDir: "/tmp/uploads",
   },
 };
